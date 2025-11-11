@@ -37,19 +37,10 @@ async function startIdentityConsumer(app) {
                     const request = JSON.parse(msg.content.toString())
                     const { action, payload } = request
 
-                    let response
+                    let response = null;
 
                     switch (action) {
-                        case 'getUser':
-                            console.log(payload.username)
-                            response = await getUserByUsername(
-                                app,
-                                payload.username
-                            )
-                            break
-                        case 'validateUser':
-                            response = await validateUser(app, payload)
-                            break
+                        // here we listen for event msg and generate response for it
                         default:
                             response = { error: 'Unknown action' }
                     }

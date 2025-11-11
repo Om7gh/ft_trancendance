@@ -11,6 +11,7 @@ services:
       - rabbitmq
       - chess
       - identity
+      - client
 
   rabbitmq:
       container_name: rabbitmq
@@ -54,6 +55,21 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+
+  client:
+    container_name: client
+    build: ./client/
+    image: client:pingpong
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
+    networks:
+      - pingpong
+
     
   # chat:
   #   container_name: chat

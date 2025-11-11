@@ -1,0 +1,8 @@
+{
+  "players": [
+    { "username": "omar", "avatar": "https://i.pravatar.cc/300" },
+    { "username": "adil", "avatar": "https://i.pravatar.cc/300" },
+    { "username": "karim", "avatar": "https://i.pravatar.cc/300" },
+    { "username": "saad", "avatar": "https://i.pravatar.cc/300" }
+  ]
+}
