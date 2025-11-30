@@ -3,7 +3,7 @@ import type { signUpData } from "@/types/userType";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import type { Error } from "@/types/errorType";
-
+// localhost/api/me 
 async function register(userData: signUpData) {
   console.log(userData);
   const res = await fetch("http://localhost:4000/api/v1/auth/signup", {

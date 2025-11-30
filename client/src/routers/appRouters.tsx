@@ -1,49 +1,83 @@
-import { HomeDashboard } from "@/components/layout";
-import { Activation, FinishRegister, SignIn, SignUp } from "@/components/ui";
-import ResetPassword from "@/components/ui/auth/ResetPassword";
-import TwoFactorActivation from "@/components/ui/auth/TwoFactorActivation";
-import ErrorPage from "@/components/ui/utils/ErrorPage";
+import { HomeDashboard } from '@/components/layout';
+import { Activation, FinishRegister, SignIn, SignUp } from '@/components/ui';
+import ResetPassword from '@/components/ui/auth/ResetPassword';
+import TwoFactorActivation from '@/components/ui/auth/TwoFactorActivation';
+import PlayTournament from '@/components/ui/game/PlayTournament';
+import ErrorPage from '@/components/ui/utils/ErrorPage';
 import {
   Auth,
   Chat,
   Dashboard,
   Friends,
-  Games,
   Landing,
   Profile,
   Settings,
-} from "@/pages";
-import { settingHandler } from "@/pages/Settings";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+} from '@/pages';
+import Chess from '@/pages/Chess';
+import Customization from '@/pages/Customization';
+import GamePortal from '@/pages/GamePortal';
+import GameSettings from '@/pages/GameSettings';
+import PingPong from '@/pages/PingPong';
+import { settingHandler } from '@/pages/Settings';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 const router = createBrowserRouter([
   {
-    path: "/dashboard",
+    path: '/dashboard',
     element: <Dashboard />,
     children: [
       {
-        path: "home",
+        path: 'home',
         element: <HomeDashboard />,
       },
       {
-        path: "profile",
+        path: 'profile',
         element: <Profile />,
       },
       {
-        path: "settings",
+        path: 'settings',
         element: <Settings />,
         action: settingHandler,
       },
       {
-        path: "games",
-        element: <Games />,
+        path: 'games',
+        children: [
+          {
+            path: 'pingpong',
+            element: <PingPong />,
+          },
+          {
+            path: 'tournament',
+            element: <PlayTournament />,
+          },
+          {
+            path: 'customization',
+            element: <Customization />,
+          },
+          {
+            path: 'portal',
+            element: <GamePortal />,
+          },
+          {
+            path: 'settings',
+            element: <GameSettings />,
+          },
+          {
+            path: 'chess',
+            element: <Chess />,
+          },
+          {
+            index: true,
+            element: <Navigate to="portal" replace />,
+          },
+        ],
       },
       {
-        path: "chat",
+        path: 'chat',
         element: <Chat />,
       },
       {
-        path: "friends",
+        path: 'friends',
         element: <Friends />,
       },
       {
@@ -53,35 +87,35 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/",
+    path: '/',
     element: <Landing />,
   },
   {
-    path: "/auth",
+    path: '/auth',
     element: <Auth />,
     children: [
       {
-        path: "signup",
+        path: 'signup',
         element: <SignUp />,
       },
       {
-        path: "signin",
+        path: 'signin',
         element: <SignIn />,
       },
       {
-        path: "avatar",
+        path: 'avatar',
         element: <FinishRegister />,
       },
       {
-        path: "activation",
+        path: 'activation',
         element: <Activation />,
       },
       {
-        path: "2-factor-activation",
+        path: '2-factor-activation',
         element: <TwoFactorActivation />,
       },
       {
-        path: "reset-password",
+        path: 'reset-password',
         element: <ResetPassword />,
       },
       {
@@ -91,7 +125,7 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "*",
+    path: '*',
     element: <ErrorPage />,
   },
 ]);

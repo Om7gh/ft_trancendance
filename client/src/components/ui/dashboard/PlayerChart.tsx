@@ -1,8 +1,8 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 const data = [
-  { name: "Wins", value: 55, color: "#0d9488" },
-  { name: "Losses", value: 44, color: "#f97316" },
+  { name: "Wins", value: 55, color: "#00E5FF" },
+  { name: "Losses", value: 44, color: "#8A2BE2" },
   { name: "Draws", value: 2, color: "rgba(46, 46, 53, 0.85)" },
 ];
 

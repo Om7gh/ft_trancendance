@@ -1,7 +1,7 @@
-import { Avatar } from "@/assets";
-import { useEffect, useState, type JSX } from "react";
-import { Link } from "react-router-dom";
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import { Avatar } from '@/assets';
+import { useEffect, useState, type JSX } from 'react';
+import { Link } from 'react-router-dom';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
 export default function Profile(): JSX.Element {
   const [active, setActive] = useState(false);
@@ -9,15 +9,15 @@ export default function Profile(): JSX.Element {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".profile-container")) {
+      if (!target.closest('.profile-container')) {
         setActive(false);
       }
     };
 
-    window.addEventListener("click", handleClickOutside);
+    window.addEventListener('click', handleClickOutside);
 
     return () => {
-      window.removeEventListener("click", handleClickOutside);
+      window.removeEventListener('click', handleClickOutside);
     };
   }, []);
 
@@ -29,8 +29,9 @@ export default function Profile(): JSX.Element {
   return (
     <div className="relative">
       <div
-        className="h-14 w-25 rounded-full flex items-center px-2 bg-slate-900 hover:bg-slate-900/30 cursor-pointer hover:from-teal-500/30 hover:to-teal-800/30 transition-all duration-300 p-0.5 z-50 ring-4 ring-offset-2 ring-offset-orange-500"
-        onClick={toggleMenu}>
+        className="h-14 w-25 rounded-full flex items-center px-2 bg-slate-900 hover:bg-slate-900/30 cursor-pointer hover:from-violet-500/30 hover:to-violet-800/30 transition-all duration-300 p-0.5 z-50 ring-4 ring-offset-2 ring-offset-violet-500"
+        onClick={toggleMenu}
+      >
         <div className="relative">
           <img
             src={Avatar}
@@ -48,7 +49,7 @@ export default function Profile(): JSX.Element {
       </div>
       {active && (
         <div className="absolute top-16 right-0 w-48 bg-slate-900 rounded-lg shadow-xl overflow-hidden animate-dropdown origin-top-right z-50">
-          <div className="px-4 py-3 bg-orange-500">
+          <div className="px-4 py-3 bg-neon">
             <p className="text-white font-medium truncate">Omar Ghazi</p>
           </div>
           <ul className="divide-y divide-gray-100">
@@ -56,7 +57,8 @@ export default function Profile(): JSX.Element {
               <Link
                 to="home"
                 className="block px-4 py-3 text-sm text-slate-100"
-                onClick={() => setActive(false)}>
+                onClick={() => setActive(false)}
+              >
                 Home
               </Link>
             </li>
@@ -64,7 +66,8 @@ export default function Profile(): JSX.Element {
               <Link
                 to="profile"
                 className="block px-4 py-3 text-sm text-slate-100"
-                onClick={() => setActive(false)}>
+                onClick={() => setActive(false)}
+              >
                 My Profile
               </Link>
             </li>
@@ -72,7 +75,8 @@ export default function Profile(): JSX.Element {
               <Link
                 to="settings"
                 className="block px-4 py-3 text-sm text-slate-100"
-                onClick={() => setActive(false)}>
+                onClick={() => setActive(false)}
+              >
                 Settings
               </Link>
             </li>
@@ -80,7 +84,8 @@ export default function Profile(): JSX.Element {
               <Link
                 to="/auth/signin"
                 className="block px-4 py-3 text-sm text-red-500 hover:text-red-600"
-                onClick={() => setActive(false)}>
+                onClick={() => setActive(false)}
+              >
                 Logout
               </Link>
             </li>
