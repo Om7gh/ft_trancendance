@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { MdClose } from 'react-icons/md';
 
@@ -11,23 +11,51 @@ function Modal({
   onClose: () => void;
   type?: string;
 }) {
+  const closeModal = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  useEffect(() => {
+    const onKey = (ev: KeyboardEvent) => {
+      if (ev.key === 'Escape') onClose();
+    };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
   return createPortal(
-    <div className="w-screen h-screen bg-slate-950/20 backdrop-blur-md fixed top-0 left-0 ">
+    <div
+      className="fixed inset-0 z-50 w-screen h-screen bg-slate-950/20 backdrop-blur-md flex items-center justify-center px-4"
+      onClick={closeModal}
+      aria-hidden={false}
+    >
       <div
-        className={`fixed ${
-          type !== 'notification' ? 'top-1/2 left-1/2' : 'top-1/4 left-1/2'
-        } -translate-x-1/2 -translate-y-1/2 px-16 py-10 max-w-[40vmax] max-h-[40vmax] bg-slate-900 shadow-md shadow-slate-950 overflow-auto transition`}
+        role="dialog"
+        aria-modal="true"
+        className={`absolute mx-auto w-full max-w-2xl max-h-[80vh] overflow-auto rounded-lg bg-slate-900 shadow-md shadow-slate-950 transition-all py-6 px-6
+          ${type === 'notification' ? 'top-1/5' : null}`}
       >
         <button
+          type="button"
           onClick={onClose}
-          className="bg-violet-500 fixed right-5 top-5 rounded-full p-1 text-xl text-violet-950 hover:scale-[1.1] duration-150 hover:bg-violet-600"
+          aria-label="Close"
+          className="absolute right-4 top-4 rounded-full p-1 text-xl text-violet-950 bg-violet-500 hover:bg-violet-600 hover:scale-105 transition-transform duration-150"
         >
           <MdClose />
         </button>
+
         <div>{children}</div>
       </div>
     </div>,
-    document.body
+    (typeof document !== 'undefined' && document.body) ||
+      document.createElement('div')
   );
 }
 

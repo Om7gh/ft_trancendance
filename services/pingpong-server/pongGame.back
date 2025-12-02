@@ -1,0 +1,305 @@
+import { Ball, Paddle, Player, Room } from './pongClasses.js'
+
+function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}
+
+function startMatch(roomId) {
+    for (const room of this.rooms) {
+        if (room.id === roomId) {
+            room.startMatch();
+        }
+    }
+}
+
+function getPlayer(userId, roomId) {
+    for (const room of this.rooms) {
+        if (room.id === roomId) {
+            return room.getPlayer(userId);
+        }
+    }
+    return (null);
+}
+
+function addToRoom(player) {
+    this.log.info(`the number of exist room is: ${this.rooms.length}`);
+
+    for (const room of this.currentRooms) {
+        if (room.waitingForPlayer() && room.addPlayer(player)) {
+            this.log.info(`player with id: ${player.id} added to an exist room with id: ${room.id}`)
+            return (room);
+        }
+    }
+
+    const newRoom = new Room(this.generateId());
+    if (newRoom) {
+        newRoom.addPlayer(player);
+        this.log.info(`player with id: ${player.id} added to new room with id: ${newRoom.id}`)
+        this.currentRooms.push(newRoom);
+        return (newRoom);
+    }
+    return (null);
+}
+
+function getOpponentId(userId, roomId) {
+    for (const room of this.rooms) {
+        if ((room.id === roomId) && room.ready()) {
+            if (room.leftPlayer.id !== userId)
+                return (room.leftPlayer.id);
+            else if (room.rightPlayer.id !== userId)
+                return (room.rightPlayer.id);
+        }
+    }
+    return (null);
+}
+
+function getRoomById(roomId) {
+    for (const room of this.rooms) {
+        if (room.id === roomId) {
+            return (room);
+        }
+    }
+    return (null);
+}
+
+function getPlayerById(playerId) {
+    for (const  of this.players) {
+        if (player.id === playerId) {
+            return (room);
+        }
+    }
+    return (null);
+}
+
+function opponentWaiter(reply, playerId, roomId) {
+    let counter  = 0;
+
+    setTimeout(() => {
+        let opponentId = this.getOpponentId(playerId, roomId);
+    
+        if (opponentId) {
+            reply.send(JSON.stringify({state: "ok", matchProps: {myId: playerId, opponentId: opponentId, roomId: roomId}}));
+        } else if (counter < 600) {
+            this.opponentWaiter(reply, playerId, roomId);
+        } else {
+            reply.code(408);
+            reply.send("It is too long waiting for opponent");
+        }
+        counter++;
+    }, 100);
+}
+
+function handlePlay(request, reply) {
+    const uid = request.query.uid;
+    const oid = request.query.oid;
+
+    const player = this.currentPlayers.find((player) => player.id === uid);
+
+    if (!player) {
+
+        player = new Player(uid, null);
+        
+        if (!player) {
+            reply.send(JSON.stringify({state: "!ok", raison: "Server Internal Error!!"}));
+            return ;
+        }
+        this.currentPlayers.push(player);
+    }
+
+    if (oid) {
+        const opponent = this.currentPlayers.find((player) => player.id === oid);
+
+        if (!opponent) {
+
+            opponent = new Player(oid, null);
+            
+            if (!opponent) {
+                reply.send(JSON.stringify({state: "!ok", raison: "Server Internal Error!!"}));
+                return ;
+            }
+            this.currentPlayers.push(opponent);
+        }
+
+        if (player.inSameRoom(opponent)) {
+            reply.send(JSON.stringify({state: "ok", uid: uid, oid: oid}));
+            return;
+        }
+
+        const room = new Room(this.generateId());
+    
+        if (!room) {
+            reply.send(JSON.stringify({state: "!ok", raison: "Server Internal Error!!"}));
+            return ;
+        }
+        this.currentRooms.push(room);
+
+        player.addRoom(room);
+        opponent.addRoom(room);
+                
+        reply.send(JSON.stringify({state: "ok", uid: uid, oid: oid}));
+        return;
+    }
+
+    const room = this.addToRoom(player);
+    
+    if (!room) {
+        reply.send(JSON.stringify({state: "!ok", raison: "Server Internal Error!!"}));
+        return ;
+    }
+    this.currentRooms.push(room);
+    
+    player.addRoom(room);
+
+    this.opponentWaiter(reply, player.id, room.id);
+}
+
+function handleFriendsRequest(reply, uid) {
+    const friends = [];
+
+    for (let player of this.players) {
+        if (player.id !== uid) {
+            friends.push({id: player[0]});
+        }
+    }
+
+    reply.send(JSON.stringify(friends));
+}
+
+function handleFriendInvite(request, reply, uid) {
+    const oid = request.query.oid;
+    const player = this.currentPlayers.find((player) => player.id === uid);
+    
+    if (player) {
+        const roomid = player.inSameRoom(uid);
+        
+        if (roomid) {
+            reply.send(JSON.stringify({type: "ok", rid: roomid, oid: oid}));
+            return;
+        }
+
+        const opponent = this.currentPlayers.find((player) => player.id === oid);
+
+        if (opponent) {
+            if (opponent.inMatch()) {
+                reply.send(JSON.stringify({type: "!ok", raison: "Already in match"}));
+                return ;
+            }
+
+            const room = new Room(this.generateId);
+
+            if (!room) {
+                reply.code(500);
+                reply.send(JSON.stringify("Server Internal Error"));
+                return ;
+            }
+
+            room.addPlayer(player, null);
+            room.addPlayer(opponent, null);
+            reply.send(JSON.stringify({type: "ok", rid: room.id, oid: oid}));
+            return;
+        }
+
+        opponent = new Player(oid, null);
+
+        if (!opponent) {
+            reply.code(500);
+            reply.send(JSON.stringify("Server Internal Error"));
+            return ;
+        }
+
+        this.currentPlayers.push(opponent);
+
+        const room = new Room(this.generateId);
+
+        if (!room) {
+            reply.code(500);
+            reply.send(JSON.stringify("Server Internal Error"));
+            return ;
+        }
+
+        room.addPlayer(player, null);
+        room.addPlayer(opponent, null);
+        reply.send(JSON.stringify({type: "ok", rid: room.id, oid: oid}));
+        return;
+    }
+}
+
+function httpHandler(request, reply) {
+    const uid = request.query.uid;
+
+    if (request.query.q === "play") {   
+        this.handleRandomMatch(request, reply, uid);
+    } else if (request.query.q === "invite") {
+        this.handleFriendInvite(request, reply, uid);
+    } else if (request.query.q === "friends") {
+        this.handleFriendsRequest(reply, uid);
+    }
+}
+
+function wsHandler(socket, req) {
+    const uid = req.query.uid;
+    const rid = req.query.rid;
+
+    const player = this.getPlayer(uid, rid);
+    
+    if (!player) {
+        socket.close();
+        return;
+    }
+
+    player.socket = socket;
+
+    this.startMatch(rid);
+
+    socket.on('message', (message) => {
+        let action = JSON.parse(message);
+
+        if (action && action.move) {
+            if (action.move === "up")
+                player.paddle.moveUp();
+            else if (action.move === "down")
+                player.paddle.moveDown();
+        }
+    });
+
+    socket.on('error', (err) => {
+        this.log.error(err);
+    });
+
+    socket.on('close', (code, raison) => {
+        this.log.info("socket closed", code, raison);
+        player.socket = null;
+    });
+}
+
+export function pongGame(fastify, options, done) {
+
+    fastify.decorate('currentPlayers', new Array());
+
+    fastify.decorate('currentRooms', new Array());
+
+    fastify.decorate('addToRoom', addToRoom);
+    fastify.decorate('startMatch', startMatch);
+    fastify.decorate('getRoomById', getRoomById);
+    
+    fastify.decorate('getPlayer', getPlayer);
+    fastify.decorate('getOpponentId', getOpponentId);
+    
+    fastify.decorate('opponentWaiter', opponentWaiter);
+
+    fastify.decorate('handlePlay', handlePlay);
+    fastify.decorate('handleInvite', handleInvite);
+
+    fastify.decorate('handleFriendsRequest', handleFriendsRequest);
+    
+
+
+    fastify.route({
+        url: '/pongGame/remote',
+        method: 'GET',
+        handler: httpHandler,
+        wsHandler: wsHandler,
+    })
+
+    done();
+}

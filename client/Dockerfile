@@ -6,6 +6,6 @@ RUN npm ci
 
 COPY . .
 
-RUN npm i zustand framer-motion
+RUN npm i zustand framer-motion axios
 EXPOSE 3000
 CMD ["npm", "run", "dev", "--", "--host"]

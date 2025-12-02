@@ -6,6 +6,9 @@ import { ToastContainer } from 'react-toastify';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 const queryClient = new QueryClient();
 
+
+
+
 const App = (): JSX.Element => {
     useEffect(() => {
         console.log(document.cookie.split(';'));

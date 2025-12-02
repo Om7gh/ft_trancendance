@@ -2,6 +2,7 @@ import LocalGame from '@/components/ui/game/LocalGame';
 import NormalGame from '@/components/ui/game/NormalGame';
 import Tournament from '@/components/ui/game/Tournament';
 import TournamentHistory from '@/components/ui/game/TournamentHistory';
+import { Outlet } from 'react-router-dom';
 
 function PingPong() {
   return (
@@ -16,6 +17,7 @@ function PingPong() {
         <TournamentHistory />
         <LocalGame />
       </div>
+      <Outlet />
     </div>
   );
 }

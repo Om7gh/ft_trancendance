@@ -4,7 +4,7 @@ import { GiPingPongBat } from 'react-icons/gi';
 function NormalGame() {
   return (
     <Link
-      to={'/dashboard/games/pingpong'}
+      to={'/dashboard/games/pingpong/remote'}
       className="group relative px-8 py-6 overflow-hidden bg-slate-900/50       backdrop-blur-sm w-80 sm:w-96 md:w-[28rem]
                  [clip-path:polygon(8%_0,100%_0,92%_100%,0_100%)]
                  before:[clip-path:polygon(8%_0,100%_0,92%_100%,0_100%)]

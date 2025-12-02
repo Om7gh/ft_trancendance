@@ -49,10 +49,10 @@ export default function Profile(): JSX.Element {
       </div>
       {active && (
         <div className="absolute top-16 right-0 w-48 bg-slate-900 rounded-lg shadow-xl overflow-hidden animate-dropdown origin-top-right z-50">
-          <div className="px-4 py-3 bg-neon">
+          <div className="px-4 py-3 bg-violet-500">
             <p className="text-white font-medium truncate">Omar Ghazi</p>
           </div>
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-slate-300">
             <li className="hover:bg-slate-700 transition-colors">
               <Link
                 to="home"

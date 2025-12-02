@@ -4,6 +4,7 @@ import ResetPassword from '@/components/ui/auth/ResetPassword';
 import TwoFactorActivation from '@/components/ui/auth/TwoFactorActivation';
 import PlayTournament from '@/components/ui/game/PlayTournament';
 import ErrorPage from '@/components/ui/utils/ErrorPage';
+import { PlayLocal } from '@/playLocal/main';
 import {
   Auth,
   Chat,
@@ -18,8 +19,10 @@ import Customization from '@/pages/Customization';
 import GamePortal from '@/pages/GamePortal';
 import GameSettings from '@/pages/GameSettings';
 import PingPong from '@/pages/PingPong';
-import { settingHandler } from '@/pages/Settings';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import PongMain from '@/pages/PongMain';
+import { PongRemote, RemoteOptions } from '@/playRemote/main';
+import { PlayWithSomeOne } from '@/playRemote/playWithSomeOne';
 
 const router = createBrowserRouter([
   {
@@ -37,14 +40,25 @@ const router = createBrowserRouter([
       {
         path: 'settings',
         element: <Settings />,
-        action: settingHandler,
       },
       {
         path: 'games',
         children: [
           {
             path: 'pingpong',
-            element: <PingPong />,
+            element: <PongMain />,
+            children: [
+              { path: 'local', element: <PlayLocal /> },
+              { index: true, element: <PingPong /> },
+              {
+                path: 'remote',
+                element: <PongRemote />,
+                children: [
+                  { path: 'someone', element: <PlayWithSomeOne /> },
+                  { index: true, element: <RemoteOptions /> },
+                ],
+              },
+            ],
           },
           {
             path: 'tournament',
