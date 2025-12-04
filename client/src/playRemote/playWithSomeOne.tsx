@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import { PlayMatch } from './playMatch.tsx';
 import { GlobalContext } from './main.tsx';
+import { useNavigate } from 'react-router-dom';
 
 type MessageDisplayerPropsType = {
   message: string;
@@ -10,7 +11,7 @@ type MessageDisplayerPropsType = {
 
 export function MessageDisplayer({ message }: MessageDisplayerPropsType) {
   return (
-    <div className="border rounded flex flex-col w-9/10 h-[300px] m-auto my-4">
+    <div className="bg-slate-900/20 shadow-lg shadow-slate-900 text-violet-100 text-center px-2 py-6 my-5 rounded-lg">
       <p className="m-auto">{message}</p>
     </div>
   );
@@ -61,6 +62,7 @@ async function fetchMatch({
 }
 
 export function PlayWithSomeOne() {
+  const navigate = useNavigate();
   const { userId } = useContext(GlobalContext);
   const [message, setMessage] = useState<string>('Waiting for Opponent...');
   const [match, setMatch] = useState<MatchType | undefined>(undefined);
@@ -85,5 +87,15 @@ export function PlayWithSomeOne() {
     return <PlayMatch match={match} />;
   }
 
-  return <MessageDisplayer message={message} />;
+  return (
+    <div>
+      <MessageDisplayer message={message} />
+      <button
+        className="m-auto block bg-slate-950 text-violet-500 px-4 py-2 rounded-lg shadow-lg shadow-slate-900/50 cursor-pointer  hover:scale-[1.1] duration-200 w-72"
+        onClick={() => navigate(-1)}
+      >
+        back
+      </button>
+    </div>
+  );
 }

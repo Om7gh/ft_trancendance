@@ -1,8 +1,5 @@
-import React from 'react'
+import React from 'react';
 
 export default function ProtectedRoute() {
-
-  return (
-    <div>ProtectedRoute</div>
-  )
+  return <div>ProtectedRoute</div>;
 }
