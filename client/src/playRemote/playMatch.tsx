@@ -7,20 +7,27 @@ import type { MatchType } from './playWithSomeOne.tsx';
 
 function messageHandler(
   event: MessageEvent,
-  setMatchState: (value: string) => void
+  setMatchState: (value: string) => void,
+  setScore: (value: ScoreType) => void
 ) {
   const message = JSON.parse(event.data);
 
   if (message.state != 'ok') {
     setMatchState(message.reason);
-  } else if (message.data.event === 'startMatch') {
-    setMatchState('going');
+  } else if (message.data.event === 'matchState') {
+    setMatchState(message.data.value);
+  } else if (message.data.event === 'updateScore') {
+    setScore({
+      leftPlayer: message.data.leftPlayer,
+      rightPlayer: message.data.rightPlayer,
+    });
   }
 }
 
 function createConnection(
   connection: { ws: WebSocket | null },
   setMatchState: (value: string) => void,
+  setScore: (value: ScoreType) => void,
   url: string
 ) {
   connection.ws = new WebSocket(url);
@@ -33,7 +40,8 @@ function createConnection(
     setMatchState('Error happens with connection!!');
   connection.ws.onopen = () => console.log('Connection is established');
   connection.ws.onclose = () => console.log('Connection is closed');
-  connection.ws.onmessage = (event) => messageHandler(event, setMatchState);
+  connection.ws.onmessage = (event) =>
+    messageHandler(event, setMatchState, setScore);
 
   return () => {
     if (connection.ws) {
@@ -41,6 +49,18 @@ function createConnection(
     }
   };
 }
+
+export type PlayerType = {
+  id: string;
+  name: string;
+  points: number;
+  imagePath: string;
+};
+
+export type ScoreType = {
+  leftPlayer: PlayerType;
+  rightPlayer: PlayerType;
+};
 
 type PlayMatchPropsType = {
   match: MatchType;
@@ -51,11 +71,12 @@ export function PlayMatch({ match }: PlayMatchPropsType) {
   const [matchState, setMatchState] = useState(
     'Waiting for Opponent to join match...'
   );
+  const [score, setScore] = useState<ScoreType | null>(null);
   const url = `http://localhost:8080/pongGame/remote/join?uid=${match.uid}&rid=${match.rid}`;
 
   useEffect(() => {
     try {
-      return createConnection(connection.current, setMatchState, url);
+      return createConnection(connection.current, setMatchState, setScore, url);
     } catch (err) {
       if (connection.current.ws) {
         connection.current.ws.close(1000, 'Close socket');
@@ -64,11 +85,17 @@ export function PlayMatch({ match }: PlayMatchPropsType) {
     }
   }, [url]);
 
-  if (matchState === 'going' || matchState === 'done') {
+  if (
+    matchState === 'going' ||
+    matchState === 'pause' ||
+    matchState === 'done'
+  ) {
     return (
       <Match
         connection={connection.current.ws!}
+        score={score!}
         matchState={matchState}
+        setScore={setScore}
         setMatchState={setMatchState}
       />
     );

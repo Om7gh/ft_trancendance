@@ -1,4 +1,4 @@
-import { Database } from 'better-sqlite3'
+import { Database } from 'better-sqlite3';
 
 export function initializeSchema(db: Database): void {
   db.exec(`
@@ -17,9 +17,10 @@ export function initializeSchema(db: Database): void {
       last_logout INTEGER DEFAULT NULL,
       email_verified BOOLEAN DEFAULT FALSE,
       provider TEXT DEFAULT 'local',
-      token_id TEXT DEFAULT ''
+      token_id TEXT DEFAULT '',
+      bio TEXT DEFAULT ''
     )
-  `)
+  `);
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS tfa (
@@ -30,5 +31,5 @@ export function initializeSchema(db: Database): void {
       created_at INTEGER DEFAULT (strftime('%s','now')),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
-  `)
+  `);
 }

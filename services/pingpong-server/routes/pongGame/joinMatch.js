@@ -1,10 +1,10 @@
 function joinMatchHandler(socket, req) {
     const uid       = req.query.uid;
     const rid       = req.query.rid;
-    const room      = this.getRoomById(rid);
     const player    = this.getPlayerById(uid);
+    const room      = player.getRoomById(rid);
 
-    if (!player || !room || !room.ready() || !room.player(uid)) {
+    if (!player || !room || (room.full() && !room.player(uid))) {
         socket.send(JSON.stringify({
             state: "!ok",
             reason: "Currently you don't have any match to join!!"
@@ -14,23 +14,36 @@ function joinMatchHandler(socket, req) {
     }
 
     room.setPlayerSocket(uid, socket);
-
-    room.startMatch();
+    
+    if (room.state === "pause") {
+        room.continue(uid);
+    } else
+        room.startMatch();
 
     socket.on('message', (message) => {
-        let action = JSON.parse(message);
+        let event = JSON.parse(message);
 
-        if (action && action.move) {
-            if (action.move === "up")
-                player.paddle.moveUp();
-            else if (action.move === "down")
-                player.paddle.moveDown();
+        if (event) {
+            if (event.type === "move") {
+                if (event.data && event.data.move) {
+                    if (event.data.move === "up")
+                        player.paddle.moveUp();
+                    else if (event.data.move === "down")
+                        player.paddle.moveDown();
+                }
+            } else if (event.type === "leave") {
+                if (event.data === true) {
+                    room.playerLeave(uid);
+                    room.stopMatch();
+                }
+            }
         }
     });
 
     socket.on('close', (code, raison) => {
         this.log.info("socket closed", code, raison);
         room.setPlayerSocket(uid, null);
+        room.pause(uid);
     });
 
     socket.on('error', (err) => {

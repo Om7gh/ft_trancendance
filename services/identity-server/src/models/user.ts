@@ -15,6 +15,7 @@ export interface User {
   provider: string;
   token_id: string;
   tfa?: TwoFactor | null;
+  bio: string;
 }
 
 export interface TwoFactor {

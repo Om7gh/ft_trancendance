@@ -1,84 +1,86 @@
-import React from 'react';
+import { useNavigate } from 'react-router';
 import { useState, useRef, useEffect } from 'react';
 
-import { Winner } from './winner.tsx';
 import { pongGame } from './pongGame.tsx';
-// import { MessageDisplayer } from '../playRemote/playWithSomeOne.tsx';
+import { ScoreBar } from './ScoreBare.tsx';
+import { MessageDisplayer } from '../playRemote/playWithSomeOne.tsx';
 
-type MessageDisplayerPropsType = {
-  message: string;
+export type PlayerType = {
+  name: string;
+  points: number;
 };
-
-export function MessageDisplayer({ message }: MessageDisplayerPropsType) {
-  return (
-    <div className="border rounded flex flex-col w-9/10 h-[300px] m-auto my-4">
-      <p className="m-auto">{message}</p>
-    </div>
-  );
-}
 
 export type ScoreType = {
-  playerA: number;
-  playerB: number;
+  leftPlayer: PlayerType;
+  rightPlayer: PlayerType;
 };
 
-type PlayerPropsType = {
-  children: React.ReactNode;
-};
-
-function Player({ children }: PlayerPropsType) {
-  return (
-    <div className="flex border rounded w-4/9 h-9/10 m-auto my-4 text-center">
-      <h1 className="text-[1.2em] m-auto">{children}</h1>
-    </div>
-  );
-}
-
-type ScoreBarPropsType = {
+type WinnerPropsType = {
   score: ScoreType;
 };
 
-function ScoreBar({ score }: ScoreBarPropsType) {
+export function Winner({ score }: WinnerPropsType) {
+  const [winner, setWinner] = useState<PlayerType | null>(null);
+
+  useEffect(() => {
+    if (score) {
+      if (score.leftPlayer.points < score.rightPlayer.points)
+        setWinner(score.rightPlayer);
+      else if (score.rightPlayer.points < score.leftPlayer.points)
+        setWinner(score.leftPlayer);
+    }
+  }, []);
+
   return (
-    <div className="flex w-9/10 h-[80px] m-auto my-4">
-      <Player>Player A: {score.playerA}</Player>
-      <Player>Player B: {score.playerB}</Player>
+    <div className="border rounded absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 tflex flex-col m-auto">
+      <img
+        className="w-1/4 m-auto my-4"
+        src="https://avatar.iran.liara.run/public"
+      />
+      <h1 className="text-[1em] m-auto text-center  my-4">
+        Winner is: {(winner && winner.name) || 'No Winner!!'}
+      </h1>
     </div>
   );
 }
 
 type MatchPropsType = {
+  matchState: string;
+  score: ScoreType;
   setMatchState: (value: string) => void;
   setScore: (value: ScoreType) => void;
 };
 
-function Match({ setScore, setMatchState }: MatchPropsType) {
+function Match({ matchState, score, setMatchState, setScore }: MatchPropsType) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const renderingContext = useRef<CanvasRenderingContext2D | null>(null);
 
   useEffect(() => {
     try {
-      if (!canvasRef.current) {
-        setMatchState('Error canvasRef not initiate correctly!!');
-        return;
-      }
+      if (matchState === 'going') {
+        if (!canvasRef.current) {
+          setMatchState('Error canvasRef not initiate correctly!!');
+          return;
+        }
 
-      renderingContext.current = canvasRef.current.getContext('2d');
-      if (!renderingContext.current) {
-        setMatchState('Error fail to get the rendering context!!');
-        return;
-      }
+        renderingContext.current = canvasRef.current.getContext('2d');
+        if (!renderingContext.current) {
+          setMatchState('Error fail to get the rendering context!!');
+          return;
+        }
 
-      return pongGame({
-        canvas: canvasRef.current,
-        context: renderingContext.current,
-        setScore: setScore,
-        setMatchState: setMatchState,
-      });
+        return pongGame({
+          score: score,
+          canvas: canvasRef.current,
+          context: renderingContext.current,
+          setScore: setScore,
+          setMatchState: setMatchState,
+        });
+      }
     } catch (error: any) {
       setMatchState(error.message);
     }
-  }, []);
+  }, [matchState]);
 
   return (
     <div className="flex flex-col w-9/10 m-auto my-4">
@@ -95,20 +97,34 @@ function Match({ setScore, setMatchState }: MatchPropsType) {
 }
 
 export function PlayLocal() {
-  const [score, setScore] = useState<ScoreType>({ playerA: 0, playerB: 0 });
-  const [matchState, setMatchState] = useState<string>('going');
+  const navigate = useNavigate();
+  const [matchState, setMatchState] = useState('going');
+  const [score, setScore] = useState<ScoreType>({
+    leftPlayer: { name: 'LeftPlayer', points: 0 },
+    rightPlayer: { name: 'RightPlayer', points: 0 },
+  });
 
-  if (matchState === 'going') {
+  if (matchState === 'going' || matchState === 'done') {
     return (
-      <div>
+      <div className="relative">
         <ScoreBar score={score} />
-        {/* <Player>Player A: {score.playerA}</Player>
-                <Player>Player B: {score.playerB}</Player> */}
-        <Match setMatchState={setMatchState} setScore={setScore} />
+        <Match
+          matchState={matchState}
+          score={score}
+          setMatchState={setMatchState}
+          setScore={setScore}
+        />
+        {matchState === 'done' && <Winner score={score} />}
+        <button
+          className="block border rounded w-1/3 my-4 p-4 m-auto"
+          onClick={() => {
+            navigate('/dashboard/games/pingpong');
+          }}
+        >
+          Leave Match
+        </button>
       </div>
     );
-  } else if (matchState === 'done') {
-    return <Winner score={score} setScore={setScore} />;
   }
 
   return <MessageDisplayer message={matchState} />;

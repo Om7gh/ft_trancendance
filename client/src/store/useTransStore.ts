@@ -3,6 +3,8 @@ import { create } from 'zustand';
 
 interface User extends signUpData {
   avatar?: string;
+  bio: string;
+  id: number;
 }
 
 type Store = {

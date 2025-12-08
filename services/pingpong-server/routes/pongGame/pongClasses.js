@@ -1,3 +1,4 @@
+import { EventEmitter } from 'node:events'
 
 export class Paddle {
     
@@ -134,39 +135,45 @@ export class Player {
     constructor(id, socket) {
         this.id         = id;
         this.paddle     = null;
-        this.rooms      = [];
+        this.room       = null;
     }
 
     inMatch() {
-        if ((this.rooms.length !== 0) && this.socket)
+        if (this.room)
             return (true);
         return (false);
     }
 
     inSameRoom(playerId) {
-        for (let room of this.rooms) {
-            if (room.isPlayer(playerId))
-                return (true); 
+        if (this.room.player(playerId)) {
+            return (true); 
         }
         return (false);
     }
 
     addRoom(room) {
-        if (this.rooms.find((id) => id === room.id)) {
-            this.rooms.push(room);
-        }
+        this.rooms = room
     }
 
-    roomsCleaner() {
-        this.rooms = this.rooms.filter((room) => room.state !== "done");
+    getRoomById(rid) {
+        if (this.room.id === rid) {
+            return (this.room);
+        }
+
+        return (null);
     }
 }
 
-export class Room {
+export class Room extends EventEmitter {
     constructor(id) {
+        super();
+
         this.id             = id;
-        this.intervalId     = null;
         this.state          = "waiting";
+
+        this.matchId        = null;
+        this.waitId         = null;
+        this.pauseId        = null;
 
         this.ball           = new Ball(350, 200);
         this.table          = {width: 700, height: 400,};
@@ -180,21 +187,10 @@ export class Room {
         this.rightSocket    = null;
         this.rightPoints      = 0;
         this.rightPaddle    = new Paddle(680, 160, this.table);
-
-        if (!this.ball || !this.leftPaddle || !this.rightPaddle) {
-            throw new Error("Fail to instantiate room objects!!");
-        }
-
     }
 
-    ready() {
+    full() {
         return (this.leftPlayer && this.rightPlayer);
-    }
-    
-    waitingForPlayer() {
-        if (!this.leftPlayer || this.leftPlayer)
-            return (true);
-        return (false);
     }
 
     player(playerId) {
@@ -216,7 +212,7 @@ export class Room {
     }
 
     addPlayer(player) {
-        if (this.waitingForPlayer()) {
+        if (!this.full()) {
             if (!this.leftPlayer) {
                 this.addLeftPlayer(player);
                 return (true);
@@ -229,8 +225,15 @@ export class Room {
         return (false);
     }
 
+    playerLeave(playerId) {
+        if (this.leftPlayer.id === playerId)
+            this.rightPoints = 7;
+        else if (this.rightPlayer.id === playerId)
+            this.leftPoints = 7;
+    }
+
     getOpponentId(playerId) {
-        if (this.ready()) {
+        if (this.full()) {
             if (this.leftPlayer.id === playerId)
                 return (this.rightPlayer.id);
             else if (this.rightPlayer.id === playerId)
@@ -240,16 +243,20 @@ export class Room {
     }
 
     setPlayerSocket(playerId, socket) {
-        if (this.leftPlayer.id === playerId) {
+        if (this.leftPlayer && (this.leftPlayer.id === playerId)) {
             this.leftSocket = socket;
-            if (!this.leftSocket && !this.rightPlayer) {
-                this.state = "done";
-            }
-        } else if (this.rightPlayer.id === playerId) {
+        } else if (this.leftPlayer && (this.rightPlayer.id === playerId)) {
             this.rightSocket = socket;
         }
     }
-
+    
+    updateScore() {
+        if (this.ball.x < 0)
+            this.rightPoints += 1;
+        else if (this.table.width < this.ball.x)
+            this.leftPoints += 1;
+    }
+    
     broadcastMessage(message) {
         if (this.leftPlayer && this.leftSocket) {
             this.leftSocket.send(message);
@@ -259,8 +266,24 @@ export class Room {
         }
     }
 
-    generateView() {
-        return (JSON.stringify({
+    broadcastScore() {
+        this.updateScore();
+        this.broadcastMessage(JSON.stringify({
+            state: "ok",
+            data: {
+                event: "updateScore",
+                leftPlayer: {id: this.leftPlayer.id,
+                    name: "leftPlayer", imagePath: "", points: this.leftPoints,
+                },
+                rightPlayer: {id: this.rightPlayer.id,
+                    name: "rightPlayer", imagePath: "", points: this.rightPoints,
+                },
+            }
+        }));
+    }
+
+    broadcastView() {
+        this.broadcastMessage(JSON.stringify({
             state: "ok",
             data: {
                 event: "updateView",
@@ -268,79 +291,103 @@ export class Room {
                 leftPaddle: this.leftPaddle.toJSON(),
                 rightPaddle: this.rightPaddle.toJSON(),
             }
-        }))
+        }));
     }
 
-    updateScore() {
-        if (this.ball.x < 0)
-            this.rightPoints += 1;
-        else if (this.table.width < this.ball.x)
-            this.leftPoints += 1;
-    }
-
-    generateScore() {
-        return (JSON.stringify({
-            state: "ok",
-            data: {
-                event: "updateScore",
-                leftPlayer: this.leftPoints,
-                rightPlayer: this.rightPoints,
-            }
-        }))
-    }
-
-    generateMatchStart() {
-        return (JSON.stringify({
+    broadcastMatchState() {
+        this.broadcastMessage(JSON.stringify({
             state: "ok", 
             data: {
-                event: "startMatch",
+                event: "matchState",
+                value: this.state,
             }
-        }))
+        }));
+    }
+
+    waitOpponentToJoin() {
+        this.waitId = setTimeout(() => {
+            if (this.state === "waiting") {
+                this.broadcastMessage(JSON.stringify({
+                    state: "ok", 
+                    data: {
+                        event: "matchState",
+                        value: "Wait for Opponent to join match too long try again!!",
+                    }
+                }))
+                this.stopMatch();
+            }
+        }, 15000);
     }
 
     startMatch() {
         if (this.state === "waiting") {
-            if ((this.leftPlayer && this.leftSocket) && 
-                (this.rightPlayer && this.rightSocket)) {
+            if ((this.leftPlayer && this.leftSocket) && (this.rightPlayer && this.rightSocket)) {
+                clearTimeout(this.waitId);
                 this.state = "going";
-                this.broadcastMessage(this.generateMatchStart());
+                this.broadcastScore();
+                this.broadcastMatchState()
                 this.matchLoop();
+            } else {
+                this.waitOpponentToJoin();
             }
         }
     }
 
     matchLoop() {
-        this.intervalId = setInterval(() => {
-            if ((this.ball.x < 0) || (this.table.width < this.ball.x)) {
-                this.updateScore()
-                this.broadcastMessage(this.generateScore());
-                if ((6 < this.leftPoints) || (6 < this.rightPoints)) {
+        if (this.state === "going") {
+            this.matchId = setInterval(() => {
+                if ((this.ball.x < 0) || (this.table.width < this.ball.x)) {
+                    this.broadcastScore()
+                    this.ball.reset();
+                    if ((6 < this.leftPoints) || (6 < this.rightPoints)) {
+                        this.broadcastView();
+                        this.stopMatch();
+                    }
+                } else if (!this.leftSocket && !this.rightSocket) {
                     this.stopMatch();
                 }
-                this.ball.reset();
-            } else if (!this.leftSocket && !this.rightSocket) {
-                this.stopMatch();
-            }
-            this.ball.getNextPosition(this.table, this.leftPaddle, this.rightPaddle);
-            this.broadcastMessage(this.generateView());
-        }, 30);
+                this.ball.getNextPosition(this.table, this.leftPaddle, this.rightPaddle);
+                this.broadcastView();
+            }, 30);
+        }
     }
 
-    generateMatchEnd() {
-        return (JSON.stringify({
-            state: "ok",
-            data: {
-                event: "done",
+    continue(playerId) {
+        if ((this.state === "pause") && this.player(playerId)) {
+            clearTimeout(this.pauseId);
+            if (this.leftSocket && this.rightSocket) {
+                this.state = "going";
+                this.broadcastScore();
+                this.broadcastMatchState()
+                this.matchLoop();
             }
-        }));
+        }
+    }
+
+    pause(playerId) {
+        if ((this.state === "going") && this.player(playerId)) {
+            clearInterval(this.matchId);
+            this.state = "pause";
+            this.broadcastMatchState()
+            this.pauseId = setTimeout(() => {
+                if (this.state === "pause") {
+                    if (this.leftPlayer.id === playerId)
+                        this.rightPoints = 7;
+                    else if (this.rightPlayer.id === playerId)
+                        this.leftPoints = 7;
+                    this.stopMatch();
+                }
+            }, 15000);
+        }
     }
     
     stopMatch() {
         this.state = "done";
 
-        if (this.intervalId) {
-            this.broadcastMessage(this.generateMatchEnd());
-            clearInterval(this.intervalId);
+        if (this.matchId) {
+            this.broadcastScore();
+            this.broadcastMatchState();
+            clearInterval(this.matchId);
         }
 
         if (this.leftPlayer) {
@@ -354,6 +401,8 @@ export class Room {
                 this.rightSocket.close();
             }
         }
+
+        this.emit("done");
     }
 }
 

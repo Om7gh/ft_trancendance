@@ -1,14 +1,16 @@
+import { GlobalContext } from '@/App';
 import useAuthenticated from '@/services/auth/useAuthenticated';
-import { useTransStore } from '@/store/useTransStore';
-import type { ReactNode } from 'react';
+import { useCallback, useContext, useEffect, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
 function AuthProtection({ children }: { children: ReactNode }) {
+  const ctx = useContext(GlobalContext);
   const isAuth = useAuthenticated();
-  const setUser = useTransStore((state) => state.setUser);
 
   if (isAuth.error) <Navigate to="/auth" />;
-  setUser(isAuth.data?.user);
+  useEffect(() => {
+    ctx?.setUser(isAuth.data?.user);
+  }, [isAuth.data?.user]);
   return children;
 }
 

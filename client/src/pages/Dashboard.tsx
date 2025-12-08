@@ -4,7 +4,6 @@ import { Outlet } from 'react-router-dom';
 
 export default function Dashboard() {
   const isMobile = useMobile();
-
   return (
     <div className="h-screen grid grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
       <aside className="row-span-2 h-screen bg-slate-950/30">

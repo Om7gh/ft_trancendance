@@ -1,21 +1,24 @@
 export function waitForOpponent(reply, room, uid) {
-    var counter         = 0;
+    var counter  = 0;
 
     const waiter = () => {
-        console.log("hello form waiter: ", counter);
-        if (room.ready()) {
-            const oid = room.getOpponentId(uid);
+        if (room.state === "waiting") {
+            if (room.full()) {
+                const oid = room.getOpponentId(uid);
             
-            if (!oid)
-                reply.code(500).send();
-            else
-                reply.code(200).send(JSON.stringify({uid: uid, oid: oid, rid: room.id}))
-        } else if (!room.ready() && (10 < counter)) {
-            room.stopMatch();
-            reply.code(204).send();
+                if (!oid)
+                    reply.code(500).send();
+                else
+                    reply.code(200).send(JSON.stringify({uid: uid, oid: oid, rid: room.id}))
+            } else if (!room.full() && (10 < counter)) {
+                reply.code(204).send();
+                room.stopMatch();
+            } else {
+                setTimeout(waiter, 1000);
+                counter++;
+            }
         } else {
-            setTimeout(waiter, 1000);
-            counter++;
+            reply.code(500).send();
         }
     };
 
@@ -28,11 +31,16 @@ function playWithSomeOneHandler(request, reply) {
 
     if (!player) {
         reply.code(500).send();
-        return;
+        return ;
     }
 
     if (player.inMatch()) {
-        reply.code(409).send();
+        const oid = player.room.getOpponentId(uid);
+            
+        if (!oid)
+            reply.code(500).send();
+        else
+            reply.code(200).send(JSON.stringify({uid: uid, oid: oid, rid: player.room.id}))
         return ;
     }
 
@@ -40,15 +48,21 @@ function playWithSomeOneHandler(request, reply) {
 
     if (!room) {
         reply.code(500).send();
-        return;
+        return ;
     }
 
-    player.rooms.push(room);
+    player.room = room;
+
+    room.on("done", () => {
+        console.log(`room with id ${room.id} is done`);
+        player.room = null;
+    })
 
     waitForOpponent(reply, room, uid);
 }
 
 export function playWithSomeOne(fastify, options, done) {
+
     fastify.route({
         url: '/pongGame/remote/someone',
         method: 'GET',

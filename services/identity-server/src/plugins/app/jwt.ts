@@ -40,6 +40,8 @@ async function authenticate(
       username: user.username,
       id: user.uid,
       avatar: user.avatar,
+      bio: user.bio || 'this my bio',
+      email: user.email,
     };
     return reply.send({ message: 'Success', user: newUser });
   } catch (err: any) {

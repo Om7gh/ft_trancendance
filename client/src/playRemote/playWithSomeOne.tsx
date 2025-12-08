@@ -1,9 +1,8 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-
 import { PlayMatch } from './playMatch.tsx';
-import { GlobalContext } from './main.tsx';
-import { useNavigate } from 'react-router-dom';
+import { useTransStore } from '@/store/useTransStore.ts';
+import { GlobalContext } from '@/App.tsx';
 
 type MessageDisplayerPropsType = {
   message: string;
@@ -11,7 +10,7 @@ type MessageDisplayerPropsType = {
 
 export function MessageDisplayer({ message }: MessageDisplayerPropsType) {
   return (
-    <div className="bg-slate-900/20 shadow-lg shadow-slate-900 text-violet-100 text-center px-2 py-6 my-5 ">
+    <div className="border rounded flex flex-col w-9/10 h-[300px] m-auto my-4">
       <p className="m-auto">{message}</p>
     </div>
   );
@@ -50,6 +49,7 @@ async function fetchMatch({
       if (response.status === 200) {
         if (!validateFetchedMatch(response.data)) {
           setMessage('Invalid match was fetched!!');
+          return;
         }
         setMatch(response.data);
       } else {
@@ -62,12 +62,13 @@ async function fetchMatch({
 }
 
 export function PlayWithSomeOne() {
-  const navigate = useNavigate();
-  const { userId } = useContext(GlobalContext);
+  const { user } = useContext(GlobalContext) || {
+    id: 'c23902d54bd696ea43b95e4c348007b3',
+  };
   const [message, setMessage] = useState<string>('Waiting for Opponent...');
   const [match, setMatch] = useState<MatchType | undefined>(undefined);
-  const url = `http://localhost:8080/pongGame/remote/someone?uid=${userId}`;
-
+  const url = `http://localhost:8080/pongGame/remote/someone?uid=${user?.id}`;
+  console.log(user!);
   useEffect(() => {
     const ignored = { state: false };
 
@@ -87,15 +88,5 @@ export function PlayWithSomeOne() {
     return <PlayMatch match={match} />;
   }
 
-  return (
-    <div>
-      <MessageDisplayer message={message} />
-      <button
-        className="m-auto block bg-slate-950 text-violet-500 px-4 py-2  shadow-lg shadow-slate-900/50 cursor-pointer  hover:scale-[1.1] duration-200 w-72"
-        onClick={() => navigate(-1)}
-      >
-        back
-      </button>
-    </div>
-  );
+  return <MessageDisplayer message={message} />;
 }

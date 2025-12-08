@@ -58,9 +58,9 @@ export default function SignUp() {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const registerSuccess = useTransStore((state) => state.registerSuccess);
   const setRegisterSuccess = useTransStore((state) => state.setRegisterSuccess);
-  const user = useTransStore((state) => state.user);
   const signupMutation = useSignUp();
   const isSubmitting = signupMutation.isPending;
+  let email;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -73,11 +73,11 @@ export default function SignUp() {
       return;
     }
     setPasswordsMatch(true);
-
+    email = formData.get('email') as string;
     const userData = {
       first_name: formData.get('first_name') as string,
       last_name: formData.get('last_name') as string,
-      email: formData.get('email') as string,
+      email,
       password,
     };
 
@@ -88,7 +88,7 @@ export default function SignUp() {
     <div className="w-[600px] bg-gradient-to-b from-slate-900/50 to-violet-800/20 py-12 px-4 sm:px-6 lg:px-8 font-main flex items-center justify-center rounded-3xl relative overflow-hidden">
       {registerSuccess && (
         <Modal onClose={() => setRegisterSuccess()}>
-          <CheckMail email={user?.email} />
+          <CheckMail email={email} />
         </Modal>
       )}
       <div className="relative max-w-md w-full mt-16 space-y-8 backdrop-blur-sm p-8  border border-violet-400/20 shadow-2xl shadow-violet-400/10">

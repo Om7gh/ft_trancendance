@@ -135,14 +135,17 @@ export class Ball {
     }
 
     addEffect(paddleCenterY: number) {
-        if ((this.y < paddleCenterY) && (90 < this.angle) && (this.angle < 270))
-            this.setAngle(this.angle + 2);
-        else if ((this.y < paddleCenterY) && (this.angle < 90) || (270 < this.angle))
-            this.setAngle(this.angle - 2);
-        else if ((paddleCenterY < this.y) && (90 < this.angle) && (this.angle < 270))
-            this.setAngle(this.angle - 2);
-        else if ((paddleCenterY < this.y) && (this.angle < 90) || (270 < this.angle))
-            this.setAngle(this.angle + 2);
+        if (this.y < paddleCenterY) {
+            if ((90 < this.angle) && (this.angle < 270))
+                this.setAngle(this.angle + 2);
+            else if ((this.angle < 90) || (270 < this.angle))
+                this.setAngle(this.angle - 2);
+        } else if (paddleCenterY < this.y) {
+            if ((90 < this.angle) && (this.angle < 270))
+                this.setAngle(this.angle - 2);
+            else if ((this.angle < 90) || (270 < this.angle))
+                this.setAngle(this.angle + 2);
+        }
     }
 
     isHitPaddle(paddle: Paddle) {
@@ -161,6 +164,16 @@ export class Ball {
             angle += 15;
         }
         return false;
+    }
+
+    calculateReflectAngle(paddle: Paddle) {
+        const x_paddleCenter = paddle.x + (paddle.width / 2);
+        const y_paddleCenter = paddle.y + (paddle.height / 2);
+        const adjacent       = this.x - x_paddleCenter;
+        const opposite       = this.y - y_paddleCenter;
+        const angle          = (Math.atan(opposite / adjacent) * (180 / Math.PI) + 180);
+
+        this.setAngle(this.angle + angle);
     }
     
     getNextPosition(table: Table, left_paddle: Paddle, right_paddle: Paddle) {
@@ -186,13 +199,11 @@ export class Events {
     s         : false | true;
     arrowup   : false | true;
     arrowdown : false | true;
-    leave:      false | true;
 
     constructor() {
         this.s          = false;
         this.w          = false;
         this.arrowup    = false;
         this.arrowdown  = false;
-        this.leave     = false;
     }
 }
