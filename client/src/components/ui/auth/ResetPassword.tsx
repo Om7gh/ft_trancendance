@@ -29,7 +29,7 @@ function ResetPassword() {
 
   if (mutateVerifyToken.isError) return <p>Not valid token</p>;
   return (
-    <div className="relative max-w-md w-full mt-16 space-y-8 backdrop-blur-sm p-8 rounded-xl border border-violet-400/20 shadow-2xl shadow-violet-400/10">
+    <div className="relative max-w-md w-full mt-16 space-y-8 backdrop-blur-sm p-8  border border-violet-400/20 shadow-2xl shadow-violet-400/10">
       <div className="absolute -left-6 top-1/2 transform -translate-y-1/2 w-4 h-24 bg-violet-400 rounded-r-lg" />
       <div className="absolute -right-6 top-1/2 transform -translate-y-1/2 w-4 h-24 bg-neon rounded-l-lg" />
 
@@ -83,11 +83,11 @@ function ResetPassword() {
         </div>
 
         <div className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-400 to-neon rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-400 to-neon  blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gray-800 ${
+            className={`relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium  text-white bg-gray-800 ${
               isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
             }`}
           >

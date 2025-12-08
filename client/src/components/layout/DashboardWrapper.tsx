@@ -18,7 +18,7 @@ export default function DashboardWrapper({
   return (
     <div className="space-y-6 animate-fadeIn ">
       <div className="flex items-center gap-5">
-        <div className="text-2xl text-slate-100 bg-slate-900/50 p-2 rounded-xl">
+        <div className="text-2xl text-slate-100 bg-slate-900/50 p-2 ">
           {icon}
         </div>
         {title && (

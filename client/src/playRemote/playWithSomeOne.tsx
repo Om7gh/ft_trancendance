@@ -11,7 +11,7 @@ type MessageDisplayerPropsType = {
 
 export function MessageDisplayer({ message }: MessageDisplayerPropsType) {
   return (
-    <div className="bg-slate-900/20 shadow-lg shadow-slate-900 text-violet-100 text-center px-2 py-6 my-5 rounded-lg">
+    <div className="bg-slate-900/20 shadow-lg shadow-slate-900 text-violet-100 text-center px-2 py-6 my-5 ">
       <p className="m-auto">{message}</p>
     </div>
   );
@@ -91,7 +91,7 @@ export function PlayWithSomeOne() {
     <div>
       <MessageDisplayer message={message} />
       <button
-        className="m-auto block bg-slate-950 text-violet-500 px-4 py-2 rounded-lg shadow-lg shadow-slate-900/50 cursor-pointer  hover:scale-[1.1] duration-200 w-72"
+        className="m-auto block bg-slate-950 text-violet-500 px-4 py-2  shadow-lg shadow-slate-900/50 cursor-pointer  hover:scale-[1.1] duration-200 w-72"
         onClick={() => navigate(-1)}
       >
         back

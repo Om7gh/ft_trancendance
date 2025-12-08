@@ -1,41 +1,39 @@
 import { useState } from 'react';
-import { Form, Link, useNavigation } from 'react-router-dom';
+import { Link, useNavigation } from 'react-router-dom';
 import { Logo } from '@assets';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import InputField from '../utils/InputField';
 import useLogin from '@/services/auth/useLogin';
 import ForgetPassword from './ForgetPassword';
 import Model from '../../layout/Modal';
 export default function SignIn() {
-  const [showPassword, setShowPassword] = useState(false);
   const [openModel, setOpenModel] = useState(false);
   const navigation = useNavigation();
   const mutate = useLogin();
-  const isSubmitting = navigation.state === 'submitting';
+  const isSubmitting = navigation.state === 'submitting'; // 'idle, submitting'
   const handleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const userData = {
-      username: formData.get('username') as string,
+      email: formData.get('email') as string,
       password: formData.get('password') as string,
     };
     mutate.mutate(userData);
   };
 
   return (
-    <div className="w-[700px] bg-gradient-to-b from-slate-800/50 to-violet-800/50py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center rounded-3xl">
+    <div className="w-[600px] bg-gradient-to-b from-slate-800/50 to-violet-800/20 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center rounded-3xl">
       {openModel && (
         <Model onClose={() => setOpenModel(false)}>
-          <ForgetPassword setOpenModel={setOpenModel} />
+          <ForgetPassword />
         </Model>
       )}
 
-      <div className="relative max-w-md w-full mt-16 space-y-8 backdrop-blur-sm p-8 rounded-xl border border-violet-400/20 shadow-2xl shadow-violet-400/10">
+      <div className="relative max-w-md w-full mt-16 space-y-8 backdrop-blur-sm p-8  border border-violet-400/20 shadow-2xl shadow-violet-400/10">
         <div className="absolute -left-6 top-1/2 transform -translate-y-1/2 w-4 h-24 bg-violet-400 rounded-r-lg" />
         <div className="absolute -right-6 top-1/2 transform -translate-y-1/2 w-4 h-24 bg-neon rounded-l-lg" />
 
         <div className="flex flex-col items-center">
-          <img src={Logo} alt="logo" className="w-[15vw]" />
+          <img src={Logo} alt="logo" className="w-52 h-52" />
 
           <h2 className="mt-6 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-neon">
             Game On!
@@ -51,14 +49,14 @@ export default function SignIn() {
           </p>
         </div>
 
-        <Form method="post" className="mt-8 space-y-6" onSubmit={handleSumbit}>
+        <form method="post" className="mt-8 space-y-6" onSubmit={handleSumbit}>
           <div className="space-y-4">
             <div className="relative">
               <InputField
-                id="username"
-                name="username"
-                type="username"
-                autoComplete="username"
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
                 placeholder="Player email"
                 className="pl-10 bg-gray-700/50 border-gray-600 focus:ring-violet-400 focus:border-violet-400"
               />
@@ -76,7 +74,7 @@ export default function SignIn() {
               <InputField
                 id="password"
                 name="password"
-                type={showPassword ? 'text' : 'password'}
+                type="password"
                 autoComplete="current-password"
                 placeholder="Secret smash"
                 className="pl-10 bg-gray-700/50 border-gray-600 focus:ring-violet-400 focus:border-violet-400"
@@ -84,17 +82,7 @@ export default function SignIn() {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="text-gray-400">🔑</span>
               </div>
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-violet-400 transition-colors"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeSlashIcon className="h-5 w-5" />
-                ) : (
-                  <EyeIcon className="h-5 w-5" />
-                )}
-              </button>
+
               {mutate?.error && (
                 <p className="mt-1 text-sm text-red-400">
                   {mutate.error.message}
@@ -127,11 +115,11 @@ export default function SignIn() {
           </div>
 
           <div className="relative group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-400 to-neon rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-400 to-neon  blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gray-800 ${
+              className={`relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium  text-white bg-gray-800 ${
                 isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
               }`}
             >
@@ -167,7 +155,7 @@ export default function SignIn() {
               )}
             </button>
           </div>
-        </Form>
+        </form>
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
@@ -182,7 +170,7 @@ export default function SignIn() {
 
         <button
           type="button"
-          className="w-full bg-slate-600 px-5 py-3 text-slate-100 rounded-lg"
+          className="w-full bg-slate-600 px-5 py-3 text-slate-100 "
         >
           <span className="mr-2 text-neon">G</span> Google
         </button>

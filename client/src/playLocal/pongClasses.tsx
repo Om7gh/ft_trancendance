@@ -186,11 +186,13 @@ export class Events {
     s         : false | true;
     arrowup   : false | true;
     arrowdown : false | true;
+    leave:      false | true;
 
     constructor() {
         this.s          = false;
         this.w          = false;
         this.arrowup    = false;
         this.arrowdown  = false;
+        this.leave     = false;
     }
 }

@@ -29,7 +29,6 @@ app.register(chessRoutes);
 const start = async () => {
   try {
     await app.ready();
-    app.ensureDefaultPlayers();
     const port = Number(process.env.PORT) || 9000;
     const host = process.env.HOST || '0.0.0.0';
     const addr = await app.listen({ port, host });

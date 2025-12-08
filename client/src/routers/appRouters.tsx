@@ -23,11 +23,18 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import PongMain from '@/pages/PongMain';
 import { PongRemote, RemoteOptions } from '@/playRemote/main';
 import { PlayWithSomeOne } from '@/playRemote/playWithSomeOne';
+import CreateUsername from '@/components/ui/auth/CreateUsername';
+import AuthProtection from '@/components/ui/auth/AuthProtection';
+import ProtectDashboard from './ProtectDashboard';
 
 const router = createBrowserRouter([
   {
     path: '/dashboard',
-    element: <Dashboard />,
+    element: (
+      <AuthProtection>
+        <Dashboard />
+      </AuthProtection>
+    ),
     children: [
       {
         path: 'home',
@@ -106,11 +113,19 @@ const router = createBrowserRouter([
   },
   {
     path: '/auth',
-    element: <Auth />,
+    element: (
+      <ProtectDashboard>
+        <Auth />
+      </ProtectDashboard>
+    ),
     children: [
       {
         path: 'signup',
         element: <SignUp />,
+      },
+      {
+        path: 'username-create',
+        element: <CreateUsername />,
       },
       {
         path: 'signin',

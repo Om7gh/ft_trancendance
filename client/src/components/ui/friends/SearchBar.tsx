@@ -106,7 +106,7 @@ export default function SearchBar() {
 
           {searchQuery && (
             <div className="absolute left-0 right-0 mt-2 z-5000">
-              <div className="max-h-60 overflow-auto bg-violet-950/30 border border-violet-700/30 rounded-lg backdrop-blur-xl shadow-xl shadow-slate-900 p-2">
+              <div className="max-h-60 overflow-auto bg-violet-950/30 border border-violet-700/30  backdrop-blur-xl shadow-xl shadow-slate-900 p-2">
                 {loading && (
                   <div className="flex items-center justify-center py-6 text-sm text-slate-300">
                     Loading...
@@ -139,7 +139,7 @@ export default function SearchBar() {
                             setResults([]);
                             setActiveSearch(false);
                           }}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800/50 transition-colors"
+                          className="w-full flex items-center gap-3 px-3 py-2  hover:bg-slate-800/50 transition-colors"
                         >
                           <img
                             src={u.avatar ?? '/default-avatar.png'}

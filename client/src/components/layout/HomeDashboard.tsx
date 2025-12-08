@@ -6,6 +6,7 @@ import TopPlayers from '../ui/dashboard/TopPlayers';
 import DashboardWrapper from './DashboardWrapper';
 import { GiChessQueen } from 'react-icons/gi';
 import { FaTableTennisPaddleBall } from 'react-icons/fa6';
+import TodayGames from '../ui/dashboard/TodayGames';
 
 type GameType = 'pingpong' | 'chess';
 
@@ -14,10 +15,13 @@ export default function HomeDashboard() {
 
   return (
     <div className="h-full p-5 space-y-6 overflow-auto">
+      <div>
+        <TodayGames />
+      </div>
       <div className="flex justify-center gap-4 mb-8">
         <button
           onClick={() => setActiveGame('pingpong')}
-          className={`px-8 py-3 rounded-lg font-semibold transition-all duration-300
+          className={`px-8 py-3  font-semibold transition-all duration-300
             ${
               activeGame === 'pingpong'
                 ? 'bg-gradient-to-r from-violet-500 to-neon text-white shadow-lg shadow-violet-500/50'
@@ -28,7 +32,7 @@ export default function HomeDashboard() {
         </button>
         <button
           onClick={() => setActiveGame('chess')}
-          className={`px-8 py-3 rounded-lg font-semibold transition-all duration-300
+          className={`px-8 py-3  font-semibold transition-all duration-300
             ${
               activeGame === 'chess'
                 ? 'bg-gradient-to-r from-violet-500 to-neon text-white shadow-lg shadow-violet-500/50'

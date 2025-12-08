@@ -48,7 +48,7 @@ export default function Profile(): JSX.Element {
         </div>
       </div>
       {active && (
-        <div className="absolute top-16 right-0 w-48 bg-slate-900 rounded-lg shadow-xl overflow-hidden animate-dropdown origin-top-right z-50">
+        <div className="absolute top-16 right-0 w-48 bg-slate-900  shadow-xl overflow-hidden animate-dropdown origin-top-right z-50">
           <div className="px-4 py-3 bg-violet-500">
             <p className="text-white font-medium truncate">Omar Ghazi</p>
           </div>

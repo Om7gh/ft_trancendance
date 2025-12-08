@@ -15,7 +15,7 @@ export default function Dashboard() {
         <DashboardHeader />
       </header>
 
-      <main className="p-6 overflow-auto">
+      <main className="py-6 px-3 overflow-auto">
         <Outlet />
       </main>
     </div>

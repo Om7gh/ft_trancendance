@@ -32,14 +32,14 @@ function Modal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 w-screen h-screen bg-slate-950/20 backdrop-blur-md flex items-center justify-center px-4"
+      className="fixed inset-0 z-50 w-screen h-screen bg-slate-950/50 backdrop-blur-md flex items-center justify-center px-4"
       onClick={closeModal}
       aria-hidden={false}
     >
       <div
         role="dialog"
         aria-modal="true"
-        className={`absolute mx-auto w-full max-w-2xl max-h-[80vh] overflow-auto rounded-lg bg-slate-900 shadow-md shadow-slate-950 transition-all py-6 px-6
+        className={`absolute lg:mx-auto md:mx-auto w-full max-w-2xl max-h-[80vh] overflow-auto  bg-slate-900 shadow-md shadow-slate-950 transition-all py-6 px-6 sm:mx-16
           ${type === 'notification' ? 'top-1/5' : null}`}
       >
         <button

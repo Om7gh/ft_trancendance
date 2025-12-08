@@ -72,6 +72,13 @@ function sendEvents(ws: WebSocket) {
         })
       );
     }
+    if (events['leave']) {
+      ws.send(
+        JSON.stringify({
+          leave: true,
+        })
+      );
+    }
   }
 }
 

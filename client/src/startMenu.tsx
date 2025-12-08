@@ -17,7 +17,5 @@ export type MenuPropsType = {
 };
 
 export function Menu({ children }: MenuPropsType) {
-  return (
-    <nav className="flex flex-col rounded w-9/10 m-auto my-4">{children}</nav>
-  );
+  return <nav className="flex flex-col  w-9/10 m-auto my-4">{children}</nav>;
 }

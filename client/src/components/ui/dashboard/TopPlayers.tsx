@@ -43,7 +43,7 @@ export default function TopPlayers() {
   }, []);
 
   return (
-    <div className="bg-slate-950/40 rounded-xl border border-slate-700 p-5 shadow-lg">
+    <div className="bg-slate-950/40  border border-slate-700 p-5 shadow-lg">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-xl font-bold text-white">
           <span className="text-neon">Top</span> Players
@@ -62,7 +62,7 @@ export default function TopPlayers() {
         {topPlayers.map((player, index) => (
           <div
             key={player.username}
-            className="flex items-center gap-4 p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50 transition-colors"
+            className="flex items-center gap-4 p-3 bg-slate-800/30  hover:bg-slate-800/50 transition-colors"
           >
             {/* Rank Badge */}
             <div
@@ -111,7 +111,7 @@ export default function TopPlayers() {
       </div>
 
       <button
-        className="w-full mt-4 py-2 text-sm font-medium rounded-lg bg-slate-800/50 border border-slate-700 text-violet-400 hover:bg-slate-800/70 transition-colors flex items-center justify-center gap-2"
+        className="w-full mt-4 py-2 text-sm font-medium  bg-slate-800/50 border border-slate-700 text-violet-400 hover:bg-slate-800/70 transition-colors flex items-center justify-center gap-2"
         onClick={() => setOpenModal(true)}
       >
         View Leaderboard

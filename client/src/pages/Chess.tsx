@@ -53,7 +53,7 @@ function Chess() {
                     enterMatchmaking();
                     setFindingMatch(true);
                   }}
-                  className="px-6 py-3 rounded-lg text-lg font-semibold bg-neon/50 text-white hover:border-4 hover:border-neon duration-200 cursor-pointer"
+                  className="px-6 py-3  text-lg font-semibold bg-neon/50 text-white hover:border-4 hover:border-neon duration-200 cursor-pointer"
                 >
                   Find Opponent
                 </button>
@@ -68,7 +68,7 @@ function Chess() {
                       leaveMatchmaking();
                       setFindingMatch(false);
                     }}
-                    className="px-6 py-3 rounded-lg text-lg font-semibold bg-violet-500 text-white hover:bg-violet-600 transition"
+                    className="px-6 py-3  text-lg font-semibold bg-violet-500 text-white hover:bg-violet-600 transition"
                   >
                     Cancel Matchmaking
                   </button>
@@ -103,7 +103,7 @@ function Chess() {
                 acceptRematch={acceptRematch}
                 declineRematch={declineRematch}
               />
-              <div className="text-left bg-slate-900 px-5 py-5 rounded-xl flex justify-between w-full text-slate-100">
+              <div className="text-left bg-slate-900 px-5 py-5  flex justify-between w-full text-slate-100">
                 <h3 className="text-2xl font-bold text-slate-100">
                   Your ID: <span className="text-neon">{roomId}</span>
                 </h3>

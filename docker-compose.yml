@@ -50,6 +50,8 @@ services:
       - '4000:4000'
     env_file:
       - ./services/identity-server/.env
+    volumes:
+      - $HOME/data:/var/lib/um
     networks:
       - pingpong
     depends_on:

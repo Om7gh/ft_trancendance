@@ -1,14 +1,14 @@
-import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 const data = [
-  { name: "Wins", value: 55, color: "#00E5FF" },
-  { name: "Losses", value: 44, color: "#8A2BE2" },
-  { name: "Draws", value: 2, color: "rgba(46, 46, 53, 0.85)" },
+  { name: 'Wins', value: 55, color: '#00E5FF' },
+  { name: 'Losses', value: 44, color: '#8A2BE2' },
+  { name: 'Draws', value: 2, color: 'rgba(46, 46, 53, 0.85)' },
 ];
 
 export default function PlayerChart() {
   return (
-    <div className="flex items-center gap-8 p-4 bg-slate-800/30 rounded-xl border border-slate-700">
+    <div className="flex items-center gap-8 p-4 bg-slate-800/30  border border-slate-700">
       <div className="space-y-4 min-w-[120px]">
         {data.map((item) => (
           <div key={item.name} className="flex items-center gap-3">
@@ -17,7 +17,7 @@ export default function PlayerChart() {
               style={{ backgroundColor: item.color }}
             />
             <span className="text-slate-300 capitalize">
-              {item.name}:{" "}
+              {item.name}:{' '}
               <span className="font-bold text-white">{item.value}%</span>
             </span>
           </div>
@@ -35,7 +35,8 @@ export default function PlayerChart() {
             paddingAngle={2}
             dataKey="value"
             animationDuration={1000}
-            animationEasing="ease-out">
+            animationEasing="ease-out"
+          >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}

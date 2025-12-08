@@ -1,11 +1,11 @@
-import type { Error } from "@/types/errorType";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import type { Error } from '@/types/errorType';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 async function forgetPassword(data: { email: string }) {
-  const res = await fetch("http://localhost:4000/api/v1/auth/forgot-password", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
+  const res = await fetch('http://localhost:8080/auths/forgot-password', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
     body: JSON.stringify(data),
   });
   if (!res.ok) {
@@ -17,13 +17,13 @@ async function forgetPassword(data: { email: string }) {
 
 function useForgetPassword() {
   return useMutation({
-    mutationKey: ["forgetPassword"],
+    mutationKey: ['forgetPassword'],
     mutationFn: forgetPassword,
     onSuccess: () => {
-      toast.info("check your email");
+      toast.info('check your email');
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Inrernal server error");
+      toast.error(err.message || 'Inrernal server error');
     },
   });
 }
