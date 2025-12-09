@@ -155,7 +155,7 @@ export default function FinishRegister() {
             </button>
             <button
               type="submit"
-              className="px-6 py-2 border-2 border-violet-400  shadow-sm text-sm font-medium
+              className="px-6 py-2 border-2 border-violet-400  shadow-sm text-sm
               text-slate-900 bg-gradient-to-r from-violet-400 to-neon hover:from-violet-300 hover:to-neon-400
               focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2
               focus:ring-offset-slate-800 font-bold transition-all"

@@ -1,6 +1,6 @@
 import { GlobalContext } from '@/App';
 import useAuthenticated from '@/services/auth/useAuthenticated';
-import { useCallback, useContext, useEffect, type ReactNode } from 'react';
+import { useContext, useEffect, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
 function AuthProtection({ children }: { children: ReactNode }) {

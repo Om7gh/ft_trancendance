@@ -132,7 +132,7 @@ const router = createBrowserRouter([
         element: <SignIn />,
       },
       {
-        path: 'avatar',
+        path: 'complete-profile',
         element: <FinishRegister />,
       },
       {
@@ -140,7 +140,7 @@ const router = createBrowserRouter([
         element: <Activation />,
       },
       {
-        path: '2-factor-activation',
+        path: 'verify-2fa',
         element: <TwoFactorActivation />,
       },
       {
