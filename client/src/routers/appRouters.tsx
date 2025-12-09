@@ -31,9 +31,9 @@ const router = createBrowserRouter([
   {
     path: '/dashboard',
     element: (
-      <AuthProtection>
+      // <AuthProtection>
         <Dashboard />
-      </AuthProtection>
+      // </AuthProtection>
     ),
     children: [
       {
@@ -114,9 +114,9 @@ const router = createBrowserRouter([
   {
     path: '/auth',
     element: (
-      <ProtectDashboard>
+      // <ProtectDashboard>
         <Auth />
-      </ProtectDashboard>
+      // </ProtectDashboard>
     ),
     children: [
       {
@@ -124,7 +124,7 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path: 'username-create',
+        path: 'choose-username',
         element: <CreateUsername />,
       },
       {
