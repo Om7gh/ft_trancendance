@@ -33,6 +33,7 @@ function addPlayerToRoom(player) {
 }
 
 function addToPlayerList(playerId) {
+
     var player = this.playerList.find((player) => player.id === playerId);
 
     if (!player) {
