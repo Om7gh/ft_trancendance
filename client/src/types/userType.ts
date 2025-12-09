@@ -11,8 +11,7 @@ export interface signUpData {
 }
 
 export interface activationUSerData {
-  email: string;
-  verificationCode: number;
+  code: string;
 }
 
 export interface completeProfile {

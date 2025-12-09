@@ -1,6 +1,6 @@
 import { RouterProvider } from 'react-router-dom';
 import { routes } from '@routers';
-import { useEffect, useState, type JSX } from 'react';
+import { useState, type JSX } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -22,14 +22,11 @@ interface GlobalContexyType {
 export const GlobalContext = createContext<GlobalContexyType | null>(null);
 
 const App = (): JSX.Element => {
-  useEffect(() => {
-    console.log(document.cookie.split(';'));
-  }, []);
   const [user, setUser] = useState<User | null>();
 
   return (
     <div className="App">
-      <GlobalContext.Provider value={{ user: user, setUser: setUser }}>
+      <GlobalContext.Provider value={{ user, setUser }}>
         <div className="Child bg-midnight/80 ">
           <QueryClientProvider client={queryClient}>
             <ReactQueryDevtools initialIsOpen={false} />

@@ -10,3 +10,7 @@ clean: down
 	rm -f ~/data/users.sqlite3
 
 re: clean up
+
+identity:
+	docker compose build identity
+	docker compose run identity

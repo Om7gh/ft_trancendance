@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import type { activationUSerData } from '@/types/userType';
 import { useTwoFactorAuth } from '@/services/auth/useTwoFactorAuth';
-import useCookie from '@/hooks/useUsersData';
 
 function ActivationInput({
   name,
@@ -17,7 +16,7 @@ function ActivationInput({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   autoFocus?: boolean;
-  ref: () => void;
+  ref: (el: HTMLInputElement) => void;
 }) {
   return (
     <input
@@ -38,7 +37,6 @@ export default function TwoFactorActivation() {
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const mutateActivate = useTwoFactorAuth();
-  const email = useCookie('email');
   const handleChange = (index: number, value: string) => {
     const newCode = [...code];
     newCode[index] = value;
@@ -62,10 +60,9 @@ export default function TwoFactorActivation() {
     const formData = new FormData(e.currentTarget);
     let activationArr = [];
     for (let i = 0; i < 6; i++) activationArr.push(formData.get(`n-${i}`));
-    const verificationCode = activationArr.join('');
+    const verificationCode = activationArr.join('') as string;
     const sendData: activationUSerData = {
-      email: email as string,
-      verificationCode: verificationCode as string,
+      code: verificationCode as string,
     };
     mutateActivate.mutate(sendData);
   };

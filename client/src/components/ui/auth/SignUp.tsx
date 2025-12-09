@@ -36,7 +36,7 @@ function CheckMail({ email }: { email: string | undefined }) {
 
       <button
         onClick={handleOpenMail}
-        className="mt-6 px-8 py-3 bg-gradient-to-r from-violet-500 to-neon text-white  font-semibold hover:shadow-lg transition-all duration-300"
+        className=" mt-6 px-8 py-3 bg-gradient-to-r from-violet-500 to-neon text-white cursor-pointer  font-semibold hover:shadow-lg transition-all duration-300"
       >
         Open Email Client
       </button>
@@ -58,9 +58,9 @@ export default function SignUp() {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const registerSuccess = useTransStore((state) => state.registerSuccess);
   const setRegisterSuccess = useTransStore((state) => state.setRegisterSuccess);
+  const [email, setEmail] = useState('');
   const signupMutation = useSignUp();
   const isSubmitting = signupMutation.isPending;
-  let email;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -73,7 +73,7 @@ export default function SignUp() {
       return;
     }
     setPasswordsMatch(true);
-    email = formData.get('email') as string;
+    setEmail(formData.get('email') as string);
     const userData = {
       first_name: formData.get('first_name') as string,
       last_name: formData.get('last_name') as string,
