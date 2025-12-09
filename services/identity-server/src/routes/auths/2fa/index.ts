@@ -51,19 +51,19 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         const user = request.session.user;
         const user2FA = fastify.mfaRepository.findByUserId(user.id);
         if (!user2FA) {
-          return reply.send({ error: 'your not allowed to do this' });
+          return reply.unauthorized('your not allowed to do this');
         }
         if (user2FA.enabled) {
-          return reply.send({ ok: '2fa already enabled' });
+          return reply.forbidden('2fa already enabled');
         }
         const secret = decrypt(user2FA.secret);
         const token = authenticator.generate(secret);
         const isValid = authenticator.verify({ token, secret });
         if (!isValid || token != code) {
-          return reply.unauthorized('invalid code');
+          return reply.badRequest('invalid code');
         }
         fastify.mfaRepository.update(user.id, { enabled: 1 });
-        return reply.send({ ok: '2fa enabled' });
+        return reply.send({ success: true, message: '2fa enabled' });
       } catch (err: any) {
         return reply.send(err);
       }
@@ -76,7 +76,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     if (token) {
       try {
         await request.verifyAccessToken();
-        return reply.redirect('/'); // ? already logged in and access token valid
+        return reply.send({
+          message: 'user already logged in',
+          next: '/dashboard',
+        }); // ? already logged in and access token valid
       } catch (err: any) {
         return reply.unauthorized('already logged refresh your token');
       }
@@ -84,10 +87,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     try {
       const user = request.session.pendingUser; //? <-- this setted on /login
       if (!user) {
-        return reply.send({ error: 'login first' });
+        return reply.badRequest('login first');
       }
       if (!user.pending) {
-        return reply.send({ error: 'already logged in' });
+        return reply.badRequest('already logged in');
       }
       const secret = decrypt(user.secret);
       const token = authenticator.generate(secret);
@@ -105,10 +108,17 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         token_id: jti,
       });
       reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
-
-      return reply.send({ ok: 'success' });
+      return reply.send({
+        success: true,
+        message: 'user logged in successfully',
+        next: '/dashboard',
+      });
     } catch (err: any) {
-      return reply.send(err);
+      return reply.code(401).send({
+        success: false,
+        message: err.message || 'error',
+        next: null,
+      });
     }
   });
 
@@ -121,21 +131,29 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         const user = request.session.user;
         const user2fa = fastify.mfaRepository.findByUserId(user.id);
         if (!user2fa) {
-          return reply.send({ error: 'you dont have permission for this' });
+          return reply.badRequest('you dont have permission for this');
         }
         const secret = decrypt(user2fa.secret);
         const token = authenticator.generate(secret);
         const isValid = authenticator.verify({ token, secret });
         if (!isValid || token != code) {
-          return reply.send({ error: 'invalid code' });
+          return reply.badRequest('invalid code');
         }
         if (!user2fa.enabled) {
-          return reply.send({ ok: '2fa already disabled' });
+          return reply.forbidden('2fa already disabled');
         }
         fastify.mfaRepository.delete(user.id);
-        return reply.send({ ok: '2fa disabled' });
+        return reply.send({
+          success: true,
+          message: '2fa disabled',
+          next: null,
+        });
       } catch (err: any) {
-        return reply.send({ error: err });
+        return reply.code(401).send({
+          success: false,
+          message: err.message || 'error',
+          next: null,
+        });
       }
     }
   );
