@@ -2,7 +2,6 @@ import { Table, Ball, Paddle, Events } from './pongClasses.tsx';
 
 import type { ScoreType } from './main.tsx'
 
-var l_score        : ScoreType  | null = null;
 var  events        : Events     | null = null;
 var  table         : Table      | null = null;
 var  ball          : Ball       | null = null;
@@ -39,8 +38,7 @@ function calculateNextFrame() {
     }
 }
 
-function initaiteGame(score: ScoreType) {
-    l_score         = score;
+function initaiteGame() {
     events          = new Events;
     table           = new Table();
     ball            = new Ball(350, 200, "orange");
@@ -49,17 +47,16 @@ function initaiteGame(score: ScoreType) {
 }
 
 type pongGameArgsType = {
-    score           : ScoreType;
     canvas          : HTMLCanvasElement;
     context         : CanvasRenderingContext2D;
-    setScore        : ((input: ScoreType) => void);
+    setScore        : ((input: ((prev: ScoreType) => ScoreType)) => void);
     setMatchState   : ((value: string) => void); 
 }
 
-export function pongGame({ score, canvas, context, setScore, setMatchState }: pongGameArgsType) {
+export function pongGame({canvas, context, setScore, setMatchState }: pongGameArgsType) {
     let animationId   = 0;
 
-    initaiteGame(score);
+    initaiteGame();
 
     if (table && ball && left_paddle && right_paddle && events) {
         table.setContext(context);
@@ -67,18 +64,29 @@ export function pongGame({ score, canvas, context, setScore, setMatchState }: po
         
         function gameLoop() {
             calculateNextFrame();
-            if (table && ball && left_paddle && right_paddle && l_score) {
+            if (table && ball && left_paddle && right_paddle) {
                 if ((ball.x < 0) || (table.width < ball.x)) {
-                    if (ball.x < 0)
-                        l_score.rightPlayer.points += 1;
-                    else (table.width < ball.x)
-                        l_score.leftPlayer.points += 1;
+                    if (ball.x < 0) {
+                        setScore((prev: ScoreType): ScoreType => {
+                            return (
+                                {
+                                    leftPlayer: {...prev.leftPlayer},
+                                    rightPlayer: {...prev.rightPlayer, points: prev.rightPlayer.points + 1}
+                                }
+                            );
+                        });
+                    } else if (table.width < ball.x) {
+                        setScore((prev: ScoreType): ScoreType => {
+                            return (
+                                {
+                                    leftPlayer: {...prev.leftPlayer, points: prev.leftPlayer.points + 1},
+                                    rightPlayer: {...prev.rightPlayer}
+                                }
+                            );
+                        });
+                    }
                     ball.reset();
                     ball.direction *= -1;
-                    setScore({...l_score});
-                    if ((6 < score.leftPlayer.points) || (6 < score.rightPlayer.points)) {
-                        setMatchState("done");
-                    }
                 }
                 table.drawNewFrame(ball, left_paddle, right_paddle)
                 animationId = requestAnimationFrame(gameLoop);

@@ -6,13 +6,13 @@ import { ScoreBar } from './ScoreBare.tsx';
 import { MessageDisplayer } from '../playRemote/playWithSomeOne.tsx';
 
 export type PlayerType = {
-  name: string;
-  points: number;
+  name          : string;
+  points        : number;
 };
 
 export type ScoreType = {
-  leftPlayer: PlayerType;
-  rightPlayer: PlayerType;
+  leftPlayer    : PlayerType;
+  rightPlayer   : PlayerType;
 };
 
 type WinnerPropsType = {
@@ -46,12 +46,11 @@ export function Winner({ score }: WinnerPropsType) {
 
 type MatchPropsType = {
   matchState: string;
-  score: ScoreType;
   setMatchState: (value: string) => void;
-  setScore: (value: ScoreType) => void;
+  setScore: (value: ((prev: ScoreType) => ScoreType)) => void;
 };
 
-function Match({ matchState, score, setMatchState, setScore }: MatchPropsType) {
+function Match({ matchState, setMatchState, setScore }: MatchPropsType) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const renderingContext = useRef<CanvasRenderingContext2D | null>(null);
 
@@ -70,7 +69,6 @@ function Match({ matchState, score, setMatchState, setScore }: MatchPropsType) {
         }
 
         return pongGame({
-          score: score,
           canvas: canvasRef.current,
           context: renderingContext.current,
           setScore: setScore,
@@ -97,22 +95,27 @@ function Match({ matchState, score, setMatchState, setScore }: MatchPropsType) {
 }
 
 export function PlayLocal() {
-  const navigate = useNavigate();
-  const [matchState, setMatchState] = useState('going');
-  const [score, setScore] = useState<ScoreType>({
+  const navigate                      = useNavigate();
+  const [matchState, setMatchState]   = useState('going');
+  const [score, setScore]             = useState<ScoreType>({
     leftPlayer: { name: 'LeftPlayer', points: 0 },
     rightPlayer: { name: 'RightPlayer', points: 0 },
   });
+
+  if (matchState !== "done") {
+    if ((6 < score.leftPlayer.points) || (6 < score.rightPlayer.points)) {
+      setMatchState("done");
+    }
+  }
 
   if (matchState === 'going' || matchState === 'done') {
     return (
       <div className="relative">
         <ScoreBar score={score} />
         <Match
-          matchState={matchState}
-          score={score}
-          setMatchState={setMatchState}
           setScore={setScore}
+          matchState={matchState}
+          setMatchState={setMatchState}
         />
         {matchState === 'done' && <Winner score={score} />}
         <button
