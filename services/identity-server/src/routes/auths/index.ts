@@ -1,10 +1,11 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { Static, Type } from '@sinclair/typebox';
 import { randomUUID } from 'crypto';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { compare, hash } from '../../auth/security/cipher-util.js';
 import { asUserInfo } from '../../dto/user-dto.js';
 import { User } from '../../models/user.js';
-import mailOptions from '../../utils/mail-options.js';
+import { confirmMailOptions, resetPasswordOptions } from '../../utils/mail-options.js';
 
 const LoginCredentials = Type.Object({
   email: Type.String({ format: 'email' }),
@@ -29,7 +30,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.post(
     '/signup',
     { schema: { body: RegisterCredentials } },
-    async function (request, reply) {
+    async function (request: FastifyRequest, reply: FastifyReply) {
       const payload = request.body as RegisterBody;
       const exists = fastify.usersRepository.findByEmail(payload.email);
       if (exists) {
@@ -42,6 +43,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         email: payload.email,
         password: hash(payload.password),
         avatar: `https://avatar.iran.liara.run/username?username=${payload.first_name}+${payload.last_name}`,
+        provider: 'local',
       } as User;
       const user = fastify.usersRepository.insert(newUser);
       if (!user) {
@@ -49,7 +51,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       }
       const token = await fastify.generateConfirmToken(user.uid);
       const url = `${fastify.config.HOST}:${fastify.config.PORT}/auths/confirm?token=${token}`;
-      await fastify.transporter.sendMail(mailOptions(user.email, url)); // TODO we can use mail service for mailling
+      await fastify.transporter.sendMail(confirmMailOptions(user.email, url)); // TODO we can use mail service for mailling
       return reply.code(201).send({ message: 'user created' });
     }
   );
@@ -57,7 +59,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.post(
     '/login',
     { schema: { body: LoginCredentials } },
-    async function (request, reply) {
+    async function (request: FastifyRequest, reply: FastifyReply) {
       const { email, password } = request.body as LoginBody;
       if (request.cookies.accessToken) {
         try {
@@ -112,7 +114,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     '/confirm',
     { schema: { querystring: ConfirmToken } },
-    async function (request, reply) {
+    async function (request: FastifyRequest, reply: FastifyReply) {
       try {
         const { sub } = await request.verifyConfirmToken();
         if (!sub) {
@@ -144,11 +146,72 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.get(
     '/userinfo',
     { onRequest: fastify.authenticate },
-    async function (request, reply) {
+    async function (request: FastifyRequest, reply: FastifyReply) {
       const userInfo = asUserInfo(request.session.user);
       request.session.destroy();
       reply.clearCookie('sessionId');
       return reply.send(userInfo);
+    }
+  );
+
+  fastify.post(
+    '/forgot-password',
+    async function (request: FastifyRequest, reply: FastifyReply) {
+      const { email } = request.body as { email: string };
+      const user = fastify.usersRepository.findByEmail(email);
+      if (!user) {
+        return reply.notFound('this email not linked with any PONG account');
+      }
+      if (user.provider !== 'local') {
+        return reply.forbidden(
+          'if this email registred locally check your email box to reset password'
+        );
+      }
+      const token = await fastify.generateConfirmToken(user.email);
+      const url = `${fastify.config.HOST}:${fastify.config.PORT}/auth/reset-password?token=${token}`;
+      await fastify.transporter.sendMail(resetPasswordOptions(user.email, url));
+      reply.send({
+        success: true,
+        message: 'please check your email, we send a reset email for you.',
+        next: null,
+      });
+    }
+  );
+
+  fastify.post(
+    '/reset-password',
+    async function (request: FastifyRequest, reply: FastifyReply) {
+      const { newPassword, confirmPassword } = request.body as {
+        newPassword: string;
+        confirmPassword: string;
+      };
+
+      try {
+        const token = await request.verifyConfirmToken();
+        if (!token) {
+          return reply.badRequest('invalid token');
+        }
+        const user = fastify.usersRepository.findByEmail(token.sub!);
+        if (!user) {
+          return reply.badRequest('no user found with this email');
+        }
+        if (newPassword !== confirmPassword) {
+          return reply.badRequest('password not match confirm password');
+        }
+        const hashedPassword = hash(newPassword);
+        fastify.usersRepository.update(user.id, { password: hashedPassword });
+        return reply.send({
+          success: true,
+          message: 'password changed successfuly',
+          next: null,
+        });
+      } catch (err: any) {
+        return reply.code(401).send({
+          success: false,
+          message: err.message || 'error',
+          next: null,
+        });
+      }
     }
   );
 };
