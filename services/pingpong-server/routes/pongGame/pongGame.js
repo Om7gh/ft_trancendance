@@ -46,6 +46,20 @@ function addToPlayerList(playerId) {
     return (player);
 }
 
+async function onRequestHookHandler(req, rep) {
+    const cookies = req.cookies;
+
+    console.log("==>", cookies);
+
+    const user = await this.axios.get("http://identity:4000/auths/userinfo", {
+        headers: {
+            Cookies: 
+        }
+    });
+
+    // console.log("==>", user);
+}
+
 export function pongGame(fastify, options, done) {
 
     fastify.decorate('playerList'       ,     new Array());
@@ -60,35 +74,11 @@ export function pongGame(fastify, options, done) {
 
     fastify.decorate('addPlayerToRoom'  , addPlayerToRoom);
 
-    // fastify.decorate('managePlayerList', managePlayerList)
+    fastify.addHook('onRequest', onRequestHookHandler);
 
     fastify.register(playWithSomeOne);
     fastify.register(joinMatch);
     fastify.register(invite);
 
-    // this route for simulate the endpoint that going to provide the
-    // the user friends.
-
-    fastify.route({
-        path: "/pongGame/remote/playerlist",
-        method: "GET",
-        handler: playerListHandler,
-    })
-
-    // fastify.manageRoomList();
-
     done();
-}
-
-// this is the handler for the friend simulate endpoint.
-
-function playerListHandler(request, reply) {
-
-    const uid = request.query.uid;
-    const result = this.playerList.map((player) =>{
-        if (player.id != uid)
-            return player.id;
-    });
-
-    reply.send(JSON.stringify(result.filter((item) => item != null)));
 }

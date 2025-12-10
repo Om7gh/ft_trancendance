@@ -1,6 +1,8 @@
 import fastify          from 'fastify';
 import cors             from '@fastify/cors';
 import websocket        from '@fastify/websocket';
+import cookie           from '@fastify/cookie';
+import axios            from 'fastify-axios'
 
 import { pongGame }     from './routes/pongGame/pongGame.js';
 
@@ -14,6 +16,13 @@ const app = fastify({
 });
 
 app.register(websocket);
+
+app.register(axios);
+
+app.register(cookie, {
+  secret: 'your-secret-key', // for signed cookies
+  parseOptions: {}, // optional: options for cookie.parse
+});
 
 app.register(cors, {
   origin: '*',
