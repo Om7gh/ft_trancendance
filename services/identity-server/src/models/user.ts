@@ -15,13 +15,12 @@ export interface User {
   email_verified: 0 | 1
   provider: string
   token_id: string
-  tfa?: TwoFactor | null
 }
 
 export interface TwoFactor {
   id: number
   user_id: number
   secret: string
-  enabled?: 0 | 1
+  enabled: 0 | 1
   created_at: number
 }
