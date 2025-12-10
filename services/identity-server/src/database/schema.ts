@@ -5,7 +5,7 @@ export function initializeSchema(db: Database): void {
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       uid TEXT DEFAULT (lower(hex(randomblob(16)))),
-      username TEXT,
+      username TEXT UNIQUE,
       email TEXT NOT NULL UNIQUE,
       first_name TEXT NOT NULL,
       last_name TEXT DEFAULT NULL,
@@ -17,10 +17,10 @@ export function initializeSchema(db: Database): void {
       last_login INTEGER DEFAULT (strftime('%s','now')),
       last_logout INTEGER DEFAULT NULL,
       email_verified BOOLEAN DEFAULT FALSE,
-      provider TEXT DEFAULT 'local',
-      token_id TEXT DEFAULT ''
+      provider TEXT DEFAULT NULL,
+      token_id TEXT DEFAULT NULL
     )
-  `)
+  `);
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS tfa (
