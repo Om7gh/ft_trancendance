@@ -170,6 +170,7 @@ export class Room extends EventEmitter {
 
         this.id             = id;
         this.state          = "waiting";
+        this.valid          = false;
 
         this.matchId        = null;
         this.waitId         = null;
@@ -382,8 +383,13 @@ export class Room extends EventEmitter {
     }
     
     stopMatch() {
+        
+        if (this.state !== "waiting") {
+            this.valid = true;
+        }
+            
         this.state = "done";
-
+        
         if (this.matchId) {
             this.broadcastScore();
             this.broadcastMatchState();
@@ -403,6 +409,24 @@ export class Room extends EventEmitter {
         }
 
         this.emit("done");
+    }
+
+    generateMatchResult() {
+        if (this.valid) {
+            return ({
+                id: this.id,
+                leftPlayer: {
+                    id      : this.leftPlayer.id,
+                    points  : this.leftPoints,
+                },
+                righPlayer: {
+                    id      : this.rightPlayer.id,
+                    points  : this.rightPoints,
+                }
+            })
+        }
+
+        return (null);
     }
 }
 

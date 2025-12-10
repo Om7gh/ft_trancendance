@@ -26,8 +26,12 @@ export function waitForOpponent(reply, room, uid) {
 }
 
 function playWithSomeOneHandler(request, reply) {
-    const uid       = request.query.uid;
-    const player    = this.addToPlayerList(uid);
+    const uid               = request.query.uid;
+    const player            = this.addToPlayerList(uid);
+
+    const accessToken   = request.cookies.accessToken;
+    
+    console.log(accessToken);
 
     if (!player) {
         reply.code(500).send();

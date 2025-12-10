@@ -1,6 +1,8 @@
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import websocket from '@fastify/websocket';
+import cookie from '@fastify/cookie';
+
 import { pongGame } from './routes/pongGame/pongGame.js';
 import { notification } from './routes/notification/notification.js';
 
@@ -14,6 +16,13 @@ const app = fastify({
 });
 
 app.register(websocket);
+
+app.register(cookie, {
+    secret: 'your-secret-key', // for signed cookies
+    parseOptions: {}, // optional: options for cookie.parse
+  })
+
+
 app.register(cors, {
   origin: '*',
   methods: ['GET'],
@@ -23,6 +32,7 @@ app.register(cors, {
 app.decorate('notifications', new Map());
 
 app.register(pongGame);
+
 app.register(notification);
 
 const start = async () => {
