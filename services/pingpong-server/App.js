@@ -1,8 +1,8 @@
-import fastify from 'fastify';
-import cors from '@fastify/cors';
-import websocket from '@fastify/websocket';
-import { pongGame } from './routes/pongGame/pongGame.js';
-import { notification } from './routes/notification/notification.js';
+import fastify          from 'fastify';
+import cors             from '@fastify/cors';
+import websocket        from '@fastify/websocket';
+
+import { pongGame }     from './routes/pongGame/pongGame.js';
 
 const app = fastify({
   logger: {
@@ -14,16 +14,14 @@ const app = fastify({
 });
 
 app.register(websocket);
+
 app.register(cors, {
   origin: '*',
   methods: ['GET'],
   credentials: true,
 });
 
-app.decorate('notifications', new Map());
-
 app.register(pongGame);
-app.register(notification);
 
 const start = async () => {
   try {

@@ -1,3 +1,5 @@
+import cookie from '@fastify/cookie'
+
 export function waitForOpponent(reply, room, uid) {
     var counter  = 0;
 
@@ -26,8 +28,11 @@ export function waitForOpponent(reply, room, uid) {
 }
 
 function playWithSomeOneHandler(request, reply) {
-    const uid       = request.query.uid;
-    const player    = this.addToPlayerList(uid);
+    const uid               = request.query.uid;
+    const player            = this.addToPlayerList(uid);
+    const { accessToken }   = request.cookies;
+
+    console.log(accessToken);
 
     if (!player) {
         reply.code(500).send();
