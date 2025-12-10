@@ -32,11 +32,11 @@ function addPlayerToRoom(player) {
     return (this.currentRoom);
 }
 
-function addToPlayerList(playerId) {
-    var player = this.playerList.find((player) => player.id === playerId);
+function addToPlayerList(user) {
+    var player = this.playerList.find((player) => player.id === user.id);
 
     if (!player) {
-        player = new Player(playerId, null);
+        player = new Player(user, null);
         
         if (player) {
             this.log.info(`add player with id: ${player.id} to playerList`);
@@ -46,18 +46,31 @@ function addToPlayerList(playerId) {
     return (player);
 }
 
-async function onRequestHookHandler(req, rep) {
-    const cookies = req.cookies;
+async function onRequestHookHandler(request, reply) {
+    const cookie = request.headers.cookie;
 
-    console.log("==>", cookies);
+    if (!cookie) {
+        reply.code(401).send();
+        return ;
+    }
+   
+    try {
 
-    const user = await this.axios.get("http://identity:4000/auths/userinfo", {
-        headers: {
-            Cookies: 
+        const response = await this.axios.get("http://identity:4000/auths/userinfo", {
+            headers: {
+                Cookie: cookie,
+            }
+        });
+        
+        if (response.status !== 200) {
+            reply.code(401).send();
+            return ;
         }
-    });
-
-    // console.log("==>", user);
+        
+        request.user = await response.data;
+    } catch (err) {
+        reply.code(401).send();
+    }
 }
 
 export function pongGame(fastify, options, done) {

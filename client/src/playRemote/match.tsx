@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import { useRef, useState, useEffect } from "react";
 
 import type { ScoreType } from "./playMatch.tsx";
-import type { PlayerType } from "./playMatch.tsx";
+import type { MatchType, PlayerType } from "./playWithSomeOne.tsx";
 
 import { ScoreBar } from "./ScoreBare.tsx";
 import { Events } from "../playLocal/pongClasses.tsx";
@@ -162,25 +162,26 @@ function CounterDown() {
 }
 
 type WinnerPropsType = {
-    score: ScoreType,
+    score: ScoreType;
+    match: MatchType;
 }
 
-export function Winner({ score }: WinnerPropsType) {
+export function Winner({ score, match }: WinnerPropsType) {
     const [winner, setWinner] = useState<PlayerType | null>(null)
 
     useEffect(() => {
         if (score) {
-            if (score.leftPlayer.points < score.rightPlayer.points)
-                setWinner(score.rightPlayer);
-            else if (score.rightPlayer.points < score.leftPlayer.points)
-                setWinner(score.leftPlayer);
+            if (score.leftPlayer < score.rightPlayer)
+                setWinner(match.rightPlayer);
+            else if (score.rightPlayer < score.leftPlayer)
+                setWinner(match.leftPlayer);
         }
     }, [])
 
     return (
         <div className="border rounded absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 tflex flex-col m-auto">
             <img className="w-1/4 m-auto my-4" 
-                src="https://avatar.iran.liara.run/public"
+                src={winner?.avatar}
             />
             <h1 className='text-[1em] m-auto text-center m-auto my-4'>Winner is: {winner && winner.name || "No Winner!!"}</h1>
         </div>
@@ -191,11 +192,12 @@ type MatchPropsType = {
     connection          : WebSocket;
     score               : ScoreType;
     matchState          : string;
-    setScore            : ((value: ScoreType) => void)
+    match               : MatchType;
+    setScore            : ((value: ScoreType) => void);
     setMatchState       : ((value: string) => void);
 }
 
-export function Match({ connection, score, matchState, setScore, setMatchState }: MatchPropsType) {
+export function Match({ connection, score, matchState, match, setScore, setMatchState }: MatchPropsType) {
     const  navigate             = useNavigate();
     const  canvasRef            = useRef<HTMLCanvasElement | null>(null);
     const  renderingContext     = useRef<CanvasRenderingContext2D | null>(null);
@@ -226,14 +228,14 @@ export function Match({ connection, score, matchState, setScore, setMatchState }
 
     return (
         <div className="relative">
-            <ScoreBar score={score} />
+            <ScoreBar score={score} match={match} />
             <div className="flex flex-col w-9/10 m-auto my-4">
                 <canvas 
                     width="700" height="400" ref={canvasRef} 
                     className="border rounded w-1/1 aspec-[7/4] m-auto"
                 >Your browser does not support HTML canvas API!!</canvas>
                 {(matchState === "pause") && <CounterDown />}
-                {(matchState === "done") && <Winner score={score} />}
+                {(matchState === "done") && <Winner score={score} match={match}/>}
             </div>
             <button
                 className="block border rounded w-1/3 my-4 p-4 m-auto"

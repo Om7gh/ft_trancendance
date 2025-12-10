@@ -9,7 +9,7 @@ export function waitForOpponent(reply, room, uid) {
                 if (!oid)
                     reply.code(500).send();
                 else
-                    reply.code(200).send(JSON.stringify({uid: uid, oid: oid, rid: room.id}))
+                    reply.code(200).send(JSON.stringify(room.generateMatch()));
             } else if (!room.full() && (10 < counter)) {
                 reply.code(204).send();
                 room.stopMatch();
@@ -26,8 +26,7 @@ export function waitForOpponent(reply, room, uid) {
 }
 
 function playWithSomeOneHandler(request, reply) {
-    const uid               = request.query.uid;
-    const player            = this.addToPlayerList(uid);
+    const player            = this.addToPlayerList(request.user);
 
     if (!player) {
         reply.code(500).send();
@@ -58,7 +57,7 @@ function playWithSomeOneHandler(request, reply) {
         player.room = null;
     })
 
-    waitForOpponent(reply, room, uid);
+    waitForOpponent(reply, room, request.user.id);
 }
 
 export function playWithSomeOne(fastify, options, done) {

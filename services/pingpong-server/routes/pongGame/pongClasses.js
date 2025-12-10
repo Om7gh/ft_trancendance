@@ -132,8 +132,10 @@ export class Ball {
 }
 
 export class Player {
-    constructor(id, socket) {
-        this.id         = id;
+    constructor(user, socket) {
+        this.id         = user.id;
+        this.name       = user.first_name;
+        this.avatar     = user.avatar;
         this.paddle     = null;
         this.room       = null;
     }
@@ -156,7 +158,7 @@ export class Player {
     }
 
     getRoomById(rid) {
-        if (this.room.id === rid) {
+        if (this.room && (this.room.id === rid)) {
             return (this.room);
         }
 
@@ -225,6 +227,20 @@ export class Room extends EventEmitter {
         return (false);
     }
 
+    generateMatch() {
+        return ({
+            roomId: this.id,
+            leftPlayer: {
+                name: this.leftPlayer.name,
+                avatar: this.leftPlayer.avatar,
+            },
+            rightPlayer: {
+                name: this.rightPlayer.name,
+                avatar: this.rightPlayer.avatar,
+            }
+        })
+    }
+
     playerLeave(playerId) {
         if (this.leftPlayer.id === playerId)
             this.rightPoints = 7;
@@ -272,12 +288,8 @@ export class Room extends EventEmitter {
             state: "ok",
             data: {
                 event: "updateScore",
-                leftPlayer: {id: this.leftPlayer.id,
-                    name: "leftPlayer", imagePath: "", points: this.leftPoints,
-                },
-                rightPlayer: {id: this.rightPlayer.id,
-                    name: "rightPlayer", imagePath: "", points: this.rightPoints,
-                },
+                leftPlayer: this.leftPoints,
+                rightPlayer: this.rightPoints,
             }
         }));
     }

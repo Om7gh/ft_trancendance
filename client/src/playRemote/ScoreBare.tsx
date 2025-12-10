@@ -1,30 +1,31 @@
-import type { ScoreType } from "./playMatch"
+import type { ScoreType } from "./playMatch.js"
+import type { MatchType, PlayerType} from "./playWithSomeOne.tsx"
 
 type PlayerPropsType = {
-    children: React.ReactNode,
+    player: PlayerType;
 }
 
-function LeftPlayer({ children }: PlayerPropsType) {
+function LeftPlayer({ player }: PlayerPropsType) {
     return (
         <div className="relative flex h-1/1 m-auto">
             <img className="absolute top-1/2 -translate-y-1/2 left-1/4 -translate-x-1/2 w-2/6 m-auto" 
-                src="https://avatar.iran.liara.run/public"
+                src={player.avatar}
             />
             <h1 className='absolute text-[1em] top-1/2 -translate-y-1/2 left-2/4 w-2/6 m-auto'>
-                {children}
+                {player.name}
             </h1>
         </div>
     )
 }
 
-function RightPlayer({ children }: PlayerPropsType) {
+function RightPlayer({ player }: PlayerPropsType) {
     return (
         <div className="relative flex h-1/1 m-auto">
             <img className="absolute top-1/2 -translate-y-1/2 left-3/4 -translate-x-1/2 w-2/6 m-auto" 
-                src="https://avatar.iran.liara.run/public"
+                src={player.avatar}
             />
             <h1 className='absolute text-[1em] top-1/2 -translate-y-1/2 left-1/8 w-2/6 m-auto'>
-                {children}
+                {player.name}
             </h1>
         </div>
     )
@@ -32,19 +33,20 @@ function RightPlayer({ children }: PlayerPropsType) {
 
 type ScoreBarPropsType = {
     score: ScoreType;
+    match: MatchType;
 }
 
-export function ScoreBar({ score }: ScoreBarPropsType) {
+export function ScoreBar({ score, match }: ScoreBarPropsType) {
     return (
         <div className="flex w-9/10 h-[100px] m-auto my-4">
             <div className="w-3/7 aspect-[3/1] m-auto my-4 py-2">
-                <LeftPlayer>{score.leftPlayer.name}</LeftPlayer>
+                <LeftPlayer player={match.leftPlayer} />
             </div>
             <div className="border rounded w-1/7 m-auto p-2 text-center">
-                {score.leftPlayer.points} vs {score.rightPlayer.points}
+                {score.leftPlayer} vs {score.rightPlayer}
             </div>
             <div className="w-3/7 aspect-[3/1] m-auto my-4 py-2">
-                <RightPlayer>{score.rightPlayer.name}</RightPlayer>
+                <RightPlayer player={match.rightPlayer} />
             </div>
         </div>
     )

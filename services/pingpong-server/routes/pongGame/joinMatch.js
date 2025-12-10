@@ -1,5 +1,5 @@
 function joinMatchHandler(socket, req) {
-    const uid       = req.query.uid;
+    const uid       = req.user.id;
     const rid       = req.query.rid;
     const player    = this.getPlayerById(uid);
     const room      = player.getRoomById(rid);

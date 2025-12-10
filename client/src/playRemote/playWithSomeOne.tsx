@@ -14,18 +14,28 @@ export function MessageDisplayer({ message }: MessageDisplayerPropsType) {
   );
 }
 
-function validateFetchedMatch(match: MatchType): boolean {
-  if (!match.uid || typeof match.uid !== 'string') return false;
-  else if (!match.oid || typeof match.oid !== 'string') return false;
-  else if (!match.rid || typeof match.rid !== 'string') return false;
-  return true;
+export type PlayerType = {
+  name: string;
+  avatar: string;
 }
 
 export type MatchType = {
-  uid: string | undefined;
-  oid: string | undefined;
-  rid: string | undefined;
+  roomId: string;
+  leftPlayer: PlayerType;
+  rightPlayer: PlayerType;
 };
+
+function validatePlayer(player: PlayerType) {
+  if (!player || !player.name || !player.avatar)
+    return (false);
+  return (true);
+}
+
+function validateMatch(match: MatchType) {
+  if (!match || !match.roomId || !validatePlayer(match.leftPlayer) || !validatePlayer(match.rightPlayer))
+    return (false);
+  return (true);
+}
 
 type FetchMatchArgsType = {
   setMessage: (value: string) => void;
@@ -45,8 +55,8 @@ async function fetchMatch({
 
     if (!ignored.state) {
       if (response.status === 200) {
-        if (!validateFetchedMatch(response.data)) {
-          setMessage('Invalid match was fetched!!');
+        if (!validateMatch(response.data)) {
+          setMessage('Error: fetched an invalid match!!');
           return;
         }
         setMatch(response.data);

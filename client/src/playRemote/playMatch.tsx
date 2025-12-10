@@ -50,16 +50,9 @@ function createConnection(
   };
 }
 
-export type PlayerType = {
-  id: string;
-  name: string;
-  points: number;
-  imagePath: string;
-};
-
 export type ScoreType = {
-  leftPlayer: PlayerType;
-  rightPlayer: PlayerType;
+  leftPlayer: number;
+  rightPlayer: number;
 };
 
 type PlayMatchPropsType = {
@@ -68,11 +61,9 @@ type PlayMatchPropsType = {
 
 export function PlayMatch({ match }: PlayMatchPropsType) {
   const connection = useRef<{ ws: WebSocket | null }>({ ws: null });
-  const [matchState, setMatchState] = useState(
-    'Waiting for Opponent to join match...'
-  );
+  const [matchState, setMatchState] = useState('Waiting for Opponent to join match...');
   const [score, setScore] = useState<ScoreType | null>(null);
-  const url = `http://localhost:8080/pongGame/remote/join?uid=${match.uid}&rid=${match.rid}`;
+  const url = `http://localhost:8080/pongGame/remote/join?rid=${match.roomId}`;
 
   useEffect(() => {
     try {
@@ -95,6 +86,7 @@ export function PlayMatch({ match }: PlayMatchPropsType) {
         connection={connection.current.ws!}
         score={score!}
         matchState={matchState}
+        match={match}
         setScore={setScore}
         setMatchState={setMatchState}
       />
