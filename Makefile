@@ -14,3 +14,8 @@ re: clean up
 identity:
 	docker compose build identity
 	docker compose run identity
+
+pong:
+	docker compose down;
+	docker image rm pong:pingpong;
+	docker compose up;
