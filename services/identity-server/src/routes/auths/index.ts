@@ -5,7 +5,10 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { compare, hash } from '../../auth/security/cipher-util.js';
 import { asUserInfo } from '../../dto/user-dto.js';
 import { User } from '../../models/user.js';
-import { confirmMailOptions, resetPasswordOptions } from '../../utils/mail-options.js';
+import {
+  confirmMailOptions,
+  resetPasswordOptions,
+} from '../../utils/mail-options.js';
 
 const LoginCredentials = Type.Object({
   email: Type.String({ format: 'email' }),
@@ -108,6 +111,29 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       });
       reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
       return reply.send({ success: true, next: '/dashboard' });
+    }
+  );
+
+  fastify.post(
+    '/logout',
+    async function (request: FastifyRequest, reply: FastifyReply) {
+      const token = request.cookies.refreshToken;
+      if (!token) {
+        return reply.badRequest('already logged out');
+      }
+      try {
+        const payload = await request.verifyRefreshToken();
+        const user = fastify.usersRepository.findByUID(payload.sub!);
+        if (!user) {
+          return reply.badRequest('user not found');
+        }
+        fastify.usersRepository.update(user.id, {
+          token_id: 'user-logged-out',
+        });
+        reply.clearAccessToken().clearRefreshToken();
+      } catch (err: any) {
+        return reply.badRequest(err);
+      }
     }
   );
 
