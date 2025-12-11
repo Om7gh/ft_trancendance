@@ -2,6 +2,22 @@ import AutoLoad from '@fastify/autoload'
 import { FastifyInstance, FastifyPluginOptions } from 'fastify'
 import path from 'node:path'
 
+export const options: FastifyServerOptions = {
+  ignoreTrailingSlash: true, //! to be kept in production
+  logger: {
+    level: 'info',
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        colorize: true,
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname',
+        singleLine: false
+      }
+    }
+  }
+}
+
 export default async function um(fastify: FastifyInstance, opts: FastifyPluginOptions) {
   await fastify.register(AutoLoad, {
     dir: path.join(import.meta.dirname, 'plugins/extern'),
