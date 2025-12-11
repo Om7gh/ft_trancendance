@@ -1,5 +1,5 @@
 import AutoLoad from '@fastify/autoload'
-import { FastifyInstance, FastifyPluginOptions } from 'fastify'
+import { FastifyInstance, FastifyPluginOptions, FastifyServerOptions } from 'fastify'
 import path from 'node:path'
 
 export const options: FastifyServerOptions = {

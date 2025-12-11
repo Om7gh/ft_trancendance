@@ -22,4 +22,4 @@ RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
 
 # CMD ["npx", "fastify", "start", "-l", "info", "--address", "0.0.0.0", "--port", "4000", "dist/app.js"]
-CMD ["npx", "fastify", "start", "--address", "0.0.0.0", "--port", "3000", "--options", "dist/app.js"]
+CMD ["npx", "fastify", "start", "--address", "0.0.0.0", "--port", "4000", "--options", "dist/app.js"]

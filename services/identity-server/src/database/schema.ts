@@ -17,7 +17,7 @@ export function initializeSchema(db: Database): void {
       last_login INTEGER DEFAULT (strftime('%s','now')),
       last_logout INTEGER DEFAULT NULL,
       email_verified BOOLEAN DEFAULT FALSE,
-      provider TEXT DEFAULT NULL,
+      provider TEXT DEFAULT NULL, -- To be removed. (moved to connections table)
       token_id TEXT DEFAULT NULL
     )
   `);

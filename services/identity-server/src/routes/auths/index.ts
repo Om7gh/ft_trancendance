@@ -5,7 +5,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { compare, hash } from '../../auth/security/cipher-util.js';
 import { asUserInfo } from '../../dto/user-dto.js';
 import { User } from '../../models/user.js';
-import { confirmMailOptions, resetPasswordOptions } from '../../utils/mail-options.js';
+import { confirmMailOptions } from '../../utils/mail-options.js';
 import { PasswordController } from '../../controllers/PasswordController.js';
 
 const LoginCredentials = Type.Object({

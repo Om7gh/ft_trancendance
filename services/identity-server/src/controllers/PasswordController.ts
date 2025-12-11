@@ -1,13 +1,14 @@
 import { type FastifyRequest, type FastifyReply } from 'fastify';
 import { hash } from '../auth/security/cipher-util.js';
 import { Password } from '../models/password.js';
-import { resetPasswordOptions } from '../../utils/mail-options.js';
+import { resetPasswordOptions } from '../utils/mail-options.js';
 import { User } from '../models/user.js';
 import { FastifyInstance } from 'fastify'; 
-import zxcvbn from 'zxcvbn';
+import zxcvbn = require("zxcvbn");
 
 export class PasswordController {
   static async resetPassword(request: FastifyRequest, reply: FastifyReply) {
+    const fastify = request.server as FastifyInstance;
     const { newPassword, confirmPassword } = request.body as {
       newPassword: string;
       confirmPassword: string;
@@ -74,8 +75,8 @@ export class PasswordController {
       return reply.unauthorized('The current password you provided is incorrect.')
     }
 
-    const zxcvbn = zxcvbn(new_password)
-    if (zxcvbn.score < 3) {
+    const reviewer = zxcvbn(new_password)
+    if (reviewer.score < 3) {
       return reply.badRequest('Password too weak')
     }
 

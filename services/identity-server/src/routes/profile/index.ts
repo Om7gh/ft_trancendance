@@ -18,12 +18,14 @@ const plugin: FastifyPluginAsyncTypebox  = async (fastify: FastifyInstance) => {
 
   fastify.patch('/update', {
     onRequest: [fastify.authenticate],
-    schema: updateUserSchema
+    schema: updateUserSchema // User other schema
   }, UserController.update)
 
   fastify.patch('/update-password', {
     onRequest: [fastify.authenticate],
-    schema: updatePasswordSchema
+    schema: {
+      body: updatePasswordSchema
+    }
   }, PasswordController.updatePassword)
 
   //TODO: To be implemented
