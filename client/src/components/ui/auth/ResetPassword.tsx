@@ -1,6 +1,6 @@
-import useCookie from '@/hooks/useUsersData';
+
 import { useVerifyToken } from '@/services/auth/useVerifiyToken';
-import { useCallback, useMemo, useState } from 'react';
+import {  useMemo, useState } from 'react';
 import { useNavigation, useSearchParams } from 'react-router-dom';
 import InputField from '../utils/InputField';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
@@ -10,7 +10,6 @@ function ResetPassword() {
   const [params] = useSearchParams();
   const mutateVerifyToken = useVerifyToken();
   const token = useMemo(() => params.get('token'), [params]);
-  const email = useCookie('email');
   const [showPassword, setShowPassword] = useState(false);
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
@@ -18,16 +17,6 @@ function ResetPassword() {
     e.preventDefault();
   };
 
-  useCallback(() => {
-    if (!token) return;
-    const data = {
-      email: email as string,
-      token: token as string,
-    };
-    mutateVerifyToken.mutate(data);
-  }, [mutateVerifyToken, token, email]);
-
-  if (mutateVerifyToken.isError) return <p>Not valid token</p>;
   return (
     <div className="relative max-w-md w-full mt-16 space-y-8 backdrop-blur-sm p-8  border border-violet-400/20 shadow-2xl shadow-violet-400/10">
       <div className="absolute -left-6 top-1/2 transform -translate-y-1/2 w-4 h-24 bg-violet-400 rounded-r-lg" />
