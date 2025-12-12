@@ -1,10 +1,12 @@
+import { GlobalContext } from '@/App';
 import axios from 'axios';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useContext, useEffect, useState, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
 const ProtectAuth = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
+  const { setUser } = useContext(GlobalContext);
 
   useEffect(() => {
     const verify = async () => {
@@ -19,9 +21,11 @@ const ProtectAuth = ({ children }: { children: ReactNode }) => {
             setAuthenticated(true);
           } catch (refreshErr) {
             setAuthenticated(false);
+            setUser(null);
           }
         } else {
           setAuthenticated(false);
+          setUser(null);
         }
       }
       setLoading(false);

@@ -18,7 +18,7 @@ export function MessageDisplayer({ message }: MessageDisplayerPropsType) {
 export type PlayerType = {
   name: string;
   avatar: string;
-}
+};
 
 export type MatchType = {
   roomId: string;
@@ -27,15 +27,19 @@ export type MatchType = {
 };
 
 function validatePlayer(player: PlayerType) {
-  if (!player || !player.name || !player.avatar)
-    return (false);
-  return (true);
+  if (!player || !player.name || !player.avatar) return false;
+  return true;
 }
 
 function validateMatch(match: MatchType) {
-  if (!match || !match.roomId || !validatePlayer(match.leftPlayer) || !validatePlayer(match.rightPlayer))
-    return (false);
-  return (true);
+  if (
+    !match ||
+    !match.roomId ||
+    !validatePlayer(match.leftPlayer) ||
+    !validatePlayer(match.rightPlayer)
+  )
+    return false;
+  return true;
 }
 
 type FetchMatchArgsType = {
@@ -46,11 +50,13 @@ type FetchMatchArgsType = {
 };
 
 async function fetchMatch({
-  setMessage, setMatch, ignored,url, }: FetchMatchArgsType) {
-
+  setMessage,
+  setMatch,
+  ignored,
+  url,
+}: FetchMatchArgsType) {
   try {
     const response = await axiosApiInstance.get(url);
-
 
     if (!ignored.state) {
       if (response.status === 200) {
@@ -72,7 +78,7 @@ export function PlayWithSomeOne() {
   const [message, setMessage] = useState<string>('Waiting for Opponent...');
   const [match, setMatch] = useState<MatchType | undefined>(undefined);
   const url = `/pongGame/remote/someone`;
-  
+
   useEffect(() => {
     const ignored = { state: false };
 

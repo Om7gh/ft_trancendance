@@ -1,18 +1,18 @@
-import axios from "axios";
+import axios from 'axios';
 
 const axiosApiInstance = axios.create({
-    baseURL: 'http://localhost:8080',
-    withCredentials: true,
-})
+  baseURL: 'http://localhost:8080',
+  withCredentials: true,
+});
 
 let isRefreshing = false;
 
 type FailedQueueType = {
-    resolve: ((value: unknown) => void);
-    reject: ((reasion?: any) => void);
-}
+  resolve: (value: unknown) => void;
+  reject: (reasion?: any) => void;
+};
 
-let failedQueue : FailedQueueType[] = [];
+let failedQueue: FailedQueueType[] = [];
 
 const processQueue = (error: unknown) => {
   failedQueue.forEach((prom) => {
@@ -47,7 +47,7 @@ axiosApiInstance.interceptors.response.use(
 
     try {
       // Request a new access token using refresh token (usually cookie)
-      await axiosApiInstance.post("/auths/refresh");
+      await axiosApiInstance.post('/auths/refresh');
 
       processQueue(null);
       return axiosApiInstance(originalRequest);
