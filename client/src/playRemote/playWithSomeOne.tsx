@@ -1,6 +1,7 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { PlayMatch } from './playMatch.tsx';
+
+import axiosApiInstance from '@/axios.ts';
 
 type MessageDisplayerPropsType = {
   message: string;
@@ -48,9 +49,7 @@ async function fetchMatch({
   setMessage, setMatch, ignored,url, }: FetchMatchArgsType) {
 
   try {
-    const response = await axios.get(url, {
-      withCredentials: true
-    });
+    const response = await axiosApiInstance.get(url);
 
 
     if (!ignored.state) {
@@ -72,7 +71,7 @@ async function fetchMatch({
 export function PlayWithSomeOne() {
   const [message, setMessage] = useState<string>('Waiting for Opponent...');
   const [match, setMatch] = useState<MatchType | undefined>(undefined);
-  const url = `http://localhost:8080/pongGame/remote/someone`;
+  const url = `/pongGame/remote/someone`;
   
   useEffect(() => {
     const ignored = { state: false };

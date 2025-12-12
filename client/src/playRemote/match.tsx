@@ -246,7 +246,7 @@ export function Match({ connection, score, matchState, match, setScore, setMatch
                             data: true
                         }));
                     }
-                    navigate("/pongGame/remote");
+                    navigate("/dashboard/games/pingpong/remote");
                 }}
             >Leave Match</button>
         </div>    

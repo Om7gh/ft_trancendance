@@ -34,12 +34,12 @@ function playWithSomeOneHandler(request, reply) {
     }
 
     if (player.inMatch()) {
-        const oid = player.room.getOpponentId(uid);
+        const oid = player.room.getOpponentId(player.id);
             
         if (!oid)
             reply.code(500).send();
         else
-            reply.code(200).send(JSON.stringify({uid: uid, oid: oid, rid: player.room.id}))
+            reply.code(200).send(JSON.stringify(player.room.generateMatch()))
         return ;
     }
 
