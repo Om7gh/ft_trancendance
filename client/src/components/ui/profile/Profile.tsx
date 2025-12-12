@@ -2,9 +2,11 @@ import { Avatar } from '@/assets';
 import { useEffect, useState, type JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { useLogout } from '@/services/auth/useLogout';
 
 export default function Profile(): JSX.Element {
   const [active, setActive] = useState(false);
+  const muatateLogout = useLogout();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -84,7 +86,10 @@ export default function Profile(): JSX.Element {
               <Link
                 to="/auth/signin"
                 className="block px-4 py-3 text-sm text-red-500 hover:text-red-600"
-                onClick={() => setActive(false)}
+                onClick={() => {
+                  setActive(false);
+                  muatateLogout.mutate();
+                }}
               >
                 Logout
               </Link>

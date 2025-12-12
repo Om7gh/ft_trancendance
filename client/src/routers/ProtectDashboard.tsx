@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState, type ReactNode } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 const ProtectDashboard = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
