@@ -160,7 +160,7 @@ export default function InputField({
         placeholder={placeholder}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        className={`w-full ${icon ? 'pl-12' : 'pl-4'} pr-4 py-3 
+        className={`  ${className} w-full ${icon ? 'pl-12' : 'pl-4'} pr-4 py-3 
           bg-slate-900/50 backdrop-blur-sm
           border-2 border-violet-500/30
           text-slate-200 placeholder-slate-500 
@@ -168,7 +168,7 @@ export default function InputField({
           focus:border-neon focus:shadow-[0_0_20px_rgba(139,92,246,0.4)]
           transition-all duration-300
           ${isFocused ? 'border-neon' : ''}
-          ${className}`}
+         `}
       />
 
       <div
