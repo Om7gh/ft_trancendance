@@ -4,6 +4,7 @@ import {
 } from '@fastify/type-provider-typebox';
 import asUser from '../../dto/user-dto.js';
 import { User } from '../../models/user.js';
+import { randomUUID } from 'crypto';
 
 const ParamsSchema = Type.Object({
   provider: Type.String(),
@@ -71,7 +72,15 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       if (!payload || !payload.email) {
         throw reply.badRequest('email not found in OAuth payload');
       }
-      fastify.usersRepository.findOrCreate(asUser(provider, payload) as User);
+      const user = fastify.usersRepository.findOrCreate(asUser(provider, payload) as User);
+      const jti = randomUUID();
+      const accessToken = await fastify.generateAccessToken(user.uid);
+      const refreshToken = await fastify.generateRefreshToken(user.uid, jti);
+      fastify.usersRepository.update(user.id, {
+        last_login: Math.floor(Date.now() / 1000),
+        token_id: jti,
+      });
+      reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
       reply.redirect('/dashboard');
     }
   );

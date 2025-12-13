@@ -22,6 +22,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
       return reply.sendAccessToken(newAccessToken).send({ success: true })
     } catch (err) {
       // TODO redirect user to loging
+      reply.clearAccessToken().clearRefreshToken().clearCookie('sessionId')
+      request.session.destroy()
       return reply.unauthorized('refresh token invalid')
     }
   })

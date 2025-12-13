@@ -1,5 +1,5 @@
 import { HomeDashboard } from '@/components/layout';
-import { Activation, FinishRegister, SignIn, SignUp } from '@/components/ui';
+import { Activation, SignIn, SignUp } from '@/components/ui';
 import ResetPassword from '@/components/ui/auth/ResetPassword';
 import TwoFactorActivation from '@/components/ui/auth/TwoFactorActivation';
 import PlayTournament from '@/components/ui/game/PlayTournament';
@@ -23,17 +23,17 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import PongMain from '@/pages/PongMain';
 import { PongRemote, RemoteOptions } from '@/playRemote/main';
 import { PlayWithSomeOne } from '@/playRemote/playWithSomeOne';
-import CreateUsername from '@/components/ui/auth/CreateUsername';
-import AuthProtection from '@/components/ui/auth/AuthProtection';
 import ProtectDashboard from './ProtectDashboard';
+import ProtectAuth from './ProtectAuth';
+import CompleteRegistre from '@/components/ui/auth/CompleteRegistre';
 
 const router = createBrowserRouter([
   {
     path: '/dashboard',
     element: (
-      // <AuthProtection>
+      <ProtectDashboard>
         <Dashboard />
-      // </AuthProtection>
+      </ProtectDashboard>
     ),
     children: [
       {
@@ -114,9 +114,9 @@ const router = createBrowserRouter([
   {
     path: '/auth',
     element: (
-      // <ProtectDashboard>
+      <ProtectAuth>
         <Auth />
-      // </ProtectDashboard>
+      </ProtectAuth>
     ),
     children: [
       {
@@ -124,16 +124,12 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path: 'choose-username',
-        element: <CreateUsername />,
-      },
-      {
         path: 'signin',
         element: <SignIn />,
       },
       {
-        path: 'complete-profile',
-        element: <FinishRegister />,
+        path: 'complete-registration',
+        element: <CompleteRegistre />,
       },
       {
         path: 'activation',

@@ -23,6 +23,7 @@ export const GlobalContext = createContext<GlobalContexyType | null>(null);
 
 const App = (): JSX.Element => {
   const [user, setUser] = useState<User | null>();
+  console.log(user);
 
   return (
     <div className="App">

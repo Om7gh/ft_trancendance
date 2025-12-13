@@ -6,7 +6,7 @@ export type MenuOptionPropsType = {
 
 export function MenuOption({ children }: MenuOptionPropsType) {
   return (
-    <button className=" bg-slate-900/50 shadow-sm shadow-violet-900 rounded text-[1em] w-3/5 m-auto my-4 p-4 hover:bg-slate-950 duration-200">
+    <button className=" bg-slate-900/50 shadow-sm shadow-violet-900 rounded text-[1em] w-3/5 m-auto my-4 hover:bg-slate-950 duration-200">
       {children}
     </button>
   );

@@ -1,1 +1,1 @@
-export { default as routes } from "./appRouters";
+export { default as routes } from './appRouters';

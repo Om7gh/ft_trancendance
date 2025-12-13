@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useContext, useEffect, useState, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
-const ProtectDashboard = ({ children }: { children: ReactNode }) => {
+const ProtectAuth = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const { setUser } = useContext(GlobalContext);
@@ -11,24 +11,15 @@ const ProtectDashboard = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const verify = async () => {
       try {
-        const data = await axios.get('/auths/userinfo', {
-          withCredentials: true,
-        });
+        await axios.get('/auths/userinfo', { withCredentials: true });
         setAuthenticated(true);
-        setUser(data.data);
       } catch (err) {
-        console.log(err);
-        if (err.response?.status === 401) {
+        if (err.response?.status === 498) {
           try {
             await axios.post('/auths/refresh', {}, { withCredentials: true });
-            // retry
-            const data = await axios.get('/auths/userinfo', {
-              withCredentials: true,
-            });
+            await axios.get('/auths/userinfo', { withCredentials: true });
             setAuthenticated(true);
-            setUser(data.data);
           } catch (refreshErr) {
-            console.log(refreshErr);
             setAuthenticated(false);
             setUser(null);
           }
@@ -49,7 +40,7 @@ const ProtectDashboard = ({ children }: { children: ReactNode }) => {
         Loading...
       </div>
     );
-  return authenticated ? children : <Navigate to="/auth/signin" replace />;
+  return !authenticated ? children : <Navigate to="/dashboard" replace />;
 };
 
-export default ProtectDashboard;
+export default ProtectAuth;
