@@ -1,11 +1,10 @@
 import LocalGame from '@/components/ui/game/LocalGame';
 import NormalGame from '@/components/ui/game/NormalGame';
 import Tournament from '@/components/ui/game/Tournament';
-import TournamentHistory from '@/components/ui/game/TournamentHistory';
 import { useTransStore } from '@/store/useTransStore';
 import { Outlet } from 'react-router-dom';
 
-function PingPong() {
+function StartMenu() {
   const user = useTransStore((state) => state.user);
   console.log(user);
   return (
@@ -17,7 +16,6 @@ function PingPong() {
         <NormalGame />
         <Tournament />
         <div className="h-[0.5px] w-full bg-slate-100/20"></div>
-        <TournamentHistory />
         <LocalGame />
       </div>
       <Outlet />
@@ -25,4 +23,4 @@ function PingPong() {
   );
 }
 
-export default PingPong;
+export default StartMenu;

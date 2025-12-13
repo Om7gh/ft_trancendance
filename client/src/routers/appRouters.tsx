@@ -1,10 +1,13 @@
 import { HomeDashboard } from '@/components/layout';
 import { Activation, SignIn, SignUp } from '@/components/ui';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+
+import ProtectAuth from './ProtectAuth';
+import ProtectDashboard from './ProtectDashboard';
 import ResetPassword from '@/components/ui/auth/ResetPassword';
 import TwoFactorActivation from '@/components/ui/auth/TwoFactorActivation';
-import PlayTournament from '@/components/ui/game/PlayTournament';
+import CompleteRegistre from '@/components/ui/auth/CompleteRegistre';
 import ErrorPage from '@/components/ui/utils/ErrorPage';
-import { PlayLocal } from '@/playLocal/main';
 import {
   Auth,
   Chat,
@@ -14,18 +17,18 @@ import {
   Profile,
   Settings,
 } from '@/pages';
+
 import Chess from '@/pages/Chess';
 import Customization from '@/pages/Customization';
 import GamePortal from '@/pages/GamePortal';
 import GameSettings from '@/pages/GameSettings';
-import PingPong from '@/pages/PingPong';
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import PongMain from '@/pages/PongMain';
-import { PongRemote, RemoteOptions } from '@/playRemote/main';
-import { PlayWithSomeOne } from '@/playRemote/playWithSomeOne';
-import ProtectDashboard from './ProtectDashboard';
-import ProtectAuth from './ProtectAuth';
-import CompleteRegistre from '@/components/ui/auth/CompleteRegistre';
+
+import PongMain from '@/pong/PongMain';
+import StartMenu from '@/pong/StartMenu.tsx';
+import { PlayLocal } from '@/pong/playLocal/main.tsx';
+import { PongRemote, RemoteOptions } from '@/pong/playRemote/main.tsx';
+import { PlayWithSomeOne } from '@/pong/playRemote/playWithSomeOne.tsx';
+import PlayTournament from '@/components/ui/game/PlayTournament';
 
 const router = createBrowserRouter([
   {
@@ -55,8 +58,8 @@ const router = createBrowserRouter([
             path: 'pingpong',
             element: <PongMain />,
             children: [
+              { index: true, element: <StartMenu /> },
               { path: 'local', element: <PlayLocal /> },
-              { index: true, element: <PingPong /> },
               {
                 path: 'remote',
                 element: <PongRemote />,
