@@ -52,7 +52,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         if (!user) {
           return reply.forbidden('user not found');
         }
-        if (user.username !== undefined) {
+        if (user.username) {
           return reply.forbidden('username already setted');
         }
         const isTaken = fastify.usersRepository.findByUsername(username);
@@ -78,7 +78,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         if (!user) {
           return reply.forbidden('user not found');
         }
-        if (user.username !== undefined) {
+        if (user.username) {
           return reply.forbidden('username already setted');
         }
         fastify.usersRepository.update(id, { username: username });
