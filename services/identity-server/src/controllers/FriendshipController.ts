@@ -1,14 +1,15 @@
 import {FastifyReply, FastifyRequest, FastifyInstance} from 'fastify';
 import { User } from '../models/user.js';
 import { Friend, Friendship } from '../models/friendship.js';
+import { UserController } from './UserController.js';
 
 export class FriendshipController {
-  static readonly ERR_FRIEND_NOT_FOUND: string = 'Friend not found';
   static readonly ERR_ALREADY_FRIEND: string = 'The user is already a friend';
   static readonly ERR_NOT_A_FRIEND: string = 'The user is not a friend';
   static readonly ERR_RECORD_NOT_FOUND: string = 'No friend request was made from the provided user'
+  static readonly ERR_UNEXCPECTED_ERR: string = 'An unexpected error occurred';
 
-	static async get(request: FastifyRequest, reply: FastifyReply) {
+  static async get(request: FastifyRequest, reply: FastifyReply) {
     const fastify = request.server as FastifyInstance;
     const user: User = request.session.user;
 
@@ -67,7 +68,7 @@ export class FriendshipController {
 
     const target = app.usersRepository.findByUID(payload.uid);
     if (!target) {
-      return reply.notFound(this.ERR_FRIEND_NOT_FOUND);
+      return reply.notFound(UserController.ERR_USER_NOT_FOUND);
     }
 
     app.friendshipRepository.insert({
@@ -89,7 +90,7 @@ export class FriendshipController {
     try {
       const target = app.usersRepository.findByUID(payload.uid);
       if (!target) {
-        throw new Error(this.ERR_FRIEND_NOT_FOUND);
+        throw new Error(UserController.ERR_USER_NOT_FOUND);
       }
       const friendships: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id);
       if (friendships.length == 0) {
@@ -105,9 +106,11 @@ export class FriendshipController {
         success: true,
         data: null
       }
-      reply.send(response)
+      return reply.send(response)
     } catch (err) {
-      return reply.badRequest(err.message);
+      if (err instanceof Error)
+        return reply.badRequest(err.message);
+      return reply.internalServerError(this.ERR_UNEXCPECTED_ERR);
     }
 
 	}
@@ -120,7 +123,7 @@ export class FriendshipController {
     try {
       const target = app.usersRepository.findByUID(payload.uid);
       if (!target) {
-        throw new Error(this.ERR_FRIEND_NOT_FOUND);
+        throw new Error(UserController.ERR_USER_NOT_FOUND);
       }
       const friendships: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id);
       if (friendships.length == 0) {
@@ -138,7 +141,9 @@ export class FriendshipController {
       }
       reply.send(response)
     } catch (err) {
-      return reply.badRequest(err.message);
+      if (err instanceof Error)
+        return reply.badRequest(err.message);
+      return reply.internalServerError(this.ERR_UNEXCPECTED_ERR);
     }
 	}
 
@@ -150,7 +155,7 @@ export class FriendshipController {
     try {
       const target = app.usersRepository.findByUID(payload.uid);
       if (!target) {
-        throw new Error(this.ERR_FRIEND_NOT_FOUND);
+        throw new Error(UserController.ERR_USER_NOT_FOUND);
       }
       const friendships: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id);
       if (friendships.length == 0) {
@@ -168,7 +173,9 @@ export class FriendshipController {
       }
       reply.send(response)
     } catch (err) {
-      return reply.badRequest(err.message);
+      if (err instanceof Error)
+        return reply.badRequest(err.message);
+      return reply.internalServerError(this.ERR_UNEXCPECTED_ERR);
     }
 	}
 }
