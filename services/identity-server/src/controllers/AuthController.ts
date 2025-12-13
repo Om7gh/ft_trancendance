@@ -151,15 +151,21 @@ export default class AuthController {
       if (user.email_verified) {
         return reply.conflict('already verified');
       }
-      // request.session.user.uid = sub;
+      request.session.pendingUser = {
+        id: user.id,
+        uid: user.uid,
+        secret: '',
+        pending: true,
+      };
+      this.log.info('session -> ' + request.session.pendingUser);
 
       // const jti = randomUUID();
       // const accessToken = await this.generateAccessToken(user.uid);
       // const refreshToken = await this.generateRefreshToken(user.uid, jti);
       this.usersRepository.update(user.id, {
         email_verified: 1,
-      //   last_login: Math.floor(Date.now() / 1000),
-      //   token_id: jti,
+        //   last_login: Math.floor(Date.now() / 1000),
+        //   token_id: jti,
       });
       // reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
     } catch (err: any) {
