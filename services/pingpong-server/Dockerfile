@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY app ./
 
 RUN npm install
 
