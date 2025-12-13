@@ -7,7 +7,7 @@ const verifyAuth = async function () {
   });
   if (!user.ok) {
     if (user.status === 401) {
-      const newRes = await fetch('http://localhost:8080/auths/refresh', {
+      const newRes = await fetch('http://localhost:8080/token/refresh', {
         method: 'POST',
         credentials: 'include',
       });

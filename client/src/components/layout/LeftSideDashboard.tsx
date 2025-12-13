@@ -7,6 +7,7 @@ import { GrPowerShutdown } from 'react-icons/gr';
 import { Link, NavLink } from 'react-router-dom';
 import DropDown from '../ui/utils/DropDown';
 import { useState, type MouseEvent, type ReactNode } from 'react';
+import { useLogout } from '@/services/auth/useLogout';
 
 export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
   const menuItems: {
@@ -36,6 +37,7 @@ export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
   ];
 
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+  const mutateLogout = useLogout();
 
   const toggleItem = (path: string) => {
     setOpenItems((s) => ({ ...s, [path]: !s[path] }));
@@ -113,11 +115,11 @@ export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
         </ul>
       </nav>
 
-      <Link
-        to="/auth/signIn"
+      <button
         className={`mt-auto ${
           isMobile ? 'p-3' : 'px-4 py-3'
         } flex items-center gap-2 border-l-5 border-r-5 border-l-violet-500 border-r-neon bg-slate-400/10`}
+        onClick={() => mutateLogout.mutate()}
       >
         <GrPowerShutdown className="text-xl text-violet-500" />
         {!isMobile && (
@@ -125,7 +127,7 @@ export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
             Nice to meet you
           </span>
         )}
-      </Link>
+      </button>
     </aside>
   );
 }
