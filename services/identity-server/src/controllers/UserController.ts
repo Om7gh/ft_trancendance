@@ -20,7 +20,7 @@ export class UserController {
     }
     const user = fastify.usersRepository.findByUID(sub as string)
     if (!user) {
-      return reply.badRequest(this.ERR_USER_NOT_FOUND)
+      return reply.badRequest(UserController.ERR_USER_NOT_FOUND)
     }
     const data = request.body as User;
     try {

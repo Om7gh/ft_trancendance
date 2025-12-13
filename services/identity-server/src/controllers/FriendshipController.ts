@@ -94,10 +94,10 @@ export class FriendshipController {
       }
       const friendships: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id);
       if (friendships.length == 0) {
-        throw new Error(this.ERR_RECORD_NOT_FOUND);
+        throw new Error(FriendshipController.ERR_RECORD_NOT_FOUND);
       }
       if (friendships[0].status == 1) {
-        throw new Error(this.ERR_ALREADY_FRIEND);
+        throw new Error(FriendshipController.ERR_ALREADY_FRIEND);
       }
       app.friendshipRepository.update(friendships[0].id, {
         status: 1  
@@ -110,7 +110,7 @@ export class FriendshipController {
     } catch (err) {
       if (err instanceof Error)
         return reply.badRequest(err.message);
-      return reply.internalServerError(this.ERR_UNEXCPECTED_ERR);
+      return reply.internalServerError(FriendshipController.ERR_UNEXCPECTED_ERR);
     }
 
 	}
@@ -127,10 +127,10 @@ export class FriendshipController {
       }
       const friendships: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id);
       if (friendships.length == 0) {
-        throw new Error(this.ERR_RECORD_NOT_FOUND);
+        throw new Error(FriendshipController.ERR_RECORD_NOT_FOUND);
       }
       if (friendships[0].status == 1) {
-        throw new Error(this.ERR_ALREADY_FRIEND);
+        throw new Error(FriendshipController.ERR_ALREADY_FRIEND);
       }
       app.friendshipRepository.delete(friendships[0].id)
       const response = {
@@ -141,7 +141,7 @@ export class FriendshipController {
     } catch (err) {
       if (err instanceof Error)
         return reply.badRequest(err.message);
-      return reply.internalServerError(this.ERR_UNEXCPECTED_ERR);
+      return reply.internalServerError(FriendshipController.ERR_UNEXCPECTED_ERR);
     }
 	}
 
@@ -157,10 +157,10 @@ export class FriendshipController {
       }
       const friendships: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id);
       if (friendships.length == 0) {
-        throw new Error(this.ERR_RECORD_NOT_FOUND);
+        throw new Error(FriendshipController.ERR_RECORD_NOT_FOUND);
       }
       if (friendships[0].status == 0) {
-        throw new Error(this.ERR_NOT_A_FRIEND);
+        throw new Error(FriendshipController.ERR_NOT_A_FRIEND);
       }
       app.friendshipRepository.delete(friendships[0].id)
       const response = {
@@ -171,7 +171,7 @@ export class FriendshipController {
     } catch (err) {
       if (err instanceof Error)
         return reply.badRequest(err.message);
-      return reply.internalServerError(this.ERR_UNEXCPECTED_ERR);
+      return reply.internalServerError(FriendshipController.ERR_UNEXCPECTED_ERR);
     }
 	}
 }

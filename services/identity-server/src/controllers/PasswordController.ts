@@ -7,6 +7,10 @@ import { FastifyInstance } from 'fastify';
 import zxcvbn = require("zxcvbn");
 
 export class PasswordController {
+  static readonly ERR_WEAK_PASSWORD: string = 'Weak Password';
+  static readonly ERR_SIMILAR_PASSWORD: string = 'The password is similar to the old one';
+  static readonly ERR_INCORRECT_PASSWORD: string = 'Current password is incorrect';
+
   static async resetPassword(request: FastifyRequest, reply: FastifyReply) {
     const fastify = request.server as FastifyInstance;
     const { newPassword, confirmPassword } = request.body as {
@@ -77,7 +81,7 @@ export class PasswordController {
 
     const reviewer = zxcvbn(new_password)
     if (reviewer.score < 3) {
-      return reply.badRequest('Password too weak')
+      return reply.badRequest(PasswordController.ERR_WEAK_PASSWORD)
     }
 
     fastify.usersRepository.update(user.id, {
