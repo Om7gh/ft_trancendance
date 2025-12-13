@@ -99,7 +99,7 @@ export class FriendshipController {
         throw new Error(this.ERR_ALREADY_FRIEND);
       }
       app.friendshipRepository.update(friendships[0].id, {
-        success: 1  
+        status: 1  
       })
       const response = {
         success: true,
