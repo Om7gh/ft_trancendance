@@ -1,7 +1,6 @@
 import { type FastifyRequest, type FastifyReply } from 'fastify';
 import { SqliteError } from 'better-sqlite3';
 import { User } from '../models/user.js';
-import zxcvbn from 'zxcvbn'; // TODO: To be moved to PasswordManager
 
 export class UserController {
 
