@@ -1,6 +1,6 @@
 import {FastifyReply, FastifyRequest, FastifyInstance} from 'fastify';
-import { User } from '../models/user';
-import { Friend, Friendship } from '../models/friendship';
+import { User } from '../models/user.js';
+import { Friend, Friendship } from '../models/friendship.js';
 
 export class FriendshipController {
   static readonly ERR_FRIEND_NOT_FOUND: string = 'Friend not found';
@@ -65,7 +65,7 @@ export class FriendshipController {
     const user: User = request.session.user;
     const payload = request.body as Pick<User, 'uid'>
 
-    const target = app.usersRepository.getUserByUuid(payload.uid);
+    const target = app.usersRepository.findByUID(payload.uid);
     if (!target) {
       return reply.notFound(this.ERR_FRIEND_NOT_FOUND);
     }
@@ -87,7 +87,7 @@ export class FriendshipController {
     const payload = request.body as Pick<User, 'uid'>
 
     try {
-      const target = app.usersRepository.getUserByUuid(payload.uid);
+      const target = app.usersRepository.findByUID(payload.uid);
       if (!target) {
         throw new Error(this.ERR_FRIEND_NOT_FOUND);
       }
@@ -118,7 +118,7 @@ export class FriendshipController {
     const payload = request.body as Pick<User, 'uid'>
 
     try {
-      const target = app.usersRepository.getUserByUuid(payload.uid);
+      const target = app.usersRepository.findByUID(payload.uid);
       if (!target) {
         throw new Error(this.ERR_FRIEND_NOT_FOUND);
       }
@@ -148,7 +148,7 @@ export class FriendshipController {
     const payload = request.body as Pick<User, 'uid'>
 
     try {
-      const target = app.usersRepository.getUserByUuid(payload.uid);
+      const target = app.usersRepository.findByUID(payload.uid);
       if (!target) {
         throw new Error(this.ERR_FRIEND_NOT_FOUND);
       }
