@@ -1,13 +1,14 @@
 import { Avatar } from '@/assets';
-import { useEffect, useState, type JSX } from 'react';
+import { useContext, useEffect, useState, type JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { useLogout } from '@/services/auth/useLogout';
+import { GlobalContext } from '@/App';
 
 export default function Profile(): JSX.Element {
   const [active, setActive] = useState(false);
   const muatateLogout = useLogout();
-
+  const { user } = useContext(GlobalContext);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -36,7 +37,7 @@ export default function Profile(): JSX.Element {
       >
         <div className="relative">
           <img
-            src={Avatar}
+            src={user?.avatar}
             alt="avatar"
             className="h-10 w-10 rounded-full object-cover border-2 border-white"
           />
