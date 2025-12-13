@@ -1,5 +1,5 @@
-import { Room, Invitation } from "routes/pongGame/pongClasses.js";
-import { waitForOpponent } from "routes/pongGame/playWithSomeOne.js";
+import { Room, Invitation } from "./pongClasses.js";
+import { waitForOpponent } from "./playWithSomeOne.js";
 
 function inviteFriendToMatch(request, reply) {
     const uid       = request.query.uid;

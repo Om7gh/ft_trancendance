@@ -1,7 +1,7 @@
-import { joinMatch } from "routes/pongGame/joinMatch.js";
-import { invite } from "routes/pongGame/invitefriendToMatch.js";
-import { playWithSomeOne } from "routes/pongGame/playWithSomeOne.js";
-import { Player, Room, Invitation } from "routes/pongGame/pongClasses.js";
+import { joinMatch } from "./joinMatch.js";
+import { invite } from "./invitefriendToMatch.js";
+import { playWithSomeOne } from "./playWithSomeOne.js";
+import { Player, Room, Invitation } from "./pongClasses.js";
 
 function generateId() {
     return (Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
