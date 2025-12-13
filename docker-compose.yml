@@ -78,7 +78,7 @@ services:
 
   pong:
     container_name: pong
-    build: ./services/pingpong-server/
+    build: ./services/pong-server/
     image: pong:pingpong
     ports:
       - '9001:9001'
