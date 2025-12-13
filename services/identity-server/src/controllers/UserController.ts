@@ -3,6 +3,7 @@ import { SqliteError } from 'better-sqlite3';
 import { User } from '../models/user.js';
 
 export class UserController {
+  static readonly ERR_USER_NOT_FOUND: string = 'User not found';
 
   static async get(request: FastifyRequest, reply: FastifyReply) {
     const user = request.session.user;
@@ -19,7 +20,7 @@ export class UserController {
     }
     const user = fastify.usersRepository.findByUID(sub as string)
     if (!user) {
-      return reply.badRequest('user not found')
+      return reply.badRequest(this.ERR_USER_NOT_FOUND)
     }
     const data = request.body as User;
     try {
