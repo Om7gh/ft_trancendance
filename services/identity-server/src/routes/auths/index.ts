@@ -46,7 +46,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.post(
     'check-username',
     async function (request: FastifyRequest, reply: FastifyReply) {
-      const { username } = request.body as { username: string };
+      const { username } = request.query as { username: string };
       try {
         const uid = request.session.user.uid; //?HINT this setted in when user click confirmation token
         if (!uid) {
