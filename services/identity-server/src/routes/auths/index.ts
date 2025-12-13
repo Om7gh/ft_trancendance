@@ -1,10 +1,9 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
 import { Type } from '@sinclair/typebox';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { hash } from '../../auth/security/cipher-util.js';
 import AuthController from '../../controllers/AuthController.js';
-import { asUserInfo } from '../../dto/user-dto.js';
 import { PasswordController } from '../../controllers/PasswordController.js';
+import { asUserInfo } from '../../dto/user-dto.js';
 
 const LoginCredentials = Type.Object({
   email: Type.String({ format: 'email' }),
@@ -44,16 +43,16 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   );
 
   fastify.post(
-    'check-username',
+    '/check-username',
     async function (request: FastifyRequest, reply: FastifyReply) {
-      const { username } = request.query as { username: string };
+      const { username } = request.body as { username: string };
       try {
-        const uid = request.session.user.uid; //?HINT this setted in when user click confirmation token
-        if (!uid) {
+        const { id } = request.session.pendingUser;
+        const user = fastify.usersRepository.findById(id);
+        if (!user) {
           return reply.forbidden('user not found');
         }
-        const user = fastify.usersRepository.findByUID(uid);
-        if (user?.username !== undefined) {
+        if (user.username !== undefined) {
           return reply.forbidden('username already setted');
         }
         const isTaken = fastify.usersRepository.findByUsername(username);
@@ -69,13 +68,41 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     }
   );
 
-  fastify.post('/forgot-password',
-    PasswordController.forgotPassword
+  fastify.post(
+    '/set-username',
+    async function (request: FastifyRequest, reply: FastifyReply) {
+      const { username } = request.body as { username: string };
+      try {
+        const { id } = request.session.pendingUser;
+        const user = fastify.usersRepository.findById(id);
+        if (!user) {
+          return reply.forbidden('user not found');
+        }
+        if (user.username !== undefined) {
+          return reply.forbidden('username already setted');
+        }
+        fastify.usersRepository.update(id, { username: username });
+        return reply.send({ success: true });
+      } catch (err: any) {
+        return reply.badRequest('set-username: error');
+      }
+    }
   );
 
-  fastify.post('/reset-password',
-    PasswordController.resetPassword
+  fastify.get(
+    '/userinfo',
+    { onRequest: fastify.authenticate },
+    async function (request: FastifyRequest, reply: FastifyReply) {
+      const userInfo = asUserInfo(request.session.user);
+      request.session.destroy();
+      reply.clearCookie('sessionId');
+      return reply.send(userInfo);
+    }
   );
+
+  fastify.post('/forgot-password', PasswordController.forgotPassword);
+
+  fastify.post('/reset-password', PasswordController.resetPassword);
 };
 
 export default plugin;
