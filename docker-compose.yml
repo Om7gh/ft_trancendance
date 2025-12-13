@@ -8,25 +8,25 @@ services:
     networks:
       - pingpong
     depends_on:
-      # - rabbitmq
+      - rabbitmq
       - chess
       - identity
       - client
 
-  # rabbitmq:
-  #   container_name: rabbitmq
-  #   image: rabbitmq:3-management
-  #   ports:
-  #     - '15672:15672'
-  #     - '5672:5672'
-  #   networks:
-  #     - pingpong
-  #   healthcheck:
-  #     test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #     start_period: 30s
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    networks:
+      - pingpong
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   chess:
     container_name: chess
@@ -38,9 +38,9 @@ services:
       - ./services/chess-server/.env
     networks:
       - pingpong
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   identity:
     container_name: identity
@@ -54,9 +54,9 @@ services:
       - $HOME/data:/var/lib/um
     networks:
       - pingpong
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   client:
     container_name: client
@@ -74,7 +74,7 @@ services:
     depends_on:
       - identity
       - chess
-      # - rabbitmq
+      - rabbitmq
 
   pong:
     container_name: pong
@@ -84,9 +84,9 @@ services:
       - '9001:9001'
     networks:
       - pingpong
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   # chat:
   #   container_name: chat

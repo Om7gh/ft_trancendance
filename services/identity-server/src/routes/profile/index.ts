@@ -1,27 +1,38 @@
-import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import { FastifyInstance } from 'fastify';
 
-const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
-  fastify.get('/', async (request, reply) => {
-    const token = request.cookies.accessToken
-    if (!token) {
-      // TODO redirect user to refresh /token
-      return reply.unauthorized('you dont have permissions to see this page')
+import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
+import { UserController } from '../../controllers/UserController.js';
+import { PasswordController } from '../../controllers/PasswordController.js';
+
+import { updateUserSchema, updatePasswordSchema } from '../../schemas/profile.js';
+
+const plugin: FastifyPluginAsyncTypebox  = async (fastify: FastifyInstance) => {
+  fastify.get('/', {
+    onRequest: [fastify.authenticate],
+  }, UserController.get)
+
+  fastify.patch('/new', {
+    onRequest: [fastify.authenticate],
+    schema: updateUserSchema
+  }, UserController.update)
+
+  fastify.patch('/update', {
+    onRequest: [fastify.authenticate],
+    schema: updateUserSchema // User other schema
+  }, UserController.update)
+
+  fastify.patch('/update-password', {
+    onRequest: [fastify.authenticate],
+    schema: {
+      body: updatePasswordSchema
     }
-    try {
-      const { sub } = await request.verifyAccessToken()
-      if (!sub) {
-        return reply.send({ sub: sub })
-      }
-      const user = fastify.usersRepository.findByUID(sub)
-      if (!user) {
-        return reply.unauthorized('you dont have permissions to see this page')
-      }
-      console.log('access token is vaid')
-      return reply.send({ success: `welcome back ${user.first_name}!` })
-    } catch (err: any) {
-      return reply.unauthorized(err)
-    }
-  })
+  }, PasswordController.updatePassword)
+
+  //TODO: To be implemented
+  // fastify.patch('/update-email', {
+  //   onRequest: [fastify.authenticate],
+  //   schema: updatePasswordSchema
+  // }, EmailController.updateEmail)
 }
 
 export default plugin
