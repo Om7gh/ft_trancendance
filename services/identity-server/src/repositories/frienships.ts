@@ -1,5 +1,5 @@
 import { Database } from 'better-sqlite3'
-import { Friend, Friendship } from '../models/friendship';
+import { Friendship } from '../models/friendship.js';
 
 export class FriendshipRepository {
   constructor(private db: Database) {}
@@ -56,7 +56,7 @@ export class FriendshipRepository {
       JOIN users uu on f.receiver_id = uu.id
       WHERE ${conditions.join(' AND ')}
     `;
-    return this.db.prepare(query).all(...params)
+    return this.db.prepare(query).all(...params) as Friendship[]
   }
 
   insert(data: Pick<Friendship, 'sender_id' | 'receiver_id'>): void {
@@ -107,7 +107,7 @@ export class FriendshipRepository {
       DELETE from friendships
       WHERE ${conditions.join(' AND ')}
     `;
-    if (this.db.prepare(query).run(id) == 0)
+    if (this.db.prepare(query).run(id).changes == 0)
       throw new Error('No Record was found with the provided payload');
   }
 }

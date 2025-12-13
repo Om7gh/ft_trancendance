@@ -1,9 +1,9 @@
 import {FastifyInstance} from 'fastify'
-import {FriendshipController} from '../../controllers/FriendshipController' 
+import {FriendshipController} from '../../controllers/FriendshipController.js' 
 
 const plugin = async (fastify: FastifyInstance) => {
   const opts = {
-    OnRequest: [fastify.authenticate],
+    onRequest: [fastify.authenticate],
   }
 
   fastify.get('/', opts, FriendshipController.get);

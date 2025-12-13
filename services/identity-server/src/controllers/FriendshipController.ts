@@ -132,9 +132,7 @@ export class FriendshipController {
       if (friendships[0].status == 1) {
         throw new Error(this.ERR_ALREADY_FRIEND);
       }
-      app.friendshipRepository.delete(friendships[0].id, {
-        success: 1
-      })
+      app.friendshipRepository.delete(friendships[0].id)
       const response = {
         success: true,
         data: null
@@ -164,9 +162,7 @@ export class FriendshipController {
       if (friendships[0].status == 0) {
         throw new Error(this.ERR_NOT_A_FRIEND);
       }
-      app.friendshipRepository.delete(friendships[0].id, {
-        success: 1
-      })
+      app.friendshipRepository.delete(friendships[0].id)
       const response = {
         success: true,
         data: null

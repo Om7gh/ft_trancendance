@@ -27,9 +27,9 @@ export class UserController {
       fastify.usersRepository.update(user.id, data)
     } catch (err) {
       if (err instanceof SqliteError || err instanceof Error) {
-        reply.badRequest(err.message);
+        return reply.badRequest(err.message);
       }
-      reply.badRequest("An unknown error occurred");
+      return reply.badRequest("An unknown error occurred");
     }
   }
 
