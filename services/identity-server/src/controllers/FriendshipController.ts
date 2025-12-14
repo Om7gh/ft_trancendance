@@ -95,10 +95,10 @@ export class FriendshipController {
   static async approve(request: FastifyRequest, reply: FastifyReply) {
     const app: FastifyInstance = request.server;
     const user: User = request.session.user;
-    const payload = request.body as Pick<User, 'uid'>
+    const { uid } = request.params as { uid: string };
 
     try {
-      const sender = app.usersRepository.findByUID(payload.uid);
+      const sender = app.usersRepository.findByUID(uid);
       if (!sender) {
         throw new Error(UserController.ERR_USER_NOT_FOUND);
       }
@@ -122,16 +122,15 @@ export class FriendshipController {
         return reply.badRequest(err.message);
       return reply.internalServerError(FriendshipController.ERR_UNEXCPECTED_ERR);
     }
-
 	}
 
   static async reject(request: FastifyRequest, reply: FastifyReply) {
     const app: FastifyInstance = request.server;
     const user: User = request.session.user;
-    const payload = request.body as Pick<User, 'uid'>
+    const { uid } = request.params as { uid: string };
 
     try {
-      const sender = app.usersRepository.findByUID(payload.uid);
+      const sender = app.usersRepository.findByUID(uid);
       if (!sender) {
         throw new Error(UserController.ERR_USER_NOT_FOUND);
       }
@@ -158,10 +157,10 @@ export class FriendshipController {
   static async delete(request: FastifyRequest, reply: FastifyReply) {
     const app: FastifyInstance = request.server;
     const user: User = request.session.user;
-    const payload = request.body as Pick<User, 'uid'>
+    const { uid } = request.params as { uid: string };
 
     try {
-      const target = app.usersRepository.findByUID(payload.uid);
+      const target = app.usersRepository.findByUID(uid);
       if (!target) {
         throw new Error(UserController.ERR_USER_NOT_FOUND);
       }
