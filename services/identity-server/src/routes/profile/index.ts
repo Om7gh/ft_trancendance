@@ -4,7 +4,7 @@ import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox'
 import { UserController } from '../../controllers/UserController.js';
 import { PasswordController } from '../../controllers/PasswordController.js';
 
-import { updateUserSchema, updatePasswordSchema, newUserSchema } from '../../schemas/profile.js';
+import { updateUserSchema, updatePasswordSchema } from '../../schemas/profile.js';
 
 const plugin: FastifyPluginAsyncTypebox  = async (fastify: FastifyInstance) => {
   fastify.get('/', {
