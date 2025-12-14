@@ -14,17 +14,17 @@ export class UserController {
 
   static async update(request: FastifyRequest, reply: FastifyReply) {
     const fastify = request.server;
-    const { sub } = await request.verifyConfirmToken()
-    if (!sub) {
-      return reply.badRequest('invalid token')
-    }
-    const user = fastify.usersRepository.findByUID(sub as string)
-    if (!user) {
-      return reply.badRequest(UserController.ERR_USER_NOT_FOUND)
-    }
     const data = request.body as User;
+    const user = request.session.user;
+
     try {
-      fastify.usersRepository.update(user.id, data)
+      fastify.usersRepository.update(user.id, data);
+      const response = {
+        success: true,
+        message: "Updated",
+        next: null
+      }
+      return reply.send(response)
     } catch (err) {
       if (err instanceof SqliteError || err instanceof Error) {
         return reply.badRequest(err.message);
