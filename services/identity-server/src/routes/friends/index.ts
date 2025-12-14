@@ -6,17 +6,23 @@ const plugin = async (fastify: FastifyInstance) => {
     onRequest: [fastify.authenticate],
   }
 
-  fastify.get('/', opts, FriendshipController.get);
+  // Friend related routes
+  fastify.get   ('/', opts, FriendshipController.get);
+  fastify.delete('/:uid', opts, FriendshipController.delete);
 
-	fastify.get('/requests/received', opts, FriendshipController.getReceivedRequests);
-  fastify.get('/requests/sent', opts, FriendshipController.getSentRequests);
+  // Friend requestes related routes
+	fastify.get   ('/requests/received', opts, FriendshipController.getReceivedRequests);
+  fastify.get   ('/requests/sent', opts, FriendshipController.getSentRequests);
+  fastify.post  ('/requests', opts, FriendshipController.request);
 
-  fastify.patch('/new', opts, FriendshipController.request);
-  fastify.patch('/approve', opts, FriendshipController.approve);
-  fastify.post('/reject', opts, FriendshipController.reject);
+  // Approve routes
+  fastify.patch ('/requests/:uid/approve', opts, FriendshipController.approve);
+  // fastify.patch ('/requests/approve', opts, FriendshipController.approveAll);
 
-  fastify.post('/delete', opts, FriendshipController.delete);
-  
+  // Reject routes
+  fastify.delete('/requests/:uid/reject', opts, FriendshipController.reject);
+  // fastify.delete('/requests/reject', opts, FriendshipController.rejectAll);
+
 }
 
 export default plugin;
