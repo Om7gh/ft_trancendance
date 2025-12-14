@@ -2,6 +2,8 @@ export interface Friendship {
   id: number
   sender_id: number
   receiver_id: number
+  sender_uid: string
+  receiver_uid: string
   sender_username: string
   receiver_username: string
   sender_fullname: string
@@ -14,6 +16,7 @@ export interface Friendship {
 }
 
 export interface Friend {
+  uid: string
   username: string
   fullname: string
   avatar: string
