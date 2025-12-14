@@ -1,53 +1,45 @@
+import { PongError } from './pongClasses.js';
+
 export function waitForOpponent(reply, room, uid) {
     var counter  = 0;
 
     const waiter = () => {
-        if (room.state === "waiting") {
-            if (room.full()) {
-                const oid = room.getOpponentId(uid);
-            
-                if (!oid)
-                    reply.code(500).send();
-                else
-                    reply.code(200).send(JSON.stringify(room.generateMatch()));
-            } else if (!room.full() && (10 < counter)) {
-                reply.code(204).send();
-                room.stopMatch();
-            } else {
-                setTimeout(waiter, 1000);
-                counter++;
-            }
-        } else {
-            reply.code(500).send();
+        if (room.full()) {
+            reply.code(200).send(JSON.stringify(room.generateMatch()));
+        } else if (!room.full() && (10 < counter)) {
+            reply.code(408).send({reason: "Error: from the match making", errorCode: "E203"});
+            room.stopMatch();
+            return ;
         }
+        setTimeout(waiter, 1000);
+        counter++;
     };
 
     waiter();
 }
 
 function playWithSomeOneHandler(request, reply) {
-    const player            = this.addToPlayerList(request.user);
+    const player = this.addToPlayerList(request.user);
 
     if (!player) {
-        reply.code(500).send();
-        return ;
+        reply.code(503);
+        throw new Error("Error: from the match making", "E001");
     }
 
     if (player.inMatch()) {
         const oid = player.room.getOpponentId(player.id);
             
-        if (!oid)
-            reply.code(500).send();
-        else
-            reply.code(200).send(JSON.stringify(player.room.generateMatch()))
-        return ;
+        if (oid) {
+            reply.code(200).send(JSON.stringify(player.room.generateMatch()));
+            return ;
+        }
     }
 
     const room = this.addPlayerToRoom(player);
 
     if (!room) {
-        reply.code(500).send();
-        return ;
+        reply.code(503);
+        throw new Error("Error: from the match making", "E002");
     }
 
     player.room = room;
@@ -63,9 +55,9 @@ function playWithSomeOneHandler(request, reply) {
 export function playWithSomeOne(fastify, options, done) {
 
     fastify.route({
-        url: '/pongGame/remote/someone',
-        method: 'GET',
-        handler: playWithSomeOneHandler,
+        url     : '/pongGame/remote/someone',
+        method  : 'GET',
+        handler : playWithSomeOneHandler,
     })
     
     done();

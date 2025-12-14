@@ -3,6 +3,8 @@ import { invite } from "./invitefriendToMatch.js";
 import { playWithSomeOne } from "./playWithSomeOne.js";
 import { Player, Room, Invitation } from "./pongClasses.js";
 
+import { PongError } from './pongClasses.js';
+
 function generateId() {
     return (Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
 }
@@ -75,19 +77,27 @@ async function onRequestHookHandler(request, reply) {
 
 export function pongGame(fastify, options, done) {
 
-    fastify.decorate('playerList'       ,     new Array());
+    fastify.decorate('playerList'       , new Array());
 
-    fastify.decorate('currentRoom'      ,            null);
+    fastify.decorate('currentRoom'      , null);
 
-    fastify.decorate('generateId'       ,      generateId);
+    fastify.decorate('generateId'       , generateId);
 
-    fastify.decorate('getPlayerById'    ,   getPlayerById);
+    fastify.decorate('getPlayerById'    , getPlayerById);
 
     fastify.decorate('addToPlayerList'  , addToPlayerList);
 
     fastify.decorate('addPlayerToRoom'  , addPlayerToRoom);
 
     fastify.addHook('onRequest', onRequestHookHandler);
+
+    fastify.setErrorHandler((error, request, reply) => {
+        if (error && (typeof(error) === PongError)) {
+            reply.send(error.toJSON());
+        } else {
+            reply.code(500).send({reason: "Unexpected Error", errorCode: "E000"});
+        }
+    });
 
     fastify.register(playWithSomeOne);
     fastify.register(joinMatch);

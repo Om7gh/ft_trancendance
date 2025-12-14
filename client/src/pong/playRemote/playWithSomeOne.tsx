@@ -7,10 +7,15 @@ type MessageDisplayerPropsType = {
   message: string;
 };
 
+export type ErrorType = {
+  reason    : string;
+  errorCode : string;
+}
+
 export function MessageDisplayer({ message }: MessageDisplayerPropsType) {
   return (
     <div className="border rounded flex flex-col w-9/10 h-[300px] m-auto my-4">
-      <p className="m-auto">{message}</p>
+      <p className="m-auto text-center">{message}</p>
     </div>
   );
 }
@@ -39,7 +44,7 @@ export function validateMatch(match: MatchType) {
 }
 
 export function PlayWithSomeOne() {
-  const [message, setMessage] = useState<string>('Waiting for Opponent...');
+  const [error, setError] = useState<ErrorType | null>(null);
   const [match, setMatch] = useState<MatchType | undefined>(undefined);
   const url = `/pongGame/remote/someone`;
 
@@ -53,16 +58,16 @@ export function PlayWithSomeOne() {
         if (!ignored && response) {
           if (response.status === 200) {
             if (!validateMatch(response.data)) {
-              setMessage('Error: fetched an invalid match!!');
+              setError({reason: "Error: fetch invalid match", errorCode: "E111"});
               return;
             }
             setMatch(response.data);
           } else {
-            setMessage('Waiting too long try after few seconds!!');
+            setError(response.data);
           }
         }
       } catch (err) {
-        setMessage('Fail to fetch match!!');
+        setError({reason: 'Fail to fetch match!!', errorCode: "E111"});
       }
     })();
 
@@ -71,9 +76,11 @@ export function PlayWithSomeOne() {
     };
   }, []);
 
-  if (match) {
+  if (error) {
+    return <MessageDisplayer message={error.reason + " " + error.errorCode} />;
+  } else if (match) {
     return <PlayMatch match={match} />;
   }
 
-  return <MessageDisplayer message={message} />;
+  return <MessageDisplayer message={"Waiting for opponent..."} />;
 }

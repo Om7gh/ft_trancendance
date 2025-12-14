@@ -49,7 +49,7 @@ export function RemoteOptions() {
 
 export function PongRemote() {
   return (
-    <div className="flex flex-col w-1/3 min-w-[500px] m-auto">
+    <div className="flex flex-col min-w-[500px] m-auto">
       <Outlet />
     </div>
   );
