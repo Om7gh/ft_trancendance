@@ -15,8 +15,9 @@ export class FriendshipController {
     const fastify = request.server as FastifyInstance;
     const user: User = request.session.user;
 
-    const friend_requests: Friendship[] = fastify.friendshipRepository.get(-1, user.id, user.id, 1);
+    const friend_requests: Friendship[] = fastify.friendshipRepository.getFriendShips(user.id);
     const result: Friend[] = friend_requests.map((friendship): Friend => ({
+      uid: friendship.sender_id == user.id ? friendship.sender_uid : friendship.receiver_uid,
       username: friendship.sender_id == user.id ? friendship.sender_username : friendship.receiver_username,
       fullname: friendship.sender_id == user.id ? friendship.sender_fullname : friendship.receiver_fullname,
       avatar: friendship.sender_id == user.id ? friendship.sender_avatar : friendship.receiver_avatar,
@@ -35,6 +36,7 @@ export class FriendshipController {
 
     const friend_requests: Friendship[] = app.friendshipRepository.get(-1, -1, user.id, 0);
     const result: Friend[] = friend_requests.map((friendship): Friend => ({
+      uid: friendship.sender_uid,
       username: friendship.sender_username,
       fullname: friendship.sender_fullname,
       avatar: friendship.sender_avatar
@@ -52,6 +54,7 @@ export class FriendshipController {
 
     const friend_requests: Friendship[] = app.friendshipRepository.get(-1, user.id, -1, 0);
     const result: Friend[] = friend_requests.map((friendship): Friend => ({
+      uid: friendship.receiver_uid,
       username: friendship.receiver_username,
       fullname: friendship.receiver_fullname,
       avatar: friendship.receiver_avatar
@@ -164,15 +167,11 @@ export class FriendshipController {
       if (!target) {
         throw new Error(UserController.ERR_USER_NOT_FOUND);
       }
-      const friendships: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id);
-      //!Fix: retrieve also the request were the user received requests
-      if (friendships.length == 0) {
+      const friendship: Friendship = app.friendshipRepository.getFriendShip(user.id, target.id);
+      if (!friendship) {
         throw new Error(FriendshipController.ERR_RECORD_NOT_FOUND);
       }
-      if (friendships[0].status == 0) {
-        throw new Error(FriendshipController.ERR_NOT_A_FRIEND);
-      }
-      app.friendshipRepository.delete(friendships[0].id)
+      app.friendshipRepository.delete(friendship.id)
       const response = {
         success: true,
         data: null

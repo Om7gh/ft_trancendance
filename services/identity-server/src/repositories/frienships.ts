@@ -17,32 +17,8 @@ export class FriendshipRepository {
     }
   }
 
-  get(id: number = -1, user_id: number = -1, friend_id: number = -1, status: number = -1): Friendship[] {
-    const conditions: string[] = [];
-    const params: any[] = [];
-
-    if (id != -1) {
-      conditions.push('f.id = ?');
-      params.push(id);
-    }
-    if (user_id != -1) {
-      conditions.push('f.sender_id = ?');
-      params.push(user_id);
-    }
-    if (friend_id != -1) {
-      conditions.push('f.receiver_id = ?');
-      params.push(friend_id);
-    }
-    if (status != -1) {
-      conditions.push('f.status = ?');
-      params.push(status);
-    }
-
-    if (conditions.length == 0) {
-      throw new Error("No filter was provided");
-    }
-
-    const query = `
+  private buildFriendshipQuery(whereClause: string): string {
+    return `
       SELECT
         f.*,
         u.username as sender_username,
@@ -54,9 +30,51 @@ export class FriendshipRepository {
       FROM friendships f
       JOIN users u on f.sender_id = u.id
       JOIN users uu on f.receiver_id = uu.id
-      WHERE ${conditions.join(' AND ')}
+      WHERE ${whereClause}
     `;
+  }
+
+  get(id: number = -1, sender_id: number = -1, receiver_id: number = -1, status: number = -1): Friendship[] {
+    const conditions: string[] = [];
+    const params: any[] = [];
+
+    if (id != -1) {
+      conditions.push('f.id = ?');
+      params.push(id);
+    }
+    if (sender_id != -1) {
+      conditions.push('f.sender_id = ?');
+      params.push(sender_id);
+    }
+    if (receiver_id != -1) {
+      conditions.push('f.receiver_id = ?');
+      params.push(receiver_id);
+    }
+    if (status != -1) {
+      conditions.push('f.status = ?');
+      params.push(status);
+    }
+
+    if (conditions.length == 0) {
+      throw new Error("No filter was provided");
+    }
+
+    const query = this.buildFriendshipQuery(conditions.join(' AND '));
     return this.db.prepare(query).all(...params) as Friendship[]
+  }
+
+  getFriendShip(user_id: number, friend_id: number): Friendship {
+    const params = [user_id, friend_id, friend_id, user_id];
+    const whereClause = 'f.status = 1 AND (f.sender_id = ? AND f.receiver_id = ?) OR (f.sender_id = ? AND f.receiver_id = ?)';
+    const query = this.buildFriendshipQuery(whereClause);
+    return this.db.prepare(query).get(...params) as Friendship;
+  }
+
+  getFriendShips(user_id: number): Friendship[] {
+    const params = [user_id, user_id];
+    const whereClause = 'f.status = 1 AND (f.sender_id = ? OR f.receiver_id = ?)';
+    const query = this.buildFriendshipQuery(whereClause);
+    return this.db.prepare(query).all(...params) as Friendship[];
   }
 
   insert(data: Pick<Friendship, 'sender_id' | 'receiver_id'>): void {
