@@ -9,7 +9,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get('/', opts, FriendshipController.get);
 
 	fastify.get('/requests/received', opts, FriendshipController.getReceivedRequests);
-  fastify.get('requests/sent', opts, FriendshipController.getSentRequests);
+  fastify.get('/requests/sent', opts, FriendshipController.getSentRequests);
 
   fastify.patch('/new', opts, FriendshipController.request);
   fastify.patch('/approve', opts, FriendshipController.approve);

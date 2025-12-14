@@ -47,8 +47,8 @@ export class FriendshipRepository {
         f.*,
         u.username as sender_username,
         uu.username as receiver_username,
-        CONCAT(u.firstname, ' ', u.lastname) AS sender_fullname,
-        CONCAT(uu.firstname, ' ', uu.lastname) AS receiver_fullname,
+        CONCAT(u.first_name, ' ', u.last_name) AS sender_fullname,
+        CONCAT(uu.first_name, ' ', uu.last_name) AS receiver_fullname,
         u.avatar as sender_avatar,
         uu.avatar as receiver_avatar
       FROM friendships f
