@@ -7,6 +7,23 @@ export function RemoteOptions() {
     <Menu>
       <MenuOption>
         <Link 
+<<<<<<< HEAD
+          to="/dashboard/games/pingpong/remote/someone"
+          className='w-full h-full'
+        >Play Match</Link>
+      </MenuOption>
+      <MenuOption>
+        <Link
+          to="/pongGame/remote/invitefriend"
+          className='w-full h-full'
+        >Invite Friend</Link>
+      </MenuOption>
+      <MenuOption>
+        <Link
+          to="/pongGame"
+          className='w-full h-full'
+        >Go Back</Link>
+=======
           className='block w-full h-full p-4'
           to="/dashboard/games/pingpong/remote/someone">Play Match</Link>
       </MenuOption>
@@ -19,6 +36,7 @@ export function RemoteOptions() {
         <Link 
           className='block w-full h-full p-4'
           to="/dashboard/games/pingpong">Go Back</Link>
+>>>>>>> 6baf1b135873f6270ab41138078d2271efac1ca5
       </MenuOption>
     </Menu>
   );
