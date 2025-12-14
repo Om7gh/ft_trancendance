@@ -17,6 +17,23 @@ export class FriendshipRepository {
     }
   }
 
+  private buildFriendshipQuery(whereClause: string): string {
+    return `
+      SELECT
+        f.*,
+        u.username as sender_username,
+        uu.username as receiver_username,
+        CONCAT(u.first_name, ' ', u.last_name) AS sender_fullname,
+        CONCAT(uu.first_name, ' ', uu.last_name) AS receiver_fullname,
+        u.avatar as sender_avatar,
+        uu.avatar as receiver_avatar
+      FROM friendships f
+      JOIN users u on f.sender_id = u.id
+      JOIN users uu on f.receiver_id = uu.id
+      WHERE ${whereClause}
+    `;
+  }
+
   get(id: number = -1, user_id: number = -1, friend_id: number = -1, status: number = -1): Friendship[] {
     const conditions: string[] = [];
     const params: any[] = [];
@@ -42,21 +59,15 @@ export class FriendshipRepository {
       throw new Error("No filter was provided");
     }
 
-    const query = `
-      SELECT
-        f.*,
-        u.username as sender_username,
-        uu.username as receiver_username,
-        CONCAT(u.first_name, ' ', u.last_name) AS sender_fullname,
-        CONCAT(uu.first_name, ' ', uu.last_name) AS receiver_fullname,
-        u.avatar as sender_avatar,
-        uu.avatar as receiver_avatar
-      FROM friendships f
-      JOIN users u on f.sender_id = u.id
-      JOIN users uu on f.receiver_id = uu.id
-      WHERE ${conditions.join(' AND ')}
-    `;
+    const query = this.buildFriendshipQuery(conditions.join(' AND '));
     return this.db.prepare(query).all(...params) as Friendship[]
+  }
+
+  getFriendShip(user_id: number, friend_id: number): Friendship {
+    const params = [user_id, friend_id, friend_id, user_id];
+    const whereClause = 'f.status = 1 AND (f.sender_id = ? AND f.receiver_id = ?) OR (f.sender_id = ? AND f.receiver_id = ?)';
+    const query = this.buildFriendshipQuery(whereClause);
+    return this.db.prepare(query).get(...params) as Friendship;
   }
 
   insert(data: Pick<Friendship, 'sender_id' | 'receiver_id'>): void {

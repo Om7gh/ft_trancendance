@@ -164,15 +164,11 @@ export class FriendshipController {
       if (!target) {
         throw new Error(UserController.ERR_USER_NOT_FOUND);
       }
-      const friendships: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id);
-      //!Fix: retrieve also the request were the user received requests
-      if (friendships.length == 0) {
+      const friendship: Friendship = app.friendshipRepository.getFriendShip(user.id, target.id);
+      if (!friendship) {
         throw new Error(FriendshipController.ERR_RECORD_NOT_FOUND);
       }
-      if (friendships[0].status == 0) {
-        throw new Error(FriendshipController.ERR_NOT_A_FRIEND);
-      }
-      app.friendshipRepository.delete(friendships[0].id)
+      app.friendshipRepository.delete(friendship.id)
       const response = {
         success: true,
         data: null
