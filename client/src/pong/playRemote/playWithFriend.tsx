@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useEffect } from "react";
 
-import type { MatchType } from "./playWithSomeOne.tsx";
+import type { ErrorType, MatchType } from "./playWithSomeOne.tsx";
 
 import { PlayMatch } from "./playMatch.tsx";
-import axiosApiInstance from '../../axios.ts';
 import { validateMatch, MessageDisplayer } from "./playWithSomeOne.tsx";
+
+import axiosApiInstance from '../../axios.ts';
 
 type FriendObject = {
     id          : string;
@@ -31,7 +32,7 @@ function Friend({ friend, setFriend }: FriendType) {
 }
 
 type ListFriendsType = {
-    setError: ((friend: string) => void);
+    setError: ((error: ErrorType) => void);
     setFriend: ((friend: string) => void);
 }
 
@@ -40,37 +41,35 @@ function ListFriends({ setError, setFriend }: ListFriendsType) {
 
     useEffect(() => {
         let ignored = false;
-
         (async function fetchFriends() {
-            const resp =  await axiosApiInstance("/pongGame/friends");
-
-            if (!ignored) {
-                if (resp.status === 200) {
-                    setFriends(resp.data);
-                } else {
-                    setError("Fail to fetch you friends!!");
-                }  
+            try {
+                const response =  await axiosApiInstance("/pongGame/friends");
+                if (!ignored && response) {
+                    if (response.status === 200)
+                        setFriends(response.data);
+                    else
+                        setError(response.data);  
+                }
+            } catch (err) {
+                setError({reason: 'Fail to fetch match!!', errorCode: "E111"});
             }
         })();
     }, []);
 
-    if (friends) {
+    if (friends) 
         return (
             <div>
-                {
-                    friends.map((friend: FriendObject) => {
-                        return (<Friend key={friend.id} friend={friend} setFriend={setFriend}/>)
-                    })
-                }
+                {friends.map((friend: FriendObject) => {
+                    return (<Friend key={friend.id} friend={friend} setFriend={setFriend}/>)
+                })}
             </div>
-        )
-    }
+        );
 
-    return (<p>Fetching Your Friends...</p>)
+    return (<MessageDisplayer message="Fetching Your Friends..." />)
 }
 
 export function PlayWithFriend() {
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<ErrorType | null>(null);
     const [friend, setFriend] = useState<string | null>(null);
     const [match, setMatch] = useState<MatchType | undefined>(undefined);
     const url = `/pongGame/invite?fid=${friend}`;
@@ -82,20 +81,18 @@ export function PlayWithFriend() {
             (async function fetchMatch() {
                 try {
                     const response = await axiosApiInstance.get(url);
-
                     if (!ignored && response) {
                         if (response.status === 200) {
                             if (!validateMatch(response.data)) {
-                                setError('Error: fetched an invalid match!!');
+                                setError({reason: "Error: fetch invalid match", errorCode: "E111"});
                                 return;
                             }
                             setMatch(response.data);
-                        } else {
-                            setError('Waiting too long try after few seconds!!');
-                        }
+                        } else
+                            setMatch(response.data);
                     }
                 } catch (err) {
-                    setError('Fail to fetch match!!');
+                    setError({reason: 'Fail to fetch match!!', errorCode: "E111"});
                 }
             })();
         }
@@ -105,11 +102,10 @@ export function PlayWithFriend() {
         })
     }, [friend]);
     
-    if (error) {
-        return <MessageDisplayer message={error!} />;
-    } else if (match) {
+    if (error)
+        return <MessageDisplayer message={error.reason + " " + error.errorCode} />;
+    else if (match)
         return <PlayMatch match={match} />;
-    }
     
     return <ListFriends setError={setError} setFriend={setFriend}  />;
 }

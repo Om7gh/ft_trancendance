@@ -50,11 +50,9 @@ export function PlayWithSomeOne() {
 
   useEffect(() => {
     let ignored = false;
-
     (async function fetchMatch() {
       try {
         const response = await axiosApiInstance.get(url);
-
         if (!ignored && response) {
           if (response.status === 200) {
             if (!validateMatch(response.data)) {
@@ -62,9 +60,8 @@ export function PlayWithSomeOne() {
               return;
             }
             setMatch(response.data);
-          } else {
+          } else
             setError(response.data);
-          }
         }
       } catch (err) {
         setError({reason: 'Fail to fetch match!!', errorCode: "E111"});
@@ -76,11 +73,10 @@ export function PlayWithSomeOne() {
     };
   }, []);
 
-  if (error) {
+  if (error)
     return <MessageDisplayer message={error.reason + " " + error.errorCode} />;
-  } else if (match) {
+  else if (match)
     return <PlayMatch match={match} />;
-  }
 
   return <MessageDisplayer message={"Waiting for opponent..."} />;
 }

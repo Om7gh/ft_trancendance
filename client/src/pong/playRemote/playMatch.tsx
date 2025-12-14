@@ -44,9 +44,8 @@ function createConnection(
     messageHandler(event, setMatchState, setScore);
 
   return () => {
-    if (connection.ws) {
+    if (connection.ws)
       connection.ws.close(1000, 'Close socket');
-    }
   };
 }
 
@@ -69,18 +68,13 @@ export function PlayMatch({ match }: PlayMatchPropsType) {
     try {
       return createConnection(connection.current, setMatchState, setScore, url);
     } catch (err) {
-      if (connection.current.ws) {
+      if (connection.current.ws)
         connection.current.ws.close(1000, 'Close socket');
-      }
       setMatchState('Error thrown on the match!!');
     }
   }, [url]);
 
-  if (
-    matchState === 'going' ||
-    matchState === 'pause' ||
-    matchState === 'done'
-  ) {
+  if ( (matchState === 'going') || (matchState === 'pause') || (matchState === 'done') )
     return (
       <Match
         connection={connection.current.ws!}
@@ -91,7 +85,6 @@ export function PlayMatch({ match }: PlayMatchPropsType) {
         setMatchState={setMatchState}
       />
     );
-  }
 
   return <MessageDisplayer message={matchState} />;
 }
