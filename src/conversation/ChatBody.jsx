@@ -1,4 +1,4 @@
-import { Avatar } from "../contacts/UsersList";
+import { Avatar } from "../contacts/CardsList";
 import {useRef, useEffect} from 'react';
 
 function IncomingMsgBubble({targetUser, msgContent}){
@@ -20,13 +20,12 @@ function OutgoingMsgBubble({senderUser, msgContent})
     );
 }
 
-
 function buildMsgBubble(sender, target, message)
 {
-    if (message.sender === sender.id)
-        return (<OutgoingMsgBubble key={message.content} senderUser={sender} msgContent={message.content}/>);
-    else if (message.sender === target.id)
-        return (<IncomingMsgBubble key={message.content} targetUser={target} msgContent={message.content}/>);
+    if (message.senderId === sender.id)
+        return (<OutgoingMsgBubble key={message.id} senderUser={sender} msgContent={message.content}/>);
+    else if (message.senderId === target.id)
+        return (<IncomingMsgBubble key={message.id} targetUser={target} msgContent={message.content}/>);
 }
 
 function ChatBody({senderUser, targetUser, messages}){
@@ -41,8 +40,8 @@ function ChatBody({senderUser, targetUser, messages}){
     });
 
     return (
-        <div ref={scrollableElement} id="chatBody" className="mb-4 p-2.5 scrollbar h-[75%] bg-[#232C38] flex overflow-auto flex-col">
-            {messages.map((message) => buildMsgBubble(senderUser, targetUser, message))}
+        <div ref={scrollableElement}  id="chatBody" className="mb-4 p-2.5 scrollbar h-[75%] bg-[#232C38] flex overflow-auto flex-col">
+            {messages?.map((message) => buildMsgBubble(senderUser, targetUser, message))}
         </div>
     );
 }

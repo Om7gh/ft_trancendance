@@ -1,31 +1,22 @@
-import { Avatar } from "../contacts/UsersList";
+import { Avatar } from "../contacts/CardsList";
 import { TfiMenu } from "react-icons/tfi";
 
-function Contactinfo({contact, isOnline}){
+function Contactinfo({name, userPresence}){
 
-	let status = "Offline";
 	let statusIconUrl = "/src/assets/paddel/offline.svg";
-	
-	if (isOnline){
-		status = "Online";
-		statusIconUrl = "/src/assets/paddel/online.svg";
-	}
+	userPresence == "online" && (statusIconUrl = "/src/assets/paddel/online.svg");
 
 	return (
 		<div className="ml-6 flex-1">
-			<h1 className="text-xl font-bold"> {contact.name}</h1>
-			<p className="text-sm relative">
-				{status}
+			<h1 className="text-xl font-bold"> {name} </h1>
+			<p className="text-sm capitalize relative">
+				{userPresence}
 				<span className="w-full h-full absolute left-11 top-1 bg-no-repeat" style={ {backgroundImage: `url(${statusIconUrl})`} }>
 				</span>
 			</p>
 		</div>
 	);
 }
-
-
-// invite: 
-// block: 
 
 function UserInvite({inviteStyle}){
 	return (
@@ -68,15 +59,13 @@ function UserActions({isWideScreen})
 	);
 }
 
-function ChatHeader({contact, screenWidth}){
+function ChatHeader({contact, screenWidth, presence}){
 
-	const isWideScreen = screenWidth > 200;
-	
 	return (
 		<div id="ChatHeader" className="bg-[#262732] h-[15%] flex flex-wrap items-center gap-2 text-white">
 			<Avatar imgUrl={contact.photo_url} name={contact.name} type="contact"/>
-			<Contactinfo contact={contact} isOnline={true}/>
-			<UserActions isWideScreen={true}/>
+			<Contactinfo name={contact.name} userPresence={presence}/>
+			<UserActions isWideScreen={screenWidth > 500}/>
 		</div>
 	);
 }

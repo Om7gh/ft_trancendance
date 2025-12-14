@@ -2,7 +2,7 @@
 function Avatar({imgUrl, name, type}){
 
   let avatarStyle = {
-    "userItem": "rounded-xl",
+    "CardItem": "rounded-xl",
     "contact": "rounded-[50%]",
     "sender": "rounded-[50%] border-2 border-[#F97316] h-[40px] self-end",
     "receiver": "rounded-[50%] border-2 border-[#0D9488] h-[40px] self-end"
@@ -23,41 +23,44 @@ function UserInfo({name, wins, userWins, unread_msg}){
       <h1 className="font-bold relative text-md">{name}
       </h1>
         {
-          (unread_msg > 0) &&
+          unread_msg > 0 &&
           <div className="min-w-4 absolute text-center top-0 left-[94%] ml-auto text-[0.6em]
                 overflow-clip rounded-[30px] bg-[#F97316]">
             {unread_msg}
           </div >
         }
-      <p className="mt-[5px] font-normal">You {wins} - {userWins} Opponent</p>
+      {/* <p className="mt-[5px] font-normal">You {wins} - {userWins} Opponent</p> */}
+      <p className="mt-[5px] font-normal">Placeholder</p>
     </div>
   );
 }
 
-function UserItem({user, selected, onSelect}){
+function CardItem({card, cardSelected, onSelect}){
 
-  let listStyle = (!selected) ? "flex gap-2 mt-3 w-full h-[8%]" :
+  let friend = card.friend;
+  let listStyle = (!cardSelected) ? "flex gap-2 mt-3 w-full h-[8%]" :
     "flex gap-2 mt-3 w-full h-[8%] bg-[#0D9488]/30 rounded-xl \
     shadow-2xl border-l-[3px] p-[3px] border-l-[#0D9488]";
   return (
-    <li className={listStyle} onClick={() => onSelect(user)}>
-      <Avatar imgUrl={user.photo_url} name={user.name} type="userItem"/>
-      <UserInfo name={user.name} wins={user.your_wins}
-        userWins={user.friend_wins} unread_msg={(selected) ? 0 : user.unread_msg}/>
+    <li className={listStyle} onClick={() => onSelect(card)}>
+      <Avatar imgUrl={friend.photo_url} name={friend.name} type="CardItem"/>
+      <UserInfo name={friend.name} wins={friend.your_wins}
+        userWins={friend.friend_wins} unread_msg={card.unread_msg}/>
     </li>
   );
 }
 
-function UsersList({users, friendSelected, onSelect}){
+function CardsList({cards, selectedCard, onCardSelect}){
 
   return  (
-    <ul id="UsersList" className="h-[87%] scrollbar overflow-auto">
+    <ul id="CardsList" className="h-[87%] scrollbar overflow-auto">
       {
-        (users !== null) && users.map(user => <UserItem
-            key={user.id}
-            user={user}
-            selected={friendSelected !== null && user.id === friendSelected.id}
-            onSelect={onSelect}
+          cards.map(card => <CardItem
+            key={card.friend.id}
+            card={card}
+            cardSelected={card.friend.id === selectedCard.friend?.id}
+            onSelect={onCardSelect}
+            unreadCount={card.unread_msg}
           />)
       }
     </ul>
@@ -66,4 +69,4 @@ function UsersList({users, friendSelected, onSelect}){
 
 export {Avatar};
 
-export default UsersList;
+export default CardsList;
