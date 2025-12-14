@@ -15,7 +15,7 @@ export class FriendshipController {
     const fastify = request.server as FastifyInstance;
     const user: User = request.session.user;
 
-    const friend_requests: Friendship[] = fastify.friendshipRepository.get(-1, user.id, user.id, 1); //! wrong
+    const friend_requests: Friendship[] = fastify.friendshipRepository.getFriendShips(user.id);
     const result: Friend[] = friend_requests.map((friendship): Friend => ({
       uid: friendship.sender_id == user.id ? friendship.sender_uid : friendship.receiver_uid,
       username: friendship.sender_id == user.id ? friendship.sender_username : friendship.receiver_username,
