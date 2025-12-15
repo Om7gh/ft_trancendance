@@ -12,6 +12,8 @@ services:
       - chess
       - identity
       - client
+    volumes:
+      - $HOME/data/avatars:/usr/share/nginx/html/avatars:ro
 
   rabbitmq:
     container_name: rabbitmq
@@ -52,6 +54,7 @@ services:
       - ./services/identity-server/.env
     volumes:
       - $HOME/data:/var/lib/um
+      - $HOME/data/avatars:/var/avatars
     networks:
       - pingpong
     depends_on:

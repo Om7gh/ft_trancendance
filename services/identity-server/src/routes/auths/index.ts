@@ -4,6 +4,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import AuthController from '../../controllers/AuthController.js';
 import { PasswordController } from '../../controllers/PasswordController.js';
 import { asUserInfo } from '../../dto/user-dto.js';
+import saveAvatar from '../../utils/avatar-utils.js';
 
 const LoginCredentials = Type.Object({
   email: Type.String({ format: 'email' }),
@@ -92,9 +93,40 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
           return reply.conflict('this username is taken');
         }
         fastify.usersRepository.update(id, { username: username });
+        request.session.user = { ...user, username };
         return reply.send({ success: true });
       } catch (err: any) {
         return reply.badRequest('set-username: error');
+      }
+    }
+  );
+
+  fastify.post(
+    '/complete-profile',
+    async function (request: FastifyRequest, reply: FastifyReply) {
+      let { avatar, bio } = request.body as {
+        avatar: string | undefined | null;
+        bio: string;
+      };
+      if (!request.session.pendingUser) {
+        return reply.badRequest('no pending authentication');
+      }
+      try {
+        const user = request.session.user;
+        if (!avatar) {
+          avatar = await saveAvatar(
+            user.uid,
+            `${user.first_name.at(0)}${user.last_name.at(0)}`,
+            `${user.username}.svg`
+          );
+        }
+        this.usersRepository.update(user.id, {
+          avatar,
+          bio,
+        });
+        this.usersRepository.update(user.id, { avatar, bio });
+      } catch (err: any) {
+        return reply.badRequest('complete-profile: error ' + err.message);
       }
     }
   );

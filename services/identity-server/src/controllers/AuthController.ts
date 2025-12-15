@@ -42,7 +42,6 @@ export default class AuthController {
       last_name: payload.last_name,
       email: payload.email,
       password: hash(payload.password),
-      avatar: `https://avatar.iran.liara.run/username?username=${payload.first_name}+${payload.last_name}`,
       provider: 'local',
     } as unknown as User;
     const user = this.usersRepository.insert(newUser);
