@@ -131,17 +131,27 @@ export class Ball {
     }
 }
 
-export class Player {
+export class Player extends EventEmitter {
+
     constructor(user, socket) {
+        super();
+
         this.id         = user.id;
         this.name       = user.first_name;
         this.avatar     = user.avatar;
         this.paddle     = null;
         this.room       = null;
+        this.tournament = null;
     }
 
     inMatch() {
         if (this.room)
+            return (true);
+        return (false);
+    }
+
+    inTournament() {
+        if (this.tournament)
             return (true);
         return (false);
     }
@@ -157,12 +167,34 @@ export class Player {
         this.rooms = room
     }
 
-    getRoomById(rid) {
-        if (this.room && (this.room.id === rid)) {
-            return (this.room);
-        }
+    getRoom() {
+        return (this.room);
+    }
 
-        return (null);
+    leaveRoom() {
+        this.room = null;
+        this.emit("leaveRoom");
+    }
+
+    addTournament(tournament) {
+        this.tournament = tournament;
+    }
+
+    getTournament() {
+        return (this.tournament);
+    }
+
+    leaveTournament() {
+        this.tournament = null;
+        this.emit("leaveTournament");
+    }
+
+    toJSON() {
+        return ({
+            id      : this.id,
+            name    : this.name,
+            avatar  : this.avatar,
+        });
     }
 }
 
@@ -171,12 +203,14 @@ function generateId() {
 }
 
 export class Room extends EventEmitter {
+
     constructor() {
         super();
 
         this.id             = generateId();
         this.state          = "waiting";
-        this.date           = null;
+        this.winner         = null;
+        this.date           = Math.floor(Date.now() / 1000);
 
         this.matchId        = null;
         this.waitId         = null;
@@ -187,16 +221,22 @@ export class Room extends EventEmitter {
 
         this.leftPlayer     = null;
         this.leftSocket     = null;
-        this.leftPoints      = 0;
+        this.leftJoin       = false;
+        this.leftPoints     = 0;
         this.leftPaddle     = new Paddle(20, 160, this.table);
         
         this.rightPlayer    = null;
         this.rightSocket    = null;
-        this.rightPoints      = 0;
+        this.rightJoin      = false;
+        this.rightPoints    = 0;
         this.rightPaddle    = new Paddle(680, 160, this.table);
     }
 
-    full() {
+    getState() {
+        return (this.state);
+    }
+
+    ready() {
         return (this.leftPlayer && this.rightPlayer);
     }
 
@@ -211,21 +251,30 @@ export class Room extends EventEmitter {
     addLeftPlayer(player) {
         this.leftPlayer = player;
         this.leftPlayer.paddle = this.leftPaddle;
+        this.leftPlayer.on("leaveRoom", () => {
+            this.rightPoints = 7;
+        });
     }
-
+    
     addRightPlayer(player) {
         this.rightPlayer = player;
         this.rightPlayer.paddle = this.rightPaddle;
+        this.rightPlayer.on("leaveRoom", () => {
+            this.leftPoints = 7;
+        });
     }
 
     addPlayer(player) {
-        if (!this.full()) {
-            if (!this.leftPlayer) {
-                this.addLeftPlayer(player);
+        if (!this.ready() && player) {
+            if (!this.leftPlayer || (this.leftPlayer.id === player.id)) {
+                if (!this.leftPlayer) {
+                    this.addLeftPlayer(player);
+                }
                 return (true);
-            } else if (!this.rightPlayer && !this.player(player.id)) {
-                this.addRightPlayer(player);
-                this.startMatch();
+            } else if ((!this.rightPlayer && !this.player(player.id)) || (this.rightPlayer.id === player.id)) {
+                if (!this.rightPlayer) {
+                    this.addRightPlayer(player);
+                }
                 return (true);
             }
         }
@@ -246,15 +295,8 @@ export class Room extends EventEmitter {
         })
     }
 
-    playerLeave(playerId) {
-        if (this.leftPlayer.id === playerId)
-            this.rightPoints = 7;
-        else if (this.rightPlayer.id === playerId)
-            this.leftPoints = 7;
-    }
-
     getOpponentId(playerId) {
-        if (this.full()) {
+        if (this.ready()) {
             if (this.leftPlayer.id === playerId)
                 return (this.rightPlayer.id);
             else if (this.rightPlayer.id === playerId)
@@ -265,9 +307,15 @@ export class Room extends EventEmitter {
 
     setPlayerSocket(playerId, socket) {
         if (this.leftPlayer && (this.leftPlayer.id === playerId)) {
-            this.leftSocket = socket;
+            this.leftSocket     = socket;
+            this.leftJoin       = true;
         } else if (this.leftPlayer && (this.rightPlayer.id === playerId)) {
-            this.rightSocket = socket;
+            this.rightSocket    = socket;
+            this.rightJoin       = true;
+        }
+
+        if (this.rightJoin && this.leftJoin) {
+            this.startMatch();
         }
     }
     
@@ -328,7 +376,7 @@ export class Room extends EventEmitter {
                     state: "ok", 
                     data: {
                         event: "matchState",
-                        value: "Wait for Opponent to join match too long try again!!",
+                        value: "Wait for Opponent to join match too!!",
                     }
                 }))
                 this.stopMatch();
@@ -337,12 +385,12 @@ export class Room extends EventEmitter {
     }
 
     startMatch() {
-        if (this.state === "waiting") {
-            if ((this.leftPlayer && this.leftSocket) && (this.rightPlayer && this.rightSocket)) {
-                clearTimeout(this.waitId);
+        if ((this.state === "waiting") && this.ready()) {
+            clearTimeout(this.waitId);
+            if (this.leftJoin && this.rightJoin) {
                 this.state = "going";
                 this.broadcastScore();
-                this.broadcastMatchState()
+                this.broadcastMatchState();
                 this.matchLoop();
             } else {
                 this.waitOpponentToJoin();
@@ -397,8 +445,21 @@ export class Room extends EventEmitter {
             }, 15000);
         }
     }
+
+    setWinner() {
+        if (this.leftPoints < this.rightPoints) {
+            this.winner = this.rightPlayer;
+        } else if (this.leftPoints > this.rightPoints) {
+            this.winner = this.leftPlayer;
+        }
+    }
+
+    getWinner() {
+        return (this.winner);
+    }
     
     stopMatch() {
+        this.setWinner();
         this.state = "done";
 
         if (this.matchId) {
@@ -421,11 +482,26 @@ export class Room extends EventEmitter {
 
         this.emit("done");
     }
+
+    toJSON() {
+        return ({
+            state           : this.state,
+            leftPlayer      : this.leftPlayer.toJSON(),
+            rightPlayer     : this.rightPlayer.toJSON(),
+            score           : {
+                leftPlayer  : this.leftPoints,
+                rightPlayer : this.rightPoints,
+            },
+            winner          : this.winner,
+        })
+    }
 }
 
 export class Invitation {
-    constructor(sender, receiver, room) {
+
+    constructor(type, sender, receiver, room) {
         this.id         = generateId();
+        this.type       = type;
         this.sender     = sender;
         this.receiver   = receiver;
         this.room       = room;
@@ -443,7 +519,182 @@ export class Invitation {
             return (true);
         return (false);
     }
+
+    getRoom() {
+        return (this.room);
+    }
+
+    toJSON() {
+        return ({
+            id          : this.id,
+            type        : this.type,
+            sender      : this.sender,
+            receiver    : this.receiver,
+        })
+    }
 }
+
+class TournamentRoom extends Room {
+    constructor () {
+        super();
+    }
+
+    setWinner() {
+        if (this.rightPlayer) {
+            this.winner = this.leftPlayer;
+        } else if (!this.leftJoin && this.rightJoin) {
+            this.winner = this.rightPlayer;
+            this.rightPoints = 7;
+        } else if (this.leftJoin && !this.rightJoin) {
+            this.winner = this.leftPlayer;
+            this.leftPoints = 7;
+        } else if (this.leftPoints < this.rightPoints) {
+            this.winner = this.rightPlayer;
+        } else if (this.leftPoints > this.rightPoints) {
+            this.winner = this.leftPlayer;
+        }
+    }
+}
+
+class Round extends EventEmitter {
+
+    constructor() {
+        this.state      = "waiting";
+        this.players    = null;
+        this.rooms      = [];
+        this.counter    = 0;
+    }
+
+    getState() {
+        return (this.state);
+    }
+
+    setPlayers(players) {
+        if (this.state === "waiting") {
+            this.players = players;
+        }
+    }
+
+    prepareRound() {
+        if ((this.state === "waiting")) {
+            for (let i = 0; i < this.players.length; i += 2) {
+                const room = new TournamentRoom();
+                room.on("done", () => {
+                    this.counter++;
+                    if (this.counter === this.rooms.length) {
+                        this.state = "done";
+                        this.emit("done");
+                    }
+                })
+                this.rooms.push(room);
+            }
+            this.state === "ready";
+        }
+    }
+
+    startRound() {
+        let j = 0;
+
+        this.prepareRound();
+        for (let i = 0; i < this.players.length; i++) {
+            this.rooms[j].addPlayer(this.players[i]);
+            if (i % 2) {
+                this.rooms[j].startMatch();
+                j++;
+            }
+        }
+        this.state = "going";
+        return (null);
+    }
+
+    getWinners() {
+        const winners = [];
+        if (this.state === "done") {
+            for (let i = 0; i < this.rooms.length; i++) {
+                if (this.rooms[i].getState() === "done") {
+                    winners.push(this.rooms[i].getWinner());
+                }
+            }
+            return (winners);
+        }
+        return (null);
+    }
+
+    toJSON() {
+        const rooms = [];
+
+        for (let i = 0; i < this.rooms.length; i++) {
+            rooms.push(this.rooms[i].toJSON());
+        }
+        return ({
+            state   : this.state,
+            matchs  : rooms,
+        })
+    }
+
+}
+
+export class Tournament {
+
+    constructor() {
+        this.id             = generateId();
+        this.state          = "waiting";
+
+        this.currentRound   = null;
+        this.winner         = null;
+
+        this.players        = [];
+        this.rounds         = [];
+    }
+
+    addPlayer(player) {
+        if (this.state === "waiting") {
+            this.players.push(player);
+            if (this.players.length === 4) {
+                this.state === "going";
+            }
+        }
+    }
+
+    removePlayer(playerId) {
+        if (this.state === "waiting") {
+            this.players = this.players.filter((item) => item.id !== playerId);
+        }
+    }
+
+    startTournament() {
+        if (this.state === "waiting") {
+            if (this.players.length === 4) {
+                this.currentRound = new Round();
+                this.currentRound.setPlayers(this.players);
+                this.currentRound.on("done", () => {
+                    this.nextRound();
+                });
+                this.rounds.push(this.currentRound);
+                this.currentRound.startRound();
+            }
+        }
+        return (null);
+    }
+
+    nextRound() {
+        const winners = this.currentRound.getWinners();
+
+        if (1 < winners.length) {
+            this.currentRound = new Round();
+            this.currentRound.setPlayers(winners);
+            this.currentRound.on("done", () => {
+                this.nextRound();
+            });
+            this.rounds.push(this.currentRound);
+            this.currentRound.startRound();
+        } else {
+            this.winner = winners[0];
+            this.state === "done";
+        }
+    }
+}
+
 
 export class PongError extends Error {
     constructor(message, errorCode) {
@@ -456,72 +707,5 @@ export class PongError extends Error {
             reason      : this.message,
             errorCod    : this.errorCode,
         })
-    }
-}
-
-class Round {
-    constructor() {
-        this.state      = "waiting";
-        this.players    = [];
-        this.rooms      = [];
-    }
-
-    addPlayer(player) {
-        this.round1.push(player);
-    }
-
-    removePlayer(playerId) {
-        this.round1 = this.round1.filter((player) => player.id !== playerId);
-    }
-
-    addRoom(room) {
-        this.rooms.push(room);
-    }
-
-    prepareRound() {
-        if ((this.state === "waiting")) {
-            for (let i = 0; i < this.players.length; i += 2) {
-                const room = new Room();
-                this.rooms.push(room);
-                room.addPlayer(this.players[i]);
-                room.addPlayer(this.players[i + 1]);
-            }
-            this.state === "ready";
-        }
-    }
-
-}
-
-export class Tournament {
-
-    constructor() {
-        this.id         = 
-        this.state      = "waiting";
-
-        this.round1     = new Round();
-        this.round2     = new Round();
-        this.winner     = null;
-    }
-
-    addPlayer(player) {
-        if (this.state === "waiting") {
-            this.round1.addPlayer(player);
-            if (this.round1 === 4) {
-                this.state = "ready";
-                this.startTournament();
-            }
-        }
-    }
-
-    removePlayer(playerId) {
-        if (this.state === "waiting") {
-            this.round1.removePlayer(playerId);
-        }
-    }
-
-    startTournament() {
-        if (this.state === ready) {
-
-        }
     }
 }
