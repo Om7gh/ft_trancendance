@@ -46,6 +46,9 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     '/check-username',
     async function (request: FastifyRequest, reply: FastifyReply) {
       const { username } = request.body as { username: string };
+      if (!request.session.pendingUser) {
+        return reply.badRequest('no pending authentication');
+      }
       try {
         const { id } = request.session.pendingUser;
         const user = fastify.usersRepository.findById(id);
@@ -72,6 +75,9 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     '/set-username',
     async function (request: FastifyRequest, reply: FastifyReply) {
       const { username } = request.body as { username: string };
+      if (!request.session.pendingUser) {
+        return reply.badRequest('no pending authentication');
+      }
       try {
         const { id } = request.session.pendingUser;
         const user = fastify.usersRepository.findById(id);
@@ -80,6 +86,10 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         }
         if (user.username) {
           return reply.forbidden('username already setted');
+        }
+        const isTaken = fastify.usersRepository.findByUsername(username);
+        if (isTaken) {
+          return reply.conflict('this username is taken');
         }
         fastify.usersRepository.update(id, { username: username });
         return reply.send({ success: true });
@@ -94,8 +104,6 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     { onRequest: fastify.authenticate },
     async function (request: FastifyRequest, reply: FastifyReply) {
       const userInfo = asUserInfo(request.session.user);
-      request.session.destroy();
-      reply.clearCookie('sessionId');
       return reply.send(userInfo);
     }
   );

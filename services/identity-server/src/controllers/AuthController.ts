@@ -157,17 +157,7 @@ export default class AuthController {
         secret: '',
         pending: true,
       };
-      this.log.info('session -> ' + request.session.pendingUser);
-
-      // const jti = randomUUID();
-      // const accessToken = await this.generateAccessToken(user.uid);
-      // const refreshToken = await this.generateRefreshToken(user.uid, jti);
-      this.usersRepository.update(user.id, {
-        email_verified: 1,
-        //   last_login: Math.floor(Date.now() / 1000),
-        //   token_id: jti,
-      });
-      // reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
+      this.usersRepository.update(user.id, { email_verified: 1 });
     } catch (err: any) {
       return reply.forbidden('invalid-token');
     }
