@@ -45,31 +45,31 @@ function handleDisconnect(app, playerId) {
           });
         }
 
-        try {
-          const winnerTeam =
-            whiteIdSnapshot && whiteIdSnapshot === opponent.playerId
-              ? 'WHITE'
-              : 'BLACK';
-          if (!whiteIdSnapshot || !blackIdSnapshot) {
-            console.warn('Skipping recordGame: missing player ids', {
-              whiteIdSnapshot,
-              blackIdSnapshot,
-            });
-          } else {
-            app.recordGame({
-              roomId,
-              whiteId: whiteIdSnapshot,
-              blackId: blackIdSnapshot,
-              winnerTeam,
-              reason: 'disconnect',
-              moves: room.turns ?? 0,
-              startedAt: room.createdAt ?? null,
-              endedAt: Math.floor(Date.now() / 1000),
-            });
-          }
-        } catch (e) {
-          console.error('Failed to record game (disconnect):', e);
-        }
+        // try {
+        //   const winnerTeam =
+        //     whiteIdSnapshot && whiteIdSnapshot === opponent.playerId
+        //       ? 'WHITE'
+        //       : 'BLACK';
+        //   if (!whiteIdSnapshot || !blackIdSnapshot) {
+        //     console.warn('Skipping recordGame: missing player ids', {
+        //       whiteIdSnapshot,
+        //       blackIdSnapshot,
+        //     });
+        //   } else {
+        //     app.recordGame({
+        //       roomId,
+        //       whiteId: whiteIdSnapshot,
+        //       blackId: blackIdSnapshot,
+        //       winnerTeam,
+        //       reason: 'disconnect',
+        //       moves: room.turns ?? 0,
+        //       startedAt: room.createdAt ?? null,
+        //       endedAt: Math.floor(Date.now() / 1000),
+        //     });
+        //   }
+        // } catch (e) {
+        //   console.error('Failed to record game (disconnect):', e);
+        // }
 
         delete rooms[roomId];
         console.log(`🗑️ Room ${roomId} deleted (opponent did not reconnect)`);

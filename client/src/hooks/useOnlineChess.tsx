@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { chessSocket } from '../classes/chessWebsocket';
 import { useChessStore } from '../store/useChessStore';
 import { toast } from 'react-toastify';
 import type { ChatMessageData, Pieces, Position } from '../types';
 import type { BoardUpdateData } from '../types';
+import { GlobalContext } from '@/App';
 
 interface OnlineState {
   roomId: string | null;
@@ -19,6 +20,7 @@ interface OnlineState {
 
 export function useOnlineChess() {
   const gameOverRef = { current: false } as { current: boolean };
+  const { user } = useContext(GlobalContext);
   const [state, setState] = useState<OnlineState>({
     roomId: null,
     myTeam: null,
@@ -31,7 +33,7 @@ export function useOnlineChess() {
     const urlParams = new URLSearchParams(window.location.search);
     const pid = urlParams.get('playerId') || localStorage.getItem('playerId');
     const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const baseWs = `${wsProto}://${window.location.host}/game/chess`;
+    const baseWs = `${wsProto}://${window.location.host}/game/chess?playerId=${user.first_name}`;
     const wsUrl = pid
       ? `${baseWs}?playerId=${encodeURIComponent(pid)}`
       : baseWs;
@@ -174,6 +176,10 @@ export function useOnlineChess() {
         });
       }
     );
+
+    chessSocket.on('gameResume', () => {
+      setState((prev) => {});
+    });
 
     chessSocket.on('enterMatchmaking', () => {
       console.log('enterMatchmaking event received');

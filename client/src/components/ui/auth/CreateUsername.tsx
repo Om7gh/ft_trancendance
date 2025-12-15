@@ -1,3 +1,4 @@
+import useCreateUsername from '@/services/auth/useCreateUsername';
 import { useEffect, useState } from 'react';
 import { FaArrowRightLong } from 'react-icons/fa6';
 import { MdErrorOutline } from 'react-icons/md';
@@ -7,6 +8,7 @@ function CreateUsername({ next }: { next: () => void }) {
   const [isValid, setIsValid] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const mutateUsername = useCreateUsername();
 
   useEffect(() => {
     if (!username) {
@@ -22,13 +24,12 @@ function CreateUsername({ next }: { next: () => void }) {
         const data = await fetch('http://localhost:8080/auths/check-username', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(username),
+          body: JSON.stringify({ username }),
           credentials: 'include',
         });
         if (!data.ok) throw await data.json();
         setIsValid(true);
       } catch (err) {
-        console.log(err);
         setIsValid(false);
         setError(err?.message || 'Username already taken');
       } finally {
@@ -37,6 +38,13 @@ function CreateUsername({ next }: { next: () => void }) {
     }
     check();
   }, [username]);
+
+  const handleClick = () => {
+    if (username) {
+      mutateUsername.mutate({ username });
+      next();
+    }
+  };
 
   return (
     <div>
@@ -71,7 +79,7 @@ function CreateUsername({ next }: { next: () => void }) {
 
         <button
           className="self-end text-lg bg-violet-800 px-4 py-2 shadow-lg shadow-slate-900 flex items-center gap-2 disabled:opacity-50"
-          onClick={next}
+          onClick={handleClick}
           disabled={!isValid || loading}
         >
           <span>Next</span>

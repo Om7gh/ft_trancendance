@@ -23,6 +23,7 @@ app.register(chessDb);
 app.register(fastifyJwt, {
   secret: process.env.JWT_SECRET,
 });
+app.register(require('./rabbitmq/'));
 app.register(require('@fastify/websocket'));
 app.register(chessRoutes);
 

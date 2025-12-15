@@ -1,7 +1,7 @@
 import { Room, Invitation } from "./pongClasses.js";
 import { waitForOpponent } from "./playWithSomeOne.js";
 
-function inviteFriendToMatch(request, reply) {
+async function inviteFriendToMatch(request, reply) {
     const uid       = request.user.id;
     const oid       = request.query.oid;
     const player    = this.addToPlayerList(request.user);
@@ -35,10 +35,17 @@ function inviteFriendToMatch(request, reply) {
 
     this.currentRoom = null;
 
-    waitForOpponent(reply, room, uid); 
+    await waitForOpponent(room)
+        .then(() => {
+            reply.code(200).send(JSON.stringify(room.generateMatch()));
+        })
+        .catch(() => {
+            reply.code(408).send({reason: "Error: Waiting too long!!", errorCode: "E203"});
+            room.stopMatch();
+        }); 
 }
 
-function acceptMatchInvitation(request, reply) {
+async function acceptMatchInvitation(request, reply) {
     const uid         = request.user.uid;
     const iid         = request.query.iid;
     const player      = this.addToPlayerList(uid);
@@ -51,7 +58,7 @@ function acceptMatchInvitation(request, reply) {
 
     if (!invitation || invitation.expired() || !invitation.invited(uid)) {
         reply.code(410);
-        throw new Error("Error: either not invited or invitation is gone", "E301");
+        throw new Error("Error: either you are not invited, or invitation is gone", "E301");
     }
 
     const room = invitation.room;
@@ -65,7 +72,14 @@ function acceptMatchInvitation(request, reply) {
 
     this.invitationList = this.invitationList.filter((item) => item.id != iid);
 
-    waitForOpponent(reply, room, uid);
+    await waitForOpponent(room)
+        .then(() => {
+            reply.code(200).send(JSON.stringify(room.generateMatch()));
+        })
+        .catch(() => {
+            reply.code(408).send({reason: "Error: Waiting too long!!", errorCode: "E203"});
+            room.stopMatch();
+        });
 }
 
 function inviteHandler(request, reply) {

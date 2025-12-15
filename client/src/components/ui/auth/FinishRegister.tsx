@@ -1,10 +1,14 @@
+import axiosApiInstance from '@/axios';
+import useCompleteRegistration from '@/services/auth/useCompleteSignUp';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function FinishRegister({ next }: { next: () => void }) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [bio, setBio] = useState('');
-
+  const navigate = useNavigate();
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const selected = e.target.files?.[0];
     if (selected) {
@@ -19,12 +23,14 @@ function FinishRegister({ next }: { next: () => void }) {
     const formData = new FormData();
     formData.append('avatar', file!);
     formData.append('bio', bio);
-
     try {
-      // axios call
-
-      next();
-    } catch (err) {}
+      await axiosApiInstance.post('/auths/complete-profile', {
+        avatar: file,
+        bio,
+      });
+      toast.success('Registration completed successfully');
+      navigate('/dashboard');
+    } catch (e) {}
   }
 
   return (
