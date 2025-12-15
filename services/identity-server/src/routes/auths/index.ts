@@ -5,6 +5,7 @@ import AuthController from '../../controllers/AuthController.js';
 import { PasswordController } from '../../controllers/PasswordController.js';
 import { asUserInfo } from '../../dto/user-dto.js';
 import saveAvatar from '../../utils/avatar-utils.js';
+import { randomUUID } from 'node:crypto';
 
 const LoginCredentials = Type.Object({
   email: Type.String({ format: 'email' }),
@@ -125,6 +126,16 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
           bio,
         });
         this.usersRepository.update(user.id, { avatar, bio });
+        const jti = randomUUID();
+        const accessToken = await this.generateAccessToken(user.uid);
+        const refreshToken = await this.generateRefreshToken(user.uid, jti);
+        const now = Math.floor(Date.now() / 1000);
+        this.usersRepository.update(user.id, {
+          last_login: now,
+          token_id: jti,
+        });
+        reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
+        return reply.send({ success: true });
       } catch (err: any) {
         return reply.badRequest('complete-profile: error ' + err.message);
       }
