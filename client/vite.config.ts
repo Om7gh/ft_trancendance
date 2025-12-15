@@ -1,11 +1,12 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
-import tailwindcss from "@tailwindcss/vite";
+
+import react from "@vitejs/plugin-react";
 import alias from "@rollup/plugin-alias";
+import tailwindcss from "@tailwindcss/vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRootDir = resolve(__dirname);

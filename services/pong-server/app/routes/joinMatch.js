@@ -2,9 +2,9 @@ function joinMatchHandler(socket, req) {
     const uid       = req.user.id;
     const rid       = req.query.rid;
     const player    = this.getPlayerById(uid);
-    const room      = player.getRoomById(rid);
+    const room      = player.getRoom(rid);
 
-    if (!player || !room || (room.full() && !room.player(uid))) {
+    if (!player || !room || (room.ready() && !room.player(uid))) {
         socket.send(JSON.stringify({
             state: "!ok",
             reason: "Currently you don't have any match to join!!"
@@ -17,8 +17,7 @@ function joinMatchHandler(socket, req) {
     
     if (room.state === "pause") {
         room.continue(uid);
-    } else
-        room.startMatch();
+    }
 
     socket.on('message', (message) => {
         let event = JSON.parse(message);
@@ -33,7 +32,7 @@ function joinMatchHandler(socket, req) {
                 }
             } else if (event.type === "leave") {
                 if (event.data === true) {
-                    room.playerLeave(uid);
+                    player.leaveRoom();
                     room.stopMatch();
                 }
             }

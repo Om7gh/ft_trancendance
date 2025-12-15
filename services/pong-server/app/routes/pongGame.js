@@ -21,7 +21,7 @@ function getPlayerById(uid) {
 
 function addPlayerToRoom(player) {
 
-    if (!this.currentRoom || this.currentRoom.full() || (this.currentRoom.state === "done")) {
+    if (!this.currentRoom || this.currentRoom.ready() || (this.currentRoom.state === "done")) {
         this.currentRoom = new Room(this.generateId());
         this.log.info(`create new room with id: ${this.currentRoom.id}`);
     }
@@ -95,6 +95,7 @@ export function pongGame(fastify, options, done) {
         if (error && (typeof(error) === PongError)) {
             reply.send(error.toJSON());
         } else {
+            console.log(error);
             reply.code(500).send({reason: "Unexpected Error", errorCode: "E000"});
         }
     });
