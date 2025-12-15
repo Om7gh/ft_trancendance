@@ -5,11 +5,42 @@ const { players, rooms } = require('../utils/state');
 const matchmakingQueue = []; // {playerId, player socket}
 
 function handleMatchmaking(playerId, connection) {
+  if (players.has(playerId)) {
+    const { roomId } = players.get(playerId);
+    const room = rooms[roomId];
+
+    if (room) {
+      const player = room.players.find((p) => p.playerId === playerId);
+      if (player) {
+        player.connection = connection;
+      }
+
+      players.set(playerId, { connection, roomId });
+
+      send(connection, {
+        type: 'gameResume',
+        roomId,
+        board: room.board,
+        yourTeam: player.team,
+        currentTurn: room.currentTurn,
+        turns: room.turns,
+        opponentConnected: room.players.length === 2,
+      });
+
+      console.log(`Player ${playerId} rejoined room ${roomId}`);
+      return;
+    }
+
+    players.delete(playerId);
+  }
+
+  // ✅ 2. Prevent duplicate queue entry
   if (matchmakingQueue.some((p) => p.playerId === playerId)) {
-    console.log(`Player ${playerId} is already in the matchmaking queue.`);
+    console.log(`Player ${playerId} is already in matchmaking queue`);
     return;
   }
 
+  // ✅ 3. Normal matchmaking
   matchmakingQueue.push({ playerId, connection });
 
   send(connection, {
@@ -20,12 +51,15 @@ function handleMatchmaking(playerId, connection) {
   if (matchmakingQueue.length >= 2) {
     const player1 = matchmakingQueue.shift();
     const player2 = matchmakingQueue.shift();
-
     createMatch(player1, player2);
   }
 }
 
 function createMatch(player1, player2) {
+  Object.keys(rooms).forEach((key) => {
+    const value = user[key];
+    console.log(value);
+  });
   const roomId = uuid();
   rooms[roomId] = {
     players: [

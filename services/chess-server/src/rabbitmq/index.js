@@ -1,60 +1,61 @@
+const amqp = require('amqplib');
+const fp = require('fastify-plugin');
 const uuid = require('uuid').v4;
+const RABBIT_URL = 'amqp://rabbitmq';
+const CHESS_QUEUE = 'chess.reply';
 
-async function connectWithRetry(url, maxRetries = 10, delay = 5000) {
-    for (let i = 0; i < maxRetries; i++) {
-        try {
-            console.log(
-                `Attempting to connect to RabbitMQ (attempt ${
-                    i + 1
-                }/${maxRetries})...`
-            );
-            const connection = await mq.connect(url);
-            console.log('Successfully connected to RabbitMQ');
-            return connection;
-        } catch (error) {
-            console.error(`Failed to connect to RabbitMQ: ${error.message}`);
-            if (i < maxRetries - 1) {
-                console.log(`Retrying in ${delay / 1000} seconds...`);
-                await new Promise((resolve) => setTimeout(resolve, delay));
-            } else {
-                throw new Error(
-                    'Max retries reached. Could not connect to RabbitMQ'
-                );
-            }
-        }
+async function connectWithRetry(url, retries = 10, delay = 5000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await amqp.connect(url);
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      await new Promise((r) => setTimeout(r, delay));
     }
+  }
 }
 
-const rpcQueue = async function (app) {
-    const connection = connectWithRetry('amqp://rabbitmq');
-    const channel = await connection.createChannel();
+async function setupRabbit(fastify) {
+  const connection = await connectWithRetry(RABBIT_URL);
+  const channel = await connection.createChannel();
 
-    await channel.assertQueue('chess_requests', { durable: true });
-    channel.prefetch(1);
+  await channel.assertQueue(CHESS_QUEUE, { durable: true });
+  channel.prefetch(1);
 
-    console.log('Identity service waiting for RPC requests...');
+  // chess -> identity : IDENTITY.REQUEST
 
-    try {
-        const sendRequest = async (msg) => {
-            const correlationId = uuid();
-            channel.sendToQueue(
-                'chess_requests',
-                Buffer.from(JSON.stringify(correlationId, msg))
-            );
-        };
+  async function consume(handler) {
+    await channel.consume(CHESS_QUEUE, async (msg) => {
+      if (!msg) return;
+      try {
+        const content = JSON.parse(msg.content.toString());
+        await handler(content, msg);
+        channel.ack(msg);
+      } catch (err) {
+        fastify.log.error(err);
+        channel.nack(msg, false, false);
+      }
+    });
+  }
 
-        app.decorate('sendRequest', sendRequest);
-        app.addHook('onClose', async () => {
-            await channel.close();
-            await connection.close();
-        });
+  function produce(queue, payload) {
+    const correlationId = uuid();
+    channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)), {
+      persistent: true,
+      correlationId,
+      replyTo: CHESS_QUEUE,
+    });
+  }
 
-        process.on('SIGINT', async () => {
-            await channel.close();
-            await connection.close();
-            process.exit(0);
-        });
-    } catch (e) {
-        throw e;
-    }
-};
+  fastify.decorate('mq', {
+    consume,
+    produce,
+  });
+
+  fastify.addHook('onClose', async () => {
+    await channel.close();
+    await connection.close();
+  });
+}
+
+module.exports = fp(setupRabbit);

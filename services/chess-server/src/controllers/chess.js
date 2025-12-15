@@ -2,12 +2,7 @@ const { v4: uuid } = require('uuid');
 const { URL } = require('url');
 const send = require('../utils/send');
 const { handleMatchmaking, removeFromQueue } = require('./matchMaking');
-const {
-  players,
-  rooms,
-  lastOpponents,
-  pendingRematches,
-} = require('../utils/state');
+const { players, rooms, lastOpponents } = require('../utils/state');
 const { syncBoard } = require('./syncBoard');
 const { handleChat } = require('./chat');
 const { handleDisconnect } = require('./handleDisconnection');
@@ -20,6 +15,7 @@ const {
 
 function chessHandler(connection, req) {
   const app = req.server;
+
   const clientIP = req.socket.remoteAddress;
   let desiredId = null;
   try {
@@ -32,7 +28,8 @@ function chessHandler(connection, req) {
       ? desiredId
       : uuid();
   if (players.has(playerId)) {
-    playerId = `${playerId}-dup-${uuid().slice(0, 8)}`;
+    players.get(playerId).connection = connection;
+    return;
   }
 
   players.set(playerId, { connection, roomId: null, ip: clientIP });
@@ -49,7 +46,6 @@ function chessHandler(connection, req) {
         message: 'Invalid JSON format',
       });
     }
-
     handleMessage(app, playerId, msg);
   });
 
