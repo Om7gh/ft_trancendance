@@ -14,7 +14,7 @@ const ProtectAuth = ({ children }: { children: ReactNode }) => {
         await axios.get('/auths/userinfo', { withCredentials: true });
         setAuthenticated(true);
       } catch (err) {
-        if (err.response?.status === 498) {
+        if (err.response?.status === 498 || err.response?.status === 401) {
           try {
             await axios.post('/auths/refresh', {}, { withCredentials: true });
             await axios.get('/auths/userinfo', { withCredentials: true });

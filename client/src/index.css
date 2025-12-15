@@ -70,7 +70,7 @@ ul::-webkit-scrollbar-thumb:hover {
 
 @theme {
   --color-midnight: #17181d;
-  --color-neon: #22e5ff;
+  --color-neon: rgba(34, 211, 238, 0.8);
   --font-second: 'Audiowide', sans-serif;
   --font-main: 'Bungee', sans-serif;
 }
