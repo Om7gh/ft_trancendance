@@ -33,13 +33,13 @@ export function RemoteOptions() {
       </MenuOption>
       <MenuOption>
         <Link
-          to="/pongGame/remote/invitefriend"
+          to="/dashboard/games/pingpong/remote/invitefriend"
           className='w-full h-full'
         >Invite Friend</Link>
       </MenuOption>
       <MenuOption>
         <Link
-          to="/pongGame"
+          to="/dashboard/games/pingpong"
           className='w-full h-full'
         >Go Back</Link>
       </MenuOption>

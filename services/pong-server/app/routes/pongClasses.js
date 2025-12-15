@@ -166,12 +166,17 @@ export class Player {
     }
 }
 
+function generateId() {
+    return (Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
+}
+
 export class Room extends EventEmitter {
-    constructor(id) {
+    constructor() {
         super();
 
-        this.id             = id;
+        this.id             = generateId();
         this.state          = "waiting";
+        this.date           = null;
 
         this.matchId        = null;
         this.waitId         = null;
@@ -419,8 +424,8 @@ export class Room extends EventEmitter {
 }
 
 export class Invitation {
-    constructor(id, sender, receiver, room) {
-        this.id         = id;
+    constructor(sender, receiver, room) {
+        this.id         = generateId();
         this.sender     = sender;
         this.receiver   = receiver;
         this.room       = room;
@@ -451,5 +456,72 @@ export class PongError extends Error {
             reason      : this.message,
             errorCod    : this.errorCode,
         })
+    }
+}
+
+class Round {
+    constructor() {
+        this.state      = "waiting";
+        this.players    = [];
+        this.rooms      = [];
+    }
+
+    addPlayer(player) {
+        this.round1.push(player);
+    }
+
+    removePlayer(playerId) {
+        this.round1 = this.round1.filter((player) => player.id !== playerId);
+    }
+
+    addRoom(room) {
+        this.rooms.push(room);
+    }
+
+    prepareRound() {
+        if ((this.state === "waiting")) {
+            for (let i = 0; i < this.players.length; i += 2) {
+                const room = new Room();
+                this.rooms.push(room);
+                room.addPlayer(this.players[i]);
+                room.addPlayer(this.players[i + 1]);
+            }
+            this.state === "ready";
+        }
+    }
+
+}
+
+export class Tournament {
+
+    constructor() {
+        this.id         = 
+        this.state      = "waiting";
+
+        this.round1     = new Round();
+        this.round2     = new Round();
+        this.winner     = null;
+    }
+
+    addPlayer(player) {
+        if (this.state === "waiting") {
+            this.round1.addPlayer(player);
+            if (this.round1 === 4) {
+                this.state = "ready";
+                this.startTournament();
+            }
+        }
+    }
+
+    removePlayer(playerId) {
+        if (this.state === "waiting") {
+            this.round1.removePlayer(playerId);
+        }
+    }
+
+    startTournament() {
+        if (this.state === ready) {
+
+        }
     }
 }

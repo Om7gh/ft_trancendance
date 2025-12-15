@@ -46,6 +46,18 @@ function initaiteGame() {
   right_paddle = new Paddle(680, 160, 'red');
 }
 
+function generateScoreObject(x: number, y: number, prev: ScoreType): ScoreType {
+  return ({
+    leftPlayer: { ...prev.leftPlayer,
+      points: prev.leftPlayer.points + x,
+    },
+    rightPlayer: {
+      ...prev.rightPlayer,
+      points: prev.rightPlayer.points + y,
+    },
+  });
+}
+
 type pongGameArgsType = {
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
@@ -73,23 +85,11 @@ export function pongGame({
         if (ball.x < 0 || table.width < ball.x) {
           if (ball.x < 0) {
             setScore((prev: ScoreType): ScoreType => {
-              return {
-                leftPlayer: { ...prev.leftPlayer },
-                rightPlayer: {
-                  ...prev.rightPlayer,
-                  points: prev.rightPlayer.points + 1,
-                },
-              };
+              return generateScoreObject(0, 1, prev);
             });
           } else if (table.width < ball.x) {
             setScore((prev: ScoreType): ScoreType => {
-              return {
-                leftPlayer: {
-                  ...prev.leftPlayer,
-                  points: prev.leftPlayer.points + 1,
-                },
-                rightPlayer: { ...prev.rightPlayer },
-              };
+              return generateScoreObject(0, 1, prev);
             });
           }
           ball.reset();
