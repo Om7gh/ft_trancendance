@@ -42,7 +42,6 @@ export default class AuthController {
       last_name: payload.last_name,
       email: payload.email,
       password: hash(payload.password),
-      avatar: `https://avatar.iran.liara.run/username?username=${payload.first_name}+${payload.last_name}`,
       provider: 'local',
     } as unknown as User;
     const user = this.usersRepository.insert(newUser);
@@ -75,6 +74,13 @@ export default class AuthController {
     }
     if (!user.email_verified) {
       return reply.forbidden('email not verified yet');
+    }
+    if (!user.username) {
+      return reply.send({
+        success: true,
+        message: 'username not set',
+        next: '/auth/complete-registration',
+      });
     }
     const userMfa = this.mfaRepository.findByUserId(user.id);
     if (userMfa && userMfa.enabled) {
@@ -157,17 +163,7 @@ export default class AuthController {
         secret: '',
         pending: true,
       };
-      this.log.info('session -> ' + request.session.pendingUser);
-
-      // const jti = randomUUID();
-      // const accessToken = await this.generateAccessToken(user.uid);
-      // const refreshToken = await this.generateRefreshToken(user.uid, jti);
-      this.usersRepository.update(user.id, {
-        email_verified: 1,
-        //   last_login: Math.floor(Date.now() / 1000),
-        //   token_id: jti,
-      });
-      // reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
+      this.usersRepository.update(user.id, { email_verified: 1 });
     } catch (err: any) {
       return reply.forbidden('invalid-token');
     }
