@@ -44,8 +44,7 @@ function createConnection(
     messageHandler(event, setMatchState, setScore);
 
   return () => {
-    if (connection.ws)
-      connection.ws.close(1000, 'Close socket');
+    if (connection.ws) connection.ws.close(1000, 'Close socket');
   };
 }
 
@@ -60,7 +59,9 @@ type PlayMatchPropsType = {
 
 export function PlayMatch({ match }: PlayMatchPropsType) {
   const connection = useRef<{ ws: WebSocket | null }>({ ws: null });
-  const [matchState, setMatchState] = useState('Waiting for Opponent to join match...');
+  const [matchState, setMatchState] = useState(
+    'Waiting for Opponent to join match...'
+  );
   const [score, setScore] = useState<ScoreType | null>(null);
   const url = `http://localhost:8080/pongGame/remote/join?rid=${match.roomId}`;
 
@@ -74,7 +75,7 @@ export function PlayMatch({ match }: PlayMatchPropsType) {
     }
   }, [url]);
 
-  if ( (matchState === 'going') || (matchState === 'pause') || (matchState === 'done') )
+  if (matchState === 'going' || matchState === 'pause' || matchState === 'done')
     return (
       <Match
         connection={connection.current.ws!}

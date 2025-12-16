@@ -138,11 +138,8 @@ export function useOnlineChess() {
         const urlParams = new URLSearchParams(window.location.search);
         const pid =
           urlParams.get('playerId') || localStorage.getItem('playerId');
-        const wsHost =
-          (import.meta as any).env?.VITE_WS_HOST || window.location.hostname;
-        const wsPort = (import.meta as any).env?.VITE_WS_PORT || '9000';
         const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const baseWs = `${wsProto}://${wsHost}:${wsPort}/game/chess`;
+        const baseWs = `${wsProto}://${window.location.host}/game/chess?playerId=${user.first_name}`;
         const wsUrl = pid
           ? `${baseWs}?playerId=${encodeURIComponent(pid)}`
           : baseWs;
@@ -177,9 +174,64 @@ export function useOnlineChess() {
       }
     );
 
-    chessSocket.on('gameResume', () => {
-      setState((prev) => {});
-    });
+    chessSocket.on(
+      'gameResume',
+      ({
+        roomId,
+        myTeam,
+        board,
+        currentTurn,
+        turns,
+        opponentConnected,
+      }: {
+        roomId: string;
+        myTeam: 'WHITE' | 'BLACK';
+        board: Pieces[];
+        currentTurn: 'WHITE' | 'BLACK';
+        turns: number;
+        opponentConnected: boolean;
+      }) => {
+        console.log('🔄 Resuming game:', {
+          roomId,
+          myTeam,
+          currentTurn,
+          turns,
+        });
+
+        setState((prev) => ({
+          ...prev,
+          roomId,
+          myTeam,
+          opponentConnected,
+          gameOver: null,
+          rematch: {
+            incomingOffer: false,
+            requested: false,
+            declined: false,
+          },
+        }));
+
+        // Update chess store with resumed game state
+        useChessStore.setState({ currentTurn, turns });
+
+        // Sync the board if board data is provided
+        if (board) {
+          window.dispatchEvent(
+            new CustomEvent('syncBoard', {
+              detail: {
+                board,
+                currentTurn,
+                turns,
+                fromPlayer: 'server',
+                prevMove: null,
+              },
+            })
+          );
+        }
+
+        gameOverRef.current = false;
+      }
+    );
 
     chessSocket.on('enterMatchmaking', () => {
       console.log('enterMatchmaking event received');
@@ -240,6 +292,7 @@ export function useOnlineChess() {
       chessSocket.off('opponentDisconnected');
       chessSocket.off('disconnected');
       chessSocket.off('gameOver');
+      chessSocket.off('gameResume');
       chessSocket.off('enterMatchmaking');
       chessSocket.off('rematchOffer');
       chessSocket.off('rematchPending');
@@ -286,9 +339,11 @@ export function useOnlineChess() {
     setState((prev) => ({
       ...prev,
       roomId: null,
+      myTeam: null,
       gameOver: null,
       opponentConnected: false,
     }));
+    chessSocket.clearRoom();
     useChessStore.setState({ currentTurn: 'WHITE', turns: 1 });
   };
 

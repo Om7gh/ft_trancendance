@@ -27,13 +27,15 @@ function chessHandler(connection, req) {
     desiredId && typeof desiredId === 'string' && desiredId.length <= 64
       ? desiredId
       : uuid();
-  if (players.has(playerId)) {
-    players.get(playerId).connection = connection;
-    return;
-  }
 
-  players.set(playerId, { connection, roomId: null, ip: clientIP });
-  console.log(`New connection [${playerId}] from ${clientIP}`);
+  if (players.has(playerId)) {
+    const existingPlayer = players.get(playerId);
+    existingPlayer.connection = connection;
+    console.log(`Player reconnected [${playerId}] from ${clientIP}`);
+  } else {
+    players.set(playerId, { connection, roomId: null, ip: clientIP });
+    console.log(`New connection [${playerId}] from ${clientIP}`);
+  }
 
   connection.on('message', (rawMsg) => {
     let msg;
@@ -56,6 +58,7 @@ function handleMessage(app, playerId, msg) {
   const { type } = msg;
   switch (type) {
     case 'matchmaking':
+      console.log('and then here...');
       return handleMatchmaking(playerId, players.get(playerId).connection);
     case 'leaveMatchmaking':
       return removeFromQueue(playerId);

@@ -218,7 +218,14 @@ type MatchPropsType = {
   setMatchState: (value: string) => void;
 };
 
-export function Match({ connection, score, matchState, match, setScore, setMatchState }: MatchPropsType) {
+export function Match({
+  connection,
+  score,
+  matchState,
+  match,
+  setScore,
+  setMatchState,
+}: MatchPropsType) {
   const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const renderingContext = useRef<CanvasRenderingContext2D | null>(null);
@@ -247,16 +254,20 @@ export function Match({ connection, score, matchState, match, setScore, setMatch
   return (
     <div className="relative">
       <ScoreBar score={score} match={match} />
-      <div className="flex flex-col w-9/10 m-auto my-4">
+      <div className="flex flex-col m-auto my-10">
         <canvas
-          width="700" height="400" ref={canvasRef}
-          className="border rounded w-1/1 aspec-[7/4] m-auto"
-        >Your browser does not support HTML canvas API!!</canvas>
-        {(matchState === 'pause') && <CounterDown />}
-        {(matchState === 'done') && <Winner score={score} match={match} />}
+          width="700"
+          height="400"
+          ref={canvasRef}
+          className="border w-full aspec-[7/4] m-auto bg-slate-950/60"
+        >
+          Your browser does not support HTML canvas API!!
+        </canvas>
+        {matchState === 'pause' && <CounterDown />}
+        {matchState === 'done' && <Winner score={score} match={match} />}
       </div>
       <button
-        className="block border rounded w-1/3 my-4 p-4 m-auto"
+        className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-1/2"
         onClick={() => {
           if (matchState === 'going') {
             connection.send(
@@ -268,7 +279,9 @@ export function Match({ connection, score, matchState, match, setScore, setMatch
           }
           navigate('/dashboard/games/pingpong/remote');
         }}
-      >Leave Match</button>
+      >
+        Leave Match
+      </button>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PlayMatch } from './playMatch.tsx';
+import { RxLapTimer } from 'react-icons/rx';
 
 import axiosApiInstance from '@/axios.ts';
 
@@ -8,14 +9,15 @@ type MessageDisplayerPropsType = {
 };
 
 export type ErrorType = {
-  reason    : string;
-  errorCode : string;
-}
+  reason: string;
+  errorCode: string;
+};
 
 export function MessageDisplayer({ message }: MessageDisplayerPropsType) {
   return (
-    <div className="border rounded flex flex-col w-9/10 h-[300px] m-auto my-4">
-      <p className="m-auto text-center">{message}</p>
+    <div className=" bg-slate-950/60 shadow-xl shadow-slate-900 text-violet-200 px-2 py-6 text-xl flex gap-5 justify-center items-center">
+      <RxLapTimer className="w-8 h-8" />
+      <p className="">{message}</p>
     </div>
   );
 }
@@ -32,13 +34,17 @@ export type MatchType = {
 };
 
 export function validatePlayer(player: PlayerType) {
-  if (!player || !player.name || !player.avatar)
-    return false;
+  if (!player || !player.name || !player.avatar) return false;
   return true;
 }
 
 export function validateMatch(match: MatchType) {
-  if ( !match || !match.roomId || !validatePlayer(match.leftPlayer) || !validatePlayer(match.rightPlayer))
+  if (
+    !match ||
+    !match.roomId ||
+    !validatePlayer(match.leftPlayer) ||
+    !validatePlayer(match.rightPlayer)
+  )
     return false;
   return true;
 }
@@ -56,15 +62,17 @@ export function PlayWithSomeOne() {
         if (!ignored && response) {
           if (response.status === 200) {
             if (!validateMatch(response.data)) {
-              setError({reason: "Error: fetch invalid match", errorCode: "E111"});
+              setError({
+                reason: 'Error: fetch invalid match',
+                errorCode: 'E111',
+              });
               return;
             }
             setMatch(response.data);
-          } else
-            setError(response.data);
+          } else setError(response.data);
         }
       } catch (err) {
-        setError({reason: 'Fail to fetch match!!', errorCode: "E111"});
+        setError({ reason: 'Fail to fetch match!!', errorCode: 'E111' });
       }
     })();
 
@@ -74,9 +82,8 @@ export function PlayWithSomeOne() {
   }, []);
 
   if (error)
-    return <MessageDisplayer message={error.reason + " " + error.errorCode} />;
-  else if (match)
-    return <PlayMatch match={match} />;
+    return <MessageDisplayer message={error.reason + ' ' + error.errorCode} />;
+  else if (match) return <PlayMatch match={match} />;
 
-  return <MessageDisplayer message={"Waiting for opponent..."} />;
+  return <MessageDisplayer message={'Waiting for opponent...'} />;
 }

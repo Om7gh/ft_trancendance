@@ -58,6 +58,7 @@ class ChessWebSocket {
   }
 
   matchmaking() {
+    console.log('enter here ...');
     this.send({ type: 'matchmaking' });
   }
 
@@ -79,9 +80,12 @@ class ChessWebSocket {
   }
 
   reconnect(url: string) {
-    if (!this.roomId) return;
+    // Close existing connection if any
+    if (this.ws) {
+      this.ws.onclose = null; // Prevent triggering disconnect event
+      this.ws.close();
+    }
     this.connect(url);
-    this.send({ type: 'reconnect', roomId: this.roomId });
   }
 
   sendChat(text: string) {
@@ -166,9 +170,12 @@ class ChessWebSocket {
         });
         break;
       case 'gameResume':
+        this.roomId = message.roomId;
+        this.myTeam = message.yourTeam;
         this.emit('gameResume', {
           roomId: message.roomId,
           myTeam: message.yourTeam,
+          board: message.board,
           currentTurn: message.currentTurn,
           turns: message.turns,
           opponentConnected: message.opponentConnected,
@@ -221,6 +228,11 @@ class ChessWebSocket {
 
   declineRematch() {
     this.send({ type: 'rematchDecline' });
+  }
+
+  clearRoom() {
+    this.roomId = null;
+    this.myTeam = null;
   }
 }
 

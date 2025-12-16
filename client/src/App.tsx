@@ -5,20 +5,24 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createContext } from 'react';
-import type { signUpData } from './types/userType';
 
 const queryClient = new QueryClient();
 
-interface User extends signUpData {
+export interface User {
   avatar: string;
   bio: string;
   id: number;
+  first_name: string;
+  last_name: string;
+  last_login: number;
+  last_logout: number;
 }
 
 interface GlobalContexyType {
-  user: User | null | undefined;
+  user: User | null;
   setUser: (user: User) => void;
 }
+
 export const GlobalContext = createContext<GlobalContexyType | null>(null);
 
 const App = (): JSX.Element => {

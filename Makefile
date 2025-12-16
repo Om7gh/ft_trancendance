@@ -1,5 +1,6 @@
 
 up :
+	mkdir -p ~/data/avatars
 	docker compose up --build
 
 down:

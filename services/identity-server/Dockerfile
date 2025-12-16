@@ -9,6 +9,7 @@ RUN npm ci
 
 COPY src ./src
 
+
 RUN npm run build
 
 FROM node:24-bullseye AS final

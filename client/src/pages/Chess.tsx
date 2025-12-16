@@ -34,6 +34,7 @@ function Chess() {
   //   );
   // }
 
+  console.log(roomId, isConnected);
   return (
     <div className="flex justify-center items-center h-full">
       <div className="">

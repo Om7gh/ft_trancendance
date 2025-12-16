@@ -3,13 +3,18 @@ const send = require('../utils/send');
 const { players, rooms } = require('../utils/state');
 
 const matchmakingQueue = []; // {playerId, player socket}
-
+let i = 0;
 function handleMatchmaking(playerId, connection) {
+  console.log('playerID = ', playerId);
+  console.log(players);
+  i++;
+  console.log(i);
   if (players.has(playerId)) {
     const { roomId } = players.get(playerId);
     const room = rooms[roomId];
 
     if (room) {
+      console.log(room);
       const player = room.players.find((p) => p.playerId === playerId);
       if (player) {
         player.connection = connection;
