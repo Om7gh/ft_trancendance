@@ -4,7 +4,7 @@ import FinishRegister from './FinishRegister';
 import { Logo } from '@assets';
 
 function CompleteRegistre() {
-  const [step, setStep] = useState<number>(1);
+  const [step, setStep] = useState<number>(0);
   const nextStep = () => {
     if (step >= 1) return;
     setStep((prev) => prev + 1);
