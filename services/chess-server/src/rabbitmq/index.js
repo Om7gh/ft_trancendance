@@ -21,12 +21,15 @@ async function setupRabbit(fastify) {
 
   await channel.assertQueue(CHESS_QUEUE, { durable: true });
   channel.prefetch(1);
+  let correlationId = null;
 
   // chess -> identity : IDENTITY.REQUEST
 
   async function consume(handler) {
     await channel.consume(CHESS_QUEUE, async (msg) => {
       if (!msg) return;
+      if (msg.properties.correlationId !== correlationId)
+          return ;
       try {
         const content = JSON.parse(msg.content.toString());
         await handler(content, msg);
@@ -39,7 +42,7 @@ async function setupRabbit(fastify) {
   }
 
   function produce(queue, payload) {
-    const correlationId = uuid();
+    correlationId = uuid();
     channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)), {
       persistent: true,
       correlationId,
