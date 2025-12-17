@@ -39,6 +39,13 @@ export async function waitForOpponent(room) {
 async function playWithSomeOneHandler(request, reply) {
     const player = this.addToPlayerList(request.user);
 
+    const answer = await this.rabbitMQ.sendToQueue("NOTIFICATION_QUEUE", {
+        content     : "hello from pong service",
+        properties  : {},
+        rpc         : true,
+    });
+    console.log(answer);
+
     if (!player) {
         reply.code(503);
         throw new Error("Error: from the match making", "E001");

@@ -24,11 +24,16 @@ services:
     networks:
       - pingpong
     healthcheck:
-      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
-      interval: 10s
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping && rabbitmq-diagnostics -q check_port_connectivity"]
+      interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
+
+      # test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      # interval: 10s
+      # timeout: 5s
+      # retries: 5
+      # start_period: 30s
 
   chess:
     container_name: chess
@@ -91,6 +96,17 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  notification:
+    container_name: notification
+    build: ./services/notification-server/
+    image: notification:pingpong
+    ports:
+      - '9002:9002'
+    networks:
+      - pingpong
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
   # chat:
   #   container_name: chat
   #   build: ./server/chat-server/

@@ -45,10 +45,11 @@ function notification(fastify, opt, done) {
 
     fastify.route({
         url: '/notification',
-        nethod: 'GET',
+        method: 'GET',
         handler: notificationHandler,
     })
 
+    done();
 }
 
 export default notification;

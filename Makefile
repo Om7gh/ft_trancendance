@@ -20,3 +20,9 @@ pong:
 	docker compose down;
 	docker image rm pong:pingpong;
 	docker compose up;
+
+notification:
+	docker compose down;
+	docker image rm notification:pingpong;
+	docker compose up;
+

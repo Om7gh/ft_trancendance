@@ -1,10 +1,11 @@
-import fastify          from 'fastify';
-import cors             from '@fastify/cors';
-import websocket        from '@fastify/websocket';
-import cookie           from '@fastify/cookie';
-import axios            from 'fastify-axios'
+import fastify            from 'fastify';
+import cors               from '@fastify/cors';
+import websocket          from '@fastify/websocket';
+import cookie             from '@fastify/cookie';
+import axios              from 'fastify-axios'
 
-import { pongGame }     from './routes/pongGame.js';
+import { pongGame }       from './routes/pongGame.js';
+import rabbitMQPlugin     from './plugins/rabbitMQ.js';
 
 const app = fastify({
   logger: {
@@ -27,6 +28,23 @@ app.register(cors, {
   credentials: true,
 });
 
+async function handler (content) {
+  console.log(`pong service receive this message from rabbit mq: ${content}`);
+  return ("Hello form pong game");
+}
+
+app.register(rabbitMQPlugin, {
+  serverUrl     : 'amqp://rabbitmq',
+  queue         : {
+    name    : 'PONG_QUEUE',
+    options : {
+      durable     : true,
+      exclusive   : true,
+    }
+  },
+  asyncHandler  : handler,
+});
+
 app.register(pongGame);
 
 const start = async () => {
@@ -37,7 +55,7 @@ const start = async () => {
     });
   } catch (err) {
     app.log.error(err);
-    Process.exit(1);
+    process.exit(1);
   }
 };
 
