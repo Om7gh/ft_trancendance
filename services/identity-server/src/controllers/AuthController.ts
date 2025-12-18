@@ -1,13 +1,96 @@
 import { randomUUID } from 'crypto';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { compare, hash } from '../auth/security/cipher-util.js';
-import { asUserInfo } from '../dto/user-dto.js';
+import asUser, { asUserInfo } from '../dto/user-dto.js';
 import { User } from '../models/user.js';
-import { LoginBody, RegisterBody, UsernameBody } from '../schemas/auth.js';
+import {
+  LoginBody,
+  OAuth2Body,
+  OAuth2CallbackBody,
+  RegisterBody,
+  UsernameBody,
+} from '../schemas/auth.js';
 import saveAvatar from '../utils/avatar-utils.js';
 import { confirmMailOptions } from '../utils/mail-options.js';
 
 export default abstract class AuthController {
+  private static async issueTokens(
+    fastify: FastifyInstance,
+    user: User
+  ): Promise<[string, string]> {
+    const jti = randomUUID();
+    const accessToken = await fastify.generateAccessToken(user.uid);
+    const refreshToken = await fastify.generateRefreshToken(user.uid, jti);
+    const now = Math.floor(Date.now() / 1000);
+    fastify.usersRepository.update(user.id, {
+      last_login: now,
+      token_id: jti,
+    });
+    return [accessToken, refreshToken];
+  }
+  static async redirect(
+    this: FastifyInstance,
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) {
+    const { provider } = request.params as OAuth2Body;
+    if (!this.auth.isSupported(provider)) {
+      throw this.httpErrors.notFound(`Provider '${provider}' is not supported`);
+    }
+    request.session.pkce = this.pkce.getParams();
+    const url = this.auth.getAuthUrl(provider, request.session.pkce);
+    reply.redirect(url);
+  }
+
+  static async oauth2Login(
+    this: FastifyInstance,
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) {
+    const { provider } = request.params as OAuth2Body;
+    const { state, code, error } = request.query as OAuth2CallbackBody;
+    if (error) {
+      console.error(`OAuth error from ${provider}: ${error}`);
+      request.session.destroy((err) => {
+        if (err) console.error('failed to destroy session:', err);
+      });
+      reply.clearCookie('sessionId', { path: '/' });
+
+      const errorMsg = encodeURIComponent(
+        'authentication failed: ' + (error || 'unknown error')
+      );
+      return reply.redirect(`/signin?error=${errorMsg}`);
+    }
+    if (!code || !state) {
+      return reply.badRequest(error ?? 'missing code or state');
+    }
+    if (!request.session?.pkce) {
+      return reply.redirect(`/oauth2/${provider}`);
+    }
+    if (request.session.pkce.state !== state) {
+      request.session.destroy();
+      reply.clearCookie('sessionId', { path: '/' });
+      throw this.httpErrors.badRequest('invalid state parameter');
+    }
+    const strategy = this.auth.use(provider);
+    const tokens = await strategy.getTokens(code, request.session.pkce);
+    request.session.destroy();
+    reply.clearCookie('sessionId', { path: '/' });
+    const payload = await strategy.getUserInfo(tokens);
+    if (!payload || !payload.email) {
+      throw reply.badRequest('email not found in OAuth payload');
+    }
+    const user = this.usersRepository.findOrCreate(
+      asUser(provider, payload) as User
+    );
+    const [accessToken, refreshToken] = await AuthController.issueTokens(
+      this,
+      user
+    );
+    reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
+    return reply.redirect('/dashboard');
+  }
+
   static async signup(
     this: FastifyInstance,
     request: FastifyRequest,
@@ -85,15 +168,10 @@ export default abstract class AuthController {
         //  }
       //} else let them login normal and remove tokens from the logged user
    */
-
-    const jti = randomUUID();
-    const accessToken = await this.generateAccessToken(user.uid);
-    const refreshToken = await this.generateRefreshToken(user.uid, jti);
-    const now = Math.floor(Date.now() / 1000);
-    this.usersRepository.update(user.id, {
-      last_login: now,
-      token_id: jti,
-    });
+    const [accessToken, refreshToken] = await AuthController.issueTokens(
+      this,
+      user
+    );
     reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
     return reply.send({ success: true, next: '/dashboard' });
   }
@@ -257,14 +335,10 @@ export default abstract class AuthController {
         bio,
       });
       this.usersRepository.update(user.id, { avatar, bio });
-      const jti = randomUUID();
-      const accessToken = await this.generateAccessToken(user.uid);
-      const refreshToken = await this.generateRefreshToken(user.uid, jti);
-      const now = Math.floor(Date.now() / 1000);
-      this.usersRepository.update(user.id, {
-        last_login: now,
-        token_id: jti,
-      });
+      const [accessToken, refreshToken] = await AuthController.issueTokens(
+        this,
+        user
+      );
       reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
       return reply.send({ success: true });
     } catch (err: any) {

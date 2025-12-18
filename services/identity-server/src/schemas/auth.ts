@@ -1,5 +1,22 @@
 import { Static, Type } from '@fastify/type-provider-typebox';
 
+export const OAuth2Schema = Type.Object({ provider: Type.String() });
+
+export type OAuth2Body = Static<typeof OAuth2Schema>;
+
+export const QuerySchema = Type.Object({
+  state: Type.String(),
+  code: Type.Optional(Type.String()),
+  error: Type.Optional(Type.String()),
+});
+
+export type OAuth2CallbackBody = Static<typeof QuerySchema>;
+
+export const CallbackSchema = {
+  params: OAuth2Schema,
+  querystring: QuerySchema,
+};
+
 export const RegisterCredentials = Type.Object({
   email: Type.String({ format: 'email' }),
   password: Type.String({ minLength: 8 }),
