@@ -1,27 +1,12 @@
 import { FastifyPluginAsyncTypebox } from '@fastify/type-provider-typebox';
-import { Type } from '@sinclair/typebox';
-import { FastifyReply, FastifyRequest } from 'fastify';
 import AuthController from '../../controllers/AuthController.js';
 import { PasswordController } from '../../controllers/PasswordController.js';
-import { asUserInfo } from '../../dto/user-dto.js';
-import saveAvatar from '../../utils/avatar-utils.js';
-import { randomUUID } from 'node:crypto';
-
-const LoginCredentials = Type.Object({
-  email: Type.String({ format: 'email' }),
-  password: Type.String(),
-});
-
-const RegisterCredentials = Type.Object({
-  email: Type.String({ format: 'email' }),
-  password: Type.String({ minLength: 8 }),
-  first_name: Type.String(),
-  last_name: Type.Optional(Type.String()),
-});
-
-const ConfirmToken = Type.Object({
-  token: Type.String(),
-});
+import {
+  ConfirmToken,
+  LoginCredentials,
+  RegisterCredentials,
+  UsernameSchema,
+} from '../../schemas/auth.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.post(
@@ -46,109 +31,22 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
 
   fastify.post(
     '/check-username',
-    async function (request: FastifyRequest, reply: FastifyReply) {
-      const { username } = request.body as { username: string };
-      if (!request.session.pendingUser) {
-        return reply.badRequest('no pending authentication');
-      }
-      try {
-        const { id } = request.session.pendingUser;
-        const user = fastify.usersRepository.findById(id);
-        if (!user) {
-          return reply.forbidden('user not found');
-        }
-        if (user.username) {
-          return reply.forbidden('username already setted');
-        }
-        const isTaken = fastify.usersRepository.findByUsername(username);
-        if (isTaken) {
-          return reply.conflict('this username is taken');
-        }
-        return reply.send({ success: true });
-      } catch (err: any) {
-        return reply.badRequest(
-          'error happen when user trying to choose username'
-        );
-      }
-    }
+    { schema: { body: UsernameSchema } },
+    AuthController.checkUsername
   );
 
   fastify.post(
     '/set-username',
-    async function (request: FastifyRequest, reply: FastifyReply) {
-      const { username } = request.body as { username: string };
-      if (!request.session.pendingUser) {
-        return reply.badRequest('no pending authentication');
-      }
-      try {
-        const { id } = request.session.pendingUser;
-        const user = fastify.usersRepository.findById(id);
-        if (!user) {
-          return reply.forbidden('user not found');
-        }
-        if (user.username) {
-          return reply.forbidden('username already setted');
-        }
-        const isTaken = fastify.usersRepository.findByUsername(username);
-        if (isTaken) {
-          return reply.conflict('this username is taken');
-        }
-        fastify.usersRepository.update(id, { username: username });
-        request.session.user = { ...user, username };
-        return reply.send({ success: true });
-      } catch (err: any) {
-        return reply.badRequest('set-username: error');
-      }
-    }
+    { schema: { body: UsernameSchema } },
+    AuthController.setUsername
   );
 
-  fastify.post(
-    '/complete-profile',
-    async function (request: FastifyRequest, reply: FastifyReply) {
-      let { avatar, bio } = request.body as {
-        avatar: string | undefined | null;
-        bio: string;
-      };
-      if (!request.session.pendingUser) {
-        return reply.badRequest('no pending authentication');
-      }
-      try {
-        const user = request.session.user;
-        if (!avatar) {
-          avatar = await saveAvatar(
-            user.uid,
-            `${user.first_name.at(0)}${user.last_name.at(0)}`,
-            `${user.username}.svg`
-          );
-        }
-        this.usersRepository.update(user.id, {
-          avatar,
-          bio,
-        });
-        this.usersRepository.update(user.id, { avatar, bio });
-        const jti = randomUUID();
-        const accessToken = await this.generateAccessToken(user.uid);
-        const refreshToken = await this.generateRefreshToken(user.uid, jti);
-        const now = Math.floor(Date.now() / 1000);
-        this.usersRepository.update(user.id, {
-          last_login: now,
-          token_id: jti,
-        });
-        reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
-        return reply.send({ success: true });
-      } catch (err: any) {
-        return reply.badRequest('complete-profile: error ' + err.message);
-      }
-    }
-  );
+  fastify.post('/complete-profile', AuthController.completeProfile);
 
   fastify.get(
     '/userinfo',
     { onRequest: fastify.authenticate },
-    async function (request: FastifyRequest, reply: FastifyReply) {
-      const userInfo = asUserInfo(request.session.user);
-      return reply.send(userInfo);
-    }
+    AuthController.userInfo
   );
 
   fastify.post('/forgot-password', PasswordController.forgotPassword);

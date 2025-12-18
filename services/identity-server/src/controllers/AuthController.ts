@@ -1,31 +1,13 @@
-import { Static, Type } from '@fastify/type-provider-typebox';
 import { randomUUID } from 'crypto';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { compare, hash } from '../auth/security/cipher-util.js';
+import { asUserInfo } from '../dto/user-dto.js';
 import { User } from '../models/user.js';
+import { LoginBody, RegisterBody, UsernameBody } from '../schemas/auth.js';
+import saveAvatar from '../utils/avatar-utils.js';
 import { confirmMailOptions } from '../utils/mail-options.js';
 
-const LoginCredentials = Type.Object({
-  email: Type.String({ format: 'email' }),
-  password: Type.String(),
-});
-
-type LoginBody = Static<typeof LoginCredentials>;
-
-// const ConfirmToken = Type.Object({
-//   token: Type.String(),
-// });
-
-const RegisterCredentials = Type.Object({
-  email: Type.String({ format: 'email' }),
-  password: Type.String({ minLength: 8 }),
-  first_name: Type.String(),
-  last_name: Type.Optional(Type.String()),
-});
-
-type RegisterBody = Static<typeof RegisterCredentials>;
-
-export default class AuthController {
+export default abstract class AuthController {
   static async signup(
     this: FastifyInstance,
     request: FastifyRequest,
@@ -134,7 +116,7 @@ export default class AuthController {
       this.usersRepository.update(user.id, {
         token_id: 'user-logged-out',
       });
-      reply.clearAccessToken().clearRefreshToken();
+      return reply.clearAccessToken().clearRefreshToken();
     } catch (err: any) {
       return reply.badRequest(err);
     }
@@ -164,9 +146,134 @@ export default class AuthController {
         pending: true,
       };
       this.usersRepository.update(user.id, { email_verified: 1 });
+      return reply.redirect('/auth/complete-registration');
     } catch (err: any) {
       return reply.forbidden('invalid-token');
     }
-    return reply.redirect('/auth/complete-registration');
+  }
+
+  private static async validateUsername(
+    fastify: FastifyInstance,
+    request: FastifyRequest,
+    reply: FastifyReply,
+    username: string
+  ) {
+    const pendingUser = request.session.pendingUser;
+    if (!pendingUser) {
+      reply.badRequest('no pending authentication');
+      return null;
+    }
+
+    const user = fastify.usersRepository.findById(pendingUser.id);
+    if (!user) {
+      reply.forbidden('user not found');
+      return null;
+    }
+
+    if (user.username) {
+      reply.forbidden('username already set');
+      return null;
+    }
+
+    const isTaken = fastify.usersRepository.findByUsername(username);
+    if (isTaken) {
+      reply.conflict('username is taken');
+      return null;
+    }
+
+    return user;
+  }
+
+  static async checkUsername(
+    this: FastifyInstance,
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) {
+    try {
+      const { username } = request.body as UsernameBody;
+
+      const user = await AuthController.validateUsername(
+        this,
+        request,
+        reply,
+        username
+      );
+      if (!user) return;
+
+      return reply.send({ success: true });
+    } catch (err: any) {
+      return reply.badRequest(`check-username: ${err.message}`);
+    }
+  }
+
+  static async setUsername(
+    this: FastifyInstance,
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) {
+    try {
+      const { username } = request.body as UsernameBody;
+
+      const user = await AuthController.validateUsername(
+        this,
+        request,
+        reply,
+        username
+      );
+      if (!user) return;
+
+      this.usersRepository.update(user.id, { username });
+      request.session.user = { ...user, username };
+
+      return reply.send({ success: true });
+    } catch (err: any) {
+      return reply.badRequest(`set-username: ${err.message}`);
+    }
+  }
+
+  static async completeProfile(
+    this: FastifyInstance,
+    request: FastifyRequest,
+    reply: FastifyReply
+  ) {
+    let { avatar, bio } = request.body as {
+      avatar: string | undefined | null;
+      bio: string;
+    };
+    if (!request.session.pendingUser) {
+      return reply.badRequest('no pending authentication');
+    }
+    try {
+      const user = request.session.user;
+      if (!avatar) {
+        avatar = await saveAvatar(
+          user.uid,
+          `${user.first_name.at(0)}${user.last_name.at(0)}`,
+          `${user.username}.svg`
+        );
+      }
+      this.usersRepository.update(user.id, {
+        avatar,
+        bio,
+      });
+      this.usersRepository.update(user.id, { avatar, bio });
+      const jti = randomUUID();
+      const accessToken = await this.generateAccessToken(user.uid);
+      const refreshToken = await this.generateRefreshToken(user.uid, jti);
+      const now = Math.floor(Date.now() / 1000);
+      this.usersRepository.update(user.id, {
+        last_login: now,
+        token_id: jti,
+      });
+      reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
+      return reply.send({ success: true });
+    } catch (err: any) {
+      return reply.badRequest('complete-profile: error ' + err.message);
+    }
+  }
+
+  static async userInfo(request: FastifyRequest, reply: FastifyReply) {
+    const userInfo = asUserInfo(request.session.user);
+    return reply.send(userInfo);
   }
 }
