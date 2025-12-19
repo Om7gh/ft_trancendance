@@ -115,6 +115,8 @@ export class FriendshipController {
       app.friendshipRepository.update(friendships[0].id, {
         status: 1  
       })
+
+      
       const response = {
         success: true,
         data: null

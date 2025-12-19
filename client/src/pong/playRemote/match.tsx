@@ -74,16 +74,16 @@ type Paddle = {
   y: number;
   width: number;
   height: number;
+  color: string;
 };
 
 function drawPaddle(
   paddle: Paddle,
   context: CanvasRenderingContext2D,
-  color = 'black'
 ) {
   if (paddle && context) {
     context.beginPath();
-    context.strokeStyle = color;
+    context.strokeStyle = paddle.color;
     context.lineWidth = paddle.width;
     context.moveTo(paddle.x, paddle.y);
     context.lineTo(paddle.x, paddle.y + paddle.height);

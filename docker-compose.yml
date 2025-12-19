@@ -14,27 +14,7 @@ services:
       - pong
     volumes:
       - $HOME/data/avatars:/usr/share/nginx/html/avatars:ro
-
-  # rabbitmq:
-  #   container_name: rabbitmq
-  #   image: rabbitmq:3-management
-  #   ports:
-  #     - '15672:15672'
-  #     - '5672:5672'
-  #   networks:
-  #     - pingpong
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping && rabbitmq-diagnostics -q check_port_connectivity"]
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 10
-
-      # test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
-      # interval: 10s
-      # timeout: 5s
-      # retries: 5
-      # start_period: 30s
-
+    
   chess:
     container_name: chess
     build: ./services/chess-server/
@@ -45,9 +25,6 @@ services:
       - ./services/chess-server/.env
     networks:
       - pingpong
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
 
   identity:
     container_name: identity
@@ -62,9 +39,6 @@ services:
       - $HOME/data/avatars:/var/avatars
     networks:
       - pingpong
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
 
   client:
     container_name: client
@@ -92,9 +66,6 @@ services:
       - '9001:9001'
     networks:
       - pingpong
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
 
   notification:
     container_name: notification
@@ -104,9 +75,7 @@ services:
       - '9002:9002'
     networks:
       - pingpong
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
+
   # chat:
   #   container_name: chat
   #   build: ./server/chat-server/

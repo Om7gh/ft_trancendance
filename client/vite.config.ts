@@ -100,7 +100,7 @@ export default defineConfig(({ mode }) => ({
     open: false,
     cors: true,
     strictPort: true,
-    allowedHosts: ['nginx', 'localhost', '.localhost'],
+    allowedHosts: ['nginx', 'localhost', '.localhost', 'bramzil.42.fr'],
     hmr: {
       overlay: false,
       clientPort: 3000,

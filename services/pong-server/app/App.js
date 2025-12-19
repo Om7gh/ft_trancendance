@@ -4,7 +4,7 @@ import websocket          from '@fastify/websocket';
 import cookie             from '@fastify/cookie';
 import axios              from 'fastify-axios'
 
-import { pongGame }       from './routes/pongGame.js';
+import pongGame           from './routes/pongGame.js';
 
 const app = fastify({
   logger: {

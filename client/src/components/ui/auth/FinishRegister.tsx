@@ -1,5 +1,4 @@
-import axiosApiInstance from '@/axios';
-import useCompleteRegistration from '@/services/auth/useCompleteSignUp';
+import axiosApiInstance from '@/axiosApiInstance';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
