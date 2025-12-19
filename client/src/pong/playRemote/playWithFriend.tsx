@@ -6,7 +6,7 @@ import type { ErrorType, MatchType } from "./playWithSomeOne.tsx";
 import { PlayMatch } from "./playMatch.tsx";
 import { validateMatch, MessageDisplayer } from "./playWithSomeOne.tsx";
 
-import axiosApiInstance from '../../axios.ts';
+import axiosApiInstance from '../../axiosApiInstance.ts';
 
 type FriendObject = {
     id          : string;
@@ -72,7 +72,7 @@ export function PlayWithFriend() {
     const [error, setError] = useState<ErrorType | null>(null);
     const [friend, setFriend] = useState<string | null>(null);
     const [match, setMatch] = useState<MatchType | undefined>(undefined);
-    const url = `/pongGame/invite?fid=${friend}`;
+    const url = `/pongGame/invite?q=send&fid=${friend}`;
 
     useEffect(() => {
         let ignored = false;

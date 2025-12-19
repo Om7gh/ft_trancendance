@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { PlayMatch } from './playMatch.tsx';
 import { RxLapTimer } from 'react-icons/rx';
 
-import axiosApiInstance from '@/axios.ts';
+import axiosApiInstance from '@/axiosApiInstance.ts';
 
 type MessageDisplayerPropsType = {
   message: string;
@@ -69,7 +69,8 @@ export function PlayWithSomeOne() {
               return;
             }
             setMatch(response.data);
-          } else setError(response.data);
+          } else
+            setError(response.data);
         }
       } catch (err) {
         setError({ reason: 'Fail to fetch match!!', errorCode: 'E111' });

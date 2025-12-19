@@ -1,95 +1,61 @@
-import { joinMatch } from "./joinMatch.js";
-import { invite } from "./invitefriendToMatch.js";
-import { playWithSomeOne } from "./playWithSomeOne.js";
-import { Player, Room, Invitation } from "./pongClasses.js";
+// import { Player, Room} from "./pongClasses.js";
+
+import joinMatch        from "./joinMatch.js";
+// import fakeFriends      from "./fakeFriends.js";
+import playWithSomeOne  from "./playWithSomeOne.js";
+// import invitation       from "./playWithFriend.js";
+
+import Room from "../gameClasses.js/roomClass.js";
 
 import { PongError } from './pongClasses.js';
 
-function generateId() {
-    return (Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
-}
-
-function getPlayerById(uid) {
-
-    for (let player of this.playerList) {
-        if (player.id === uid) {
-            return (player);
+function alreadyInMatch(userId) {
+    for (let [id, room] of this.roomList) {
+        if (room.isPlayer(userId)) {
+            return (room);
         }
     }
     return (null);
 }
 
-function addPlayerToRoom(player) {
+function createRoom() {
+    const room = new Room();
 
-    if (!this.currentRoom || this.currentRoom.ready() || (this.currentRoom.state === "done")) {
-        this.currentRoom = new Room(this.generateId());
-        this.log.info(`create new room with id: ${this.currentRoom.id}`);
+    this.log.info(`create new room with id: ${room.id}`);
+    this.roomList.set(room.id, room);
+    room.on("done", () => {
+        this.roomList.delete(room.id);
+        this.log.info(`delete room with id: ${room.id}`);
+    })
+    return (room);
+}
+
+function addPlayerToRoom(user) {
+
+    if (!this.currentRoom) {
+        this.currentRoom = this.createRoom();
     }
 
     if (this.currentRoom) {
-        this.currentRoom.addPlayer(player);
-        this.log.info(`add player with id: ${player.id} to room with id: ${this.currentRoom.id}`);
+        this.currentRoom.addPlayer(user);
+        this.log.info(`add player with id: ${user.id} to room with id: ${this.currentRoom.id}`);
+        if (this.currentRoom.getState() === "ready") {
+            this.currentRoom = null;
+        }
     }
 
     return (this.currentRoom);
 }
 
-function addToPlayerList(user) {
-    var player = this.playerList.find((player) => player.id === user.id);
-
-    if (!player) {
-        player = new Player(user, null);
-        
-        if (player) {
-            this.log.info(`add player with id: ${player.id} to playerList`);
-            this.playerList.push(player);
-        }
-    }
-    return (player);
-}
-
-async function onRequestHookHandler(request, reply) {
-    const cookie = request.headers.cookie;
-
-    if (!cookie) {
-        reply.code(401).send();
-        return ;
-    }
-   
-    try {
-
-        const response = await this.axios.get("http://identity:4000/auths/userinfo", {
-            headers: {
-                Cookie: cookie,
-            }
-        });
-        
-        if (response.status !== 200) {
-            reply.code(401).send();
-            return ;
-        }
-        
-        request.user = await response.data;
-    } catch (err) {
-        reply.code(401).send();
-    }
-}
-
 export function pongGame(fastify, options, done) {
+    
+    fastify.decorate('currentRoom', null);
+    fastify.decorate('roomList', new Map());
 
-    fastify.decorate('playerList'       , new Array());
-
-    fastify.decorate('currentRoom'      , null);
-
-    fastify.decorate('generateId'       , generateId);
-
-    fastify.decorate('getPlayerById'    , getPlayerById);
-
-    fastify.decorate('addToPlayerList'  , addToPlayerList);
-
-    fastify.decorate('addPlayerToRoom'  , addPlayerToRoom);
-
-    fastify.addHook('onRequest', onRequestHookHandler);
+    fastify.decorate('createRoom', createRoom);
+    fastify.decorate('alreadyInMatch', alreadyInMatch);
+    fastify.decorate('addPlayerToRoom', addPlayerToRoom);
+    
 
     fastify.setErrorHandler((error, request, reply) => {
         if (error && (typeof(error) === PongError)) {
@@ -101,8 +67,9 @@ export function pongGame(fastify, options, done) {
     });
 
     fastify.register(playWithSomeOne);
+    // fastify.register(playWithFriend);
     fastify.register(joinMatch);
-    fastify.register(invite);
+    // fastify.register(fakeFriends);
 
     done();
 }

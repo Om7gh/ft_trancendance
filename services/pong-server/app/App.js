@@ -5,7 +5,6 @@ import cookie             from '@fastify/cookie';
 import axios              from 'fastify-axios'
 
 import { pongGame }       from './routes/pongGame.js';
-import rabbitMQPlugin     from './plugins/rabbitMQ.js';
 
 const app = fastify({
   logger: {
@@ -26,23 +25,6 @@ app.register(cors, {
   origin: '*',
   methods: ['GET'],
   credentials: true,
-});
-
-async function handler (content) {
-  console.log(`pong service receive this message from rabbit mq: ${content}`);
-  return ("Hello form pong game");
-}
-
-app.register(rabbitMQPlugin, {
-  serverUrl     : 'amqp://rabbitmq',
-  queue         : {
-    name    : 'PONG_QUEUE',
-    options : {
-      durable     : true,
-      exclusive   : true,
-    }
-  },
-  asyncHandler  : handler,
 });
 
 app.register(pongGame);

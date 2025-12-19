@@ -1,7 +1,8 @@
+import { v4 as uuid } from 'uuid';
 import { EventEmitter } from 'node:events'
 
+
 export class Paddle {
-    
     constructor(x, y, table) {
         this.x                  = x;
         this.y                  = y;
@@ -198,16 +199,12 @@ export class Player extends EventEmitter {
     }
 }
 
-function generateId() {
-    return (Date.now().toString(36) + Math.random().toString(36).substr(2, 5));
-}
-
 export class Room extends EventEmitter {
 
     constructor() {
         super();
 
-        this.id             = generateId();
+        this.id             = uuid();
         this.state          = "waiting";
         this.winner         = null;
         this.date           = Math.floor(Date.now() / 1000);
@@ -500,7 +497,7 @@ export class Room extends EventEmitter {
 export class Invitation {
 
     constructor(type, sender, receiver, room) {
-        this.id         = generateId();
+        this.id         = uuid();
         this.type       = type;
         this.sender     = sender;
         this.receiver   = receiver;
@@ -559,6 +556,7 @@ class TournamentRoom extends Room {
 class Round extends EventEmitter {
 
     constructor() {
+        this.id         = uuid();
         this.state      = "waiting";
         this.players    = null;
         this.rooms      = [];
@@ -627,6 +625,7 @@ class Round extends EventEmitter {
             rooms.push(this.rooms[i].toJSON());
         }
         return ({
+            id      : this.id,
             state   : this.state,
             matchs  : rooms,
         })
@@ -637,7 +636,7 @@ class Round extends EventEmitter {
 export class Tournament {
 
     constructor() {
-        this.id             = generateId();
+        this.id             = uuid;
         this.state          = "waiting";
 
         this.currentRound   = null;

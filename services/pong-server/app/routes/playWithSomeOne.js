@@ -1,22 +1,4 @@
-import { PongError } from './pongClasses.js';
-
-// export function waitForOpponent(reply, room, uid) {
-//     var counter  = 0;
-
-//     const waiter = () => {
-//         if (room.full()) {
-//             reply.code(200).send(JSON.stringify(room.generateMatch()));
-//         } else if (!room.full() && (10 < counter)) {
-//             reply.code(408).send({reason: "Error: from the match making", errorCode: "E203"});
-//             room.stopMatch();
-//             return ;
-//         }
-//         setTimeout(waiter, 1000);
-//         counter++;
-//     };
-
-//     waiter();
-// }
+import { PongError, Invitation } from './pongClasses.js';
 
 export async function waitForOpponent(room) {
     let counter = null;
@@ -29,7 +11,7 @@ export async function waitForOpponent(room) {
                 resolve();
             } else if (60 < counter) {
                 clearInterval(intervalId);
-                reject();
+                reject({reason: "Error: Waiting for opponent too long!!", errorCode: "E203"});
             }
             counter++;
         }, 1000);
@@ -37,54 +19,26 @@ export async function waitForOpponent(room) {
 }
 
 async function playWithSomeOneHandler(request, reply) {
-    const player = this.addToPlayerList(request.user);
-
-    const answer = await this.rabbitMQ.sendToQueue("NOTIFICATION_QUEUE", {
-        content     : "hello from pong service",
-        properties  : {},
-        rpc         : true,
-    });
-    console.log(answer);
-
-    if (!player) {
-        reply.code(503);
-        throw new Error("Error: from the match making", "E001");
+    var room = this.alreadyInMatch(user.id);
+        
+    if (room) {
+        reply.code(200).send(JSON.stringify(room.generateMatch()));
+        return ;
     }
-
-    if (player.inMatch()) {
-        const oid = player.room.getOpponentId(player.id);
-            
-        if (oid) {
-            reply.code(200).send(JSON.stringify(player.room.generateMatch()));
-            return ;
-        }
-    }
-
-    const room = this.addPlayerToRoom(player);
+    
+    room = this.addPlayerToRoom(user);
 
     if (!room) {
         reply.code(503);
-        throw new Error("Error: from the match making", "E002");
+        throw new Error("Server overloaded, try later!!", "E002");
     }
-
-    player.room = room;
-
-    room.on("done", () => {
-        console.log(`room with id ${room.id} is done`);
-        player.room = null;
-    })
-
+    
     await waitForOpponent(room)
-        .then(() => {
-            reply.code(200).send(JSON.stringify(room.generateMatch()));
-        })
-        .catch(() => {
-            reply.code(408).send({reason: "Error: Waiting for opponent too long!!", errorCode: "E203"});
-            room.stopMatch();
-        });
+    
+    reply.code(200).send(JSON.stringify(room.generateMatch()));
 }
 
-export function playWithSomeOne(fastify, options, done) {
+export default function playWithSomeOne(fastify, options, done) {
 
     fastify.route({
         url     : '/pongGame/remote/someone',

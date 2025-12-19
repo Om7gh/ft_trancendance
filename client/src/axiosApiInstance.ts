@@ -7,20 +7,23 @@ const axiosApiInstance = axios.create({
 
 let isRefreshing = false;
 
-type FailedQueueType = {
+type FailedRequestQueueType = {
   resolve: (value: unknown) => void;
   reject: (reasion?: any) => void;
 };
 
-let failedQueue: FailedQueueType[] = [];
+let failedRequestQueue: FailedRequestQueueType[];
 
-const processQueue = (error: unknown) => {
-  failedQueue.forEach((prom) => {
-    if (error) prom.reject(error);
-    else prom.resolve(undefined);
+function processRequestsQueue(error: unknown) {
+  
+  failedRequestQueue.forEach((prom) => {
+    if (error)
+      prom.reject(error);
+    else
+      prom.resolve(undefined);
   });
 
-  failedQueue = [];
+  failedRequestQueue = [];
 };
 
 axiosApiInstance.interceptors.response.use(
@@ -28,34 +31,29 @@ axiosApiInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status !== 401 || originalRequest._retry) {
+    if ((error.response?.status !== 401) || originalRequest._retry) {
       return Promise.reject(error);
     }
 
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
-        failedQueue.push({ resolve, reject });
-      })
-        .then(() => axiosApiInstance(originalRequest))
+        failedRequestQueue.push({ resolve, reject });
+      }).then(() => axiosApiInstance(originalRequest))
         .catch((err) => Promise.reject(err));
     }
 
     originalRequest._retry = true;
+
     isRefreshing = true;
 
     try {
-      const newAxiosInstance = axios.create({
-        baseURL: 'http://localhost:8080',
-        withCredentials: true,
-      })
+      await axios.post('http://localhost:8080/auths/refresh');
 
-      await newAxiosInstance.post('/auths/refresh');
-
-      processQueue(null);
+      processRequestsQueue(null);
       return axiosApiInstance(originalRequest);
-    } catch (err) {
-      processQueue(err);
-      return Promise.reject(err);
+    } catch (error) {
+      processRequestsQueue(error);
+      throw error;
     } finally {
       isRefreshing = false;
     }
