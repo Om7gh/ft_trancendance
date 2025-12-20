@@ -1,5 +1,3 @@
-import headersSchema from '../schemas/headersSchema.js';
-
 export function alreadyInMatch(roomList, userId) {
     for (let [id, room] of roomList) {
         if (room.isPlayer(userId)) {
@@ -20,7 +18,9 @@ export async function waitForOpponent(room) {
                 resolve();
             } else if (60 < counter) {
                 clearInterval(intervalId);
-                reject({reason: "Error: Waiting for opponent too long!!", errorCode: "E203"});
+                const error = new Error("Waiting for opponent too long!!");
+                error.statusCode = 408;
+                reject(error);
             }
             counter++;
         }, 1000);
@@ -32,14 +32,15 @@ async function playWithSomeOneHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        reply.code(400);
-        throw new Error("Invalid user passed to handler!!");
+        const error = new Error("Invalid user passed to handler!!")
+        error.statusCode = 400;
+        throw error;
     }
 
     var   room  = alreadyInMatch(this.roomList, user.id);
         
     if (room && (room.getState() !== "done")) {
-        reply.code(200).send(JSON.stringify(room.generateMatch()));
+        reply.send(JSON.stringify(room.generateMatch()));
         return ;
     }
     
@@ -50,13 +51,11 @@ async function playWithSomeOneHandler(request, reply) {
     reply.send(JSON.stringify(room.generateMatch()));
 }
 
-export default function playWithSomeOne(fastify, options, done) {
+export default async function playWithSomeOne(fastify, options) {
 
     fastify.route({
         url     : '/pongGame/remote/someone',
         method  : 'GET',
         handler : playWithSomeOneHandler,
     })
-    
-    done();
 }

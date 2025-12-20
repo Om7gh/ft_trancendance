@@ -1,14 +1,12 @@
 import onRequestHook from "../hooks/onRequestHook.js";
 import playWithSomeOne from "./playWithSomeOne.js";
 import inviteFriendToMatch from "./inviteFriendToMatch.js";
-import acceptMatchInvitation from "./acceptMatchInvite.js";
+import acceptMatchInvitation from "./acceptMatchInvitation.js";
 import joinMatch from "./joinMatch.js";
 import Room from "../gameClasses/roomClass.js";
 import errorHandler from "../plugins/errorHandler.js";
 
 // import fakeFriends      from "./fakeFriends.js";
-
-import { PongError } from './pongClasses.js';
 
 
 function createRoom() {
@@ -41,12 +39,14 @@ export default function pongGame(fastify, options, done) {
     
     fastify.decorate('currentRoom', null);
     fastify.decorate('roomList', new Map());
+    fastify.decorate("invitationList", new Map());
 
     fastify.decorate('createRoom', createRoom);
     fastify.decorate('addPlayerToRoom', addPlayerToRoom);
 
     fastify.register(onRequestHook);
     fastify.register(errorHandler);
+
     fastify.register(playWithSomeOne);
     fastify.register(inviteFriendToMatch);
     fastify.register(acceptMatchInvitation);

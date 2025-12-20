@@ -1,28 +1,19 @@
-import fastify          from 'fastify';
-import cors             from '@fastify/cors';
-import axios            from 'fastify-axios';
-import cookie           from '@fastify/cookie';
-
-import notification     from './routes/notification.js';
+import fastify from 'fastify';
+import cookie from '@fastify/cookie';
+import axios from 'fastify-axios';
+import corsPlugin from './plugins/corsPlugin.js';
+import notification from './routes/notification.js';
+import validateUser from './plugins/validateUser.js';
 
 const app = fastify({
-  logger: {
-    level: 'debug',
-    transport: {
-      target: 'pino-pretty',
-    },
-  },
+  logger: {level: 'debug',transport: {target: 'pino-pretty',},},
 });
 
 app.register(axios);
 
 app.register(cookie);
-
-app.register(cors, {
-  origin: '*',
-  methods: ['GET'],
-  credentials: true,
-});
+app.register(corsPlugin);
+app.register(validateUser);
 
 app.register(notification);
 

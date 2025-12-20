@@ -43,7 +43,7 @@ function CompleteRegistre() {
           </div>
           <div>
             {step === 0 && <CreateUsername next={nextStep} />}
-            {step === 1 && <FinishRegister next={nextStep} />}
+            {step === 1 && <FinishRegister />}
           </div>
         </div>
       </div>

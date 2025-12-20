@@ -1,13 +1,12 @@
-const querySchema = {
+const acceptQuerySchema = {
   querystring: {
     type: 'object',
-    required: ['q', 'rid'],
+    required: ['iid'],
     additionalProperties: false,
     properties: {
-      q: { type: 'string', const: 'accept' },
       iid: { type: 'string', minLength: 10 },
     }
   }
 };
 
-export default querySchema;
+export default acceptQuerySchema;

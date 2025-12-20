@@ -1,28 +1,29 @@
-async function notificationHandler(request, reply) {
-    const uid       = request.user.id;
-    const result    = this.notifications.get(uid);
+import notificationSchema from "../../schemas/notificationSchema.js";
 
-    if (result) {
-        reply.send(result);
-        this.notifications.delete(uid);
+async function sendNotificationHandler(request, reply) {
+    const notification          = request.body;
+    const receiver              = notification.receiver;
+    const pendingNotifications  = this.notifications.get(receiver.uid);
+
+    console.log("from identity ----------> to notification: ", notification)
+
+    if (pendingNotifications) {
+        pendingNotifications.push(notification);
     } else {
-        reply.send([]);
+        this.notifications.set(receiver.uid, [notification,])
     }
+
+    return ("Notifiaction queued successfully.");
 }
 
-function notificationPrivateApi(fastify, opt, done) {
-
-    fastify.decorate('notifications', new Map());
-
-    fastify.addHook('onRequest', onRequestHookHandler);
+async function sendNotification(fastify, opt) {
 
     fastify.route({
-        url: '/notifications/send',
+        url: '/send',
         method: 'post',
-        handler: notificationHandler,
+        schema: notificationSchema,
+        handler: sendNotificationHandler,
     })
-
-    done();
 }
 
-export default notificationPrivateApi;
+export default sendNotification;
