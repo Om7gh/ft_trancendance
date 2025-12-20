@@ -23,6 +23,7 @@ export function MessageDisplayer({ message }: MessageDisplayerPropsType) {
 }
 
 export type PlayerType = {
+  id: string;
   name: string;
   avatar: string;
 };
@@ -34,11 +35,13 @@ export type MatchType = {
 };
 
 export function validatePlayer(player: PlayerType) {
-  if (!player || !player.name || !player.avatar) return false;
+  if (!player || !player.id || !player.name)
+    return false;
   return true;
 }
 
 export function validateMatch(match: MatchType) {
+  console.log(match);
   if (
     !match ||
     !match.roomId ||

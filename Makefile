@@ -21,6 +21,11 @@ pong:
 	docker image rm pong:pingpong;
 	docker compose up;
 
+nginx:
+	docker compose down;
+	docker image rm nginx:pingpong;
+	docker compose up;
+
 notification:
 	docker compose down;
 	docker image rm notification:pingpong;

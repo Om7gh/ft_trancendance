@@ -1,4 +1,4 @@
-import SearchBar from '../friends/SearchBar';
+import SearchBar from '../utils/SearchBar';
 
 export default function AllFriends() {
   return (

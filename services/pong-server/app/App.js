@@ -1,32 +1,22 @@
-import fastify            from 'fastify';
-import cors               from '@fastify/cors';
-import websocket          from '@fastify/websocket';
-import cookie             from '@fastify/cookie';
-import axios              from 'fastify-axios'
+import fastify from 'fastify';
+import websocket from '@fastify/websocket';
+import cookie from '@fastify/cookie';
+import axios from 'fastify-axios';
+import corsPlugin from './plugins/corsPlugin.js';
+import validateUser from './plugins/validateUser.js';
 
-import { pongGame }       from './routes/pongGame.js';
+import pongGame from './routes/pongGame.js';
 
 const app = fastify({
-  logger: {
-    level: 'debug',
-    transport: {
-      target: 'pino-pretty',
-    },
-  },
+  logger: {level: 'debug',transport: {target: 'pino-pretty',},},
 });
 
 app.register(axios);
-
-app.register(cookie);
-
 app.register(websocket);
 
-app.register(cors, {
-  origin: '*',
-  methods: ['GET'],
-  credentials: true,
-});
-
+app.register(cookie);
+app.register(corsPlugin);
+app.register(validateUser);
 app.register(pongGame);
 
 const start = async () => {
