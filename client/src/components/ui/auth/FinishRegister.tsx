@@ -44,7 +44,7 @@ function FinishRegister({ next }: { next: () => void }) {
             id="avatar"
             name="avatar"
             type="file"
-            accept="*.png"
+            accept="image/*"
             onChange={handleFileChange}
             className="hidden"
           />
