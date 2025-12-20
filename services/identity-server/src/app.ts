@@ -1,6 +1,12 @@
-import AutoLoad from '@fastify/autoload'
-import { FastifyInstance, FastifyPluginOptions, FastifyServerOptions } from 'fastify'
-import path from 'node:path'
+import AutoLoad from '@fastify/autoload';
+import {
+  FastifyInstance,
+  FastifyPluginOptions,
+  FastifyReply,
+  FastifyRequest,
+  FastifyServerOptions,
+} from 'fastify';
+import path from 'node:path';
 
 export const options: FastifyServerOptions = {
   ignoreTrailingSlash: true, //! to be kept in production
@@ -12,53 +18,59 @@ export const options: FastifyServerOptions = {
         colorize: true,
         translateTime: 'HH:MM:ss Z',
         ignore: 'pid,hostname',
-        singleLine: false
-      }
-    }
-  }
-}
+        singleLine: false,
+      },
+    },
+  },
+};
 
-export default async function um(fastify: FastifyInstance, opts: FastifyPluginOptions) {
+export default async function um(
+  fastify: FastifyInstance,
+  opts: FastifyPluginOptions
+) {
   await fastify.register(AutoLoad, {
     dir: path.join(import.meta.dirname, 'plugins/extern'),
     options: {},
-  })
+  });
 
   fastify.register(AutoLoad, {
     dir: path.join(import.meta.dirname, 'plugins/app'),
     options: { ...opts },
-  })
+  });
 
   fastify.register(AutoLoad, {
     dir: path.join(import.meta.dirname, 'routes'),
     autoHooks: true,
     cascadeHooks: true,
     options: { ...opts },
-  })
+  });
 
-  fastify.setErrorHandler((err: any, request, reply) => {
-    fastify.log.error(
-      {
-        err,
-        request: {
-          method: request.method,
-          url: request.url,
-          query: request.query,
-          params: request.params,
-        },
-      },
-      'Unhandled error occurred'
-    )
+  fastify.setErrorHandler(
+    (err: any, request: FastifyRequest, reply: FastifyReply) => {
+      if (!err.statusCode || err.statusCode >= 500) {
+        fastify.log.error(
+          {
+            err,
+            request: {
+              method: request.method,
+              url: request.url,
+              query: request.query,
+              params: request.params,
+            },
+          },
+          'Unhandled error occurred'
+        );
+      }
+      reply.code(err.statusCode ?? 500);
 
-    reply.code(err.statusCode ?? 500)
+      let message = 'Internal Server Error';
+      if (err.statusCode && err.statusCode < 500) {
+        message = err.message;
+      }
 
-    let message = 'Internal Server Error'
-    if (err.statusCode && err.statusCode < 500) {
-      message = err.message
+      return { message };
     }
-
-    return { message }
-  })
+  );
 
   fastify.setNotFoundHandler(
     {
@@ -78,11 +90,11 @@ export default async function um(fastify: FastifyInstance, opts: FastifyPluginOp
           },
         },
         'Resource not found'
-      )
+      );
 
-      reply.code(404)
+      reply.code(404);
 
-      return { message: 'Not Found' }
+      return { message: 'Not Found' };
     }
-  )
+  );
 }
