@@ -18,7 +18,7 @@ export { default as MyScore } from "./dashboard/MyScore.tsx";
 export { default as PlayerChart } from "./dashboard/PlayerChart.tsx";
 export { default as PlayerStatictics } from "./dashboard/PlayerStatictics.tsx";
 export { default as TopPlayers } from "./dashboard/TopPlayers.tsx";
-export { default as SearchBar } from "./friends/SearchBar.tsx";
+export { default as SearchBar } from "./utils/SearchBar.tsx";
 export { default as LandingHero } from "./landingPage/LandingHero.tsx";
 export { default as LandingFooter } from "./landingPage/LandingFooter.tsx";
 export { default as LandingNavbar } from "./landingPage/LandingNavbar.tsx";
