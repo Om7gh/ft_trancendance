@@ -8,8 +8,6 @@ import errorHandler from "../plugins/errorHandler.js";
 
 // import fakeFriends      from "./fakeFriends.js";
 
-import { PongError } from './pongClasses.js';
-
 
 function createRoom() {
     const room = new Room();
@@ -48,7 +46,7 @@ export default function pongGame(fastify, options, done) {
 
     fastify.register(onRequestHook);
     fastify.register(errorHandler);
-    
+
     fastify.register(playWithSomeOne);
     fastify.register(inviteFriendToMatch);
     fastify.register(acceptMatchInvitation);
