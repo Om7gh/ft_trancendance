@@ -1,5 +1,5 @@
 import { GlobalContext } from '@/App';
-import axios from 'axios';
+import axiosApiInstance from '@/axiosApiInstance';
 import { useContext, useEffect, useState, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -11,13 +11,13 @@ const ProtectAuth = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const verify = async () => {
       try {
-        await axios.get('/auths/userinfo', { withCredentials: true });
+        await axiosApiInstance.get('/auths/userinfo', { withCredentials: true });
         setAuthenticated(true);
       } catch (err) {
         if (err.response?.status === 498 || err.response?.status === 401) {
           try {
-            await axios.post('/auths/refresh', {}, { withCredentials: true });
-            await axios.get('/auths/userinfo', { withCredentials: true });
+            await axiosApiInstance.post('/auths/refresh', {}, { withCredentials: true });
+            await axiosApiInstance.get('/auths/userinfo', { withCredentials: true });
             setAuthenticated(true);
           } catch (refreshErr) {
             setAuthenticated(false);

@@ -1,5 +1,5 @@
 import { GlobalContext } from '@/App';
-import axios from 'axios';
+import axiosApiInstance from '@/axiosApiInstance';
 import { useContext, useEffect, useState, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ const ProtectDashboard = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const verify = async () => {
       try {
-        const data = await axios.get('/auths/userinfo', {
+        const data = await axiosApiInstance.get('/auths/userinfo', {
           withCredentials: true,
         });
         setAuthenticated(true);
@@ -20,9 +20,9 @@ const ProtectDashboard = ({ children }: { children: ReactNode }) => {
         console.log(err);
         if (err.response?.status === 401) {
           try {
-            await axios.post('/auths/refresh', {}, { withCredentials: true });
+            await axiosApiInstance.post('/auths/refresh', {}, { withCredentials: true });
             // retry
-            const data = await axios.get('/auths/userinfo', {
+            const data = await axiosApiInstance.get('/auths/userinfo', {
               withCredentials: true,
             });
             setAuthenticated(true);
