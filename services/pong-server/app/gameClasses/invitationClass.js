@@ -2,17 +2,17 @@ import Player from "./playerClass.js";
 
 export default class Invitation {
 
-    constructor(type, sender, receiver, room) {
+    constructor(type, sender, receiverId, room) {
         this.id         = uuid();
         this.type       = type;
         this.sender     = new Player(sender);
-        this.receiver   = new Player(receiver);
+        this.receiverId = receiverId;
         this.room       = room;
         this.sendTime   = Math.floor(Date.now() / 1000);
     }
 
     invited(id) {
-        if (this.receiver.id === id)
+        if (this.receiverId === id)
             return true;
         return false;
     }
@@ -32,7 +32,7 @@ export default class Invitation {
             id          : this.id,
             type        : this.type,
             sender      : this.sender.toJSON(),
-            receiver    : this.receiver.toJSON(),
+            receiver    : this.receiverId,
         })
     }
 }

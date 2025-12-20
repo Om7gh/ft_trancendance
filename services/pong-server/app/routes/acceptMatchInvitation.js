@@ -6,23 +6,26 @@ async function acceptHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        reply.code(400);
-        throw new Error("Invalid user passed to handler!!");
+        const error = new Error("Invalid user passed to handler!!")
+        error.statusCode = 400;
+        throw error
     }
 
     const iid         = request.query.iid;
     const invitation  = this.invitationList.get(iid);
 
     if (!invitation || invitation.expired() || !invitation.invited(user.id)) {
-        reply.code(410);
-        throw new Error("Error: either you are not invited, or invitation is gone", "E301");
+        const error = new Error("Either you are not invited, or invitation is gone");
+        error.statusCode = 400;
+        throw error
     }
 
     var room = alreadyInMatch(this.roomList, user.id);
     
     if (room && (room.getState() !== "done")) {
-        reply.code(409);
-        throw new Error("You are already in match!!", "E102");
+        const error = new Error("You are already in match!!");
+        error.statusCode = 409;
+        throw error
     }
 
     room = invitation.getRoom();
