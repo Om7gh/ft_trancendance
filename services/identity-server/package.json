@@ -1,0 +1,68 @@
+{
+  "name": "transcendence",
+  "version": "1.0.0",
+  "description": "This project was bootstrapped with Fastify-CLI.",
+  "main": "app.ts",
+  "type": "module",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "npm run build:ts && tsc -p test/tsconfig.json && c8 node --test -r ts-node/register \"test/**/*.ts\"",
+    "start": "npm run build:ts && fastify start -l info dist/app.js",
+    "build:ts": "tsc",
+    "watch:ts": "tsc -w",
+    "dev": "npm run build:ts && concurrently -k -p \"[{name}]\" -n \"TypeScript,App\" -c \"yellow.bold,cyan.bold\" \"npm:watch:ts\" \"npm:dev:start\"",
+    "dev:start": "fastify start --ignore-watch='*.ts,*.sqlite,*.db,node_modules' -w -l info -P dist/app.js",
+    "build": "tsc --project tsconfig.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaitelka/transcendence.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aaitelka/transcendence/issues"
+  },
+  "homepage": "https://github.com/aaitelka/transcendence#readme",
+  "dependencies": {
+    "@fastify/autoload": "^6.0.0",
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.1.0",
+    "@fastify/env": "^5.0.3",
+    "@fastify/rate-limit": "^10.3.0",
+    "@fastify/sensible": "^6.0.0",
+    "@fastify/session": "^11.1.1",
+    "@fastify/type-provider-typebox": "^6.1.0",
+    "@node-rs/argon2": "^2.0.2",
+    "@sinclair/typebox": "^0.34.41",
+    "better-sqlite3": "^12.4.1",
+    "fastify": "^5.0.0",
+    "fastify-cli": "^7.4.1",
+    "fastify-plugin": "^5.0.0",
+    "google-auth-library": "^9.15.0",
+    "jose": "^6.1.2",
+    "nodemailer": "^7.0.10",
+    "otplib": "^12.0.1",
+    "qrcode": "^1.5.4",
+    "qs": "^6.14.0",
+    "ui-avatar-svg": "^1.0.0",
+    "zxcvbn": "^4.4.2"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.0.8",
+    "@types/nodemailer": "^7.0.4",
+    "@types/qrcode": "^1.5.6",
+    "@types/qs": "^6.14.0",
+    "@types/zxcvbn": "^4.4.5",
+    "c8": "^9.1.0",
+    "concurrently": "^9.0.0",
+    "dotenv": "^17.2.3",
+    "fastify-tsconfig": "^3.0.0",
+    "ts-node": "^10.4.0",
+    "typescript": "~5.9.2"
+  }
+}

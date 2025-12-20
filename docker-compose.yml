@@ -1,0 +1,126 @@
+services:
+  nginx:
+    container_name: nginx
+    build: ./nginx/
+    image: nginx:pingpong
+    ports:
+      - '8080:80'
+    networks:
+      - pingpong
+    depends_on:
+      - chess
+      - identity
+      - client
+      - pong
+    volumes:
+      - $HOME/data/avatars:/usr/share/nginx/html/avatars:ro
+
+  # rabbitmq:
+  #   container_name: rabbitmq
+  #   image: rabbitmq:3-management
+  #   ports:
+  #     - '15672:15672'
+  #     - '5672:5672'
+  #   networks:
+  #     - pingpong
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping && rabbitmq-diagnostics -q check_port_connectivity"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 10
+
+      # test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      # interval: 10s
+      # timeout: 5s
+      # retries: 5
+      # start_period: 30s
+
+  chess:
+    container_name: chess
+    build: ./services/chess-server/
+    image: chess:pingpong
+    ports:
+      - '9000:9000'
+    env_file:
+      - ./services/chess-server/.env
+    networks:
+      - pingpong
+    # depends_on:
+    #   rabbitmq:
+    #     condition: service_healthy
+
+  identity:
+    container_name: identity
+    build: ./services/identity-server/
+    image: identity:pingpong
+    ports:
+      - '4000:4000'
+    env_file:
+      - ./services/identity-server/.env
+    volumes:
+      - $HOME/data:/var/lib/um
+      - $HOME/data/avatars:/var/avatars
+    networks:
+      - pingpong
+    # depends_on:
+    #   rabbitmq:
+    #     condition: service_healthy
+
+  client:
+    container_name: client
+    build: ./client/
+    image: client:pingpong
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
+    networks:
+      - pingpong
+    depends_on:
+      - identity
+      - chess
+      - pong
+
+  pong:
+    container_name: pong
+    build: ./services/pong-server/
+    image: pong:pingpong
+    ports:
+      - '9001:9001'
+    networks:
+      - pingpong
+    # depends_on:
+    #   rabbitmq:
+    #     condition: service_healthy
+
+  notification:
+    container_name: notification
+    build: ./services/notification-server/
+    image: notification:pingpong
+    ports:
+      - '9002:9002'
+    networks:
+      - pingpong
+    # depends_on:
+    #   rabbitmq:
+    #     condition: service_healthy
+  # chat:
+  #   container_name: chat
+  #   build: ./server/chat-server/
+  #   image: chat:pingpong
+  #   ports:
+  #     - "4000:4000"
+  #   env_file:
+  #     - ./server/chat-server/.env
+  #   networks:
+  #     - pingpong
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+
+networks:
+  pingpong:
+    driver: bridge

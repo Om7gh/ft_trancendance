@@ -1,0 +1,14 @@
+export { default as Racket } from "./ping/3.png";
+export { default as Ball1 } from "./ping/1.png";
+export { default as Ball2 } from "./ping/2.png";
+export { default as Table } from "./ping/table.png";
+export { default as Why } from "./about/why.png";
+export { default as AboutUs } from "./about/aboutus.png";
+export { default as Join } from "./about/join.png";
+export { default as Tournament } from "./features/1.png";
+export { default as Multiple } from "./features/2.png";
+export { default as Single } from "./features/3.png";
+export { default as Banner } from "./banner1.png";
+export { default as Logo } from "./logo.png";
+export { default as Login } from "./login3.png";
+export { default as Avatar } from "./avatar.png";
