@@ -1,4 +1,13 @@
-import { PongError, Invitation } from './pongClasses.js';
+import headersSchema from '../schemas/headersSchema.js';
+
+export function alreadyInMatch(roomList, userId) {
+    for (let [id, room] of roomList) {
+        if (room.isPlayer(userId)) {
+            return (room);
+        }
+    }
+    return (null);
+}
 
 export async function waitForOpponent(room) {
     let counter = null;
@@ -20,23 +29,25 @@ export async function waitForOpponent(room) {
 
 async function playWithSomeOneHandler(request, reply) {
     const user  = request.user;
-    var   room  = this.alreadyInMatch(user.id);
+    const state = this.validateUser(user);
+
+    if (!state) {
+        reply.code(400);
+        throw new Error("Invalid user passed to handler!!");
+    }
+
+    var   room  = alreadyInMatch(this.roomList, user.id);
         
-    if (room) {
+    if (room && (room.getState() !== "done")) {
         reply.code(200).send(JSON.stringify(room.generateMatch()));
         return ;
     }
     
     room = this.addPlayerToRoom(user);
-
-    if (!room) {
-        reply.code(503);
-        throw new Error("Server overloaded, try later!!", "E002");
-    }
     
-    await waitForOpponent(room)
+    await waitForOpponent(room);
     
-    reply.code(200).send(JSON.stringify(room.generateMatch()));
+    reply.send(JSON.stringify(room.generateMatch()));
 }
 
 export default function playWithSomeOne(fastify, options, done) {

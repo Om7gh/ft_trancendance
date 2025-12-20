@@ -19,19 +19,21 @@ export default class Player extends EventEmitter {
     }
     
     setSocket(socket) {
-        if (socket) {
+        console.log("++++try to set socket+++++")
+        if (socket && !this.socket) {
             this.joind = true;
             this.socket = socket;
+            console.log("++++set socket successfully+++++")
 
             socket.on('message', (message) => {
                 let event = JSON.parse(message);
+                if (!event)
+                    return ;
                 if (event.type === "move") {
-                    if (event.data) {
-                        if (event.data.move === "up")
+                    if (event.data && (event.data.move === "up"))
                             this.paddle.moveUp();
-                        else if (event.data.move === "down")
+                    else if (event.data && (event.data.move === "down"))
                             this.paddle.moveDown();
-                    }
                 } else if (event.type === "leave") {
                     if (event.data === true) {
                         this.leave = true;
@@ -51,12 +53,16 @@ export default class Player extends EventEmitter {
         }
     }
 
-    setPaddleSide(value) {
-        this.x = value;
+    setPaddleInTable(value) {
+        this.paddle.setX(value);
     }
 
     setPoints(value) {
         this.points = value;
+    }
+
+    getPoints() {
+        return this.points;
     }
 
     incrementPoints() {

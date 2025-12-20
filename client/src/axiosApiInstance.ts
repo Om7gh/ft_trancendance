@@ -47,7 +47,9 @@ axiosApiInstance.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await axios.post('http://localhost:8080/auths/refresh');
+      await axios.post('http://localhost:8080/auths/refresh', {
+        withCredentials: true,
+      });
 
       processRequestsQueue(null);
       return axiosApiInstance(originalRequest);

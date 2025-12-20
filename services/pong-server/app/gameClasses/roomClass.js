@@ -38,7 +38,7 @@ export default class Room extends EventEmitter {
 
     addLeftPlayer(user) {
         this.leftPlayer = new Player(user, this.table);
-        this.leftPlayer.setPaddleSide("left");
+        this.leftPlayer.setPaddleInTable("left");
         this.leftPlayer.on("leaveMatch", () => {
             this.rightPlayer.setPoints(7);
             this.stopMatch();
@@ -50,7 +50,7 @@ export default class Room extends EventEmitter {
     
     addRightPlayer(user) {
         this.rightPlayer = new Player(user, this.table);
-        this.rightPlayer.setPaddleSide("right");
+        this.rightPlayer.setPaddleInTable("right");
         this.rightPlayer.on("leaveMatch", () => {
             this.leftPlayer.setPoints(7);
             this.stopMatch();
@@ -79,16 +79,17 @@ export default class Room extends EventEmitter {
     }
 
     setPlayerSocket(playerId, socket) {
+
         if (this.leftPlayer && (this.leftPlayer.id === playerId)) {
             this.leftPlayer.setSocket(socket);
         } else if (this.rightPlayer && (this.rightPlayer.id === playerId)) {
             this.rightPlayer.setSocket(socket);
         }
 
-        if (this.leftPlayer.isJoind() && this.rightPlayer.isJoind()) {
-            this.startMatch();
-        } else if (this.state === "pause") {
+        if (this.state === "pause") {
             this.continue(playerId);
+        } else if (this.leftPlayer.isJoind() && this.rightPlayer.isJoind()) {
+            this.startMatch();
         }
     }
     
@@ -115,8 +116,8 @@ export default class Room extends EventEmitter {
             state: "ok",
             data: {
                 event: "updateScore",
-                leftPlayer: this.leftPlayer.points,
-                rightPlayer: this.rightPlayer.points,
+                leftPlayer: this.leftPlayer.getPoints(),
+                rightPlayer: this.rightPlayer.getPoints(),
             }
         }));
     }
@@ -194,11 +195,11 @@ export default class Room extends EventEmitter {
                 if ((this.ball.x < 0) || (this.table.width < this.ball.x)) {
                     this.broadcastScore()
                     this.ball.reset();
-                    if ((6 < this.leftPlayer.points) || (6 < this.rightPayerleftPlayer.points)) {
+                    if ((6 < this.leftPlayer.getPoints()) || (6 < this.rightPlayer.getPoints())) {
                         this.broadcastView();
                         this.stopMatch();
                     }
-                } else if (!this.leftPlayer.socket && !this.rightPlayerleftPlayer.socket) {
+                } else if (!this.leftPlayer.socket && !this.rightPlayer.socket) {
                     this.stopMatch();
                 }
                 this.ball.getNextPosition(this.table, this.leftPlayer.paddle, this.rightPlayer.paddle);
@@ -235,9 +236,9 @@ export default class Room extends EventEmitter {
     }
 
     setWinner() {
-        if (this.leftPlayer.points < this.rightPlayer.points) {
+        if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints()) {
             this.winner = this.rightPlayer;
-        } else if (this.leftPlayer.points > this.rightPlayer.points) {
+        } else if (this.leftPlayer.getPoints() > this.rightPlayer.getPoints()) {
             this.winner = this.leftPlayer;
         }
     }
