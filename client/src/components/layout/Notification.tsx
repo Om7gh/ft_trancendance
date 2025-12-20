@@ -1,9 +1,41 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
 import Modal from './Modal';
+import axiosApiInstance from '@/axiosApiInstance';
 
 function Notification() {
   const [openNotification, setOpenNotification] = useState(false);
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchNotification() {
+      try {
+        const response = await axiosApiInstance.get("/notification/fetch");
+        if (isMounted) {
+          setData(response.data);
+          setError("");
+          setLoading(false);
+        }
+      } catch (e: any) {
+        if (isMounted) {
+          setError(e.message || "Failed to fetch notifications");
+          setLoading(false);
+        }
+      }
+    }
+    fetchNotification();
+    const intervalId = setInterval(() => {
+      fetchNotification();
+    }, 10000);
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
+  }, [])
+
   return (
     <div className="relative">
       <IoIosNotificationsOutline
@@ -12,7 +44,9 @@ function Notification() {
       />
       {openNotification && (
         <Modal onClose={() => setOpenNotification(false)} type="notification">
-          <div className='text-white'>notification</div>
+          {loading && <p>Loading...</p>}
+          {!loading && error && <p className='text-pink-500 text-xl text-center'>{error}</p>}
+          {!loading && !error && (data !== null ? <div className='text-violet-200'>{data}</div> : <p className='text-pink-500 text-xl'>No Notification available yet</p>)}
         </Modal>
       )}
     </div>

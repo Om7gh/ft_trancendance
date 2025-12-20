@@ -2,6 +2,8 @@ import {FastifyReply, FastifyRequest, FastifyInstance} from 'fastify';
 import { User } from '../models/user.js';
 import { Friend, Friendship } from '../models/friendship.js';
 import { UserController } from './UserController.js';
+import { randomUUID } from 'crypto';
+import axios from 'axios';
 
 export class FriendshipController {
   static readonly ERR_ALREADY_FRIEND: string = 'The user is already a friend';
@@ -88,18 +90,37 @@ export class FriendshipController {
       sender_id: user.id,
       receiver_id: target.id
     })
-    const response = {
-      success: true,
-      data: null
+
+    try {
+       const sender = {
+          uid: user.uid,
+          username: user.username,
+          avatar: user.avatar
+        }
+        const receiver = {
+          uid: target.uid
+        }
+        await axios.post("http://notification:9005/send", {
+          id: randomUUID(),
+          type: "friend-accept",
+          expireTime: 0,
+          sender,
+          receiver
+        })
+      const response = {
+        success: true,
+        data: null
+      }
+      reply.send(response)
+    } catch(e) {
+
     }
-    reply.send(response)
 	}
 
   static async approve(request: FastifyRequest, reply: FastifyReply) {
     const app: FastifyInstance = request.server;
     const user: User = request.session.user;
     const { uid } = request.params as { uid: string };
-
     try {
       const sender = app.usersRepository.findByUID(uid);
       if (!sender) {
@@ -115,13 +136,30 @@ export class FriendshipController {
       app.friendshipRepository.update(friendships[0].id, {
         status: 1  
       })
-
-      
-      const response = {
-        success: true,
-        data: null
+      try {
+        const sender = {
+          uid: user.uid,
+          username: user.username,
+          avatar: user.avatar
+        }
+        const receiver = {
+          uid
+        }
+        await axios.post("http://notification:9005/send", {
+          id: randomUUID(),
+          type: "friend-accept",
+          expireTime: 0,
+          sender,
+          receiver
+        })
+        const response = {
+          success: true,
+          data: null
+        }
+        return reply.send(response)
+      } catch(e) {
+        return reply.badRequest("Error from notification")
       }
-      return reply.send(response)
     } catch (err) {
       if (err instanceof Error)
         return reply.badRequest(err.message);

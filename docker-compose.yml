@@ -101,7 +101,7 @@ services:
     build: ./services/notification-server/
     image: notification:pingpong
     ports:
-      - '9002:9002'
+      - '9005:9005'
     networks:
       - pingpong
     # depends_on:
