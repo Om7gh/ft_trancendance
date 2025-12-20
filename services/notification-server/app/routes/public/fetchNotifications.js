@@ -1,5 +1,4 @@
 import onRequestHookHandler from "../../hooks/onRequestHook.js";
-
 async function fetchNotificationHandler(request, reply) {
     const user  = request.user;
     const state = this.validateUser(user);
@@ -11,12 +10,14 @@ async function fetchNotificationHandler(request, reply) {
     }
 
     const result = this.notifications.get(user.id);
+
+    console.log(result)
     reply.send(result);
 }
 
 async function fetchNotification(fastify, opt) {
 
-    fastify.addHook('onRequest', onRequestHookHandler);
+    fastify.register(onRequestHookHandler);
 
     fastify.route({
         url: '/fetch',

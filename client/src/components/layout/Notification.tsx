@@ -13,7 +13,7 @@ function Notification() {
     let isMounted = true;
     async function fetchNotification() {
       try {
-        const response = await axiosApiInstance.get("/notification/fetch");
+        const response = await axiosApiInstance.get("/fetch");
         if (isMounted) {
           setData(response.data);
           setError("");
@@ -36,6 +36,8 @@ function Notification() {
     };
   }, [])
 
+  console.log(data)
+
   return (
     <div className="relative">
       <IoIosNotificationsOutline
@@ -46,7 +48,7 @@ function Notification() {
         <Modal onClose={() => setOpenNotification(false)} type="notification">
           {loading && <p>Loading...</p>}
           {!loading && error && <p className='text-pink-500 text-xl text-center'>{error}</p>}
-          {!loading && !error && (data !== null ? <div className='text-violet-200'>{data}</div> : <p className='text-pink-500 text-xl'>No Notification available yet</p>)}
+          {!loading && !error && (data.length ? <div className='text-violet-200'>{data[0].sender.username}</div> : <p className='text-violet-200 text-xl text-center'>No Notification available yet</p>)}
         </Modal>
       )}
     </div>

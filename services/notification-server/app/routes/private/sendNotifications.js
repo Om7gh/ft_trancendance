@@ -3,14 +3,15 @@ import notificationSchema from "../../schemas/notificationSchema.js";
 async function sendNotificationHandler(request, reply) {
     const notification          = request.body;
     const receiver              = notification.receiver;
-    const pendingNotifications  = this.notifications.get(receiver.id);
+    const pendingNotifications  = this.notifications.get(receiver.uid);
+
+    console.log("from identity ----------> to notification: ", notification)
 
     if (pendingNotifications) {
         pendingNotifications.push(notification);
     } else {
-        this.notifications.set(receiver.id, [notification,])
+        this.notifications.set(receiver.uid, [notification,])
     }
-    const result = this.notifications.get(uid);
 
     return ("Notifiaction queued successfully.");
 }

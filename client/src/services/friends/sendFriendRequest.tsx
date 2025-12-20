@@ -7,6 +7,7 @@ interface SendFriendRequestPayload {
 }
 
 async function sendFriendRequest(payload: SendFriendRequestPayload) {
+  console.log(payload)
   try {
     const { data } = await axiosApiInstance.post<ApiResponse<null>>("/friends/requests", payload);
     return data;

@@ -77,13 +77,14 @@ export class FriendshipController {
     if (!target) {
       return reply.notFound(UserController.ERR_USER_NOT_FOUND);
     }
-
     let friendship: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id, -1);
     if (friendship.length > 0) {
+      console.log("first error...");
       return reply.badRequest(FriendshipController.ERR_PENDING_APPROVAL);
     }
     friendship = app.friendshipRepository.get(-1, target.id, user.id, -1);
     if (friendship.length > 0) {
+      console.log("second error...");
       return reply.badRequest(FriendshipController.ERR_WAITING_APPROVAL);
     }
     app.friendshipRepository.insert({
@@ -113,7 +114,7 @@ export class FriendshipController {
       }
       reply.send(response)
     } catch(e) {
-
+      reply.badRequest("Error when sending notification request")
     }
 	}
 
