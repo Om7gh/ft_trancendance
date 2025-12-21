@@ -1,11 +1,36 @@
+import Card from "../types/UserCard"
 
-function Avatar({imgUrl, name, type}){
+type OnSelect = (selectedCard: Card) => void;
+
+interface AvatarProps{
+  imgUrl: string,
+  name: string,
+  type: "CardItem"
+      | "contact"
+      | "sender"
+      | "receiver"
+}
+
+interface CardItemProps{
+  card: Card,
+  isSelected: boolean,
+  onSelect: OnSelect
+}
+
+interface CardsListProps {
+  cards: Card[],
+  selectedCard: Card | null,
+  onSelect: OnSelect
+}
+
+
+function Avatar({imgUrl, name, type}: AvatarProps){
 
   let avatarStyle = {
     "CardItem": "rounded-xl",
-    "contact": "rounded-[50%]",
-    "sender": "rounded-[50%] border-2 border-[#F97316] h-[40px] self-end",
-    "receiver": "rounded-[50%] border-2 border-[#0D9488] h-[40px] self-end"
+    contact: "rounded-[50%]",
+    sender: "rounded-[50%] border-2 border-[#F97316] h-[40px] self-end",
+    receiver: "rounded-[50%] border-2 border-[#0D9488] h-[40px] self-end"
   }
   
   return (
@@ -17,7 +42,7 @@ function Avatar({imgUrl, name, type}){
   );
 }
 
-function UserInfo({name, wins, userWins, unread_msg}){
+function UserInfo({name, unread_msg}: {name: string, unread_msg: number}){
   return (
     <div className="flex-1 self-center relative text-white ">
       <h1 className="font-bold relative text-md">{name}
@@ -29,28 +54,26 @@ function UserInfo({name, wins, userWins, unread_msg}){
             {unread_msg}
           </div >
         }
-      {/* <p className="mt-[5px] font-normal">You {wins} - {userWins} Opponent</p> */}
-      <p className="mt-[5px] font-normal">Placeholder</p>
+      <p className="mt-1.25 font-normal">Placeholder</p>
     </div>
   );
 }
 
-function CardItem({card, cardSelected, onSelect}){
+function CardItem({card, isSelected, onSelect}: CardItemProps){
 
   let friend = card.friend;
-  let listStyle = (!cardSelected) ? "flex gap-2 mt-3 w-full h-[8%]" :
+  let listStyle = (!isSelected) ? "flex gap-2 mt-3 w-full h-[8%]" :
     "flex gap-2 mt-3 w-full h-[8%] bg-[#0D9488]/30 rounded-xl \
     shadow-2xl border-l-[3px] p-[3px] border-l-[#0D9488]";
   return (
     <li className={listStyle} onClick={() => onSelect(card)}>
       <Avatar imgUrl={friend.photo_url} name={friend.name} type="CardItem"/>
-      <UserInfo name={friend.name} wins={friend.your_wins}
-        userWins={friend.friend_wins} unread_msg={card.unread_msg}/>
+      <UserInfo name={friend.name} unread_msg={card.unread_msg}/>
     </li>
   );
 }
 
-function CardsList({cards, selectedCard, onCardSelect}){
+function CardsList({cards, selectedCard, onSelect}: CardsListProps){
 
   return  (
     <ul id="CardsList" className="h-[87%] scrollbar overflow-auto">
@@ -58,9 +81,8 @@ function CardsList({cards, selectedCard, onCardSelect}){
           cards.map(card => <CardItem
             key={card.friend.id}
             card={card}
-            cardSelected={card.friend.id === selectedCard.friend?.id}
-            onSelect={onCardSelect}
-            unreadCount={card.unread_msg}
+            isSelected={card.friend.id === selectedCard?.friend?.id}
+            onSelect={onSelect}
           />)
       }
     </ul>
