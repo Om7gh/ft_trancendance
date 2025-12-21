@@ -1,18 +1,19 @@
-import Player from "./playerClass.js";
 import {v4 as uuid} from "uuid"
+import User from "./userClass.js";
+
 export default class Invitation {
 
-    constructor(type, sender, receiverId, room) {
+    constructor(type, sender, receiver, room) {
         this.id         = uuid();
         this.type       = type;
-        this.sender     = new Player(sender);
-        this.receiverId = receiverId;
+        this.sender     = new User(sender);
+        this.receiver   = new User(receiver);
         this.room       = room;
         this.sendTime   = Math.floor(Date.now() / 1000);
     }
 
     invited(id) {
-        if (this.receiverId === id)
+        if (this.receiver.id === id)
             return true;
         return false;
     }
@@ -32,7 +33,7 @@ export default class Invitation {
             id          : this.id,
             type        : this.type,
             sender      : this.sender.toJSON(),
-            receiver    : this.receiverId,
+            receiver    : this.receiver.toJSON(),
         })
     }
 }

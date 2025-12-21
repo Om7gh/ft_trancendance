@@ -2,10 +2,11 @@ import fp from "fastify-plugin";
 
 export default fp(async function errorHandler(fastify, options) {
     fastify.setErrorHandler((error, request, reply) => {
-        console.log(error)
-        if (error.statusCode < 500)
+        if (error.statusCode && (error.statusCode < 500))
             reply.code(error.statusCode).send(error.message);
-        else
-            reply.code(444).send("Unexpected error!!");
+        else {
+            console.log(error);
+            reply.code(500).send("Unexpected error!!");
+        }
     })
 });

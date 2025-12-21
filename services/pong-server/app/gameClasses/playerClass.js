@@ -19,11 +19,9 @@ export default class Player extends EventEmitter {
     }
     
     setSocket(socket) {
-        console.log("++++try to set socket+++++")
         if (socket && !this.socket) {
             this.joind = true;
             this.socket = socket;
-            console.log("++++set socket successfully+++++")
 
             socket.on('message', (message) => {
                 let event = JSON.parse(message);
