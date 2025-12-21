@@ -7,7 +7,7 @@ export default class Player extends EventEmitter {
         super();
 
         this.id         = user.id;
-        this.name       = user.first_name;
+        this.username   = user.username;
         this.avatar     = user.avatar;
 
         this.paddle     = new Paddle(table);
@@ -82,7 +82,7 @@ export default class Player extends EventEmitter {
     toJSON() {
         return ({
             id          : this.id,
-            name        : this.name,
+            username    : this.username,
             avatar      : this.avatar,
             points      : this.points,
         });

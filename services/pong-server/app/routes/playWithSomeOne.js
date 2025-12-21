@@ -49,6 +49,12 @@ async function playWithSomeOneHandler(request, reply) {
     await waitForOpponent(room);
     
     reply.send(JSON.stringify(room.generateMatch()));
+
+    room.on("done", () => {
+        if (room.getWinner()) {
+            this.db.addMatch(room.toJSON());
+        }
+    })
 }
 
 export default async function playWithSomeOne(fastify, options) {

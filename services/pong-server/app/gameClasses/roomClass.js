@@ -164,12 +164,12 @@ export default class Room extends EventEmitter {
             roomId: this.id,
             leftPlayer: {
                 id: this.leftPlayer.id,
-                name: this.leftPlayer.name,
+                name: this.leftPlayer.username,
                 avatar: this.leftPlayer.avatar,
             },
             rightPlayer: {
                 id: this.rightPlayer.id,
-                name: this.rightPlayer.name,
+                name: this.rightPlayer.username,
                 avatar: this.rightPlayer.avatar,
             }
         })
@@ -237,9 +237,9 @@ export default class Room extends EventEmitter {
 
     setWinner() {
         if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints()) {
-            this.winner = this.rightPlayer;
+            this.winner = this.rightPlayer.id;
         } else if (this.leftPlayer.getPoints() > this.rightPlayer.getPoints()) {
-            this.winner = this.leftPlayer;
+            this.winner = this.leftPlayer.id;
         }
     }
 
@@ -275,6 +275,7 @@ export default class Room extends EventEmitter {
     toJSON() {
         return ({
             state           : this.state,
+            id              : this.id,
             leftPlayer      : this.leftPlayer.toJSON(),
             rightPlayer     : this.rightPlayer.toJSON(),
             winner          : this.winner,
