@@ -4,8 +4,8 @@ import type { ApiResponse, Friend } from "@/types/friendTypes";
 
 async function getFriends() {
   try {
-    const { data } = await axiosApiInstance.get<ApiResponse<Friend[]>>("/friends/");
-    return data.data;
+    const { data } = await axiosApiInstance.get<ApiResponse<Friend[]>>("/friends/list");
+    return data;
   } catch (e) {
     throw e;
   }
@@ -13,7 +13,7 @@ async function getFriends() {
 
 const useGetFriends = () => {
   return useQuery({
-    queryKey: ["getFriends"],
+    queryKey: ["getFriend"],
     queryFn: getFriends,
   });
   // {data, error, isSuccess, isError}

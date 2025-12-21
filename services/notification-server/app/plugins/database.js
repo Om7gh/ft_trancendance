@@ -1,7 +1,6 @@
 import fp from 'fastify-plugin';
 import Database from 'better-sqlite3';
-import DatabaseService from '../classes/databaseClass.js';
-
+import DatabaseService from "../classes/databaseclass.js"
 
 export function initDatabase(dbPath = './notification.db') {
     const db = new Database(dbPath);
@@ -10,7 +9,7 @@ export function initDatabase(dbPath = './notification.db') {
 
     db.pragma('foreign_keys = ON');
 
-    db.exec(`
+    db.exec( `
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
             username TEXT NOT NULL,
@@ -25,10 +24,9 @@ export function initDatabase(dbPath = './notification.db') {
             expire_time INTEGER,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (sender_id) REFERENCES users(id),
-            FOREIGN KEY (receiver_id) REFERENCES users(id),
+            FOREIGN KEY (receiver_id) REFERENCES users(id)
         );
-
-    `);
+    ` );
 
     return db;
 }

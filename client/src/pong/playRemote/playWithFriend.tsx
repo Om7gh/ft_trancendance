@@ -10,7 +10,7 @@ import axiosApiInstance from '../../axiosApiInstance.ts';
 import useGetFriends from "@/services/friends/getFriends.tsx";
 
 type FriendObject = {
-    id          : string;
+    uid          : string;
     username    : string;
     avatar      : string;
 }
@@ -26,7 +26,7 @@ function Friend({ friend, setFriend }: FriendType) {
             <img src={friend.avatar} />
             <h1>{friend.username}</h1>
             <button
-                onClick={() => setFriend(friend.id)}
+                onClick={() => setFriend(friend.uid)}
             >Invite To Match</button>
         </div>
     )
@@ -69,7 +69,7 @@ function ListFriends({ setError, setFriend }: ListFriendsType) {
         return (
             <div>
                 {friends.map((friend: FriendObject) => {
-                    return (<Friend key={friend.id} friend={friend} setFriend={setFriend}/>)
+                    return (<Friend key={friend.uid} friend={friend} setFriend={setFriend}/>)
                 })}
             </div>
         );
@@ -80,7 +80,7 @@ export function PlayWithFriend() {
     const [error, setError] = useState<string | null>(null);
     const [friend, setFriend] = useState<string | null>(null);
     const [match, setMatch] = useState<MatchType | undefined>(undefined);
-    const url = `/pongGame/invite?q=send&fid=${friend}`;
+    const url = `/pongGame/remote/inviteFriend?q=send&fid=${friend}`;
 
     useEffect(() => {
         let ignored = false;

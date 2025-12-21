@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PlayMatch } from './playMatch.tsx';
 import { RxLapTimer } from 'react-icons/rx';
+import axios from 'axios'
 
 import axiosApiInstance from '@/axiosApiInstance.ts';
 
@@ -41,7 +42,7 @@ export function validatePlayer(player: PlayerType) {
 }
 
 export function validateMatch(match: MatchType) {
-  console.log(match);
+  console.log("match here ... ", match);
   if (
     !match ||
     !match.roomId ||
@@ -61,7 +62,7 @@ export function PlayWithSomeOne() {
     let ignored = false;
     (async function fetchMatch() {
       try {
-        const response = await axiosApiInstance.get(url);
+        const response = await axios.get(url);
         if (!ignored && response) {
           if (response.status === 200) {
             if (!validateMatch(response.data)) {

@@ -1,5 +1,5 @@
 import Player from "./playerClass.js";
-
+import {v4 as uuid} from "uuid"
 export default class Invitation {
 
     constructor(type, sender, receiverId, room) {

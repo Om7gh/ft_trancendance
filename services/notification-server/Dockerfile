@@ -10,6 +10,6 @@ WORKDIR /usr/src/app
 
 COPY app ./
 
-RUN npm install
+RUN npm install && npm install better-sqlite3
 
 CMD ["npm", "run", "dev"]
