@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useEffect } from "react";
 
-import type { ErrorType, MatchType } from "./playWithSomeOne.tsx";
+import type { MatchType } from "./playWithSomeOne.tsx";
 
 import { PlayMatch } from "./playMatch.tsx";
 import { validateMatch, MessageDisplayer } from "./playWithSomeOne.tsx";
 
 import axiosApiInstance from '../../axiosApiInstance.ts';
+import useGetFriends from "@/services/friends/getFriends.tsx";
 
 type FriendObject = {
     id          : string;
@@ -32,31 +33,39 @@ function Friend({ friend, setFriend }: FriendType) {
 }
 
 type ListFriendsType = {
-    setError: ((error: ErrorType) => void);
+    setError: ((error: string) => void);
     setFriend: ((friend: string) => void);
 }
 
 function ListFriends({ setError, setFriend }: ListFriendsType) {
-    const [friends, setFriends] = useState<[] | null>(null);
+    // const [friends, setFriends] = useState<[] | null>(null);
 
-    useEffect(() => {
-        let ignored = false;
-        (async function fetchFriends() {
-            try {
-                const response =  await axiosApiInstance("/pongGame/friends");
-                if (!ignored && response) {
-                    if (response.status === 200)
-                        setFriends(response.data);
-                    else
-                        setError(response.data);  
-                }
-            } catch (err) {
-                setError({reason: 'Fail to fetch match!!', errorCode: "E111"});
-            }
-        })();
-    }, []);
+    // useEffect(() => {
+    //     let ignored = false;
+    //     (async function fetchFriends() {
+    //         try {
+    //             const response =  await axiosApiInstance("/friends/");
+    //             console.log("here..")
+    //             if (!ignored && response) {
+    //                 if (response.status === 200)
+    //                     setFriends(response.data);
+    //                 else
+    //                     setError(response.data);  
+    //             }
+    //         } catch (err) {
+    //             setError({reason: 'Fail to fetch match!!', errorCode: "E111"});
+    //         }
+    //     })();
+    // }, []);
 
-    if (friends) 
+    const {data : friends, isError, error, isPending} = useGetFriends()
+
+    if (isPending)
+        return (<MessageDisplayer message="Fetching Your Friends..." />)
+    if (isError)
+        if (error)
+            setError(error.message)
+    if (friends?.length) 
         return (
             <div>
                 {friends.map((friend: FriendObject) => {
@@ -64,12 +73,11 @@ function ListFriends({ setError, setFriend }: ListFriendsType) {
                 })}
             </div>
         );
-
-    return (<MessageDisplayer message="Fetching Your Friends..." />)
+        return (<MessageDisplayer message="Your friend list is empty" />)
 }
 
 export function PlayWithFriend() {
-    const [error, setError] = useState<ErrorType | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [friend, setFriend] = useState<string | null>(null);
     const [match, setMatch] = useState<MatchType | undefined>(undefined);
     const url = `/pongGame/invite?q=send&fid=${friend}`;
@@ -77,14 +85,14 @@ export function PlayWithFriend() {
     useEffect(() => {
         let ignored = false;
 
-        if (!friend) {
+        if (friend) {
             (async function fetchMatch() {
                 try {
                     const response = await axiosApiInstance.get(url);
                     if (!ignored && response) {
                         if (response.status === 200) {
                             if (!validateMatch(response.data)) {
-                                setError({reason: "Error: fetch invalid match", errorCode: "E111"});
+                                setError("Error: fetch invalid match");
                                 return;
                             }
                             setMatch(response.data);
@@ -92,7 +100,7 @@ export function PlayWithFriend() {
                             setMatch(response.data);
                     }
                 } catch (err) {
-                    setError({reason: 'Fail to fetch match!!', errorCode: "E111"});
+                    setError('Fail to fetch match!!');
                 }
             })();
         }
@@ -101,9 +109,9 @@ export function PlayWithFriend() {
             ignored = true;
         })
     }, [friend]);
-    
+
     if (error)
-        return <MessageDisplayer message={error.reason + " " + error.errorCode} />;
+        return <MessageDisplayer message={error} />;
     else if (match)
         return <PlayMatch match={match} />;
     

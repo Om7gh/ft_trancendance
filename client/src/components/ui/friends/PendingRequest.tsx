@@ -53,12 +53,12 @@ function PendingRequest() {
       {requests.map((request: Friend) => (
         <div
           key={request.uid}
-          className="flex items-center gap-4 p-4 bg-slate-900/30 hover:bg-slate-900/50 border border-orange-500/20 rounded-lg transition-all duration-200"
+          className="flex items-center gap-4 p-4 bg-slate-900/30 hover:bg-slate-900/50 border border-violet-500/20 rounded-lg transition-all duration-200"
         >
           <img
             src={request.avatar ?? "/default-avatar.png"}
             alt={request.username}
-            className="w-12 h-12 rounded-full object-cover border-2 border-orange-500/30"
+            className="w-12 h-12 rounded-full object-cover border-2 border-violet-500/30"
           />
           <div className="flex-1 min-w-0">
             <div className="text-slate-100 font-medium truncate">

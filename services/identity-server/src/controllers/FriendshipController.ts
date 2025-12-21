@@ -103,7 +103,7 @@ export class FriendshipController {
         }
         await axios.post("http://notification:9005/send", {
           id: randomUUID(),
-          type: "friend-accept",
+          type: "friend-request",
           expireTime: 0,
           sender,
           receiver

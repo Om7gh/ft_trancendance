@@ -16,6 +16,7 @@ const useGetFriends = () => {
     queryKey: ["getFriends"],
     queryFn: getFriends,
   });
+  // {data, error, isSuccess, isError}
 };
 
 export default useGetFriends;
