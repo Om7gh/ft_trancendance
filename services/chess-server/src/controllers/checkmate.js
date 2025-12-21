@@ -12,17 +12,6 @@ function handleCheckmate(app, playerId, winnerTeam) {
   const winner =
     winnerTeam === 'WHITE' || winnerTeam === 'BLACK' ? winnerTeam : 'DRAW';
 
-  if (room.players.length === 2) {
-    const a = room.players[0].playerId;
-    const b = room.players[1].playerId;
-    lastOpponents.set(a, b);
-    lastOpponents.set(b, a);
-    const pa = players.get(a);
-    const pb = players.get(b);
-    if (pa) pa.roomId = null;
-    if (pb) pb.roomId = null;
-  }
-
   for (const p of room.players) {
     send(p.connection, {
       type: 'gameOver',
@@ -40,7 +29,7 @@ function handleCheckmate(app, playerId, winnerTeam) {
         whiteId: white.playerId,
         blackId: black.playerId,
         winnerTeam: winner,
-        reason: 'checkmate',
+        reason: winner === 'DRAW' ? 'draw' : 'checkmate',
         moves: room.turns ?? 0,
         startedAt: room.createdAt ?? null,
         endedAt: Math.floor(Date.now() / 1000),
@@ -53,6 +42,17 @@ function handleCheckmate(app, playerId, winnerTeam) {
     }
   } catch (e) {
     console.error('Failed to record game (checkmate):', e);
+  }
+
+  if (room.players.length === 2) {
+    const a = room.players[0].playerId;
+    const b = room.players[1].playerId;
+    lastOpponents.set(a, b);
+    lastOpponents.set(b, a);
+    const pa = players.get(a);
+    const pb = players.get(b);
+    if (pa) pa.roomId = null;
+    if (pb) pb.roomId = null;
   }
 
   const rid = player.roomId;

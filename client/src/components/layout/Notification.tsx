@@ -27,13 +27,13 @@ function Notification() {
       }
     }
     fetchNotification();
-    // const intervalId = setInterval(() => {
-    //   fetchNotification();
-    // }, 10000);
-    // return () => {
-    //   isMounted = false;
-    //   clearInterval(intervalId);
-    // };
+    const intervalId = setInterval(() => {
+      fetchNotification();
+    }, 10000);
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, [])
 
   console.log(data)
