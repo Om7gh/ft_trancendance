@@ -23,7 +23,7 @@ async function acceptHandler(request, reply) {
     var room = alreadyInMatch(this.roomList, user.id);
     
     if (room && (room.getState() !== "done")) {
-        const error = new Error("You are already in match!!");
+        const error = new Error("You are already in other match!!");
         error.statusCode = 409;
         throw error
     }

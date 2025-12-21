@@ -5,8 +5,6 @@ async function sendNotificationHandler(request, reply) {
     const receiver              = notification.receiver;
     const pendingNotifications  = this.notifications.get(receiver.uid);
 
-    console.log("from identity ----------> to notification: ", notification)
-
     if (pendingNotifications) {
         pendingNotifications.push(notification);
     } else {

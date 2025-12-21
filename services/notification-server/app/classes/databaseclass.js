@@ -1,0 +1,64 @@
+export default class DatabaseService {
+    constructor(db) {
+        this.db = db;
+
+        this.insertUser = this.db.prepare(`
+            INSERT OR IGNORE INTO users (id, username, avatar)
+            VALUES (@id, @username, @avatar)
+        `);
+
+        this.insertNotification = this.db.prepare(`
+            INSERT OR IGNORE INTO notifications (
+                id, sender_id, receiver_id, expire_time
+            ) VALUES (
+                @id, @sender_id, @receiver_id, @expire_time
+            )
+        `);
+
+        this.fetchNotificationsByUser = this.db.prepare(`
+            SELECT
+                n.id AS notification_id,
+                n.receiver_id,
+                n.expire_time,
+                u.id AS sender_id, u.username AS sender_username, u.avatar AS sender_avatar
+            FROM notifications n
+            JOIN users u ON n.sender_id = u.id
+            WHERE n.receiver_id = ?
+            ORDER BY n.created_at DESC
+        `);
+    }
+
+    addUser({ id, username, avatar }) {
+        this.insertUser.run({ id, username, avatar });
+    }
+
+    addNotification({ id, sender, receiver, expireTime }) {
+        this.addUser(sender);
+
+        this.insertMatch.run({
+            id,
+            sender_id: sender.id,
+            receiver_id: receiver.id,
+            expire_time:  expireTime
+        });
+
+        return id;
+    }
+
+    getNotificationsByUser(userId) {
+        const rows = this.fetchNotificationsByUser.all(userId);
+
+        return rows.map(r => ({
+            id: r.match_id,
+            expireTime: r.expire_time,
+            sender: {
+                id: r.sender_id,
+                username: r.sender_username,
+                avatar: r.sender_avatar,
+            },
+            receiver: {
+                id: r.receiver_id,
+            }
+        }));
+    }
+}

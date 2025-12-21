@@ -4,6 +4,7 @@ import axios from 'fastify-axios';
 import corsPlugin from './plugins/corsPlugin.js';
 import notification from './routes/notification.js';
 import validateUser from './plugins/validateUser.js';
+import dataBase from './plugins/database.js';
 
 const app = fastify({
   logger: {level: 'debug',transport: {target: 'pino-pretty',},},
@@ -12,6 +13,7 @@ const app = fastify({
 app.register(axios);
 
 app.register(cookie);
+app.register(dataBase);
 app.register(corsPlugin);
 app.register(validateUser);
 
