@@ -47,7 +47,7 @@ async function generateAccessToken(
   return await generateToken({
     sub: uid,
     secret: this.tokenSecrets.accessToken,
-    expiresIn: '1m', //TODO make it 15m
+    expiresIn: '15m', //TODO make it 15m
   });
 }
 
@@ -88,7 +88,7 @@ async function generateRefreshToken(
     sub: uid,
     jti: jti,
     secret: this.tokenSecrets.refreshToken,
-    expiresIn: '5m',
+    expiresIn: '30d',
   });
 }
 
@@ -127,7 +127,7 @@ async function generateConfirmToken(
   return await generateToken({
     sub: uid,
     secret: this.tokenSecrets.confirmToken,
-    expiresIn: '5m',
+    expiresIn: '50m',
   });
 }
 
