@@ -6,7 +6,7 @@ import joinMatch from "./joinMatch.js";
 import Room from "../gameClasses/roomClass.js";
 import errorHandler from "../plugins/errorHandler.js";
 import fakeFriends from "./fakeFriends.js";
-// import fakeFriends      from "./fakeFriends.js";
+import statistics from "./statistics.js";
 
 
 function createRoom() {
@@ -48,6 +48,7 @@ export default function pongGame(fastify, options, done) {
     fastify.register(errorHandler);
     fastify.register(fakeFriends)
 
+    fastify.register(statistics);
     fastify.register(playWithSomeOne);
     fastify.register(inviteFriendToMatch);
     fastify.register(acceptMatchInvitation);
