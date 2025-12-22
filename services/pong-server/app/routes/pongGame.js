@@ -3,7 +3,7 @@ import playWithSomeOne from "./playWithSomeOne.js";
 import inviteFriendToMatch from "./inviteFriendToMatch.js";
 import acceptMatchInvitation from "./acceptMatchInvitation.js";
 import joinMatch from "./joinMatch.js";
-import Room from "../gameClasses/roomClass.js";
+import Room from "../classes/roomClass.js";
 import errorHandler from "../plugins/errorHandler.js";
 import fakeFriends from "./fakeFriends.js";
 import statistics from "./statistics.js";

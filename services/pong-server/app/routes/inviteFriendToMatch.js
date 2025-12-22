@@ -1,5 +1,5 @@
-import Room from "../gameClasses/roomClass.js";
-import Invitation from "../gameClasses/invitationClass.js";
+import Room from "../classes/roomClass.js";
+import Invitation from "../classes/invitationClass.js";
 import inviteQuerySchema from "../schemas/inviteQuerySchema.js";
 import { alreadyInMatch, waitForOpponent }  from "./playWithSomeOne.js";
 
