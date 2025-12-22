@@ -18,6 +18,7 @@ export async function waitForOpponent(room) {
                 resolve();
             } else if (60 < counter) {
                 clearInterval(intervalId);
+                room.stopMatch();
                 const error = new Error("Waiting for opponent too long!!");
                 error.statusCode = 408;
                 reject(error);
@@ -51,7 +52,7 @@ async function playWithSomeOneHandler(request, reply) {
     reply.send(JSON.stringify(room.generateMatch()));
 
     room.on("done", () => {
-        if (room.getWinner()) {
+        if (room.getState() === "done") {
             this.db.addMatch(room.toJSON());
         }
     })
