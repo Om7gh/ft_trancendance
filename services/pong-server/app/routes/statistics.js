@@ -1,3 +1,5 @@
+import errorHandler from "../plugins/errorHandler.js";
+
 class Statistics {
     constructor(matches, uid) {
         this.matches =  matches;
@@ -22,27 +24,22 @@ class Statistics {
 }
 
 async function statisticsHandler(request, reply) {
-    const user  = request.user;
-    const state = this.validateUser(user);
+    const uid  = request.query.uid;
 
-    if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
-        error.statusCode = 400;
-        throw error;
-    }
-
-    const matches = this.db.getMatchesByUser(user.id);
-    const statistics = new Statistics(matches, user.id);
+    const matches = this.db.getMatchesByUser(uid);
+    const statistics = new Statistics(matches, uid);
 
     this.log.info(statistics);
-    
+
     reply.send(statistics);
 }
 
 export default async function statistics(fastify, options) {
 
+    fastify.register(errorHandler);
+
     fastify.route({
-        url     : '/pongGame/statistics',
+        url     : '/statistics',
         method  : 'GET',
         handler : statisticsHandler,
     })
