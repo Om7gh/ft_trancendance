@@ -16,6 +16,7 @@ export interface User {
   last_name: string;
   last_login: number;
   last_logout: number;
+  username: string
 }
 
 interface GlobalContexyType {

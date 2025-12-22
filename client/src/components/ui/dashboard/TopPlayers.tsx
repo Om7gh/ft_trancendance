@@ -33,7 +33,7 @@ const Players = [
   },
 ];
 
-export default function TopPlayers() {
+export default function TopPlayers({type}: {type:string}) {
   const [topPlayers, setTopPlayers] = useState([]);
   const [openModal, setOpenModal] = useState(false);
 

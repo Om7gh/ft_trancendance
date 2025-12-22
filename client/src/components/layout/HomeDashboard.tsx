@@ -49,13 +49,13 @@ export default function HomeDashboard() {
         icon={<FaTableTennisPaddleBall />}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PlayerChart />
-          <PlayerStatistics />
+          <PlayerChart type="pingpong" />
+          <PlayerStatistics type="pingpong" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          <MyGamesHistory />
-          <TopPlayers />
+          <MyGamesHistory type="pingpong" />
+          <TopPlayers type="pingpong" />
         </div>
       </DashboardWrapper>
 
@@ -65,13 +65,13 @@ export default function HomeDashboard() {
         icon={<GiChessQueen />}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PlayerChart />
-          <PlayerStatistics />
+          <PlayerChart type="chess" />
+          <PlayerStatistics type="chess" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          <MyGamesHistory />
-          <TopPlayers />
+          <MyGamesHistory type="chess" />
+          <TopPlayers type="chess" />
         </div>
       </DashboardWrapper>
     </div>

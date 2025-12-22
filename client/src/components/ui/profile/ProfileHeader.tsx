@@ -35,7 +35,7 @@ function ProfileHeader() {
         <div className="flex gap-5 items-center justify-between w-full">
           <p className="text-lg tracking-wider">Username</p>
           <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xl">
-            flash
+            {user?.username}
           </p>
         </div>
         <div className="flex gap-5 items-center justify-between w-full ">
