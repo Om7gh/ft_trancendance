@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { SqliteError } from 'better-sqlite3';
 import {
     type FastifyReply,
@@ -5,6 +6,8 @@ import {
     FastifyInstance,
 } from 'fastify';
 import { User } from '../models/user.js';
+import { UsernameBody } from '../schemas/auth.js';
+import { asUserInfo } from '../dto/user-dto.js';
 
 export class UserController {
     static readonly ERR_USER_NOT_FOUND: string = 'User not found';
@@ -54,6 +57,36 @@ export class UserController {
 
             const users = this.usersRepository.searchUsers(query, limit);
             return reply.send({ users });
+        } catch (err) {
+            console.error(err);
+            return reply.notFound('no user found');
+        }
+    }
+
+    static async user(
+        this: FastifyInstance,
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+        try {
+            const { username } = request.params as UsernameBody;
+            const user = this.usersRepository.findByUsername(username);
+            if (!user) {
+                return reply.notFound('--- user not found ---');
+            }
+            const res = await axios.get(`http://pong:9001/statistics?uid${user.uid}`);
+            if (!res) {
+                this.log.info(
+                    ' ----------- pong statistics not found ----------- '
+                );
+            }
+            const fullUser = {
+                user: asUserInfo(user),
+                pong: {
+                    statistics: res.data
+                }
+            };
+            return reply.send(fullUser);
         } catch (err) {
             console.error(err);
             return reply.notFound('no user found');
