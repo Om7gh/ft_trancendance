@@ -10,7 +10,7 @@ async function fetchNotificationHandler(request, reply) {
         throw error;
     }
 
-    const result = this.notifications.get(user.id);
+    const result = this.db.getNotificationsByUser(user.id);
 
     reply.send(result);
 }

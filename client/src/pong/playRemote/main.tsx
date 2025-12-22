@@ -5,13 +5,17 @@ import { MdGamepad } from 'react-icons/md';
 
 export type MenuOptionPropsType = {
   children: React.ReactNode;
+  destination: string;
 };
 
-export function MenuOption({ children }: MenuOptionPropsType) {
+export function MenuOption({ children, destination }: MenuOptionPropsType) {
   return (
-    <button className="block h-[70px] bg-violet-500/20 shadow-lg shadow-slate-900 rounded text-[1em] w-3/5 m-auto my-4 hover:bg-violet-500/50 duration-200 text-violet-200 cursor-pointer">
+    <Link
+      to={destination}
+      className="block border w-2/3 h-1/7 text-xl text-center m-auto my-4 p-4"
+    >
       {children}
-    </button>
+    </Link>
   );
 }
 
@@ -36,27 +40,15 @@ export function Menu({ children }: MenuPropsType) {
 export function RemoteOptions() {
   return (
     <Menu>
-      <MenuOption>
-        <Link
-          to="/dashboard/games/pingpong/remote/someone"
-          className="w-full h-full text-xl"
-        >
-          Play Match
-        </Link>
-      </MenuOption>
-      <MenuOption>
-        <Link
-          to="/dashboard/games/pingpong/remote/invitefriend"
-          className="w-full h-full text-xl"
-        >
-          Invite Friend
-        </Link>
-      </MenuOption>
-      <MenuOption>
-        <Link to="/dashboard/games/pingpong" className="w-full h-full text-xl">
-          Go Back
-        </Link>
-      </MenuOption>
+      <MenuOption
+        destination='/dashboard/games/pingpong/remote/someone'
+      >Play Match</MenuOption>
+      <MenuOption
+        destination='/dashboard/games/pingpong/remote/invitefriend'
+      >Invite Friend</MenuOption>
+      <MenuOption
+        destination='/dashboard/games/pingpong'
+      >Go Back</MenuOption>
     </Menu>
   );
 }

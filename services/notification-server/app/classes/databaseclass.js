@@ -35,7 +35,7 @@ export default class DatabaseService {
     addNotification({ id, sender, receiver, expireTime }) {
         this.addUser(sender);
 
-        this.insertMatch.run({
+        this.insertNotification.run({
             id,
             sender_id: sender.id,
             receiver_id: receiver.id,
@@ -49,7 +49,7 @@ export default class DatabaseService {
         const rows = this.fetchNotificationsByUser.all(userId);
 
         return rows.map(r => ({
-            id: r.match_id,
+            id: r.notification_id,
             expireTime: r.expire_time,
             sender: {
                 id: r.sender_id,

@@ -44,7 +44,10 @@ export default class Room extends EventEmitter {
             this.stopMatch();
         });
         this.leftPlayer.on("socketClosed", () => {
-            this.pause(this.leftPlayer.id);
+            if (this.state === "pause")
+                this.stopMatch();
+            else
+                this.pause(this.leftPlayer.id);
         })
     }
     
@@ -56,7 +59,10 @@ export default class Room extends EventEmitter {
             this.stopMatch();
         });
         this.rightPlayer.on("socketClosed", () => {
-            this.pause(this.rightPlayer.id);
+            if (this.state === "pause")
+                this.stopMatch();
+            else
+                this.pause(this.rightPlayer.id);
         })
         this.state = "ready";
     }
@@ -236,10 +242,14 @@ export default class Room extends EventEmitter {
     }
 
     setWinner() {
-        if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints()) {
-            this.winner = this.rightPlayer.id;
-        } else if (this.leftPlayer.getPoints() > this.rightPlayer.getPoints()) {
-            this.winner = this.leftPlayer.id;
+        if (!this.leftPlayer || !this.rightPlayer) {
+            this.state = "canceled";
+        } else {
+            if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints())
+                this.winner = this.rightPlayer.id;
+            else if (this.leftPlayer.getPoints() > this.rightPlayer.getPoints())
+                this.winner = this.leftPlayer.id;
+            this.state = "done";
         }
     }
 
@@ -249,7 +259,6 @@ export default class Room extends EventEmitter {
     
     stopMatch() {
         this.setWinner();
-        this.state = "done";
 
         if (this.playingId) {
             this.broadcastScore();

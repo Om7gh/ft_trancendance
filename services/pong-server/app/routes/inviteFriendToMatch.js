@@ -32,6 +32,12 @@ async function inviteHandler(request, reply) {
     room = new Room();
     room.addPlayer(user);
     this.roomList.set(room.id, room);
+    room.on("done", () => {
+        if (room.getState() === "done") {
+            this.db.addMatche(room.toJSON());
+        }
+        this.roomList.delete(room.id);
+    })
     
     const invitation = new Invitation("InviteToMatch", user, {id: fid, username: "", avatar: ""}, room);
     

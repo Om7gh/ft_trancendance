@@ -16,9 +16,12 @@ app.register(axios);
 app.register(websocket);
 
 app.register(cookie);
-app.register(dataBase);
 app.register(corsPlugin);
 app.register(validateUser);
+app.register(dataBase, {
+  dbPath: "/var/local/pong.db",
+});
+
 app.register(pongGame);
 
 const start = async () => {

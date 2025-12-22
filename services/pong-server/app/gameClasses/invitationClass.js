@@ -9,17 +9,17 @@ export default class Invitation {
         this.sender     = new User(sender);
         this.receiver   = new User(receiver);
         this.room       = room;
-        this.sendTime   = Math.floor(Date.now() / 1000);
+        this.expireTime = Math.floor(Date.now() / 1000) + 60000;
     }
 
-    invited(id) {
+    isInvited(id) {
         if (this.receiver.id === id)
             return true;
         return false;
     }
 
     expired() {
-        if (60 < ((Math.floor(Date.now() / 1000)) - this.time))
+        if (this.expireTime < Math.floor(Date.now() / 1000))
             return (true);
         return (false);
     }
@@ -34,6 +34,7 @@ export default class Invitation {
             type        : this.type,
             sender      : this.sender.toJSON(),
             receiver    : this.receiver.toJSON(),
+            expireTime  : this.expireTime,
         })
     }
 }
