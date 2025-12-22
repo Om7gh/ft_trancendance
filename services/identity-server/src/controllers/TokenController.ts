@@ -8,7 +8,6 @@ export default abstract class TokenController {
   ) {
     const token = request.cookies.refreshToken;
     if (!token) {
-      // TODO user should redirect to loging
       reply.clearAccessToken();
       return reply.unauthorized('loggin first');
     }
@@ -16,7 +15,6 @@ export default abstract class TokenController {
       const payload = await request.verifyRefreshToken();
       const user = this.usersRepository.findByUID(payload.sub!);
       if (payload.jti != user?.token_id) {
-        // TODO redirect user to loging
         return reply
           .clearAccessToken()
           .clearRefreshToken()
@@ -28,7 +26,6 @@ export default abstract class TokenController {
       const newAccessToken = await this.generateAccessToken(payload.sub!);
       return reply.sendAccessToken(newAccessToken).send({ success: true });
     } catch (err) {
-      // TODO redirect user to loging
       reply.clearAccessToken().clearRefreshToken().clearCookie('sessionId');
       request.session.destroy();
       return reply.unauthorized('refresh token invalid');
