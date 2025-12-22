@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 
 import { pongGame } from './pongGame.tsx';
 import { ScoreBar } from './ScoreBare.tsx';
-import { MessageDisplayer } from '../playRemote/playWithSomeOne.tsx';
+import MessageDisplayer from '../component/MessageDisplayer.tsx';
 
 export type PlayerType = {
   name          : string;

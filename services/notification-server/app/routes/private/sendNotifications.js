@@ -7,14 +7,7 @@ async function sendNotificationHandler(request, reply) {
         for (let item of notifications) {
             let receiver = item.receiver;
             if (receiver) {
-                let pendingNotifications = this.notifications.get(receiver.id);
-
-                if (pendingNotifications) {
-                    pendingNotifications.push(item);
-                } else {
-                    this.notifications.set(receiver.id, notifications)
-                }
-                console.log(this.notifications.get(receiver.id));
+                this.db.addNotification(item);
             }
         }
     }

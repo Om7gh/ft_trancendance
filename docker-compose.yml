@@ -92,6 +92,8 @@ services:
       - '9001:9001'
     networks:
       - pingpong
+    volumes:
+      - $HOME/data/pong:/var/local
     # depends_on:
     #   rabbitmq:
     #     condition: service_healthy
@@ -104,6 +106,8 @@ services:
       - '9005:9005'
     networks:
       - pingpong
+    volumes:
+      - $HOME/data/notification:/var/local
     # depends_on:
     #   rabbitmq:
     #     condition: service_healthy
