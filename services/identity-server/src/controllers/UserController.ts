@@ -5,9 +5,9 @@ import {
     type FastifyRequest,
     FastifyInstance,
 } from 'fastify';
+import { asUserInfo } from '../dto/user-dto.js';
 import { User } from '../models/user.js';
 import { UsernameBody } from '../schemas/auth.js';
-import { asUserInfo } from '../dto/user-dto.js';
 
 export class UserController {
     static readonly ERR_USER_NOT_FOUND: string = 'User not found';
@@ -57,10 +57,15 @@ export class UserController {
 
             const users = this.usersRepository.searchUsers(query, limit);
             return reply.send({ users });
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             return reply.notFound('no user found');
         }
+    }
+
+    private static async getStatistics(gameService: string, uid: string) {
+        const res = await axios.get(`${gameService}/statistics?uid=${uid}`);
+        return res?.data;
     }
 
     static async user(
@@ -74,22 +79,24 @@ export class UserController {
             if (!user) {
                 return reply.notFound('--- user not found ---');
             }
-            const res = await axios.get(`http://pong:9001/statistics?uid${user.uid}`);
-            if (!res) {
-                this.log.info(
-                    ' ----------- pong statistics not found ----------- '
-                );
-            }
+
             const fullUser = {
                 user: asUserInfo(user),
-                pong: {
-                    statistics: res.data
-                }
+                // chess:
+                //     (await UserController.getStatistics(
+                //         'http://chess:9000',
+                //         user.uid
+                //     )) || null,
+                pong:
+                    (await UserController.getStatistics(
+                        'http://pong:9001',
+                        user.uid
+                    )) || null,
             };
             return reply.send(fullUser);
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
-            return reply.notFound('no user found');
+            return reply.badRequest(err.message);
         }
     }
 }

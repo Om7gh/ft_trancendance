@@ -48,7 +48,6 @@ export default function pongGame(fastify, options, done) {
     fastify.register(errorHandler);
     fastify.register(fakeFriends)
 
-    fastify.register(statistics);
     fastify.register(playWithSomeOne);
     fastify.register(inviteFriendToMatch);
     fastify.register(acceptMatchInvitation);
