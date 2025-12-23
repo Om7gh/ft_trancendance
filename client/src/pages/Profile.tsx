@@ -1,5 +1,5 @@
 import { GlobalContext } from '@/App';
-import { FriendList, MyGamesHistory } from '@/components/ui';
+import { MyGamesHistory } from '@/components/ui';
 import GamesStatistics from '@/components/ui/profile/GamesStatistics';
 import ProfileHeader from '@/components/ui/profile/ProfileHeader';
 import { useContext } from 'react';
@@ -33,7 +33,7 @@ function Profile() {
             <FaUserFriends className="text-violet-500" />
             {user.first_name}' friends
           </p>
-          <FriendsList />
+          {/* <FriendsList /> */}
         </div>
       </div>
     </div>

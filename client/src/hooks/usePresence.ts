@@ -1,5 +1,5 @@
 import {useEffect, useMemo } from "react";
-import Card from "../src/types/UserCard";
+import type Card from "@/types/UserCard";
 
 function usePresence(conversations: Card[], contacts: Card[], socket: React.RefObject<WebSocket | null>){
 
