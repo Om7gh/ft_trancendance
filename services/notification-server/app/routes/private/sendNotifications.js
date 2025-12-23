@@ -2,19 +2,12 @@ import notificationSchema from "../../schemas/notificationSchema.js";
 
 async function sendNotificationHandler(request, reply) {
     const notifications = request.body.data;
-
+    console.log("+++++++++++++", notifications, "++++++++++");
     if (notifications) {
         for (let item of notifications) {
             let receiver = item.receiver;
             if (receiver) {
-                let pendingNotifications = this.notifications.get(receiver.id);
-
-                if (pendingNotifications) {
-                    pendingNotifications.push(item);
-                } else {
-                    this.notifications.set(receiver.id, notifications)
-                }
-                console.log(this.notifications.get(receiver.id));
+                this.db.addNotification(item);
             }
         }
     }
@@ -23,7 +16,6 @@ async function sendNotificationHandler(request, reply) {
 }
 
 async function sendNotification(fastify, opt) {
-
     fastify.route({
         url: '/send',
         method: 'POST',

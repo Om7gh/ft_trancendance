@@ -11,11 +11,6 @@ const plugin: FastifyPluginAsyncTypebox  = async (fastify: FastifyInstance) => {
     onRequest: [fastify.authenticate],
   }, UserController.get)
 
-  // fastify.patch('/', {
-  //   onRequest: [fastify.authenticate],
-  //   schema: newUserSchema
-  // }, UserController.create)
-
   fastify.patch('/', {
     onRequest: [fastify.authenticate],
     schema: updateUserSchema
@@ -27,12 +22,6 @@ const plugin: FastifyPluginAsyncTypebox  = async (fastify: FastifyInstance) => {
       body: updatePasswordSchema
     }
   }, PasswordController.updatePassword)
-
-  //TODO: To be implemented
-  // fastify.patch('/email', {
-  //   onRequest: [fastify.authenticate],
-  //   schema: updatePasswordSchema
-  // }, EmailController.updateEmail) // Use UserController if possible
 }
 
 export default plugin

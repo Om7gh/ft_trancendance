@@ -2,16 +2,21 @@ import { Outlet, Link } from 'react-router';
 
 import React from 'react';
 import { MdGamepad } from 'react-icons/md';
+import MenuButton from '../component/MenuButton';
 
 export type MenuOptionPropsType = {
   children: React.ReactNode;
+  destination: string;
 };
 
-export function MenuOption({ children }: MenuOptionPropsType) {
+export function MenuOption({ children, destination }: MenuOptionPropsType) {
   return (
-    <button className="block h-[70px] bg-violet-500/20 shadow-lg shadow-slate-900 rounded text-[1em] w-3/5 m-auto my-4 hover:bg-violet-500/50 duration-200 text-violet-200 cursor-pointer">
+    <Link
+      to={destination}
+      className="block border w-2/3 h-1/7 text-xl text-center m-auto my-4 p-4"
+    >
       {children}
-    </button>
+    </Link>
   );
 }
 
@@ -21,7 +26,7 @@ export type MenuPropsType = {
 
 export function Menu({ children }: MenuPropsType) {
   return (
-    <>
+    <div className="w-fullspace-y-12 flex flex-col text-center">
       <nav className="bg-slate-900/50  p-4 shadow-xl shadow-slate-900  flex flex-col  w-9/10 m-auto my-4 h-full justify-center">
         <h2 className="text-center bg-linear-0 from-violet-500 to-neon bg-clip-text text-transparent text-4xl flex gap-5 items-center mx-auto mb-5">
           <MdGamepad className="w-16 h-16 text-violet-300 bg-slate-900/50 p-2 shadow-xl" />
@@ -29,34 +34,24 @@ export function Menu({ children }: MenuPropsType) {
         </h2>
         {children}
       </nav>
-    </>
+    </div>
   );
 }
 
 export function RemoteOptions() {
   return (
     <Menu>
-      <MenuOption>
-        <Link
-          to="/dashboard/games/pingpong/remote/someone"
-          className="w-full h-full text-xl"
-        >
+      <div className="w-full space-y-12 flex flex-col text-center">       
+        <MenuButton destination='/dashboard/games/pingpong/remote/someone' >
           Play Match
-        </Link>
-      </MenuOption>
-      <MenuOption>
-        <Link
-          to="/dashboard/games/pingpong/remote/invitefriend"
-          className="w-full h-full text-xl"
-        >
+        </MenuButton>
+        <MenuButton destination='/dashboard/games/pingpong/remote/invitefriend' >
           Invite Friend
-        </Link>
-      </MenuOption>
-      <MenuOption>
-        <Link to="/dashboard/games/pingpong" className="w-full h-full text-xl">
+        </MenuButton>
+        <MenuButton destination='/dashboard/games/pingpong' >
           Go Back
-        </Link>
-      </MenuOption>
+        </MenuButton>
+      </div>
     </Menu>
   );
 }

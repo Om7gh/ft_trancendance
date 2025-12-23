@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 import Database from 'better-sqlite3';
-import DatabaseService from '../gameClasses/databaseClass.js';
+import DatabaseService from '../classes/databaseClass.js';
 
 
 export function initDatabase(dbPath = './pong.db') {

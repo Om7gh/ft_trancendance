@@ -30,7 +30,6 @@ export default abstract class MFAController {
     if (mfa?.enabled) {
       return reply.forbidden('2fa already enabled');
     }
-    //TODO IMPORTANT, Handle if user dosent scan qr, make them generate new one or save the generated qr to sned it again
     return reply.send(html);
   }
 

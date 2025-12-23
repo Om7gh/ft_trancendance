@@ -85,12 +85,15 @@ export default abstract class AuthController {
         const user = this.usersRepository.findOrCreate(
             asUser(provider, payload) as User
         );
+        if (user.username) {
+            return reply.redirect('/auth/complete-registration');
+        }
         const [accessToken, refreshToken] = await AuthController.issueTokens(
             this,
             user
         );
         reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
-        return reply.redirect('/dashboard');
+        return reply.redirect('/auth/complete-registration');
     }
 
     static async signup(
@@ -113,11 +116,11 @@ export default abstract class AuthController {
         } as unknown as User;
         const user = this.usersRepository.insert(newUser);
         if (!user) {
-            return reply.code(400).send({ message: 'user not created' }); //! what should do here?
+            return reply.code(400).send({ message: 'user not created' });
         }
         const token = await this.generateConfirmToken(user.uid);
         const url = `${this.config.HOST}:${this.config.PORT}/auths/confirm?token=${token}`;
-        await this.transporter.sendMail(confirmMailOptions(user.email, url)); // TODO we can use mail service for mailling
+        await this.transporter.sendMail(confirmMailOptions(user.email, url));
         return reply.code(201).send({ message: 'user created' });
     }
 
@@ -352,7 +355,7 @@ export default abstract class AuthController {
                 );
             }
 
-            await this.usersRepository.update(user.id, {
+            this.usersRepository.update(user.id, {
                 avatar,
                 bio,
             });

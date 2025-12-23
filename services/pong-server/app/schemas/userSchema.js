@@ -4,7 +4,7 @@ const userSchema = {
     required: ['id', 'username', 'avatar'],
     additionalProperties: true,
     properties: {
-      uid: {
+      id: {
         type: 'string',
         minLength: 1
       },

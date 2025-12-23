@@ -5,7 +5,6 @@ export default fp(async function errorHandler(fastify, options) {
         if (error.statusCode && (error.statusCode < 500))
             reply.code(error.statusCode).send(error.message);
         else {
-            console.log(error);
             reply.code(500).send("Unexpected error!!");
         }
     })

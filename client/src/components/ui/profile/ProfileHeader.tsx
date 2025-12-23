@@ -8,7 +8,7 @@ function ProfileHeader() {
 
   const sendRequest = () => {
     console.log("iS clicked")
-    const uid = "e7f1f98f150db582922495acc8b593d2";
+    const uid = "a4dd5697269d9219b96d742377872377";
     mutateFriend.mutate({uid})
   }
   return (
@@ -35,7 +35,7 @@ function ProfileHeader() {
         <div className="flex gap-5 items-center justify-between w-full">
           <p className="text-lg tracking-wider">Username</p>
           <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xl">
-            flash
+            {user?.username}
           </p>
         </div>
         <div className="flex gap-5 items-center justify-between w-full ">

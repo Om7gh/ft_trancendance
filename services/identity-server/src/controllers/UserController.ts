@@ -1,10 +1,13 @@
+import axios from 'axios';
 import { SqliteError } from 'better-sqlite3';
 import {
     type FastifyReply,
     type FastifyRequest,
     FastifyInstance,
 } from 'fastify';
+import { asUserInfo } from '../dto/user-dto.js';
 import { User } from '../models/user.js';
+import { UsernameBody } from '../schemas/auth.js';
 
 export class UserController {
     static readonly ERR_USER_NOT_FOUND: string = 'User not found';
@@ -54,9 +57,47 @@ export class UserController {
 
             const users = this.usersRepository.searchUsers(query, limit);
             return reply.send({ users });
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
             return reply.notFound('no user found');
+        }
+    }
+
+    private static async getStatistics(gameService: string, uid: string) {
+        const res = await axios.get(`${gameService}/statistics?uid=${uid}`);
+        return res?.data;
+    }
+
+    static async user(
+        this: FastifyInstance,
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+        try {
+            const { username } = request.params as UsernameBody;
+            const user = this.usersRepository.findByUsername(username);
+            if (!user) {
+                return reply.notFound('--- user not found ---');
+            }
+
+            const fullUser = {
+                user: asUserInfo(user),
+                // chess:
+                //     (await UserController.getStatistics(
+                //         'http://chess:9000',
+                //         user.uid
+                //     )) || null,
+                pong:
+                    (await UserController.getStatistics(
+                        'http://pong:9001',
+                        user.uid
+                    )) || null,
+                friends: this.friendshipRepository.getFriendships(user.id)
+            };
+            return reply.send(fullUser);
+        } catch (err: any) {
+            console.error(err);
+            return reply.badRequest(err.message);
         }
     }
 }

@@ -33,7 +33,7 @@ export function useOnlineChess() {
     const urlParams = new URLSearchParams(window.location.search);
     const pid = urlParams.get('playerId') || localStorage.getItem('playerId');
     const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const baseWs = `${wsProto}://${window.location.host}/game/chess?playerId=${user.first_name}`;
+    const baseWs = `${wsProto}://${window.location.host}/game/chess?playerId=${user?.username}`;
     const wsUrl = pid
       ? `${baseWs}?playerId=${encodeURIComponent(pid)}`
       : baseWs;

@@ -13,9 +13,11 @@ const app = fastify({
 app.register(axios);
 
 app.register(cookie);
-app.register(dataBase);
 app.register(corsPlugin);
 app.register(validateUser);
+app.register(dataBase, {
+  dbPath: "/var/local/notification.db",
+});
 
 app.register(notification);
 

@@ -19,18 +19,17 @@ export function initDatabase(dbPath = './notification.db') {
 
         CREATE TABLE IF NOT EXISTS notifications (
             id TEXT PRIMARY KEY,
+            type TEXT NOT NULL,
             sender_id TEXT NOT NULL,
             receiver_id TEXT NOT NULL,
             expire_time INTEGER,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (sender_id) REFERENCES users(id),
-            FOREIGN KEY (receiver_id) REFERENCES users(id)
+            FOREIGN KEY (sender_id) REFERENCES users(id)
         );
     ` );
 
     return db;
 }
-
 
 export default fp(async function dataBase(fastify, options) {
     const db = initDatabase(options.dbPath);

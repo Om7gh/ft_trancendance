@@ -1,5 +1,5 @@
-import { waitForOpponent } from "./playWithSomeOne.js";
 import acceptQuerySchema from "../schemas/acceptQuerySchema.js";
+import { waitForOpponent, alreadyInMatch } from "./playWithSomeOne.js";
 
 async function acceptHandler(request, reply) {
     const user  = request.user;
@@ -14,7 +14,7 @@ async function acceptHandler(request, reply) {
     const iid         = request.query.iid;
     const invitation  = this.invitationList.get(iid);
 
-    if (!invitation || invitation.expired() || !invitation.invited(user.id)) {
+    if (!invitation || invitation.expired() || !invitation.isInvited(user.id)) {
         const error = new Error("Either you are not invited, or invitation is gone");
         error.statusCode = 400;
         throw error

@@ -1,91 +1,73 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { Match } from './match.tsx';
-import { MessageDisplayer } from './playWithSomeOne.tsx';
+import type { MatchPropsType } from '../types/playMatch.ts';
+import type { ScoreType, PlayMatchPropsType } from '../types/playMatch.ts';
 
-import type { MatchType } from './playWithSomeOne.tsx';
+import useWebSocket from '../hooks/useWebSocket.ts';
+import CounterDown from '../component/CounterDown.tsx';
+import RemoteWinner from '../component/remoteWinner.tsx';
+import RemoteScoreBar from '../component/remoteScoreBare.tsx';
+import useSynchronization from '../hooks/useSynchronization.ts';
+import MessageDisplayer from '../component/MessageDisplayer.tsx';
 
-function messageHandler(
-  event: MessageEvent,
-  setMatchState: (value: string) => void,
-  setScore: (value: ScoreType) => void
-) {
-  const message = JSON.parse(event.data);
-
-  if (message.state != 'ok') {
-    setMatchState(message.reason);
-  } else if (message.data.event === 'matchState') {
-    setMatchState(message.data.value);
-  } else if (message.data.event === 'updateScore') {
-    setScore({
-      leftPlayer: message.data.leftPlayer,
-      rightPlayer: message.data.rightPlayer,
-    });
-  }
-}
-
-function createConnection(
-  connection: { ws: WebSocket | null },
-  setMatchState: (value: string) => void,
-  setScore: (value: ScoreType) => void,
-  url: string
-) {
-  connection.ws = new WebSocket(url);
-
-  if (!connection.ws) {
-    setMatchState('Fail to establish connection to server!!');
-  }
-
-  connection.ws.onerror = () =>
-    setMatchState('Error happens with connection!!');
-  connection.ws.onopen = () => console.log('Connection is established');
-  connection.ws.onclose = () => console.log('Connection is closed');
-  connection.ws.onmessage = (event) =>
-    messageHandler(event, setMatchState, setScore);
-
-  return () => {
-    if (connection.ws) connection.ws.close(1000, 'Close socket');
-  };
-}
-
-export type ScoreType = {
-  leftPlayer: number;
-  rightPlayer: number;
-};
-
-type PlayMatchPropsType = {
-  match: MatchType;
-};
-
-export function PlayMatch({ match }: PlayMatchPropsType) {
-  const connection = useRef<{ ws: WebSocket | null }>({ ws: null });
-  const [matchState, setMatchState] = useState(
-    'Waiting for Opponent to join match...'
-  );
+function Match({match, connection, matchState, setMatchState, setError}: MatchPropsType) {
+  const navigate = useNavigate();
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [score, setScore] = useState<ScoreType | null>(null);
+
+  useSynchronization(connection, canvasRef, matchState,
+    setScore, setMatchState, setError
+  )
+
+  return (
+    <div className="relative">
+      <RemoteScoreBar score={score} match={match} />
+      <div className="flex flex-col m-auto my-10">
+        <canvas
+          width="700"
+          height="400"
+          ref={canvasRef}
+          className="border w-full aspec-[7/4] m-auto bg-slate-950/60"
+        >
+          Your browser does not support HTML canvas API!!
+        </canvas>
+        {(matchState === 'done') && <RemoteWinner score={score} match={match} />}
+        {(matchState === 'pause') && <CounterDown />}
+      </div>
+      <button
+          className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-1/2"
+          onClick={() => {
+            if (matchState === 'going') {
+                connection.send(JSON.stringify({type: 'leave',data: true,}));
+            }
+            navigate('/dashboard/games/pingpong/remote');
+          }}
+      >Leave Match</button>
+    </div>
+  );
+}
+
+export default function PlayMatch({ match }: PlayMatchPropsType) {
+  const connection  = useRef<{ ws: WebSocket | null }>({ ws: null });
+  const [error, setError] = useState<string | null>(null);
+  const [matchState, setMatchState] = useState<string | null>(null);
   const url = `http://localhost:8080/pongGame/remote/join?rid=${match.roomId}`;
 
-  useEffect(() => {
-    try {
-      return createConnection(connection.current, setMatchState, setScore, url);
-    } catch (err) {
-      if (connection.current.ws)
-        connection.current.ws.close(1000, 'Close socket');
-      setMatchState('Error thrown on the match!!');
-    }
-  }, [url]);
+  useWebSocket(url, connection.current, setMatchState, setError);
 
-  if (matchState === 'going' || matchState === 'pause' || matchState === 'done')
+  if (error){
+    return <MessageDisplayer message={error} />
+  } else if (matchState) {
     return (
-      <Match
-        connection={connection.current.ws!}
-        score={score!}
-        matchState={matchState}
+      <Match 
         match={match}
-        setScore={setScore}
+        connection={connection.current.ws!}
+        matchState={matchState}
         setMatchState={setMatchState}
+        setError={setError}
       />
-    );
-
-  return <MessageDisplayer message={matchState} />;
+    )
+  }
+  return <MessageDisplayer message="Establishing connection..." />;
 }

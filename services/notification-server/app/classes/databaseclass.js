@@ -9,15 +9,16 @@ export default class DatabaseService {
 
         this.insertNotification = this.db.prepare(`
             INSERT OR IGNORE INTO notifications (
-                id, sender_id, receiver_id, expire_time
+                id, type, sender_id, receiver_id, expire_time
             ) VALUES (
-                @id, @sender_id, @receiver_id, @expire_time
+                @id, @type, @sender_id, @receiver_id, @expire_time
             )
         `);
 
         this.fetchNotificationsByUser = this.db.prepare(`
             SELECT
                 n.id AS notification_id,
+                n.type
                 n.receiver_id,
                 n.expire_time,
                 u.id AS sender_id, u.username AS sender_username, u.avatar AS sender_avatar
@@ -32,11 +33,12 @@ export default class DatabaseService {
         this.insertUser.run({ id, username, avatar });
     }
 
-    addNotification({ id, sender, receiver, expireTime }) {
+    addNotification({ id, type, sender, receiver, expireTime }) {
         this.addUser(sender);
 
-        this.insertMatch.run({
+        this.insertNotification.run({
             id,
+            type,
             sender_id: sender.id,
             receiver_id: receiver.id,
             expire_time:  expireTime
@@ -49,7 +51,8 @@ export default class DatabaseService {
         const rows = this.fetchNotificationsByUser.all(userId);
 
         return rows.map(r => ({
-            id: r.match_id,
+            id: r.notification_id,
+            type: r.type,
             expireTime: r.expire_time,
             sender: {
                 id: r.sender_id,

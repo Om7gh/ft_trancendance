@@ -1,14 +1,14 @@
 export default function fakeFriends(fastify, options, done) {
     fastify.decorate("friendList", new Array());
 
-    fastify.friendList.push({uid: "f0518f3321b8820a836ace90d2125a12", username: 'bramzil1', avatar: 'https://avatar.iran.liara.run/public'});
-    fastify.friendList.push({uid: 22222, username: 'omghazi', avatar: 'https://avatar.iran.liara.run/public'});
-    fastify.friendList.push({uid: 33333, username: 'alafdili', avatar: 'https://avatar.iran.liara.run/public'});
-    fastify.friendList.push({uid: 44444, username: 'mohimi', avatar: 'https://avatar.iran.liara.run/public'});
-    fastify.friendList.push({uid: 55555, username: 'aateika', avatar: 'https://avatar.iran.liara.run/public'});
-    fastify.friendList.push({uid: 66666, username: 'hmad', avatar: 'https://avatar.iran.liara.run/public'});
-    fastify.friendList.push({uid: 77777, username: 'said', avatar: 'https://avatar.iran.liara.run/public'});
-    fastify.friendList.push({uid: 88888, username: 'moha', avatar: 'https://avatar.iran.liara.run/public'});
+    fastify.friendList.push({id: "f0518f3321b8820a836ace90d2125a12", username: 'bramzil1', avatar: 'https://avatar.iran.liara.run/public'});
+    fastify.friendList.push({id: 22222, username: 'omghazi', avatar: 'https://avatar.iran.liara.run/public'});
+    fastify.friendList.push({id: 33333, username: 'alafdili', avatar: 'https://avatar.iran.liara.run/public'});
+    fastify.friendList.push({id: 44444, username: 'mohimi', avatar: 'https://avatar.iran.liara.run/public'});
+    fastify.friendList.push({id: 55555, username: 'aateika', avatar: 'https://avatar.iran.liara.run/public'});
+    fastify.friendList.push({id: 66666, username: 'hmad', avatar: 'https://avatar.iran.liara.run/public'});
+    fastify.friendList.push({id: 77777, username: 'said', avatar: 'https://avatar.iran.liara.run/public'});
+    fastify.friendList.push({id: 88888, username: 'moha', avatar: 'https://avatar.iran.liara.run/public'});
 
     fastify.route({
         url: '/friends/list',
