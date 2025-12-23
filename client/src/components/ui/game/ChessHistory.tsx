@@ -1,6 +1,32 @@
-import type { User } from '@/App';
-import useGetChessHistory from '@/services/chess/useChessHistory';
-import { PiPingPongBold } from 'react-icons/pi';
+import { FaChess } from 'react-icons/fa';
+
+interface UserData {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  avatar: string;
+}
+
+interface ChessMatch {
+  id: string;
+  opponent: string;
+  result: string;
+  reason: string;
+  moves: number;
+  startedAt: number;
+}
+
+interface ChessHistoryProps {
+  userData: UserData;
+  matchData: {
+      totalGames: number;
+      wins: number;
+      losses: number;
+      draws: number;
+      winRate: string;
+  };
+}
 
 function ResultBadge({ win }: { win: boolean }) {
   return (
@@ -17,20 +43,15 @@ function ResultBadge({ win }: { win: boolean }) {
 }
 
 
-function ChessHistory({user}: {user: User}) {
-  const {data: gameHistory, isError, error, isPending} = useGetChessHistory(user?.username)
-  
-  if (isPending)
-    return <p className='text-center text-violet-500 text-xl'>Loading...</p>
-  if (isError)
-    return <p className='text-ping-500 text-center text-xl'>{error.message}</p>
-  
-  const { history } = gameHistory;
+function ChessHistory({userData, matchData}: ChessHistoryProps) {
+  const history: ChessMatch[] = [];
   
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
   };
+
+  console.log(matchData)
 
   return (
     <div className="relative  border border-violet-500/30 bg-slate-950/30 p-6  shadow-xl shadow-slate-800 h-96 overflow-auto">
@@ -41,23 +62,28 @@ function ChessHistory({user}: {user: User}) {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-3  bg-violet-500/15 border border-violet-500/30">
-              <PiPingPongBold className="text-xl text-violet-300" />
+              <FaChess className="text-xl text-violet-300" />
             </div>
             <div>
               <h3 className="text-xl font-semibold tracking-wide text-violet-200">
-                Match History
+                Chess History
               </h3>
               <p className="text-xs text-slate-400">
-                {history.length} games
+                {matchData?.totalGames} games
               </p>
             </div>
           </div>
         </div>
 
+        {history.length === 0 ? (
+          <div className="text-center py-8 text-slate-400">
+            No chess games played yet
+          </div>
+        ) : (
         <div className="space-y-3">
           {history.map((game) => {
             const isWinning = game.result === 'WIN';
-            const playerName = user?.username || '';
+            const playerName = userData?.username || '';
             
             return (
               <div
@@ -99,6 +125,7 @@ function ChessHistory({user}: {user: User}) {
             );
           })}
         </div>
+        )}
       </div>
     </div>)
 }

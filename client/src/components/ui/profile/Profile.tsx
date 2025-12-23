@@ -1,4 +1,3 @@
-import { Avatar } from '@/assets';
 import { useContext, useEffect, useState, type JSX } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
@@ -67,7 +66,7 @@ export default function Profile(): JSX.Element {
             </li>
             <li className="hover:bg-slate-700 transition-colors">
               <Link
-                to="profile"
+                to={`profile/${user?.username}`}
                 className="block px-4 py-3 text-sm text-slate-100"
                 onClick={() => setActive(false)}
               >

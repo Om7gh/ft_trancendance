@@ -7,6 +7,7 @@ import DashboardWrapper from './DashboardWrapper';
 import { GiChessQueen } from 'react-icons/gi';
 import { FaTableTennisPaddleBall } from 'react-icons/fa6';
 import TodayGames from '../ui/dashboard/TodayGames';
+import GamesHistory from '../ui/game/GamesHistory';
 
 type GameType = 'pingpong' | 'chess';
 
@@ -54,7 +55,7 @@ export default function HomeDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          <MyGamesHistory type="pingpong" />
+          <GamesHistory type="pingpong" />
           <TopPlayers type="pingpong" />
         </div>
       </DashboardWrapper>
@@ -70,7 +71,7 @@ export default function HomeDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          <MyGamesHistory type="chess" />
+          <GamesHistory type="chess" />
           <TopPlayers type="chess" />
         </div>
       </DashboardWrapper>
