@@ -1,5 +1,3 @@
-
-
 export type Paddle = {
   x: number;
   y: number;

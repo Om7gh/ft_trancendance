@@ -1,7 +1,10 @@
+import { v4 as uuid} from 'uuid';
+import Round from './roundClass.js'
+
 export default class Tournament {
 
     constructor() {
-        this.id             = uuid;
+        this.id             = uuid();
         this.state          = "waiting";
 
         this.currentRound   = null;

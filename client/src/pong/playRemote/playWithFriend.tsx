@@ -4,7 +4,7 @@ import type { MatchType } from "../types/playWithSomeOne.ts";
 import type { FriendObject, FriendPropsType, ListFriendsPropsType } from '../types/playWithFriend.ts';
 
 import PlayMatch from "./playMatch.tsx";
-import useFriends from "../hooks/useFriends.ts";
+import useFetchFriends from "../hooks/useFetchFriends.ts";
 import useFetchMatch from '../hooks/useFetchMatch.ts';
 import MessageDisplayer from "../component/MessageDisplayer.tsx";
 
@@ -23,7 +23,7 @@ function Friend({ friend, setFriendId }: FriendPropsType) {
 function ListFriends({ setError, setFriendId }: ListFriendsPropsType) {
     const [friends, setFriends] = useState<[] | null>(null);
 
-    useFriends(setFriends, setError);
+    useFetchFriends(setFriends, setError);
 
     if (friends){
         if (friends.length) {

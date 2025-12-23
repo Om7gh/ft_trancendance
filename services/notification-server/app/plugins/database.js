@@ -19,6 +19,7 @@ export function initDatabase(dbPath = './notification.db') {
 
         CREATE TABLE IF NOT EXISTS notifications (
             id TEXT PRIMARY KEY,
+            type TEXT NOT NULL,
             sender_id TEXT NOT NULL,
             receiver_id TEXT NOT NULL,
             expire_time INTEGER,

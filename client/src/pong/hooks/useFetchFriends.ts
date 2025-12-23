@@ -1,12 +1,7 @@
 import { useEffect } from "react";
 import axiosApiInstance from "@/axiosApiInstance";
 
-type UseFriendsPropsType = {
-    setFriends: (value: []) => void;
-    setError: (value: string) => void;
-}
-
-export default function useFriends(setFriends: ((value: []) => void), setError: (value: string) => void) {
+export default function useFetchFriends(setFriends: ((value: []) => void), setError: (value: string) => void) {
     useEffect(() => {
         let ignored = false;
         (async function fetchFriends() {

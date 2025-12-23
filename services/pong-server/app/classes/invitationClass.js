@@ -3,13 +3,13 @@ import User from "./userClass.js";
 
 export default class Invitation {
 
-    constructor(type, sender, receiver, room) {
-        this.id         = uuid();
-        this.type       = type;
-        this.sender     = new User(sender);
-        this.receiver   = new User(receiver);
-        this.room       = room;
-        this.expireTime = Math.floor(Date.now() / 1000) + 60000;
+    constructor(type, sender, receiver, room, timeOut) {
+        this.id             = uuid();
+        this.type           = type;
+        this.sender         = new User(sender);
+        this.receiver       = new User(receiver);
+        this.room           = room;
+        this.expireTime     = (timeOut) ? (Math.floor(Date.now() / 1000) + timeOut) : null;
     }
 
     isInvited(id) {
@@ -19,7 +19,7 @@ export default class Invitation {
     }
 
     expired() {
-        if (this.expireTime < Math.floor(Date.now() / 1000))
+        if (this.expireTime < (Math.floor(Date.now() / 1000)))
             return (true);
         return (false);
     }
@@ -29,12 +29,15 @@ export default class Invitation {
     }
 
     toJSON() {
-        return ({
-            id          : this.id,
-            type        : this.type,
-            sender      : this.sender.toJSON(),
-            receiver    : this.receiver.toJSON(),
-            expireTime  : this.expireTime,
-        })
+        if (!this.receiver)
+            return null;
+        return {
+            id         : this.id,
+            type       : this.type,
+            receiver   : this.receiver.toJSON(),
+            expireTime : this.expireTime,
+            ...(this.sender && { sender: this.sender.toJSON() }),
+        };
     }
+
 }
