@@ -92,6 +92,7 @@ export class UserController {
                         'http://pong:9001',
                         user.uid
                     )) || null,
+                friends: this.friendshipRepository.getFriendships(user.id)
             };
             return reply.send(fullUser);
         } catch (err: any) {
