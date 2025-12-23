@@ -17,18 +17,15 @@ export default function asUser(
   if (!data.email) {
     throw new Error('data object has no email field');
   }
-  const username = data.email?.split('@')[0];
 
   const mappings: Record<string, () => Partial<User>> = {
     discord: () => ({
-      username: username,
       first_name: data.global_name,
       email: data.email,
       avatar: dicordAvatar({ id: data.id, avatar: data.avatar }),
       email_verified: data.verified,
     }),
     google: () => ({
-      username: username,
       first_name: data.given_name,
       last_name: data.family_name,
       email: data.email,

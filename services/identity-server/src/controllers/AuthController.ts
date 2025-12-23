@@ -85,12 +85,15 @@ export default abstract class AuthController {
         const user = this.usersRepository.findOrCreate(
             asUser(provider, payload) as User
         );
+        if (user.username) {
+            return reply.redirect('/auth/complete-registration');
+        }
         const [accessToken, refreshToken] = await AuthController.issueTokens(
             this,
             user
         );
         reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
-        return reply.redirect('/dashboard');
+        return reply.redirect('/auth/complete-registration');
     }
 
     static async signup(
@@ -352,7 +355,7 @@ export default abstract class AuthController {
                 );
             }
 
-            await this.usersRepository.update(user.id, {
+            this.usersRepository.update(user.id, {
                 avatar,
                 bio,
             });
