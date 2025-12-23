@@ -1,14 +1,23 @@
-import { GlobalContext } from '@/App';
-import { useContext } from 'react';
 import ChessHistory from '../game/ChessHistory';
 import PongHistory from '../game/PongHistory';
 
+interface UserData {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  avatar: string;
+}
 
+interface MyGamesHistoryProps {
+  type: string;
+  userData: UserData;
+  matchData: any;
+}
 
-export default function MyGamesHistory({type} : {type: string}) {
-  const {user} = useContext(GlobalContext)
+export default function MyGamesHistory({type, userData, matchData} : MyGamesHistoryProps) {
   if (type === "chess")
-    return <ChessHistory user={user} />
+    return <ChessHistory userData={userData} matchData={matchData} />
   else
-      return <PongHistory user={user} />
+    return <PongHistory userData={userData} matchData={matchData} />
 }

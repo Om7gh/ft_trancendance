@@ -1,10 +1,11 @@
-const { getGameStats } = require("../repositories");
+const { getGameStats, getPlayerGameHistory } = require("../repositories");
 
 const getStats = async function(req, rep) {
     const {uid} = req.query;
     if (!uid)
        return rep.code(400).send({message: "Missing Username"})
      const stats = getGameStats(req.server.db, uid);
+     const history = getPlayerGameHistory(req.server.db, uid);
      return rep.send({
       stats: {
         totalGames: stats.totalGames || 0,
@@ -15,6 +16,7 @@ const getStats = async function(req, rep) {
           ? ((stats.wins / stats.totalGames) * 100).toFixed(2) 
           : '0.00'
       },
+      history
       })
 }
 
