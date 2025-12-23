@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
 import Modal from './Modal';
 import axiosApiInstance from '@/axiosApiInstance';
+import Notify from '../ui/utils/Notify';
 
 function Notification() {
   const [openNotification, setOpenNotification] = useState(false);
@@ -35,9 +36,7 @@ function Notification() {
       clearInterval(intervalId);
     };
   }, [])
-
   console.log(data)
-
   return (
     <div className="relative">
       <IoIosNotificationsOutline
@@ -48,7 +47,11 @@ function Notification() {
         <Modal onClose={() => setOpenNotification(false)} type="notification">
           {loading && <p>Loading...</p>}
           {!loading && error && <p className='text-pink-500 text-xl text-center'>{error}</p>}
-          {!loading && !error && (data.length ? <div className='text-violet-200'>{data[0].sender.username}</div> : <p className='text-violet-200 text-xl text-center'>No Notification available yet</p>)}
+          {!loading && !error && (data.length ? <>
+            {data.map((notif, i) => (
+              <Notify data={notif} key={i} />
+            ))}
+          </> : <p className='text-violet-200 text-xl text-center'>No Notification available yet</p>)}
         </Modal>
       )}
     </div>

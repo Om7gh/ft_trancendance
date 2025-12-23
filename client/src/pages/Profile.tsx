@@ -26,7 +26,7 @@ function Profile() {
             <MdOutlineHistory className="text-violet-500" />
             {user.first_name}' Game history
           </p>
-          <MyGamesHistory />
+          <MyGamesHistory type="pong" />
         </div>
         <div>
           <p className="text-3xl text-violet-400 mb-4 flex gap-4">

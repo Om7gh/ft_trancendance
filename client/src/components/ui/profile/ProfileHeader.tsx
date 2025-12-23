@@ -8,7 +8,7 @@ function ProfileHeader() {
 
   const sendRequest = () => {
     console.log("iS clicked")
-    const uid = "a4dd5697269d9219b96d742377872377";
+    const uid = "c54b8bb3a0016a1eec344c7baa8afd06";
     mutateFriend.mutate({uid})
   }
   return (
