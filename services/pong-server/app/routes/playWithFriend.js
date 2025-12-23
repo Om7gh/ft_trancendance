@@ -34,7 +34,7 @@ async function inviteFriendToMatch(request, reply) {
         this.invitationList.set(invitation.id, invitation);
         
         const response = await axios({
-            url: "http://notification:9003/notification/send",
+            url: "http://notification:9003/send",
             method: "POST",
             data: JSON.stringify([invitation.toJSON(),]),
         })
