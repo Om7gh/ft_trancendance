@@ -5,7 +5,7 @@ import type { FriendObject, FriendPropsType, ListFriendsPropsType } from '../typ
 
 import PlayMatch from "./playMatch.tsx";
 import useFriends from "../hooks/useFriends.ts";
-import useFetchMatch from '../hooks/useMatch.ts';
+import useFetchMatch from '../hooks/useFetchMatch.ts';
 import MessageDisplayer from "../component/MessageDisplayer.tsx";
 
 function Friend({ friend, setFriendId }: FriendPropsType) {

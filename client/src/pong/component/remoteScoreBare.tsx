@@ -39,7 +39,7 @@ type ScoreBarPropsType = {
   match: MatchType | null;
 };
 
-export default function ScoreBar({ score, match }: ScoreBarPropsType) {
+export default function RemoteScoreBar({ score, match }: ScoreBarPropsType) {
   if (score && match) {
     return (
       <div className=" flex justify-center items-center bg-slate-950/60 shadow-xl text-violet-200">

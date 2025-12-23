@@ -1,17 +1,18 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import type { MatchPropsType } from '../types/playMatch.ts';
 import type { ScoreType, PlayMatchPropsType } from '../types/playMatch.ts';
 
-import Winner from '../component/Winner.tsx';
-import ScoreBar from '../component/ScoreBare.tsx';
-import LeaveMatch from '../component/LeavMatch.tsx';
 import useWebSocket from '../hooks/useWebSocket.ts';
 import CounterDown from '../component/CounterDown.tsx';
+import RemoteWinner from '../component/remoteWinner.tsx';
+import RemoteScoreBar from '../component/remoteScoreBare.tsx';
 import useSynchronization from '../hooks/useSynchronization.ts';
 import MessageDisplayer from '../component/MessageDisplayer.tsx';
 
 function Match({match, connection, matchState, setMatchState, setError}: MatchPropsType) {
+  const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [score, setScore] = useState<ScoreType | null>(null);
 
@@ -21,7 +22,7 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
 
   return (
     <div className="relative">
-      <ScoreBar score={score} match={match} />
+      <RemoteScoreBar score={score} match={match} />
       <div className="flex flex-col m-auto my-10">
         <canvas
           width="700"
@@ -31,10 +32,18 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
         >
           Your browser does not support HTML canvas API!!
         </canvas>
-        {(matchState === 'done') && <Winner score={score} match={match} />}
+        {(matchState === 'done') && <RemoteWinner score={score} match={match} />}
         {(matchState === 'pause') && <CounterDown />}
       </div>
-      <LeaveMatch matchState={matchState} connection={connection} />
+      <button
+          className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-1/2"
+          onClick={() => {
+            if (matchState === 'going') {
+                connection.send(JSON.stringify({type: 'leave',data: true,}));
+            }
+            navigate('/dashboard/games/pingpong/remote');
+          }}
+      >Leave Match</button>
     </div>
   );
 }

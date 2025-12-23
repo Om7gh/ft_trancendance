@@ -1,22 +1,23 @@
 import { useState, useEffect } from "react";
 
-import type { ScoreType } from "../types/playMatch";
-import type { MatchType, PlayerType } from "../types/playWithSomeOne";
 import MessageDisplayer from "./MessageDisplayer";
+import { type ScoreType } from "../types/playMatch";
+import { type MatchType, type PlayerType } from "../types/playWithSomeOne";
 
 export type WinnerPropsType = {
     score: ScoreType | null;
     match: MatchType | null;
 };
 
-export default function Winner({ score, match }: WinnerPropsType) {
+export default function RemoteWinner({ score, match }: WinnerPropsType) {
     const [winner, setWinner] = useState<PlayerType | null>(null);
 
     useEffect(() => {
         if (score && match) {
-        if (score.leftPlayer < score.rightPlayer) setWinner(match.rightPlayer);
-        else if (score.rightPlayer < score.leftPlayer)
-            setWinner(match.leftPlayer);
+            if (score.leftPlayer < score.rightPlayer)
+                setWinner(match.rightPlayer);
+            else if (score.rightPlayer < score.leftPlayer)
+                setWinner(match.leftPlayer);
         }
     }, []);
 

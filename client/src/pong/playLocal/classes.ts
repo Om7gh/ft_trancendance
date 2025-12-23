@@ -1,21 +1,14 @@
-export class Table {
-    context             : CanvasRenderingContext2D | null;
+import type { ScoreType } from "./main";
+
+class Table {
+    context             : CanvasRenderingContext2D;
     width               : number;
     height              : number;
 
-    constructor(){
-        this.context    = null;
-        this.width      = 0;
-        this.height     = 0;
-    }
-    
-    setContext(context: CanvasRenderingContext2D) {
+    constructor(context: CanvasRenderingContext2D, width: number, height: number){
         this.context    = context;
-    }
-
-    setContextDimensions(canvas: HTMLCanvasElement) {
-        this.width      = canvas.width;
-        this.height     = canvas.height;
+        this.width      = width;
+        this.height     = height;
     }
 
     clearContext() {
@@ -32,7 +25,7 @@ export class Table {
     }
 }
 
-export class Paddle {
+class Paddle {
     x                   : number;
     y                   : number;
     width               : number;
@@ -85,7 +78,7 @@ export class Paddle {
     }
 }
 
-export class Ball {
+class Ball {
     x                    : number;
     y                    : number;
     angle                : number;
@@ -115,6 +108,7 @@ export class Ball {
         this.y = 200;
         this.speed = 5;
         this.lastHit = "";
+        this.direction *= -1;
         this.angle = this.generateRandomAngle();
     }
 
@@ -205,5 +199,140 @@ export class Events {
         this.w          = false;
         this.arrowup    = false;
         this.arrowdown  = false;
+    }
+
+    setKey (key: string, value: boolean) {
+        if (key === 's')
+            this.s = value;
+        else if (key === 'w')
+            this.w = value;
+        else if (key === 'arrowup')
+            this.arrowup = value;
+        else if (key === 'arrowdown')
+            this.arrowdown = value;
+    }
+}
+
+export default class Match {
+    state          : string;
+    events         : Events;
+    table          : Table;
+    ball           : Ball;
+    leftPaddle     : Paddle;
+    rightPaddle    : Paddle;
+    score          : ScoreType;
+
+    animationId    : number | null;
+    setScore       : ((value: ScoreType) => void) | null;
+    setMatchState  : ((value: string) => void) | null;
+
+
+    constructor(context: CanvasRenderingContext2D) {
+        this.state          = "waiting";
+        this.animationId    = null;
+        this.events         = new Events();
+        this.table          = new Table(context, 700, 400);
+        this.ball           = new Ball(350, 200, "orange");
+        this.leftPaddle     = new Paddle(20, 180, "red");
+        this.rightPaddle    = new Paddle(680, 180, "green");
+        this.score          = {
+            leftPlayer: {name: "leftPlayer", points: 0},
+            rightPlayer: {name: "rightPlayer", points: 0},
+        }
+        
+        this.matchLoop      = this.matchLoop.bind(this);
+        this.handleKeyDown  = this.handleKeyDown.bind(this);
+        this.handleKeyUp    = this.handleKeyUp.bind(this);
+
+        this.setMatchState  = null;
+        this.setScore       = null;
+    }
+
+    startMatch(
+        setScore: (value: ScoreType) => void,
+        setMatchState: (value: string) => void,
+    ) {
+        if (this.state === "waiting") {
+            this.setScore = setScore;
+            this.setMatchState = setMatchState;
+            this.state = "going";
+            this.setMatchState("going");
+            this.setScore(this.score);
+            this.addEventListeners();
+            this.matchLoop();
+        }
+    }
+
+    matchLoop() {
+        if (this.state === "going") {
+            this.calculateNextFrame();
+            if ((this.ball.x < 0) && this.setScore) {
+                this.score.rightPlayer.points += 1;
+                this.setScore({leftPlayer: {...this.score.leftPlayer},
+                    rightPlayer: {...this.score.rightPlayer}});
+                this.ball.reset();
+            } else if ((this.table.width < this.ball.x) && this.setScore) {
+                this.score.leftPlayer.points += 1;
+                this.setScore({leftPlayer: {...this.score.leftPlayer},
+                    rightPlayer: {...this.score.rightPlayer}});
+                this.ball.reset();
+            }
+            if ((this.score.leftPlayer.points === 7) ||
+                (this.score.rightPlayer.points === 7)) {
+                this.stopMatch();
+            }
+            this.table.drawNewFrame(this.ball, this.leftPaddle, this.rightPaddle);
+            this.animationId = requestAnimationFrame(this.matchLoop);
+        }
+    }
+
+    calculateNextFrame() {
+        if (this.events['arrowdown'])
+            this.rightPaddle.moveDown(this.table);
+        if (this.events['arrowup'])
+            this.rightPaddle.moveUp();
+        if (this.events['s'])
+            this.leftPaddle.moveDown(this.table);
+        if (this.events['w'])
+            this.leftPaddle.moveUp();
+        this.ball.getNextPosition(
+            this.table,
+            this.leftPaddle,
+            this.rightPaddle,
+        )
+    }
+
+    addEventListeners() {
+        document.addEventListener('keydown', this.handleKeyDown);
+        document.addEventListener('keyup', this.handleKeyUp);
+    }
+
+    removeEventListeners() {
+        document.removeEventListener('keyup', this.handleKeyUp);
+        document.removeEventListener('keydown', this.handleKeyDown);
+    }
+
+    handleKeyUp(event: KeyboardEvent) {
+        const key = event.key.toLowerCase();
+        if (key === 'w' || key === 's' || key === 'arrowup' || key === 'arrowdown') {
+            this.events.setKey(key, false);
+            event.preventDefault();
+        }
+    }
+
+    handleKeyDown(event: KeyboardEvent) {
+        const key = event.key.toLowerCase();
+        if (key === 'w' || key === 's' || key === 'arrowup' || key === 'arrowdown') {
+            this.events.setKey(key, true);
+            event.preventDefault();
+        }
+    }
+
+    stopMatch() {
+        if (this.state === "going") {
+            this.removeEventListeners();
+            this.setMatchState!("done");
+            this.state = "done";
+        }
     }
 }

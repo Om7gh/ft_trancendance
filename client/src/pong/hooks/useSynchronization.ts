@@ -3,8 +3,9 @@ import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 import type { ScoreType } from "../types/playMatch";
 
-import { Events } from "../playLocal/pongClasses";
+import { Events } from "../playLocal/classes";
 import messageHandler from "../utils/messageHandler";
+import { createRenderingContext } from "../utils/utils";
 
 const events = new Events();
 
@@ -45,16 +46,6 @@ function sendEvents(ws: WebSocket, matchState: string) {
       );
     }
   }
-}
-
-function createRenderingContext(canvas: HTMLCanvasElement | null) {
-  if (canvas) {
-    const context = canvas.getContext("2d");
-    if (!context)
-      throw ("Fail to get the rendering context!!");
-    return (context);
-  } else
-    throw ("Canvas ref not initiate correctly!!");
 }
 
 export default function useSynchronization(

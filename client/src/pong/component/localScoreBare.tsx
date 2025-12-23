@@ -1,4 +1,5 @@
-import type { ScoreType } from "./main.tsx"
+import { type ScoreType } from "../playLocal/main.tsx"
+import MessageDisplayer from "../component/MessageDisplayer.tsx"
 
 type PlayerPropsType = {
     children: React.ReactNode,
@@ -31,21 +32,24 @@ function RightPlayer({ children }: PlayerPropsType) {
 }
 
 type ScoreBarPropsType = {
-    score: ScoreType;
+    score: ScoreType | null;
 }
 
-export function ScoreBar({ score }: ScoreBarPropsType) {
-    return (
-        <div className="flex w-9/10 h-[100px] m-auto my-4">
-            <div className="w-3/7 aspect-[3/1] m-auto my-4 py-2">
-                <LeftPlayer>{score.leftPlayer.name}</LeftPlayer>
+export default function LocalScoreBar({ score }: ScoreBarPropsType) {
+    if (score) {
+        return (
+            <div className="flex w-9/10 h-[100px] m-auto my-4">
+                <div className="w-3/7 aspect-[3/1] m-auto my-4 py-2">
+                    <LeftPlayer>{score.leftPlayer.name}</LeftPlayer>
+                </div>
+                <div className="border rounded w-1/7 m-auto p-2 text-center">
+                    {score.leftPlayer.points} vs {score.rightPlayer.points}
+                </div>
+                <div className="w-3/7 aspect-[3/1] m-auto my-4 py-2">
+                    <RightPlayer>{score.rightPlayer.name}</RightPlayer>
+                </div>
             </div>
-            <div className="border rounded w-1/7 m-auto p-2 text-center">
-                {score.leftPlayer.points} vs {score.rightPlayer.points}
-            </div>
-            <div className="w-3/7 aspect-[3/1] m-auto my-4 py-2">
-                <RightPlayer>{score.rightPlayer.name}</RightPlayer>
-            </div>
-        </div>
-    )
+        )
+    }
+    return <MessageDisplayer message="Loading score..." />
 }

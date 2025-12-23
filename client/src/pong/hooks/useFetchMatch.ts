@@ -4,7 +4,7 @@ import axiosApiInstance from "@/axiosApiInstance.ts";
 import type { MatchType } from "../types/playWithSomeOne.ts";
 
 
-export default function useMatch(
+export default function useFetchMatch(
     url: string,
     setMatch: ((match: MatchType) => void),
     setError: ((error: string) => void)

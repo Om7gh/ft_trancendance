@@ -24,8 +24,8 @@ import GamePortal from '@/pages/GamePortal';
 import GameSettings from '@/pages/GameSettings';
 
 import PongMain from '@/pong/PongMain';
-import StartMenu from '@/pong/StartMenu.tsx';
 import { PlayLocal } from '@/pong/playLocal/main.tsx';
+import StartMenu from '@/pong/component/StartMenu.tsx';
 import { PongRemote, RemoteOptions } from '@/pong/playRemote/main.tsx';
 import PlayWithSomeOne from '@/pong/playRemote/playWithSomeOne.tsx';
 import PlayTournament from '@/components/ui/game/PlayTournament';

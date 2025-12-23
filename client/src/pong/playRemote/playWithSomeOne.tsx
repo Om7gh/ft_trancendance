@@ -3,7 +3,7 @@ import { useState} from 'react';
 import type { MatchType } from '../types/playWithSomeOne.ts';
 
 import PlayMatch from './playMatch.tsx';
-import useMatch from '../hooks/useMatch.ts';
+import useFetchMatch from '../hooks/useFetchMatch.ts';
 import MessageDisplayer from '../component/MessageDisplayer.tsx';
 
 export default function PlayWithSomeOne() {
@@ -11,7 +11,7 @@ export default function PlayWithSomeOne() {
   const [match, setMatch] = useState<MatchType | null>(null);
   const url = `/pongGame/remote/someone`;
 
-  useMatch(url, setMatch, setError);
+  useFetchMatch(url, setMatch, setError);
 
   if (error)
     return <MessageDisplayer message={error} />;
