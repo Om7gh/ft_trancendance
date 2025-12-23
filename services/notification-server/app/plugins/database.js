@@ -30,7 +30,6 @@ export function initDatabase(dbPath = './notification.db') {
     return db;
 }
 
-
 export default fp(async function dataBase(fastify, options) {
     const db = initDatabase(options.dbPath);
     const dbService = new DatabaseService(db);

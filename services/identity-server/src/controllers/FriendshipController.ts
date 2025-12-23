@@ -135,20 +135,24 @@ export class FriendshipController {
 
         try {
             const sender = {
-                uid: user.uid,
+                id: user.uid,
                 username: user.username,
                 avatar: user.avatar,
             };
             const receiver = {
-                uid: target.uid,
+                id: target.uid,
             };
             await axios.post('http://notification:9005/send', {
-                id: randomUUID(),
-                type: 'friend-request',
-                expireTime: 0,
-                sender,
-                receiver,
-            });
+                data: [
+                    {
+                    id: randomUUID(),
+                    type: 'friend-request',
+                    expireTime: 0,
+                    sender,
+                    receiver,
+                    }
+                ]
+                });
             const response = {
                 success: true,
                 data: null,
