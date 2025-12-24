@@ -16,27 +16,22 @@ export class FriendshipRepository {
 
     private buildFriendshipQuery(whereClause: string): string {
         return `
-      SELECT
-        f.*,
-        u.username as sender_username,
-        uu.username as receiver_username,
-        CONCAT(u.first_name, ' ', u.last_name) AS sender_fullname,
-        CONCAT(uu.first_name, ' ', uu.last_name) AS receiver_fullname,
-        u.avatar as sender_avatar,
-        uu.avatar as receiver_avatar
-      FROM friendships f
-      JOIN users u on f.sender_id = u.id
-      JOIN users uu on f.receiver_id = uu.id
-      WHERE ${whereClause}
-    `;
+            SELECT
+                f.*,
+                u.username as sender_username,
+                uu.username as receiver_username,
+                CONCAT(u.first_name, ' ', u.last_name) AS sender_fullname,
+                CONCAT(uu.first_name, ' ', uu.last_name) AS receiver_fullname,
+                u.avatar as sender_avatar,
+                uu.avatar as receiver_avatar
+            FROM friendships f
+            JOIN users u on f.sender_id = u.id
+            JOIN users uu on f.receiver_id = uu.id
+            WHERE ${whereClause}
+        `;
     }
 
-    get(
-        id: number = -1,
-        sender_id: number = -1,
-        receiver_id: number = -1,
-        status: number = -1
-    ): Friendship[] {
+    get(id: number = -1, sender_id: number = -1, receiver_id: number = -1, status: number = -1): Friendship[] {
         const conditions: string[] = [];
         const params: any[] = [];
 
@@ -67,16 +62,14 @@ export class FriendshipRepository {
 
     getFriendship(user_id: number, friend_id: number): Friendship {
         const params = [user_id, friend_id, friend_id, user_id];
-        const whereClause =
-            'f.status = 1 AND (f.sender_id = ? AND f.receiver_id = ?) OR (f.sender_id = ? AND f.receiver_id = ?)';
+        const whereClause = 'f.status = 1 AND (f.sender_id = ? AND f.receiver_id = ?) OR (f.sender_id = ? AND f.receiver_id = ?)';
         const query = this.buildFriendshipQuery(whereClause);
         return this.db.prepare(query).get(...params) as Friendship;
     }
 
     getFriendships(user_id: number): Friendship[] {
         const params = [user_id, user_id];
-        const whereClause =
-            'f.status = 1 AND (f.sender_id = ? OR f.receiver_id = ?)';
+        const whereClause = 'f.status = 1 AND (f.sender_id = ? OR f.receiver_id = ?)';
         const query = this.buildFriendshipQuery(whereClause);
         return this.db.prepare(query).all(...params) as Friendship[];
     }
@@ -128,9 +121,9 @@ export class FriendshipRepository {
         }
 
         const query: string = `
-      DELETE from friendships
-      WHERE ${conditions.join(' AND ')}
-    `;
+            DELETE from friendships
+            WHERE ${conditions.join(' AND ')}
+        `;
         if (this.db.prepare(query).run(id).changes == 0)
             throw new Error('No Record was found with the provided payload');
     }
