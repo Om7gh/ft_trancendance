@@ -38,11 +38,7 @@ export class FriendshipController {
                 friends_since: friendship.updated_at,
             })
         );
-        const response = {
-            success: true,
-            data: result,
-        };
-        reply.send(response);
+        reply.send(result);
     }
 
     static async getReceivedRequests(request: FastifyRequest, reply: FastifyReply) {
@@ -58,11 +54,7 @@ export class FriendshipController {
                 avatar: friendship.sender_avatar,
             })
         );
-        const response = {
-            success: true,
-            data: result,
-        };
-        reply.send(response);
+        reply.send(result);
     }
 
     static async getSentRequests(request: FastifyRequest, reply: FastifyReply) {
@@ -78,11 +70,7 @@ export class FriendshipController {
                 avatar: friendship.receiver_avatar,
             })
         );
-        const response = {
-            success: true,
-            data: result,
-        };
-        reply.send(response);
+        reply.send(result);
     }
 
     static async request(request: FastifyRequest, reply: FastifyReply) {
