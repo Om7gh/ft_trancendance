@@ -93,6 +93,7 @@ export default abstract class AuthController {
         reply: FastifyReply
     ) {
         const payload = request.body as RegisterBody;
+        this.log.info(payload);
         const exists = this.usersRepository.findByEmail(payload.email);
         if (exists) {
             return reply.conflict('an account with this email already exists');
@@ -148,12 +149,6 @@ export default abstract class AuthController {
         const userMfa = this.mfaRepository.findByUserId(user.id);
         if (userMfa && userMfa.enabled) {
             reply.sendNonceToken(await this.generateNonceToken(user.uid, '5m'));
-            // request.pendingUser = {
-            //     id: user.id,
-            //     uid: user.uid,
-            //     secret: userMfa.secret,
-            //     pending: true,
-            // };
             return reply.send({ success: true, next: '/auth/verify-2fa' });
         }
 
@@ -348,7 +343,7 @@ export default abstract class AuthController {
                 .send({ success: true });
         } catch (err) {
             request.log.error(err);
-            return reply.internalServerError('complete-profile failed');
+            return reply.notFound('complete-profile failed');
         }
     }
 

@@ -51,6 +51,12 @@ export default class Player extends EventEmitter {
         }
     }
 
+    closeSocket() {
+        if (this.socket) {
+            this.socket.close();
+        }
+    }
+
     setPaddleInTable(value) {
         this.paddle.setX(value);
     }

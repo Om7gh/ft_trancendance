@@ -35,14 +35,16 @@ async function acceptHandler(request, reply) {
 
     await waitForOpponent(room);
 
-    reply.send(JSON.stringify(room.generateMatch()));
+    reply.send(JSON.stringify(room.toJSON()));
 }
 
 export default async function acceptMatchInvitation(fastify, options) {
+
     fastify.route({
         url     : '/pongGame/remote/acceptmatchinvitation',
         method  : 'GET',
         schema  : acceptQuerySchema,
         handler : acceptHandler,
     })
+
 }

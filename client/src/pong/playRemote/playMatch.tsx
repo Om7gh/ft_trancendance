@@ -52,7 +52,7 @@ export default function PlayMatch({ match }: PlayMatchPropsType) {
   const connection  = useRef<{ ws: WebSocket | null }>({ ws: null });
   const [error, setError] = useState<string | null>(null);
   const [matchState, setMatchState] = useState<string | null>(null);
-  const url = `http://localhost:8080/pongGame/remote/join?rid=${match.roomId}`;
+  const url = `http://localhost:8080/pongGame/remote/join?rid=${match.id}`;
 
   useWebSocket(url, connection.current, setMatchState, setError);
 
