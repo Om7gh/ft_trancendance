@@ -1,4 +1,4 @@
-import Room from "../classes/roomClass.js";
+import GenericRoom from "../classes/genericRoom.js";
 import Invitation from "../classes/invitationClass.js";
 import inviteQuerySchema from "../schemas/inviteQuerySchema.js";
 import { alreadyInMatch, waitForOpponent }  from "./playWithSomeOne.js";
@@ -29,7 +29,7 @@ async function inviteHandler(request, reply) {
         throw error;
     }
     
-    room = new Room();
+    room = new GenericRoom();
     room.addPlayer(user);
     this.roomList.set(room.id, room);
     room.on("done", () => {
@@ -49,7 +49,7 @@ async function inviteHandler(request, reply) {
     
     await waitForOpponent(room)
     
-    reply.send(JSON.stringify(room.generateMatch()));
+    reply.send(JSON.stringify(room.toJSON()));
 }
 
 
