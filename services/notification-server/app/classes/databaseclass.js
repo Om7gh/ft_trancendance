@@ -18,7 +18,7 @@ export default class DatabaseService {
         this.fetchNotificationsByUser = this.db.prepare(`
             SELECT
                 n.id AS notification_id,
-                n.type
+                n.type,
                 n.receiver_id,
                 n.expire_time,
                 u.id AS sender_id, u.username AS sender_username, u.avatar AS sender_avatar

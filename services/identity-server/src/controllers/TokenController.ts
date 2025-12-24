@@ -26,8 +26,7 @@ export default abstract class TokenController {
       const newAccessToken = await this.generateAccessToken(payload.sub!);
       return reply.sendAccessToken(newAccessToken).send({ success: true });
     } catch (err) {
-      reply.clearAccessToken().clearRefreshToken().clearCookie('sessionId');
-      request.session.destroy();
+      reply.clearAccessToken().clearRefreshToken();
       return reply.unauthorized('refresh token invalid');
     }
   }
