@@ -14,11 +14,20 @@ export default class Tournament {
         this.rounds         = [];
     }
 
+    isPlayer(playerId) {
+        for (let player of this.players) {
+            if (player.id === playerId) {
+                return (true);
+            }
+        }
+        return (false);
+    }
+
     addPlayer(player) {
         if (this.state === "waiting") {
             this.players.push(player);
             if (this.players.length === 4) {
-                this.state === "going";
+                this.startTournament();
             }
         }
     }
@@ -33,11 +42,14 @@ export default class Tournament {
         if (this.state === "waiting") {
             if (this.players.length === 4) {
                 this.currentRound = new Round();
+                this.rounds.push(this.currentRound);
                 this.currentRound.setPlayers(this.players);
                 this.currentRound.on("done", () => {
                     this.nextRound();
                 });
-                this.rounds.push(this.currentRound);
+                this.currentRound.on("error", () => {
+                    this.emit("error");
+                });
                 this.currentRound.startRound();
             }
         }
@@ -49,15 +61,52 @@ export default class Tournament {
 
         if (1 < winners.length) {
             this.currentRound = new Round();
+            this.rounds.push(this.currentRound);
             this.currentRound.setPlayers(winners);
             this.currentRound.on("done", () => {
                 this.nextRound();
             });
-            this.rounds.push(this.currentRound);
+            this.currentRound.on("error", () => {
+                this.emit("error");
+            });
             this.currentRound.startRound();
-        } else {
+        } else if (winners.length === 1) {
             this.winner = winners[0];
-            this.state === "done";
+            this.state = "done";
+            this.emit("done");
+        } else {
+            this.emit("error");
         }
+    }
+
+    toJSON() {
+        
+        if (this.state === "waiting") {
+            let players = [];
+            
+            for (let player of this.players) {
+                this.players.push(player.toJSON());
+            }
+            
+            return ({
+                id: this.id,
+                state: this.state,
+                winner: this.winner,
+                players: players,
+            })
+        }
+
+        let rounds = [];
+        
+        for (let round of this.rounds) {
+            rounds.push(round.toJSON());
+        }
+
+        return ({
+            id: this.id,
+            state: this.state,
+            winner: this.winner,
+            rounds: rounds,
+        })
     }
 }

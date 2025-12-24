@@ -2,7 +2,7 @@ import notificationSchema from "../../schemas/notificationSchema.js";
 
 async function sendNotificationHandler(request, reply) {
     const notifications = request.body.data;
-    console.log("+++++++++++++", notifications, "++++++++++");
+
     if (notifications) {
         for (let item of notifications) {
             let receiver = item.receiver;
@@ -11,7 +11,6 @@ async function sendNotificationHandler(request, reply) {
             }
         }
     }
-
     return ("Notifiaction queued successfully.");
 }
 
