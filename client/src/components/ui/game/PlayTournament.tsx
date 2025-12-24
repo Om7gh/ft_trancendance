@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { TournamentPlayer } from '@/types/gameTypes';
 import FirstRound from './FirstRound';
 import DemiFinal from './DemiFinal';
 import Final from './Final';
+import axios from 'axios';
 
 const mockPlayers = [
   {
@@ -33,6 +34,19 @@ const mockPlayers = [
 
 function PlayTournament() {
   const [players, setPlayers] = useState<TournamentPlayer[]>(mockPlayers);
+
+  useEffect(() => {
+    (async function fetchTournament() {
+      console.log("********Hello world**********");
+      const tournamnet = await axios({
+        url: "http://localhost:8080/pongGame/remote/tournament",
+        method: "GET",
+        withCredentials: true,
+      });
+      console.log("++++++++++", tournamnet, "++++++++++++++");
+    })();
+  }, [])
+
   return (
     <div className="grid place-items-center w-full h-1/2 overflow-auto">
       <div className="grid grid-cols-3 text-center text-slate-300 text-2xl w-[1200px] overflow-auto ">

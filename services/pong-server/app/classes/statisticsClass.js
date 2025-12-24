@@ -1,8 +1,8 @@
 export default class Statistics {
     constructor(matches, uid) {
-        this.matches =  matches;
         this.wins = 0;
         this.loses = 0;
+        this.matches =  matches;
 
         for (let matche of this.matches) {
             if (matche.winner === uid)

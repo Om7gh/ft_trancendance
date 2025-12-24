@@ -1,9 +1,9 @@
-import { FastifyReply, FastifyRequest, FastifyInstance } from 'fastify';
-import { User } from '../models/user.js';
-import { Friend, Friendship } from '../models/friendship.js';
-import { UserController } from './UserController.js';
-import { randomUUID } from 'crypto';
 import axios from 'axios';
+import { randomUUID } from 'crypto';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { Friend, Friendship } from '../models/friendship.js';
+import { User } from '../models/user.js';
+import { UserController } from './UserController.js';
 
 export class FriendshipController {
     static readonly ERR_ALREADY_FRIEND: string = 'The user is already a friend';
@@ -19,7 +19,7 @@ export class FriendshipController {
 
     static async get(request: FastifyRequest, reply: FastifyReply) {
         const fastify = request.server as FastifyInstance;
-        const user: User = request.session.user;
+        const user: User = request.user;
 
         const friend_requests: Friendship[] =
             fastify.friendshipRepository.getFriendships(user.id);
@@ -56,7 +56,7 @@ export class FriendshipController {
         reply: FastifyReply
     ) {
         const app: FastifyInstance = request.server;
-        const user: User = request.session.user;
+        const user: User = request.user;
 
         const friend_requests: Friendship[] = app.friendshipRepository.get(
             -1,
@@ -81,7 +81,7 @@ export class FriendshipController {
 
     static async getSentRequests(request: FastifyRequest, reply: FastifyReply) {
         const app: FastifyInstance = request.server;
-        const user: User = request.session.user;
+        const user: User = request.user;
 
         const friend_requests: Friendship[] = app.friendshipRepository.get(
             -1,
@@ -106,7 +106,7 @@ export class FriendshipController {
 
     static async request(request: FastifyRequest, reply: FastifyReply) {
         const app: FastifyInstance = request.server;
-        const user: User = request.session.user;
+        const user: User = request.user;
         const payload = request.body as Pick<User, 'uid'>;
 
         const target = app.usersRepository.findByUID(payload.uid);
@@ -165,7 +165,7 @@ export class FriendshipController {
 
     static async approve(request: FastifyRequest, reply: FastifyReply) {
         const app: FastifyInstance = request.server;
-        const user: User = request.session.user;
+        const user: User = request.user;
         const { uid } = request.params as { uid: string };
         try {
             const sender = app.usersRepository.findByUID(uid);
@@ -220,7 +220,7 @@ export class FriendshipController {
 
     static async reject(request: FastifyRequest, reply: FastifyReply) {
         const app: FastifyInstance = request.server;
-        const user: User = request.session.user;
+        const user: User = request.user;
         const { uid } = request.params as { uid: string };
 
         try {
@@ -255,7 +255,7 @@ export class FriendshipController {
 
     static async delete(request: FastifyRequest, reply: FastifyReply) {
         const app: FastifyInstance = request.server;
-        const user: User = request.session.user;
+        const user: User = request.user;
         const { uid } = request.params as { uid: string };
 
         try {

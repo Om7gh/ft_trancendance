@@ -1,8 +1,13 @@
+import { v4 as uuid} from 'uuid'
+import { EventEmitter } from 'events';
 import TournamentRoom from './tournamentRoomClass.js';
+
 
 export default class Round extends EventEmitter {
 
     constructor() {
+        super();
+
         this.id         = uuid();
         this.state      = "waiting";
         this.players    = null;
@@ -35,6 +40,9 @@ export default class Round extends EventEmitter {
                             this.emit("done");
                         }
                     })
+                    currentRoom.on("error", () => {
+                        this.emit("error");
+                    })
                 }
                 currentRoom.addInvitee(this.players[i].id);
             }
@@ -44,7 +52,7 @@ export default class Round extends EventEmitter {
 
     startRound() {
         this.prepareRound();
-        if (this.ready) {
+        if (this.state === "ready") {
             for (let room of this.rooms) {
                 room.invitePlayers();
             }
@@ -77,7 +85,7 @@ export default class Round extends EventEmitter {
         return ({
             id      : this.id,
             state   : this.state,
-            matches : rooms,
+            matches : matches,
         })
     }
 
