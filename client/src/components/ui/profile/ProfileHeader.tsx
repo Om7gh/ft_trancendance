@@ -32,6 +32,8 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
     return 'Offline';
   };
 
+  console.log(userData)
+
   return (
     <div className="h-96 bg-slate-950/30 shadow-lg shadow-slate-900 mb-5 p-3 flex justify-around items-center">
       <div className="flex  items-center h-full gap-8  px-5 py-2">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import MyGamesHistory from '../ui/dashboard/MyGamesHistory';
 import PlayerChart from '../ui/dashboard/PlayerChart';
 import PlayerStatistics from '../ui/dashboard/PlayerStatictics';
@@ -7,13 +7,15 @@ import DashboardWrapper from './DashboardWrapper';
 import { GiChessQueen } from 'react-icons/gi';
 import { FaTableTennisPaddleBall } from 'react-icons/fa6';
 import TodayGames from '../ui/dashboard/TodayGames';
-import GamesHistory from '../ui/game/GamesHistory';
+import useGetChessHistory from '@/services/chess/useChessHistory';
+import { GlobalContext } from '@/App';
 
 type GameType = 'pingpong' | 'chess';
 
 export default function HomeDashboard() {
   const [activeGame, setActiveGame] = useState<GameType>('pingpong');
-
+  const {user} = useContext(GlobalContext)
+  const {data: chess, isPending, isError, error} = useGetChessHistory(user?.username)
   return (
     <div className="h-full p-5 space-y-6 overflow-auto">
       <div>
@@ -55,7 +57,7 @@ export default function HomeDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          <GamesHistory type="pingpong" />
+           {/* <MyGamesHistory type="pong" userData={user} matchData={chess} /> */}
           <TopPlayers type="pingpong" />
         </div>
       </DashboardWrapper>
@@ -71,7 +73,9 @@ export default function HomeDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          <GamesHistory type="chess" />
+          {
+            isPending ? <p>Loading...</p> : isError ? <p></p> : <MyGamesHistory type="chess" userData={user} matchData={chess} />
+          }
           <TopPlayers type="chess" />
         </div>
       </DashboardWrapper>

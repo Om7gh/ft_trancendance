@@ -9,22 +9,34 @@ interface UserData {
 }
 
 interface ChessMatch {
-  id: string;
-  opponent: string;
-  result: string;
-  reason: string;
-  moves: number;
-  startedAt: number;
+  blackPlayerId: string,
+      endedAt: number,
+      id: number,
+      opponent: string,
+      moves: number,
+      reason: string,
+      result: string,
+      roomId: string,
+      startedAt: number,
+      whitePlayerId: string,
+      winnerTeam: string
 }
+
+/*
+ 
+*/
 
 interface ChessHistoryProps {
   userData: UserData;
   matchData: {
+    stats: {
       totalGames: number;
       wins: number;
       losses: number;
       draws: number;
       winRate: string;
+    },
+    history: ChessMatch[]
   };
 }
 
@@ -43,9 +55,7 @@ function ResultBadge({ win }: { win: boolean }) {
 }
 
 
-function ChessHistory({userData, matchData}: ChessHistoryProps) {
-  const history: ChessMatch[] = [];
-  
+function ChessHistory({userData, matchData}: ChessHistoryProps) {  
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -69,19 +79,19 @@ function ChessHistory({userData, matchData}: ChessHistoryProps) {
                 Chess History
               </h3>
               <p className="text-xs text-slate-400">
-                {matchData?.totalGames} games
+                {matchData?.stats.totalGames} games
               </p>
             </div>
           </div>
         </div>
 
-        {history.length === 0 ? (
+        {matchData.history.length === 0 ? (
           <div className="text-center py-8 text-slate-400">
             No chess games played yet
           </div>
         ) : (
         <div className="space-y-3">
-          {history.map((game) => {
+          {matchData.history.map((game : ChessMatch) => {
             const isWinning = game.result === 'WIN';
             const playerName = userData?.username || '';
             

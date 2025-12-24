@@ -33,7 +33,11 @@ function handleMatchmaking(playerId, connection) {
   }
 
   if (matchmakingQueue.some((p) => p.playerId === playerId)) {
-    console.log(`Player ${playerId} is already in matchmaking queue`);
+    console.log(`⚠️ Player ${playerId} is already in matchmaking queue`);
+    send(connection, {
+      type: 'error',
+      message: 'You are already in the matchmaking queue',
+    });
     return;
   }
 
@@ -47,15 +51,28 @@ function handleMatchmaking(playerId, connection) {
   if (matchmakingQueue.length >= 2) {
     const player1 = matchmakingQueue.shift();
     const player2 = matchmakingQueue.shift();
+    
+    // Prevent a player from matching with themselves
+    if (player1.playerId === player2.playerId) {
+      console.log(`⚠️ Player ${player1.playerId} attempted to match with themselves`);
+      // Put one back in the queue
+      matchmakingQueue.unshift(player1);
+      send(player1.connection, {
+        type: 'error',
+        message: 'Cannot play against yourself. Waiting for another player...',
+      });
+      return;
+    }
+    
     createMatch(player1, player2);
   }
 }
 
 function createMatch(player1, player2) {
-  Object.keys(rooms).forEach((key) => {
-    const value = user[key];
-    console.log(value);
-  });
+  // Object.keys(rooms).forEach((key) => {
+  //   const value = user[key];
+  //   console.log(value);
+  // });
   const roomId = uuid();
   rooms[roomId] = {
     players: [
