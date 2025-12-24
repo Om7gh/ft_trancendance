@@ -1,54 +1,60 @@
 import { v4 as uuid} from 'uuid';
-import Round from './roundClass.js'
+import Round from './roundClass.js';
+import { EventEmitter } from 'events';
+import Player from './playerClass.js';
 
-export default class Tournament {
+export default class Tournament extends EventEmitter {
 
     constructor() {
+        super();
+
         this.id             = uuid();
         this.state          = "waiting";
 
         this.currentRound   = null;
         this.winner         = null;
 
-        this.players        = [];
+        this.users          = [];
         this.rounds         = [];
     }
 
-    isPlayer(playerId) {
-        for (let player of this.players) {
-            if (player.id === playerId) {
+    isPlayer(userId) {
+        for (let user of this.users) {
+            if (user.id === userId) {
                 return (true);
             }
         }
         return (false);
     }
 
-    addPlayer(player) {
+    addPlayer(user) {
         if (this.state === "waiting") {
-            this.players.push(player);
-            if (this.players.length === 4) {
+            this.users.push(user);
+            if (this.users.length === 2) {
                 this.startTournament();
             }
         }
     }
 
-    removePlayer(playerId) {
+    removePlayer(userId) {
         if (this.state === "waiting") {
-            this.players = this.players.filter((item) => item.id !== playerId);
+            this.users = this.users.filter((item) => item.id !== userId);
         }
     }
 
     startTournament() {
         if (this.state === "waiting") {
-            if (this.players.length === 4) {
+            if (this.users.length === 2) {
+                this.state = "going";
                 this.currentRound = new Round();
                 this.rounds.push(this.currentRound);
-                this.currentRound.setPlayers(this.players);
+                this.currentRound.setPlayers(this.users);
                 this.currentRound.on("done", () => {
                     this.nextRound();
                 });
                 this.currentRound.on("error", () => {
-                    this.emit("error");
+                    this.state = "done";
+                    this.emit("done");
                 });
                 this.currentRound.startRound();
             }
@@ -67,7 +73,7 @@ export default class Tournament {
                 this.nextRound();
             });
             this.currentRound.on("error", () => {
-                this.emit("error");
+                this.emit("done");
             });
             this.currentRound.startRound();
         } else if (winners.length === 1) {
@@ -75,24 +81,18 @@ export default class Tournament {
             this.state = "done";
             this.emit("done");
         } else {
-            this.emit("error");
+            this.state = "done";
+            this.emit("done");
         }
     }
 
     toJSON() {
         
         if (this.state === "waiting") {
-            let players = [];
-            
-            for (let player of this.players) {
-                this.players.push(player.toJSON());
-            }
-            
             return ({
                 id: this.id,
                 state: this.state,
-                winner: this.winner,
-                players: players,
+                users: this.users,
             })
         }
 
@@ -105,7 +105,7 @@ export default class Tournament {
         return ({
             id: this.id,
             state: this.state,
-            winner: this.winner,
+            ...(this.winner && {winner: this.winner.toJSON()}),
             rounds: rounds,
         })
     }

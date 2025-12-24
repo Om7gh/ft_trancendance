@@ -1,4 +1,4 @@
-import axios from "fastify-axios";
+import axios from 'axios';
 import Room from "./roomClass.js";
 import Invitation from "./invitationClass.js";
 
@@ -70,7 +70,9 @@ export default class TournamentRoom extends Room {
     }
 
     setWinner() {
-        if (this.leftPlayer && !this.rightPlayer) {
+        if (!this.leftPlayer && !this.rightPlayer) {
+            return ;
+        } else if (this.leftPlayer < !this.rightPlayer) {
             this.winner = this.leftPlayer;
         } else if (this.leftPlayer.Points < this.rightPlayer.Points) {
             this.winner = this.rightPlayer;

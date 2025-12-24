@@ -6,7 +6,7 @@ import joinMatch from "./joinMatch.js";
 import Room from "../classes/roomClass.js";
 import errorHandler from "../plugins/errorHandler.js";
 import fakeFriends from "./fakeFriends.js";
-import statistics from "./statistics.js";
+import tournament from "./tournament.js";
 
 
 function createRoom() {
@@ -35,7 +35,7 @@ function addPlayerToRoom(user) {
     return (this.currentRoom);
 }
 
-export default function pongGame(fastify, options, done) {
+export default async function pongGame(fastify, options) {
     
     fastify.decorate('currentRoom', null);
     fastify.decorate('roomList', new Map());
@@ -51,9 +51,8 @@ export default function pongGame(fastify, options, done) {
     fastify.register(playWithSomeOne);
     fastify.register(inviteFriendToMatch);
     fastify.register(acceptMatchInvitation);
+    fastify.register(tournament);
     fastify.register(joinMatch);
 
     // fastify.register(fakeFriends);
-
-    done();
 }

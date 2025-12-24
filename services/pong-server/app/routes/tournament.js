@@ -1,3 +1,7 @@
+import onRequestHook from "../hooks/onRequestHook.js";
+import errorHandler from "../plugins/errorHandler.js";
+import Tournament from "../classes/tournamentClass.js";
+
 export function alreadyInTournament(tournamentList, userId) {
     for (let [id, tournament] of tournamentList) {
         if (tournament.isPlayer(userId)) {
@@ -24,31 +28,28 @@ async function tournamentHandler(request, reply) {
         return;
     }
 
-    if (room && (room.getState() !== "done")) {
-        reply.send(JSON.stringify(room.generateMatch()));
-        return ;
+    if (!this.currentTournament || (this.currentTournament.state !== "waiting")) {
+        this.currentTournament = new Tournament();
+        this.tournamentList.set(this.currentTournament.id, this.currentTournament);
+        this.currentTournament.on("done", () => {
+            let tournamentId = this.currentTournament.id;
+            this.tournamentList.delete(tournamentId);
+            console.log("remove the tournament with Id: ", tournamentId);
+        });
     }
-    
-    room = this.addPlayerToRoom(user);
-    
-    await waitForOpponent(room);
-    
-    reply.send(JSON.stringify(room.generateMatch()));
 
-    room.on("done", () => {
-        if (room.getState() === "done") {
-            this.db.addMatch(room.toJSON());
-        }
-    })
+    this.currentTournament.addPlayer(user);
+
+    reply.send(this.currentTournament.toJSON());
 }
 
-export default async function playWithSomeOne(fastify, options) {
+export default async function tournament(fastify, options) {
 
     fastify.decorate("currentTournament", null);
     fastify.decorate("tournamentList", new Map());
 
     fastify.route({
-        url     : '/pongGame/tournament',
+        url     : '/pongGame/remote/tournament',
         method  : 'GET',
         handler : tournamentHandler,
     })

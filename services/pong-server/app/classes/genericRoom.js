@@ -11,8 +11,8 @@ export default class Room extends EventEmitter {
 
         this.id             = uuid();
         this.state          = "waiting";
+        this.members        = [];
         this.winner         = null;
-        this.date           = Math.floor(Date.now() / 1000);
 
         this.playingId      = null;
         this.waitingId      = null;
@@ -28,12 +28,23 @@ export default class Room extends EventEmitter {
         return (this.state);
     }
 
-    isPlayer(playerId) {
-        if (this.leftPlayer && (this.leftPlayer.id === playerId))
-            return (true);
-        else if (this.rightPlayer && (this.rightPlayer.id === playerId))
-            return (true);
-        return (false);
+    addMember(user) {
+        if (
+            (this.state !== "waiting") || 
+            (this.members.length == 2) ||
+            this.isMember(user.id) 
+        )
+            return ;
+        this.members.push(user);
+    }
+
+    isMember(userId) {
+        for (let member of this.members) {
+            if (member.id === userId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     addLeftPlayer(user) {

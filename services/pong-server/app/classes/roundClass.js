@@ -1,8 +1,13 @@
+import { v4 as uuid} from 'uuid'
+import { EventEmitter } from 'events';
 import TournamentRoom from './tournamentRoomClass.js';
+
 
 export default class Round extends EventEmitter {
 
     constructor() {
+        super();
+
         this.id         = uuid();
         this.state      = "waiting";
         this.players    = null;
@@ -80,7 +85,7 @@ export default class Round extends EventEmitter {
         return ({
             id      : this.id,
             state   : this.state,
-            matches : rooms,
+            matches : matches,
         })
     }
 
