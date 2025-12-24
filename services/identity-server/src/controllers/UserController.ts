@@ -79,14 +79,13 @@ export class UserController {
             if (!user) {
                 return reply.notFound('--- user not found ---');
             }
-
             const fullUser = {
                 user: asUserInfo(user),
-                chess:
-                    (await UserController.getStatistics(
-                        'http://chess:9000',
-                        user.username
-                    )) || null,
+                // chess:
+                //     (await UserController.getStatistics(
+                //         'http://chess:9000',
+                //         user.uid
+                //     )) || null,
                 pong:
                     (await UserController.getStatistics(
                         'http://pong:9001',

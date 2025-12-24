@@ -2,8 +2,24 @@ import { PiPingPongBold } from 'react-icons/pi';
 import { FaChess } from 'react-icons/fa';
 import { MdAutoAwesome } from 'react-icons/md';
 
-const pong = { win: 5, lose: 2 };
-const chess = { win: 10, lose: 5, draw: 3 };
+interface ChessStats {
+  totalGames: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  winRate: string;
+}
+
+interface PongStats {
+  wins: number;
+  loses: number;
+  matches: any[];
+}
+
+interface GamesStatisticsProps {
+  chessStats: ChessStats;
+  pongStats: PongStats;
+}
 
 function Progress({
   label,
@@ -91,7 +107,10 @@ function StatHUD({
   );
 }
 
-export default function GamesStatistics() {
+export default function GamesStatistics({ chessStats, pongStats }: GamesStatisticsProps) {
+  const pong = { win: pongStats.wins, lose: pongStats.loses };
+  const chess = { win: chessStats.wins, lose: chessStats.losses, draw: chessStats.draws };
+  
   const totalWin = pong.win + chess.win;
   const totalLose = pong.lose + chess.lose;
 

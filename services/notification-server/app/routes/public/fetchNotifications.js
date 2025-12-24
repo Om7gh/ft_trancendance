@@ -2,6 +2,7 @@ import onRequestHookHandler from "../../hooks/onRequestHook.js";
 
 async function fetchNotificationHandler(request, reply) {
     const user  = request.user;
+    console.log("++++++", user, "++++++++");
     const state = this.validateUser(user);
 
     if (!state) {

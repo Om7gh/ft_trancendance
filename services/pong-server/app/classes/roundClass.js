@@ -1,3 +1,5 @@
+import TournamentRoom from './tournamentRoomClass.js';
+
 export default class Round extends EventEmitter {
 
     constructor() {
@@ -19,43 +21,45 @@ export default class Round extends EventEmitter {
     }
 
     prepareRound() {
-        if ((this.state === "waiting")) {
-            for (let i = 0; i < this.players.length; i += 2) {
-                const room = new TournamentRoom();
-                room.on("done", () => {
-                    this.counter++;
-                    if (this.counter === this.rooms.length) {
-                        this.state = "done";
-                        this.emit("done");
-                    }
-                })
-                this.rooms.push(room);
+        let currentRoom = null
+
+        if ((this.state === "waiting") && this.players) {
+            for (let i = 0; i < this.players.length; i++) {
+                if (!(i % 2)){
+                    currentRoom = new TournamentRoom()
+                    this.rooms.push(currentRoom);
+                    currentRoom.on("done", () => {
+                        this.counter++;
+                        if (this.counter === this.rooms.length) {
+                            this.state = "done";
+                            this.emit("done");
+                        }
+                    })
+                }
+                currentRoom.addInvitee(this.players[i].id);
             }
-            this.state === "ready";
+            this.state = "ready";
         }
     }
 
     startRound() {
-        let j = 0;
-
         this.prepareRound();
-        for (let i = 0; i < this.players.length; i++) {
-            this.rooms[j].addPlayer(this.players[i]);
-            if (i % 2) {
-                this.rooms[j].startMatch();
-                j++;
+        if (this.ready) {
+            for (let room of this.rooms) {
+                room.invitePlayers();
             }
+            this.state = "going";
+        } else {
+            console.log("Round not ready yet!!");
         }
-        this.state = "going";
-        return (null);
     }
 
     getWinners() {
         const winners = [];
         if (this.state === "done") {
-            for (let i = 0; i < this.rooms.length; i++) {
-                if (this.rooms[i].getState() === "done") {
-                    winners.push(this.rooms[i].getWinner());
+            for (let room of this.rooms) {
+                if (room.getState() === "done") {
+                    winners.push(room.getWinner());
                 }
             }
             return (winners);
@@ -64,15 +68,16 @@ export default class Round extends EventEmitter {
     }
 
     toJSON() {
-        const rooms = [];
+        const matches = [];
 
-        for (let i = 0; i < this.rooms.length; i++) {
-            rooms.push(this.rooms[i].toJSON());
+        for (let room of this.rooms) {
+            matches.push(room.toJSON());
         }
+
         return ({
             id      : this.id,
             state   : this.state,
-            matchs  : rooms,
+            matches : rooms,
         })
     }
 

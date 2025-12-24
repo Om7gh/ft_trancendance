@@ -20,7 +20,7 @@ function chessHandler(connection, req) {
   let desiredId = null;
   try {
     const u = new URL(req.url, 'http://localhost');
-    desiredId = u.searchParams.get('playerId');
+    desiredId = u.searchParams.get('playerId'); // username
   } catch {}
 
   let playerId =

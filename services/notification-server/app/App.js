@@ -16,7 +16,7 @@ app.register(cookie);
 app.register(corsPlugin);
 app.register(validateUser);
 app.register(dataBase, {
-  dpPath: "/var/local/notification"
+  dbPath: "/var/local/notification.db",
 });
 
 app.register(notification);

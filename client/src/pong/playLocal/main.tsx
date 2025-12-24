@@ -22,7 +22,7 @@ type MatchPropsType = {
   setScore: (value: ScoreType | null) => void;
 };
 
-function Mattch({setError, setMatchState, setScore }: MatchPropsType) {
+function Match({setError, setMatchState, setScore }: MatchPropsType) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useLocalMatch(canvasRef, setError, setMatchState, setScore);
@@ -52,7 +52,7 @@ export function PlayLocal() {
   return (
     <div className="relative">
       <LocalScoreBar score={score} />
-      <Mattch
+      <Match
         setError={setError}
         setScore={setScore}
         setMatchState={setMatchState}

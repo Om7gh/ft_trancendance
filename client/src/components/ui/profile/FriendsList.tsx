@@ -1,10 +1,12 @@
-import { useGetFriends, useUnfriend } from "@/services/friends";
+import { useUnfriend } from "@/services/friends";
 import type { Friend } from "@/types/friendTypes";
 import { FaUserMinus } from "react-icons/fa";
-import { BiLoaderAlt } from "react-icons/bi";
 
-function FriendsList() {
-  const { data: friends, isLoading, error } = useGetFriends();
+interface FriendsListProps {
+  friendsList: Friend[];
+}
+
+function FriendsList({ friendsList }: FriendsListProps) {
   const unfriend = useUnfriend();
 
   const handleUnfriend = (uid: string, username: string) => {
@@ -13,23 +15,7 @@ function FriendsList() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <BiLoaderAlt className="text-violet-500 text-4xl animate-spin" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-8 text-rose-400">
-        Failed to load friends. Please try again.
-      </div>
-    );
-  }
-
-  if (!friends || friends.length === 0) {
+  if (!friendsList || friendsList.length === 0) {
     return (
       <div className="text-center py-12 text-slate-400">
         No friends yet
@@ -39,7 +25,7 @@ function FriendsList() {
 
   return (
     <div className="space-y-3">
-      {friends.map((friend: Friend) => (
+      {friendsList.map((friend: Friend) => (
         <div
           key={friend.uid}
           className="flex items-center gap-4 p-4 bg-slate-900/30 hover:bg-slate-900/50 border border-violet-500/10 rounded-lg transition-all duration-200"

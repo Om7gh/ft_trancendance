@@ -8,10 +8,16 @@ function StartMenu() {
         Choose your battle !
       </p>
       <div className="w-full space-y-12 flex flex-col text-center">
-        <MenuButton destination="/dashboard/games/pingpong/local">Play Local</MenuButton>
-        <MenuButton destination="/dashboard/games/pingpong/remote">One vs One</MenuButton>
+        <MenuButton destination="/dashboard/games/pingpong/local">
+          Play Local
+        </MenuButton>
+        <MenuButton destination="/dashboard/games/pingpong/remote">
+          One vs One
+        </MenuButton>
         <div className="h-[0.5px] w-full bg-slate-100/20"></div>
-        <MenuButton destination="/dashboard/games/tournament">Tournament</MenuButton>
+        <MenuButton destination="/dashboard/games/tournament">
+          Tournament
+        </MenuButton>
       </div>
     </div>
   );
