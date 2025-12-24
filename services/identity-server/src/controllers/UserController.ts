@@ -81,11 +81,11 @@ export class UserController {
             }
             const fullUser = {
                 user: asUserInfo(user),
-                // chess:
-                //     (await UserController.getStatistics(
-                //         'http://chess:9000',
-                //         user.uid
-                //     )) || null,
+                chess:
+                    (await UserController.getStatistics(
+                        'http://chess:9000',
+                        user.username
+                    )) || null,
                 pong:
                     (await UserController.getStatistics(
                         'http://pong:9001',
