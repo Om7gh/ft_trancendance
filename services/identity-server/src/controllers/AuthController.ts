@@ -1,5 +1,7 @@
 import { randomUUID } from 'crypto';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { Pkce } from '../auth/index.js';
+import { PkceParams } from '../auth/remote/types/pkce.js';
 import { compare, hash } from '../auth/security/cipher-util.js';
 import asUser, { asUserInfo } from '../dto/user-dto.js';
 import { User } from '../models/user.js';
@@ -39,8 +41,10 @@ export default abstract class AuthController {
                 `Provider '${provider}' is not supported`
             );
         }
-        request.pkce = this.pkce.getParams();
-        const url = this.auth.getAuthUrl(provider, request.pkce);
+        const pkce = Pkce.getParams();
+        const pkceParams = `${pkce.state};${pkce.codeVerifier};${pkce.codeChallenge}`;
+        reply.sendNonceToken(await this.generateNonceToken(pkceParams, '5m'));
+        const url = this.auth.getAuthUrl(provider, pkce);
         reply.redirect(url);
     }
 
@@ -61,30 +65,35 @@ export default abstract class AuthController {
         if (!code || !state) {
             return reply.badRequest(error ?? 'missing code or state');
         }
-        if (!request?.pkce) {
-            return reply.redirect(`/oauth2/${provider}`);
+        try {
+            const { sub } = await request.verifyNonceToken();
+            const [state, codeVerifier, codeChallenge] = sub!.split(';');
+            if (state !== state) {
+                throw this.httpErrors.badRequest('invalid state parameter');
+            }
+            const strategy = this.auth.use(provider);
+            const pkce = { state, codeVerifier, codeChallenge } as PkceParams;
+            const tokens = await strategy.getTokens(code, pkce);
+            const payload = await strategy.getUserInfo(tokens);
+            if (!payload || !payload.email) {
+                throw reply.badRequest('email not found in OAuth payload');
+            }
+            const user = this.usersRepository.findOrCreate(
+                asUser(provider, payload) as User
+            );
+            if (!user.username) {
+                reply.sendNonceToken(
+                    await this.generateNonceToken(user.uid, '5m')
+                );
+                return reply.redirect('/auth/complete-registration');
+            }
+            const [accessToken, refreshToken] =
+                await AuthController.issueTokens(this, user);
+            reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken).clearNonceToken();
+            return reply.redirect('/dashboard');
+        } catch (err: any) {
+            return reply.badRequest(err.message);
         }
-        if (request.pkce.state !== state) {
-            throw this.httpErrors.badRequest('invalid state parameter');
-        }
-        const strategy = this.auth.use(provider);
-        const tokens = await strategy.getTokens(code, request.pkce);
-        const payload = await strategy.getUserInfo(tokens);
-        if (!payload || !payload.email) {
-            throw reply.badRequest('email not found in OAuth payload');
-        }
-        const user = this.usersRepository.findOrCreate(
-            asUser(provider, payload) as User
-        );
-        if (user.username) {
-            return reply.redirect('/auth/complete-registration');
-        }
-        const [accessToken, refreshToken] = await AuthController.issueTokens(
-            this,
-            user
-        );
-        reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
-        return reply.redirect('/auth/complete-registration');
     }
 
     static async signup(

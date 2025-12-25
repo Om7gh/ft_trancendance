@@ -1,14 +1,14 @@
 import { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import nodemailer from 'nodemailer';
-import { AuthManager, Pkce } from '../../auth/index.js';
+import { AuthManager } from '../../auth/index.js';
 import Discord from '../../auth/remote/providers/discord.js';
 import Google from '../../auth/remote/providers/google.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
     auth: typeof AuthManager;
-    pkce: typeof Pkce;
+    // pkce: Pkce;
     transporter: ReturnType<typeof createTransporter>;
   }
 }
@@ -34,7 +34,7 @@ export default fp(
     AuthManager.register(new Google(fastify.providerConfig.google));
     AuthManager.register(new Discord(fastify.providerConfig.discord));
 
-    fastify.decorate('pkce', Pkce);
+    // fastify.decorate('pkce', new Pkce());
     fastify.decorate('auth', AuthManager);
     fastify.decorate('transporter', createTransporter(fastify));
   },
