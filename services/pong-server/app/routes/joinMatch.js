@@ -1,4 +1,5 @@
 import { alreadyInMatch } from "./playWithSomeOne.js";
+import { waitForOpponent } from "./playWithSomeOne.js";
 
 async function joinMatchHandler(request, reply) {
     const user  = request.user;
@@ -27,6 +28,10 @@ async function joinMatchHandler(request, reply) {
         error.statusCode = 400;
         throw error;
     }
+
+    room.joinRoom(user);
+
+    await waitForOpponent(room);
     
     return (reply.send(JSON.stringify(room.toJSON())));
 }

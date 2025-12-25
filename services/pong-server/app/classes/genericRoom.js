@@ -208,7 +208,7 @@ export default class GenericRoom extends EventEmitter {
                     }
                 }))
                 this.stopMatch();
-            }, 15000);
+            }, 60000);
         }
     }
 
