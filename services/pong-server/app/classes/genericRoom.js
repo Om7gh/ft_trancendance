@@ -218,7 +218,7 @@ export default class GenericRoom extends EventEmitter {
             try {
                 for (let member of this.members) {
                     invitations.push({
-                        id: this.id,
+                        id: uuid(),
                         type: "joinMatch",
                         sender: {id: this.id, username: "", avatar: ""},
                         receiver: {id: member.id},

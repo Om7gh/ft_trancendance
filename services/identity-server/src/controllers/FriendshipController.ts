@@ -54,6 +54,7 @@ export class FriendshipController {
                 avatar: friendship.sender_avatar,
             })
         );
+        console.log(result);
         reply.send(result);
     }
 

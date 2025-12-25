@@ -16,7 +16,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post  ('/requests', opts, FriendshipController.request);
 
   // Approve routes
-  fastify.patch ('/requests/:uid/approve', opts, FriendshipController.approve);
+  fastify.put ('/requests/:uid/approve', opts, FriendshipController.approve);
   // fastify.patch ('/requests/approve', opts, FriendshipController.approveAll);
 
   // Reject routes

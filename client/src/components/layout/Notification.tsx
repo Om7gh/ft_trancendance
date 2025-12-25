@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
 import Modal from './Modal';
 import axiosApiInstance from '@/axiosApiInstance';
-import Notify from '../ui/utils/Notify';
+import Notify, { type NotificationType } from '../ui/utils/Notify';
 
 function Notification() {
   const [openNotification, setOpenNotification] = useState(false);
@@ -48,7 +48,7 @@ function Notification() {
           {loading && <p>Loading...</p>}
           {!loading && error && <p className='text-pink-500 text-xl text-center'>{error}</p>}
           {!loading && !error && (data.length ? <>
-            {data.map((notif, i) => (
+            {data.map((notif : NotificationType, i: number) => (
               <Notify data={notif} key={i} />
             ))}
           </> : <p className='text-violet-200 text-xl text-center'>No Notification available yet</p>)}

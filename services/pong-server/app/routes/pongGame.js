@@ -8,7 +8,6 @@ import tournament from "./tournament.js";
 import joinMatch from "./joinMatch.js";
 import match from "./match.js";
 
-
 function addRoomToRoomList(room) {
     if (room && !this.roomList.get(room.id)) {
         this.roomList.set(room.id, room);
@@ -40,6 +39,6 @@ export default async function pongGame(fastify, options) {
     fastify.register(inviteFriendToMatch);
     fastify.register(acceptMatchInvitation);
     fastify.register(tournament);
-    fastify.register(joinMatch);
     fastify.register(match);
+    fastify.register(joinMatch);
 }

@@ -3,7 +3,7 @@ import Participant from './Participant';
 
 function FirstRound({ players }: Tournaments) {
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex row-start-1 row-end-2 items-center gap-4">
       {players.map((player: TournamentPlayer, i: number) => (
         <>
           <Participant player={player} key={i} index={i} />

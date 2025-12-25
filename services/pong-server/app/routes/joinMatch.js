@@ -1,4 +1,3 @@
-import GenericRoom from "../classes/genericRoom.js";
 import { alreadyInMatch } from "./playWithSomeOne.js";
 
 async function joinMatchHandler(request, reply) {
