@@ -1,8 +1,8 @@
 import { Avatar } from "../contacts/CardsList.tsx"
 import {useRef, useEffect} from 'react';
 
-import type User from "@/types/User"
-import type Message from "@/types/Message"
+import type {User} from "@/types/User"
+import type {Message} from "@/types/Message"
 
 interface MsgBubbleProps{
     user: User;

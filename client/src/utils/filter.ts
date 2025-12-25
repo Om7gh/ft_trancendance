@@ -1,4 +1,4 @@
-import type Card from '@/types/UserCard'
+import type {Card} from '@/types/UserCard'
 
 function cardsFilterByQuery(query: string, cards: Card[]){
   return (cards.filter(card => {

@@ -2,17 +2,19 @@ import ChatBody from "./ChatBody.tsx";
 import ChatInput from "./ChatInput.tsx";
 import ChatHeader from "./ChatHeader.tsx";
 import StatusResolver from "../contacts/JsxByStatus.tsx";
-import useFetch from "@/hooks/useFetch.ts";
+import useAxios from "@/hooks/useAxios.ts";
 import useEventListener from "@/hooks/useEventListener.ts";
-import {useEffect, useState} from "react";
-import { currentUser as userData } from "@/pages/Chat.tsx";
+import {useEffect, useContext, useState} from "react";
+import { GlobalContext } from "@/App.tsx";
 
-import type Card from "@/types/UserCard.ts"
-import type User from "@/types/User.ts"
-import type Message from "@/types/Message.ts"
+import type {Card} from "@/types/UserCard.ts"
+import type {User} from "@/types/User.ts"
+import type {User as GloblaUser} from "@/App.tsx"
+import type {Message} from "@/types/Message.ts"
+
+import ConversationImg from "@assets/placeholders/conversation-placeholder.png";
 
 interface ConversationPanelProps{
-	currenctUser: User;
 	targetUserCard: Card | null;
 	UsersTab: string;
 	isMobile: boolean;
@@ -20,7 +22,7 @@ interface ConversationPanelProps{
 	changeUserView: (view: string) => void;
 }
 
-function constructReq(sender: User, target: User, content: string){
+function constructReq(sender: User | null, target: User, content: string){
 	return ({
 		action: "send-message",
 		sender: sender,
@@ -29,13 +31,24 @@ function constructReq(sender: User, target: User, content: string){
 	});
 }
 
-function ConversationPanel({ currenctUser, UsersTab, targetUserCard, isMobile, connection, changeUserView}: ConversationPanelProps){
-
+function ConversationPanel({
+	UsersTab,
+	targetUserCard,
+	isMobile,
+	connection,
+	changeUserView
+}: ConversationPanelProps){
+	const userInfo  = useContext(GlobalContext);
 	const [showActions, setShowActions] = useState(false);
 	const [messages, setMessages] = useState<Message[]>([]);
-	const [historyMsgs, messageStatus] = useFetch((targetUserCard && targetUserCard.id) ? `/messages/${userData.id}/${targetUserCard.id}`: null);
+	const [historyMsgs, messageStatus] = useAxios( (targetUserCard && targetUserCard.id)
+			? `/messages/${targetUserCard.id}` 
+			: null);
 	
 	useEventListener(connection.current, "message", incomingMsgHandler);
+
+	const {id, first_name: name, avatar: photo_url} = userInfo?.user as GloblaUser;
+	const currentUser: User = {id, name, photo_url};
 
 	useEffect(() => {
 		if (messageStatus === "fulfilled") {
@@ -65,11 +78,11 @@ function ConversationPanel({ currenctUser, UsersTab, targetUserCard, isMobile, c
 				...messages,
 				{
 					id: crypto.randomUUID(),
-					senderId: currenctUser.id,
+					senderId: currentUser.id,
 					content: inputText
 				}
 			])
-			connection.current?.send(JSON.stringify(constructReq(currenctUser, targetUserCard?.friend as User, inputText)));
+			connection.current?.send(JSON.stringify(constructReq(currentUser, targetUserCard?.friend as User, inputText)));
 			setTimeout(() => changeUserView("Chats"), 300);
 		}
 		formControl.value = "";
@@ -100,8 +113,8 @@ function ConversationPanel({ currenctUser, UsersTab, targetUserCard, isMobile, c
 
 	if (targetUserCard?.friend === undefined)
 		return (
-			<div id="ConversationPanel" className="h-full flex-2 bg-[#232c38] ml-4 pl-2 flex flex-col items-center justify-center">
-				<img src="/src/assets/default-conversation.png" className="w-[68%]"  alt="decorator image for unselected conversation"/>
+			<div id="ConversationPanel" className="h-full flex-2 ml-4 pl-2 flex flex-col items-center justify-center">
+				<img src={ConversationImg} className="w-[68%]"  alt="decorator image for unselected conversation"/>
 				<p className="text-gray-200 font-bold">Conversation missing. Target a conversation</p>
 			</div>
 		)
@@ -117,7 +130,7 @@ function ConversationPanel({ currenctUser, UsersTab, targetUserCard, isMobile, c
 				onAction={handleUserAction}
 			/>
 			<StatusResolver status={messageStatus} content={messages} view="Messages">
-				<ChatBody senderUser={currenctUser} targetUser={targetUserCard.friend} messages={messages}/>
+				<ChatBody senderUser={currentUser} targetUser={targetUserCard.friend} messages={messages}/>
 			</StatusResolver>
 			<ChatInput onSend={handleSendingMsg}/>
 		</div>

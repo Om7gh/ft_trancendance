@@ -1,4 +1,4 @@
-import type Card from "@/types/UserCard.ts"
+import type {Card} from "@/types/UserCard.ts"
 
 type OnSelect = (selectedCard: Card) => void;
 

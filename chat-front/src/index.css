@@ -1,8 +1,0 @@
-@import "tailwindcss";
-
-.scrollbar {
-    scroll-behavior: smooth;
-    scrollbar-width: auto;
-    scrollbar-color: gray rgb(0 0 0 / 0%);
-    scrollbar-gutter: stable;
-}

@@ -17,8 +17,8 @@ function conversationPlugin(instance, opt){
 		return (conversations);
 	}
 	
-	instance.get("/conversations/:userId", async (req, reply) => {
-		let constructedReply = constructReply(+req.params.userId);
+	instance.get("/conversations", async (req, reply) => {
+		let constructedReply = constructReply(req.user.id);
 		return (JSON.stringify(constructedReply));
 	});
 }

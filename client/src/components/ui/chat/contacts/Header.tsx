@@ -15,11 +15,11 @@ function SearchBar({onSearch}: {onSearch: OnSearch}){
           p-1.25 pl-3 border-3 rounded-xl border-[#0D9488]"
         id="search"
         type="search"
-        placeholder="Search here"
+        placeholder="Search for a user"
         onChange={(e) => {onSearch(e)}}
         />
       <span className="inline-block absolute top-[20%] right-[3%] opacity-50
-        peer-placeholder-shown:after:content-[url(assets/search-icon-white/basicSearch.svg)]">
+        peer-placeholder-shown:after:content-[url(client/src/assets/search/search-icon.svg)]">
       </span>
     </div>
   );

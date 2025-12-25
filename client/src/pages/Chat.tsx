@@ -1,4 +1,4 @@
-import useFetch from "../hooks/useFetch.ts";
+import useAxios from "../hooks/useAxios.ts";
 import usePresence from "../hooks/usePresence.ts";
 import useWebsocket from "../hooks/useWebsocket.ts";
 import useEventListener from "../hooks/useEventListener.ts";
@@ -7,13 +7,7 @@ import ConversationPanel from "../components/ui/chat/conversation/ConversationPa
 import {useState, useEffect, useRef} from "react";
 import { cardsFilterByQuery } from "../utils/filter.ts";
 
-import type Card from "../types/UserCard.ts";
-
-export const currentUser  = {
-  id: 1,
-  name: "ayoub",
-  photo_url: "src/assets/avatar.png"
-}
+import type {Card} from "../types/UserCard.ts";
 
 function visibleCardsResolver(
   conversationCards: Card[],
@@ -49,9 +43,9 @@ function App(){
   const [serachQuery, setSearchQuery] = useState("");
   const [mobileView, setMobileView] = useState("contacts");
   
-  const [chatCards, conversationStatus] = useFetch(`/conversations/${currentUser.id}`);
-  const [contactCards, contactStatus] = useFetch(`/contacts/${currentUser.id}`);
-  const socket = useWebsocket(`/messages/${currentUser.id}`);
+  const [chatCards, conversationStatus] = useAxios(`/conversations`);
+  const [contactCards, contactStatus] = useAxios(`/contacts`);
+  const socket = useWebsocket(`/messages`);
 
 
   const isMobile = screenWidth <= 500;
@@ -62,7 +56,12 @@ function App(){
   usePresence(chatCards.current, contactCards.current, socket);
   useEventListener(window, "resize", () => setScreenWidth(window.innerWidth));
 
-  const visibleCards = visibleCardsResolver(chatCards.current, contactCards.current, selectedTab.current, serachQuery);
+  const visibleCards = visibleCardsResolver(
+    chatCards.current,
+    contactCards.current,
+    selectedTab.current,
+    serachQuery
+  );
 
   function getFetchStatusByTab(tabName: string){
     if (tabName === "Chats" || tabName === "Unread")
@@ -141,7 +140,9 @@ function App(){
         }
         case "new-conversation":{
           chatCards.current.push(incomingMsg.conversation);
-          contactCards.current = contactCards.current.filter((contact: Card) => contact.friend.id !== incomingMsg.conversation.friend.id);
+          contactCards.current = contactCards.current.filter((contact: Card) => {
+            return (contact.friend.id !== incomingMsg.conversation.friend.id);
+          })
         }
       }
     }
@@ -173,7 +174,6 @@ function App(){
         showConversation && <ConversationPanel
           key={selectedCard?.friend?.id}
           UsersTab={selectedTab.current}
-          currenctUser={currentUser}
           targetUserCard={selectedCard}
           isMobile={isMobile}
           connection={socket}

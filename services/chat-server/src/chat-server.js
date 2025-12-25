@@ -1,6 +1,7 @@
 import fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import cors from '@fastify/cors';
+import onRequestHook from "../hooks/onRequestHandler.js"
 import contacts from "../routes/contacts.js";
 import messages from "../routes/messages.js";
 import conversation from "../routes/conversation.js";
@@ -21,6 +22,8 @@ async function main() {
 
 	let app = fastify(serverOptions);
 
+	app.register(onRequestHook);
+
 	app.register(cors);
 	
 	app.register(websocket);
@@ -40,7 +43,7 @@ async function main() {
 		conv: { convDb: convDb }
 	});
 
-	app.listen({port: 9004})
+	app.listen({port: 9004, host: "0.0.0.0"})
 	.then((address) => {
 		app.log.info(`Chat server is started! Ready to accept connections on ${address}`);
 	})

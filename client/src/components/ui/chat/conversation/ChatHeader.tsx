@@ -2,7 +2,7 @@ import { Avatar } from "../contacts/CardsList";
 import { TfiMenu, TfiClose } from "react-icons/tfi";
 import { VscChevronLeft } from "react-icons/vsc";
 
-import type User from "@/types/User";
+import type {User} from "@/types/User";
 
 type OnAction = (e: React.MouseEvent<HTMLDivElement>, action: string) => void;
 
@@ -42,9 +42,9 @@ interface ChatHeaderProps{
 
 function Contactinfo({name, userPresence}: ContactinfoProps){
 
-	let statusIconUrl = "/src/assets/paddel/offline.svg";
+	let statusIconUrl = "../../../public/assets/paddel/offline.svg";
 	if (userPresence === "online") {
-		statusIconUrl = "/src/assets/paddel/online.svg";
+		statusIconUrl = "../../../public/assets/paddel/online.svg";
 	}
 
 	return (

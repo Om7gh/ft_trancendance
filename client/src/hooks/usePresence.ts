@@ -1,9 +1,9 @@
 import {useEffect, useMemo } from "react";
-import type Card from "@/types/UserCard";
+import type {Card} from "@/types/UserCard";
 
 function usePresence(conversations: Card[], contacts: Card[], socket: React.RefObject<WebSocket | null>){
 
-    let presenceIds = useMemo(() => {
+    const presenceIds = useMemo(() => {
         const contactsIds = contacts.map(contact => contact.friend.id)
         const conversationIds = conversations.map(conv => conv.friend.id)
         return ([...contactsIds, ...conversationIds].sort().join());

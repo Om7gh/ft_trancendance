@@ -111,19 +111,21 @@ services:
     # depends_on:
     #   rabbitmq:
     #     condition: service_healthy
-  # chat:
-  #   container_name: chat
-  #   build: ./server/chat-server/
-  #   image: chat:pingpong
-  #   ports:
-  #     - "4000:4000"
-  #   env_file:
-  #     - ./server/chat-server/.env
-  #   networks:
-  #     - pingpong
-  #   depends_on:
-  #     rabbitmq:
-  #       condition: service_healthy
+  chat:
+    container_name: chat
+    build: ./services/chat-server/
+    image: chat:pingpong
+    ports:
+      - "9004:9004"
+    # env_file:
+    #   - ./server/chat-server/.env
+    networks:
+      - pingpong
+    # volumes:
+    #   - $HOME/data/chat:/var/local
+    # depends_on:
+    #   rabbitmq:
+    #     condition: service_healthy
 
 networks:
   pingpong:

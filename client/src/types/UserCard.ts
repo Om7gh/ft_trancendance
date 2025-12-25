@@ -1,10 +1,8 @@
-import User from './User'
+import type {User} from './User'
 
-interface Card{
+export  interface Card{
     id: number,
     friend: User,
     unread_msg: number,
     presence: string
 }
-
-export default Card;

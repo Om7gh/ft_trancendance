@@ -1,6 +1,11 @@
 import { BarLoader } from "react-spinners";
-import type Card from "@/types/UserCard"
-import type Message from "@/types/Message"
+import type {Card} from "@/types/UserCard"
+import type {Message} from "@/types/Message"
+
+import ErrorImg from "@assets/illustrations/errorState.svg";
+import EmptyMsgImg from "@assets/illustrations/Work chat-cuate.svg";
+import EmptyConvImg from "@assets/illustrations/startConversation.svg";
+import EmptyContactImg from "@assets/illustrations/Feeling sorry-cuate.svg";
 
 type OnAction = (e: React.MouseEvent<HTMLButtonElement>, tabName: string) => void;
 
@@ -15,7 +20,7 @@ interface StatusResolverProps{
 function EmptyContacts(){
     return (
     <div className="h-[87%] flex flex-col justify-center items-center text-gray-300">
-      <img src="src/assets/Feeling sorry-cuate (1).svg"/>
+      <img src={EmptyContactImg}/>
       <p className="font-bold text-gray-200"> No contacts found</p>
       <p>See Chats or add new ones</p>
     </div>
@@ -25,7 +30,7 @@ function EmptyContacts(){
 function EmptyConversations({onAction}: {onAction: OnAction}){
     return (
     <div className="h-[87%] flex flex-col justify-center items-center text-gray-300">
-        <img src="src/assets/startConversation.svg"/>
+        <img src={EmptyConvImg}/>
         <p className="font-bold text-gray-200"> No conversation found</p>
         <p>Chat with a contact to start.</p>
         <button onClick={(e) => {onAction(e, "Contacts")}} className="m-6 bg-[#F97316]/80 p-1.5 rounded-4xl text-gray-200">Start a conversation</button>
@@ -36,7 +41,7 @@ function EmptyConversations({onAction}: {onAction: OnAction}){
 function EmptyMessages(){
     return (
     <div className="h-[87%] flex flex-col justify-center items-center text-gray-300">
-      <img src="src/assets/Work chat-cuate.svg"/>
+      <img src={EmptyMsgImg}/>
       <p className="font-bold text-gray-200"> No messages yet</p>
       <p>Your conversations will appear here, start typing</p>
     </div>
@@ -68,7 +73,7 @@ function LoadingStatus(){
 function ErrorStaus(){
   return (
     <div className="h-[87%] flex flex-col justify-center items-center">
-      <img src="src/assets/errorState.svg"/>
+      <img src={ErrorImg}/>
       <p className="text-gray-200 font-bold">Something went wrong</p>
     </div>
   );

@@ -78,7 +78,7 @@ function messagesPlugin(instance, opt) {
 			}
 
 			function handleEnterConversation() {
-				let actionByUserId = +clientReq.params.userId;
+				let actionByUserId = req.user.id;
 
 				if (activeUserConv.has(actionByUserId) && activeUserConv.get(actionByUserId) === parsedMsg.conversationId)
 					return ;
@@ -93,14 +93,14 @@ function messagesPlugin(instance, opt) {
 			}
 
 			function handleLeaveConversation() {
-				let actionByuserId = +clientReq.params.userId;
+				let actionByuserId = req.user.id;
 				if (!activeUserConv.has(actionByuserId) || activeUserConv.get(actionByuserId) !== parsedMsg.conversationId)
 					return ;
 				activeUserConv.delete(actionByuserId, parsedMsg.conversationId);
 			}
 
 			function handleWatchUsers(){
-				let userId = +clientReq.params.userId;
+				let userId = req.user.id;
 				if (presenceInterests.has(userId)){
 					presenceInterests.delete(userId);
 					presenceInterests.set(userId, parsedMsg.users);
@@ -136,7 +136,7 @@ function messagesPlugin(instance, opt) {
 	}
 
 	function broadcastPresenceChange(presenceChange, req){
-		let socketUserId = +req.params.userId;
+		let socketUserId = req.user.id;
 		presenceInterests.forEach((users, interstedUser, map) => {
 			if (users.find((UID) => +UID === socketUserId) !== undefined){
 				connectedUsers.get(interstedUser).send(JSON.stringify({
@@ -150,8 +150,8 @@ function messagesPlugin(instance, opt) {
 
 	function handleConnectionClose(code, reason, req){
 		broadcastPresenceChange('offline', req);
-		connectedUsers.delete(+req.params.userId);
-		activeUserConv.delete(+req.params.userId);
+		connectedUsers.delete(req.user.id);
+		activeUserConv.delete(req.user.id);
 		req.log.info('client close its connection');
 		req.log.info(`its code: ${code} and its reason: ${reason}`);
 	}
@@ -160,25 +160,24 @@ function messagesPlugin(instance, opt) {
 		req.log.error(`websocket error hinstanceen ${error}`);
 	}
  
-	instance.get("/messages/:userId", {websocket: true}, (socket, req) => {
-        connectedUsers.set(+req.params.userId, socket);
+	instance.get("/messages", {websocket: true}, (socket, req) => {
+        connectedUsers.set(req.user.id, socket);
 		broadcastPresenceChange('online', req);
 		socket.on('message', (msg) => handleIncomingMessages(msg, socket, req));
 		socket.on('close', (code, reason) => handleConnectionClose(code, reason, req));
 		socket.on('error', (err) => handleConnectionError(err, req));
 	})
 
-	instance.get("/messages/:userId/:convId", async (req, reply) => {
-		
-		let conv = opt.msg.convDb.find((conv) => conv.id === +req.params.convId);
-		if (conv === undefined || (conv.user1.id !== +req.params.userId && conv.user2.id !== +req.params.userId))
+	instance.get("/messages/:convId", async (req, reply) => {
+		const convId = Number(req.params.convId);
+		let conv = opt.msg.convDb.find((conv) => conv.id === convId);
+		if (conv === undefined || (conv.user1.id !== req.user.id && conv.user2.id !== req.user.id))
 		{
 			reply.code(403);
-			throw new Error(`You don't belong to conversation ${req.params.convId}`);
+			throw new Error(`You don't belong to conversation ${convId}`);
 		}
-		let historyMsgs = opt.msg.msgDb.filter((msg) => msg.convId === +req.params.convId).map((msg) => msg.message);
+		let historyMsgs = opt.msg.msgDb.filter((msg) => msg.convId === convId).map((msg) => msg.message);
 		reply.log.debug(`reply: ${JSON.stringify(historyMsgs)}`);
-		reply.type('application/json');
 		return (historyMsgs);
 	});
 }

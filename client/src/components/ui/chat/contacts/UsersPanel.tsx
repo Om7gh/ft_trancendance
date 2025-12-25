@@ -2,7 +2,7 @@ import Header from "./Header.tsx";
 import FilterTabs from "./FilterTabs.tsx";
 import CardsList from "./CardsList.tsx";
 import StatusResolver from "./JsxByStatus.tsx";
-import type Card from "@/types/UserCard.ts";
+import type {Card} from "@/types/UserCard.ts";
 
 interface UsersPanelProps{
   selectedCard: Card | null,

@@ -4,8 +4,6 @@ import GamesStatistics from '@/components/ui/profile/GamesStatistics';
 import ProfileHeader from '@/components/ui/profile/ProfileHeader';
 import { IoStatsChart } from 'react-icons/io5';
 import { MdOutlineHistory } from 'react-icons/md';
-import { FaUserFriends } from 'react-icons/fa';
-import FriendsList from '@/components/ui/profile/FriendsList';
 import useGetProfile from '@/services/user/useGetProfile';
 import { useParams } from 'react-router-dom';
 import { useContext } from 'react';
@@ -40,7 +38,7 @@ function Profile() {
     );
   }
 
-  const { user, chess, pong, friends } = data;
+  const { user, chess, pong } = data;
 
   console.log(chess)
 
@@ -67,7 +65,7 @@ function Profile() {
             <MdOutlineHistory className="text-violet-500" />
             {user.first_name}' Pong history
           </p>
-          <FriendsList />
+          {/* <FriendsList /> */}
         </div>
       </div>
     </div>

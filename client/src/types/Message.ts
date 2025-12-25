@@ -1,8 +1,6 @@
 
-interface Message{
+export interface Message{
     id: number | string,
-    senderId: number,
+    senderId: number | string,
     content: string
 }
-
-export default Message;

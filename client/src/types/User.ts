@@ -1,7 +1,5 @@
-interface User{
-    id: number,
+export interface User{
+    id: string | number,
     name: string,
     photo_url: string
 }
-
-export default User;
