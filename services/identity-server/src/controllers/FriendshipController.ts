@@ -19,7 +19,7 @@ export class FriendshipController {
         const friend_requests: Friendship[] = fastify.friendshipRepository.getFriendships(user.id);
         const result: Friend[] = friend_requests.map(
             (friendship): Friend => ({
-                uid:
+                id:
                     friendship.sender_id == user.id
                         ? friendship.sender_uid
                         : friendship.receiver_uid,
@@ -48,7 +48,7 @@ export class FriendshipController {
         const friend_requests: Friendship[] = app.friendshipRepository.get(-1, -1, user.id, 0);
         const result: Friend[] = friend_requests.map(
             (friendship): Friend => ({
-                uid: friendship.sender_uid,
+                id: friendship.sender_uid,
                 username: friendship.sender_username,
                 fullname: friendship.sender_fullname,
                 avatar: friendship.sender_avatar,
@@ -64,7 +64,7 @@ export class FriendshipController {
         const friend_requests: Friendship[] = app.friendshipRepository.get(-1, user.id, -1, 0);
         const result: Friend[] = friend_requests.map(
             (friendship): Friend => ({
-                uid: friendship.receiver_uid,
+                id: friendship.receiver_uid,
                 username: friendship.receiver_username,
                 fullname: friendship.receiver_fullname,
                 avatar: friendship.receiver_avatar,
