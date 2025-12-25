@@ -221,7 +221,7 @@ export default class GenericRoom extends EventEmitter {
                         id: uuid(),
                         type: "joinMatch",
                         sneder: {id: this.id, username: "", avatar: ""},
-                        receiver: member,
+                        receiver: {id: member.id},
                         expire: (Math.floor(Date.now() / 1000) + 60),
                     });
                 }
@@ -246,7 +246,7 @@ export default class GenericRoom extends EventEmitter {
                 }
                 this.stopMatch();
             }
-        }, 15000);
+        }, 60000);
     }
 
     cancelMatch() {
