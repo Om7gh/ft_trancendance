@@ -114,7 +114,7 @@ export class FriendshipRepository {
         const params: any[] = [];
 
         if (id != -1) {
-            conditions.push('f.id = ?');
+            conditions.push('id = ?');
             params.push(id);
         }
 
