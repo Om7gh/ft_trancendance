@@ -11,7 +11,7 @@ const queryClient = new QueryClient();
 export interface User {
   avatar: string;
   bio: string;
-  id: number;
+  id: string;
   first_name: string;
   last_name: string;
   last_login: number;

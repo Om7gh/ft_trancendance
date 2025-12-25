@@ -1,8 +1,11 @@
+import Websocket from 'ws';
 import fp from 'fastify-plugin';
 import Messages from "../classes/Messages.js";
 import Conversations from "../classes/Conversations.js";
 import findConversation from "../utils/findConversatoin.js";
-import Websocket from 'ws';
+import UsersBlocks from '../classes/users_blocks.js';
+import isBlockedBy from "../utils/isBlockedBy.js";
+import areFriends from "../utils/areFriends.js";
 
 
 function messagesPlugin(instance, opt) {
@@ -25,7 +28,7 @@ function messagesPlugin(instance, opt) {
 						(parsedMsg.sender.id !== conv.user2.id) && (conv.user2UnreadCount += 1);
 					}
 					connectedUsers.get(parsedMsg.target.id).send(JSON.stringify({type: "message", ...msg}));
-					clientReq.log.debug(`server send via websocke: ${JSON.stringify({type: "message", ...msg})}`);
+					clientReq.log.debug(`server send via websocket: ${JSON.stringify({type: "message", ...msg})}`);
 				}
 				else {
 					(parsedMsg.sender.id !== conv.user1.id) && (conv.user1UnreadCount += 1);
@@ -70,11 +73,28 @@ function messagesPlugin(instance, opt) {
 			}
 			
 			function handleSendMessage() {
-				let conversation = findConversation(opt.msg.convDb, parsedMsg.sender.id, parsedMsg.target.id);
-				conversation === undefined && (conversation = handleNewConversation());
-				let message = new Messages(conversation.id, parsedMsg.sender.id, parsedMsg.content);
-				opt.msg.msgDb.push(message);
-				notifyOrSend(message.message, conversation);
+				try {
+					if (clientReq.user.id !== parsedMsg.sender.id)
+						throw Error("you aren't the authorized sender");
+
+					if (!areFriends(parsedMsg.sender.id, parsedMsg.target.id))
+						throw Error("You can only message your contacts.");
+
+					if (isBlockedBy(opt.msg.blockDb, parsedMsg.target.id, parsedMsg.sender.id))
+						throw Error("You can't send messages to this user");
+
+					let conversation = findConversation(opt.msg.convDb, parsedMsg.sender.id, parsedMsg.target.id);
+					conversation === undefined && (conversation = handleNewConversation());
+					let message = new Messages(conversation.id, parsedMsg.sender.id, parsedMsg.content);
+					opt.msg.msgDb.push(message);
+					notifyOrSend(message.message, conversation);
+				}
+				catch(e){
+					clientSocket.send(JSON.stringify({
+						type: "error",
+						message: e.message
+					}));
+				}
 			}
 
 			function handleEnterConversation() {
@@ -108,6 +128,60 @@ function messagesPlugin(instance, opt) {
 				presenceInterests.set(userId, parsedMsg.users);
 			}
 
+			function handleUserBlock(){
+				try {
+					if (clientReq.user.id === parsedMsg.targetID)
+						throw Error("You cannot block yourself!");
+					if (!areFriends(clientReq.user.id, parsedMsg.targetID))
+						throw Error("You are not allowed to Block this user");
+					if (isBlockedBy(opt.msg.blockDb, clientReq.user.id, parsedMsg.targetID))
+						throw Error("User already blocked!");
+					opt.msg.blockDb.push(new UsersBlocks(clientReq.user.id, parsedMsg.targetID));
+					if (connectedUsers.has(parsedMsg.targetID)){
+						connectedUsers.get(parsedMsg.targetID).send(JSON.stringify({
+							type: "connection-update",
+							stateBy: clientReq.user.id,
+							connectionState: "blocked_by_them"
+						}));
+					}
+				}
+				catch(e) {
+					clientSocket.send(JSON.stringify({
+						type: "error",
+						message: e.message
+					}));
+				}
+			}
+
+			function handleUserUnblock(){
+				try {
+					if (clientReq.user.id === parsedMsg.targetID)
+						throw Error("You cannot Unblock yourself!");
+					if (!areFriends(clientReq.user.id, parsedMsg.targetID))
+						throw Error("You are not allowed to Unblock this user");
+					if (!isBlockedBy(opt.msg.blockDb, clientReq.user.id, parsedMsg.targetID))
+						throw Error("User already Unblocked!");
+					if (connectedUsers.has(parsedMsg.targetID)){
+						connectedUsers.get(parsedMsg.targetID).send(JSON.stringify({
+							type: "connection-update",
+							stateBy: clientReq.user.id,
+							connectionState: "active"
+						}));
+					}
+					opt.msg.blockDb = opt.msg.blockDb.filter((entry) => {
+						return (
+							entry.blockerID !== clientReq.user.id
+						)
+					});
+				}
+				catch(e) {
+					clientSocket.send(JSON.stringify({
+						type: "error",
+						message: e.message
+					}));
+				}
+			}
+
 			switch (parsedMsg.action) {
 				case "send-message": {
 					handleSendMessage();
@@ -125,6 +199,14 @@ function messagesPlugin(instance, opt) {
 					handleLeaveConversation();
 					break ;
 				}
+				case "block-user": {
+					handleUserBlock();
+					break ;
+				}
+				case "unblock-user":{
+					handleUserUnblock();
+					break;
+				}
 				default: {
 					throw new Error("Action property is missing/invalid");
 				}
@@ -136,14 +218,16 @@ function messagesPlugin(instance, opt) {
 	}
 
 	function broadcastPresenceChange(presenceChange, req){
-		let socketUserId = req.user.id;
+		let socketUserId = +req.params.userId;
 		presenceInterests.forEach((users, interstedUser, map) => {
 			if (users.find((UID) => +UID === socketUserId) !== undefined){
-				connectedUsers.get(interstedUser).send(JSON.stringify({
-					type: "user-presence",
-					presence: presenceChange,
-					userId: socketUserId
-				}));
+				if (connectedUsers.has(interstedUser)){
+					connectedUsers.get(interstedUser).send(JSON.stringify({
+						type: "user-presence",
+						presence: presenceChange,
+						userId: socketUserId
+					}));
+				}
 			}
 		});
 	}

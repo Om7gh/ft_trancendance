@@ -1,4 +1,5 @@
 import fp from 'fastify-plugin';
+import friendConnectionState from '../utils/friendConnectionState.js';
 
 function conversationPlugin(instance, opt){
 
@@ -7,6 +8,7 @@ function conversationPlugin(instance, opt){
 		conversations = conversations.map((conv) => {
 			let unreadMsgs = (conv.user1.id === userId) ? conv.user1UnreadCount : conv.user2UnreadCount;
 			let user = (conv.user1.id === userId) ? conv.user2 : conv.user1;
+			user = {...user, connectionState: friendConnectionState(opt.conv.blockDb, userId, user.id)}
 			return ({
 				id: conv.id,
 				friend: user,
@@ -23,4 +25,4 @@ function conversationPlugin(instance, opt){
 	});
 }
 
-export default fp(conversationPlugin, {name: "conversationPlugin"});``
+export default fp(conversationPlugin, {name: "conversationPlugin"});

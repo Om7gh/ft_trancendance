@@ -38,14 +38,10 @@ function Profile() {
     );
   }
 
-<<<<<<< HEAD
   const { user, chess, pong } = data;
 
   console.log(chess)
 
-=======
-  const { user, chess, pong, friends } = data;
->>>>>>> origin/integration
   return (
     <div>
       <ProfileHeader userData={user} isOwnProfile={currentUser?.id === user.id} />

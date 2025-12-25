@@ -19,6 +19,7 @@ async function main() {
 
 	let convDb = [];
 	let msgDb = [];
+	let usersBlocksDb = [];
 
 	let app = fastify(serverOptions);
 
@@ -31,16 +32,23 @@ async function main() {
 	app.register(messages, {
 		msg: {
 			convDb: convDb,
-			msgDb: msgDb
+			msgDb: msgDb,
+			blockDb: usersBlocksDb
 		}
 	});
 
 	app.register(contacts, {
-		contacts: { convDB: convDb }
+		contacts: {
+			convDB: convDb,
+			blockDb: usersBlocksDb
+		}
 	});
 
 	app.register(conversation, {
-		conv: { convDb: convDb }
+		conv: {
+			convDb: convDb,
+			blockDb: usersBlocksDb
+		}
 	});
 
 	app.listen({port: 9004, host: "0.0.0.0"})
