@@ -4,6 +4,7 @@ import type { ApiResponse } from "@/types/friendTypes";
 
 async function approveFriendRequest(uid: string) {
   try {
+    console.log(uid)
     const { data } = await axiosApiInstance.patch<ApiResponse<null>>(`/friends/requests/${uid}/approve`);
     return data;
   } catch (e) {

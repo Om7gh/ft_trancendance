@@ -6,6 +6,7 @@ import corsPlugin from './plugins/corsPlugin.js';
 import validateUser from './plugins/validateUser.js';
 import dataBase from './plugins/dataBase.js';
 import statistics from './routes/statistics.js';
+import tournament from './routes/tournament.js';
 
 import pongGame from './routes/pongGame.js';
 

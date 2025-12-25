@@ -10,6 +10,8 @@ function PendingRequest() {
   const reject = useRejectFriendRequest();
   const [processingUid, setProcessingUid] = useState<string | null>(null);
 
+  console.log("request here ",requests)
+
   const handleApprove = async (uid: string) => {
     setProcessingUid(uid);
     approve.mutate(uid, {

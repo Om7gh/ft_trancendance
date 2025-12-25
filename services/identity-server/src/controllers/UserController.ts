@@ -13,7 +13,7 @@ export class UserController {
     static readonly ERR_USER_NOT_FOUND: string = 'User not found';
 
     static async get(request: FastifyRequest, reply: FastifyReply) {
-        const user = request.session.user;
+        const user = request.user;
         reply.send(user);
     }
 
@@ -22,7 +22,7 @@ export class UserController {
     static async update(request: FastifyRequest, reply: FastifyReply) {
         const fastify = request.server;
         const data = request.body as User;
-        const user = request.session.user;
+        const user = request.user;
 
         try {
             fastify.usersRepository.update(user.id, data);
@@ -56,7 +56,7 @@ export class UserController {
             }
 
             const users = this.usersRepository.searchUsers(query, limit);
-            return reply.send({ users });
+            return reply.send(users);
         } catch (err: any) {
             console.error(err);
             return reply.notFound('no user found');
@@ -82,7 +82,7 @@ export class UserController {
             const fullUser = {
                 user: asUserInfo(user),
                 chess:
-                        (await UserController.getStatistics(
+                    (await UserController.getStatistics(
                         'http://chess:9000',
                         user.username
                     )) || null,
@@ -91,7 +91,7 @@ export class UserController {
                         'http://pong:9001',
                         user.uid
                     )) || null,
-                friends: this.friendshipRepository.getFriendships(user.id)
+                friends: this.friendshipRepository.getFriendships(user.id),
             };
             return reply.send(fullUser);
         } catch (err: any) {

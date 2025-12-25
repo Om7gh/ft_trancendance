@@ -12,7 +12,7 @@ type FailedRequestQueueType = {
   reject: (reasion?: any) => void;
 };
 
-let failedRequestQueue: FailedRequestQueueType[];
+let failedRequestQueue: FailedRequestQueueType[] = [];
 
 function processRequestsQueue(error: unknown) {
   
@@ -47,9 +47,7 @@ axiosApiInstance.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      await axios.post('http://localhost:8080/auths/refresh', {
-        withCredentials: true,
-      });
+      await axiosApiInstance.post('/auths/refresh', null);
 
       processRequestsQueue(null);
       return axiosApiInstance(originalRequest);

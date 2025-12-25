@@ -1,5 +1,7 @@
 import { randomUUID } from 'crypto';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { Pkce } from '../auth/index.js';
+import { PkceParams } from '../auth/remote/types/pkce.js';
 import { compare, hash } from '../auth/security/cipher-util.js';
 import asUser, { asUserInfo } from '../dto/user-dto.js';
 import { User } from '../models/user.js';
@@ -39,8 +41,10 @@ export default abstract class AuthController {
                 `Provider '${provider}' is not supported`
             );
         }
-        request.session.pkce = this.pkce.getParams();
-        const url = this.auth.getAuthUrl(provider, request.session.pkce);
+        const pkce = Pkce.getParams();
+        const pkceParams = `${pkce.state};${pkce.codeVerifier};${pkce.codeChallenge}`;
+        reply.sendNonceToken(await this.generateNonceToken(pkceParams, '5m'));
+        const url = this.auth.getAuthUrl(provider, pkce);
         reply.redirect(url);
     }
 
@@ -53,11 +57,6 @@ export default abstract class AuthController {
         const { state, code, error } = request.query as OAuth2CallbackBody;
         if (error) {
             console.error(`OAuth error from ${provider}: ${error}`);
-            request.session.destroy((err) => {
-                if (err) console.error('failed to destroy session:', err);
-            });
-            reply.clearCookie('sessionId', { path: '/' });
-
             const errorMsg = encodeURIComponent(
                 'authentication failed: ' + (error || 'unknown error')
             );
@@ -66,34 +65,35 @@ export default abstract class AuthController {
         if (!code || !state) {
             return reply.badRequest(error ?? 'missing code or state');
         }
-        if (!request.session?.pkce) {
-            return reply.redirect(`/oauth2/${provider}`);
+        try {
+            const { sub } = await request.verifyNonceToken();
+            const [state, codeVerifier, codeChallenge] = sub!.split(';');
+            if (state !== state) {
+                throw this.httpErrors.badRequest('invalid state parameter');
+            }
+            const strategy = this.auth.use(provider);
+            const pkce = { state, codeVerifier, codeChallenge } as PkceParams;
+            const tokens = await strategy.getTokens(code, pkce);
+            const payload = await strategy.getUserInfo(tokens);
+            if (!payload || !payload.email) {
+                throw reply.badRequest('email not found in OAuth payload');
+            }
+            const user = this.usersRepository.findOrCreate(
+                asUser(provider, payload) as User
+            );
+            if (!user.username) {
+                reply.sendNonceToken(
+                    await this.generateNonceToken(user.uid, '5m')
+                );
+                return reply.redirect('/auth/complete-registration');
+            }
+            const [accessToken, refreshToken] =
+                await AuthController.issueTokens(this, user);
+            reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken).clearNonceToken();
+            return reply.redirect('/dashboard');
+        } catch (err: any) {
+            return reply.badRequest(err.message);
         }
-        if (request.session.pkce.state !== state) {
-            request.session.destroy();
-            reply.clearCookie('sessionId', { path: '/' });
-            throw this.httpErrors.badRequest('invalid state parameter');
-        }
-        const strategy = this.auth.use(provider);
-        const tokens = await strategy.getTokens(code, request.session.pkce);
-        request.session.destroy();
-        reply.clearCookie('sessionId', { path: '/' });
-        const payload = await strategy.getUserInfo(tokens);
-        if (!payload || !payload.email) {
-            throw reply.badRequest('email not found in OAuth payload');
-        }
-        const user = this.usersRepository.findOrCreate(
-            asUser(provider, payload) as User
-        );
-        if (user.username) {
-            return reply.redirect('/auth/complete-registration');
-        }
-        const [accessToken, refreshToken] = await AuthController.issueTokens(
-            this,
-            user
-        );
-        reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
-        return reply.redirect('/auth/complete-registration');
     }
 
     static async signup(
@@ -102,6 +102,7 @@ export default abstract class AuthController {
         reply: FastifyReply
     ) {
         const payload = request.body as RegisterBody;
+        this.log.info(payload);
         const exists = this.usersRepository.findByEmail(payload.email);
         if (exists) {
             return reply.conflict('an account with this email already exists');
@@ -118,7 +119,7 @@ export default abstract class AuthController {
         if (!user) {
             return reply.code(400).send({ message: 'user not created' });
         }
-        const token = await this.generateConfirmToken(user.uid);
+        const token = await this.generateNonceToken(user.uid, '1h');
         const url = `${this.config.HOST}:${this.config.PORT}/auths/confirm?token=${token}`;
         await this.transporter.sendMail(confirmMailOptions(user.email, url));
         return reply.code(201).send({ message: 'user created' });
@@ -146,20 +147,17 @@ export default abstract class AuthController {
             return reply.forbidden('email not verified yet');
         }
         if (!user.username) {
-            return reply.send({
-                success: true,
-                message: 'username not set',
-                next: '/auth/complete-registration',
-            });
+            return reply
+                .sendNonceToken(await this.generateNonceToken(user.uid, '5m'))
+                .send({
+                    success: true,
+                    message: 'username not set',
+                    next: '/auth/complete-registration',
+                });
         }
         const userMfa = this.mfaRepository.findByUserId(user.id);
         if (userMfa && userMfa.enabled) {
-            request.session.pendingUser = {
-                id: user.id,
-                uid: user.uid,
-                secret: userMfa.secret,
-                pending: true,
-            };
+            reply.sendNonceToken(await this.generateNonceToken(user.uid, '5m'));
             return reply.send({ success: true, next: '/auth/verify-2fa' });
         }
 
@@ -222,13 +220,8 @@ export default abstract class AuthController {
             if (user.email_verified) {
                 return reply.conflict('already verified');
             }
-            request.session.pendingUser = {
-                id: user.id,
-                uid: user.uid,
-                secret: '',
-                pending: true,
-            };
             this.usersRepository.update(user.id, { email_verified: 1 });
+            reply.sendNonceToken(await this.generateNonceToken(user.uid, '5m'));
             return reply.redirect('/auth/complete-registration');
         } catch (err: any) {
             return reply.forbidden('invalid-token');
@@ -241,30 +234,26 @@ export default abstract class AuthController {
         reply: FastifyReply,
         username: string
     ) {
-        const pendingUser = request.session.pendingUser;
-        if (!pendingUser) {
-            reply.badRequest('no pending authentication');
-            return null;
-        }
+        try {
+            const user = request.pendingUser;
+            if (!user) {
+                return reply.forbidden('user not found');
+            }
+            if (user.username) {
+                reply.forbidden('username already set');
+                return null;
+            }
 
-        const user = fastify.usersRepository.findById(pendingUser.id);
-        if (!user) {
-            reply.forbidden('user not found');
-            return null;
-        }
+            const isTaken = fastify.usersRepository.findByUsername(username);
+            if (isTaken) {
+                reply.conflict('username is taken');
+                return null;
+            }
 
-        if (user.username) {
-            reply.forbidden('username already set');
-            return null;
+            return user;
+        } catch (err: any) {
+            return reply.badRequest(err.message);
         }
-
-        const isTaken = fastify.usersRepository.findByUsername(username);
-        if (isTaken) {
-            reply.conflict('username is taken');
-            return null;
-        }
-
-        return user;
     }
 
     static async checkUsername(
@@ -306,7 +295,7 @@ export default abstract class AuthController {
             if (!user) return;
 
             this.usersRepository.update(user.id, { username });
-            request.session.user = { ...user, username };
+            request.pendingUser = { ...user, username };
 
             return reply.send({ success: true });
         } catch (err: any) {
@@ -319,16 +308,14 @@ export default abstract class AuthController {
         request: FastifyRequest,
         reply: FastifyReply
     ) {
-        if (!request.session.pendingUser) {
-            return reply.badRequest('no pending authentication');
-        }
-
-        const user = request.session.user;
-
         let bio: string | undefined;
         let avatar: string | undefined;
 
         try {
+            const user = this.usersRepository.findById(request.pendingUser.id);
+            if (!user) {
+                return reply.badRequest('no user found');
+            }
             for await (const part of request.parts()) {
                 if (part.type === 'file' && part.fieldname === 'avatar') {
                     avatar = await saveUploadedAvatar(
@@ -342,11 +329,6 @@ export default abstract class AuthController {
                     bio = String(part.value);
                 }
             }
-
-            if (!bio) {
-                return reply.badRequest('bio is required');
-            }
-
             if (!avatar) {
                 avatar = await saveAvatar(
                     user.uid,
@@ -366,15 +348,16 @@ export default abstract class AuthController {
             reply
                 .sendAccessToken(accessToken)
                 .sendRefreshToken(refreshToken)
+                .clearNonceToken()
                 .send({ success: true });
         } catch (err) {
             request.log.error(err);
-            return reply.internalServerError('complete-profile failed');
+            return reply.notFound('complete-profile failed');
         }
     }
 
     static async userInfo(request: FastifyRequest, reply: FastifyReply) {
-        const userInfo = asUserInfo(request.session.user);
+        const userInfo = asUserInfo(request.user);
         return reply.send(userInfo);
     }
 }

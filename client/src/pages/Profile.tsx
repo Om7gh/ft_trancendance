@@ -38,10 +38,14 @@ function Profile() {
     );
   }
 
+<<<<<<< HEAD
   const { user, chess, pong } = data;
 
   console.log(chess)
 
+=======
+  const { user, chess, pong, friends } = data;
+>>>>>>> origin/integration
   return (
     <div>
       <ProfileHeader userData={user} isOwnProfile={currentUser?.id === user.id} />
@@ -58,7 +62,7 @@ function Profile() {
             <MdOutlineHistory className="text-violet-500" />
             {user.first_name}' Chess history
           </p>
-          <MyGamesHistory type="chess" userData={user} matchData={chess.stats} />
+          <MyGamesHistory type="chess" userData={user} matchData={chess} />
         </div>
         <div>
           <p className="text-3xl text-violet-400 mb-4 flex gap-4">

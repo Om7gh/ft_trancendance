@@ -30,6 +30,13 @@ function chessHandler(connection, req) {
 
   if (players.has(playerId)) {
     const existingPlayer = players.get(playerId);
+    const oldConnection = existingPlayer.connection;
+    
+    // Close old connection to prevent race conditions
+    if (oldConnection && oldConnection.readyState === 1) {
+      oldConnection.close();
+    }
+    
     existingPlayer.connection = connection;
     console.log(`Player reconnected [${playerId}] from ${clientIP}`);
   } else {
@@ -51,15 +58,20 @@ function chessHandler(connection, req) {
     handleMessage(app, playerId, msg);
   });
 
-  connection.on('close', () => handleDisconnect(app, playerId));
+  connection.on('close', () => handleDisconnect(app, playerId, connection));
 }
 
 function handleMessage(app, playerId, msg) {
+  const player = players.get(playerId);
+  if (!player) {
+    console.error(`❌ Player [${playerId}] not found in players map`);
+    return;
+  }
+
   const { type } = msg;
   switch (type) {
     case 'matchmaking':
-      console.log('and then here...');
-      return handleMatchmaking(playerId, players.get(playerId).connection);
+      return handleMatchmaking(playerId, player.connection);
     case 'leaveMatchmaking':
       return removeFromQueue(playerId);
     case 'syncBoard':
@@ -82,7 +94,6 @@ function handleMessage(app, playerId, msg) {
       return handleRematchDecline(playerId);
     default:
       console.log(`Unknown message type: ${type}`);
-      const player = players.get(playerId);
       if (player)
         send(player.connection, {
           type: 'error',

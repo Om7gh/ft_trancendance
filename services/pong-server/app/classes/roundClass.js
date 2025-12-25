@@ -1,42 +1,56 @@
-import TournamentRoom from './tournamentRoomClass.js';
+import { v4 as uuid} from 'uuid'
+import { EventEmitter } from 'events';
+import GenericRoom from './genericRoom.js';
+
 
 export default class Round extends EventEmitter {
 
     constructor() {
-        this.id         = uuid();
-        this.state      = "waiting";
-        this.players    = null;
-        this.rooms      = [];
-        this.counter    = 0;
+        super();
+
+        this.id             = uuid();
+        this.state          = "waiting";
+        this.participants   = null;
+        this.rooms          = [];
+        this.counter        = 0;
     }
 
     getState() {
         return (this.state);
     }
 
-    setPlayers(players) {
+    setParticipants(participants) {
         if (this.state === "waiting") {
-            this.players = players;
+            this.participants = participants;
         }
     }
 
     prepareRound() {
         let currentRoom = null
 
-        if ((this.state === "waiting") && this.players) {
-            for (let i = 0; i < this.players.length; i++) {
+        if ((this.state === "waiting") && this.participants) {
+            for (let i = 0; i < this.participants.length; i++) {
                 if (!(i % 2)){
-                    currentRoom = new TournamentRoom()
+                    currentRoom = new GenericRoom();
+                    currentRoom.type = "tournament";
                     this.rooms.push(currentRoom);
+
                     currentRoom.on("done", () => {
-                        this.counter++;
+                        this.counter += 1;
                         if (this.counter === this.rooms.length) {
                             this.state = "done";
                             this.emit("done");
                         }
                     })
+
+                    currentRoom.on("error", () => {
+                        this.state = "canceled";
+                        this.emit("error");
+                    })
+
+                    this.emit("newRoom", currentRoom);
                 }
-                currentRoom.addInvitee(this.players[i].id);
+                currentRoom.addMember(this.participants[i]);
             }
             this.state = "ready";
         }
@@ -44,11 +58,11 @@ export default class Round extends EventEmitter {
 
     startRound() {
         this.prepareRound();
-        if (this.ready) {
-            for (let room of this.rooms) {
-                room.invitePlayers();
-            }
+        if (this.state === "ready") {
             this.state = "going";
+            for (let room of this.rooms) {
+                room.inviteMembers();
+            }
         } else {
             console.log("Round not ready yet!!");
         }
@@ -77,7 +91,7 @@ export default class Round extends EventEmitter {
         return ({
             id      : this.id,
             state   : this.state,
-            matches : rooms,
+            matches : matches,
         })
     }
 

@@ -1,8 +1,10 @@
 export default class User {
     constructor(user) {
-        this.id         = user.id;
-        this.username   = user.username;
-        this.avatar     = user.avatar;
+        if (user) {
+            this.id         = user.id;
+            this.username   = user.username;
+            this.avatar     = user.avatar;
+        }
     }
 
     toJSON() {

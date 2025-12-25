@@ -2,9 +2,16 @@ const send = require('../utils/send');
 const { rooms, players, lastOpponents } = require('../utils/state');
 const { removeFromQueue } = require('./matchMaking');
 
-function handleDisconnect(app, playerId) {
+function handleDisconnect(app, playerId, disconnectingConnection) {
   const player = players.get(playerId);
   if (!player) return;
+
+  // Only delete the player if the disconnecting connection is the current one
+  // This prevents race conditions when a player reconnects
+  if (player.connection !== disconnectingConnection) {
+    console.log(`Ignoring disconnect from old connection for [${playerId}]`);
+    return;
+  }
 
   const { roomId } = player;
   players.delete(playerId);

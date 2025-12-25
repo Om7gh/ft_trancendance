@@ -1,11 +1,11 @@
 export type PlayerType = {
   id: string;
-  name: string;
+  username: string;
   avatar: string;
 };
 
 export type MatchType = {
-  roomId: string;
+  id: string;
   leftPlayer: PlayerType;
   rightPlayer: PlayerType;
 };
