@@ -18,6 +18,8 @@ export class FriendshipRepository {
         return `
             SELECT
                 f.*,
+                u.uid as sender_uid,
+                uu.uid as receiver_uid,
                 u.username as sender_username,
                 uu.username as receiver_username,
                 CONCAT(u.first_name, ' ', u.last_name) AS sender_fullname,
