@@ -1,25 +1,42 @@
-function joinMatchHandler(socket, req) {
-    const uid       = req.user.id;
-    const rid       = req.query.rid;
-    const room      = this.roomList.get(rid);
+import GenericRoom from "../classes/genericRoom.js";
+import { alreadyInMatch } from "./playWithSomeOne.js";
 
-    if (!room || !room.isPlayer(uid) || ((room.state !== "ready") && (room.state !== "pause"))) {
-        socket.send(JSON.stringify({
-            state: "!ok",
-            reason: "Currently you don't have any match to join!!"
-        }));
-        socket.close();
-        return ;
+async function joinMatchHandler(request, reply) {
+    const user  = request.user;
+    const state = this.validateUser(user);
+
+    if (!state) {
+        const error = new Error("Invalid user passed to handler!!")
+        error.statusCode = 400;
+        throw error;
     }
 
-    room.setPlayerSocket(uid, socket);
+    let room = alreadyInMatch(this.roomList, user.id);
+            
+    if (room && (room.getState() !== "done") && (room.getState() !== "canceled")) {
+        const error = new Error("You are already in other match!!")
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const rid = request.query.rid
+
+    room = this.roomList.get(rid);
+
+    if (!room || (room.getState() !== "waiting") || !room.isMember(user.id)) {
+        const error = new Error("Currently you don't have any match to join!!")
+        error.statusCode = 400;
+        throw error;
+    }
+    
+    return (reply.send(JSON.stringify(room.toJSON())));
 }
 
 export default async function joinMatch(fastify, options) {
+
     fastify.route({
-        url: '/pongGame/remote/join',
-        method: 'GET',
-        websocket: true,
-        handler: joinMatchHandler,
+        url     : '/pongGame/remote/joinMatch',
+        method  : 'GET',
+        handler : joinMatchHandler,
     })
 }

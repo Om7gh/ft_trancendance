@@ -36,8 +36,8 @@ export default class DatabaseService {
     }
 
     addMatch({ id, leftPlayer, rightPlayer, winner }) {
-        this.addUser(leftPlayer);
 
+        this.addUser(leftPlayer);
         this.addUser(rightPlayer);
 
         this.insertMatch.run({
@@ -46,7 +46,7 @@ export default class DatabaseService {
             left_points: leftPlayer.points,
             right_player_id: rightPlayer.id,
             right_points: rightPlayer.points,
-            winner_id: winner
+            winner_id: winner.id
         });
 
         return id;

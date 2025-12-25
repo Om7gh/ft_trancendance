@@ -1,3 +1,5 @@
+import GenericRoom from "../classes/genericRoom.js";
+
 export function alreadyInMatch(roomList, userId) {
     for (let [id, room] of roomList) {
         if (room.isPlayer(userId)) {
@@ -18,7 +20,7 @@ export async function waitForOpponent(room) {
                 resolve();
             } else if (60 < counter) {
                 clearInterval(intervalId);
-                room.stopMatch();
+                room.cancelMatch();
                 const error = new Error("Waiting for opponent too long!!");
                 error.statusCode = 408;
                 reject(error);
@@ -38,24 +40,26 @@ async function playWithSomeOneHandler(request, reply) {
         throw error;
     }
 
-    var   room  = alreadyInMatch(this.roomList, user.id);
+    let room = alreadyInMatch(this.roomList, user.id);
         
     if (room && (room.getState() !== "done")) {
-        reply.send(JSON.stringify(room.generateMatch()));
+        reply.send(JSON.stringify(room.toJSON()));
         return ;
     }
     
-    room = this.addPlayerToRoom(user);
+    if (!this.currentRoom || (this.currentRoom.getState() !== "waiting")) {
+        room = new GenericRoom();
+        this.addRoomToRoomList(room);
+        this.currentRoom = room;
+    }
+
+    room = this.currentRoom;
+    
+    room.addPlayer(user);
     
     await waitForOpponent(room);
     
-    reply.send(JSON.stringify(room.generateMatch()));
-
-    room.on("done", () => {
-        if (room.getState() === "done") {
-            this.db.addMatch(room.toJSON());
-        }
-    })
+    reply.send(JSON.stringify(room.toJSON()));
 }
 
 export default async function playWithSomeOne(fastify, options) {

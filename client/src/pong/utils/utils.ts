@@ -1,7 +1,7 @@
 import type { MatchType, PlayerType } from "../types/playWithSomeOne";
 
 export function validatePlayer(player: PlayerType) {
-  if (!player || !player.id || !player.name)
+  if (!player || !player.id || !player.username)
     return false;
   return true;
 }
@@ -10,7 +10,7 @@ export function validateMatch(match: MatchType) {
   console.log("match here ... ", match);
   if (
     !match ||
-    !match.roomId ||
+    !match.id ||
     !validatePlayer(match.leftPlayer) ||
     !validatePlayer(match.rightPlayer)
   )

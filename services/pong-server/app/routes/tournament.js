@@ -1,10 +1,8 @@
-import onRequestHook from "../hooks/onRequestHook.js";
-import errorHandler from "../plugins/errorHandler.js";
 import Tournament from "../classes/tournamentClass.js";
 
 export function alreadyInTournament(tournamentList, userId) {
     for (let [id, tournament] of tournamentList) {
-        if (tournament.isPlayer(userId)) {
+        if (tournament.isMember(userId)) {
             return (tournament);
         }
     }
@@ -21,7 +19,7 @@ async function tournamentHandler(request, reply) {
         throw error;
     }
 
-    var tournament  = alreadyInTournament(this.tournamentList, user.id);
+    let tournament  = alreadyInTournament(this.tournamentList, user.id);
     
     if (tournament) {
         reply.send(tournament.toJSON());
@@ -30,17 +28,24 @@ async function tournamentHandler(request, reply) {
 
     if (!this.currentTournament || (this.currentTournament.state !== "waiting")) {
         this.currentTournament = new Tournament();
+
         this.tournamentList.set(this.currentTournament.id, this.currentTournament);
+
         this.currentTournament.on("done", () => {
-            let tournamentId = this.currentTournament.id;
-            this.tournamentList.delete(tournamentId);
-            console.log("remove the tournament with Id: ", tournamentId);
+            console.log("remove the tournament with Id: ", this.currentTournament.id);
+            // this.tournamentList.delete(this.currentTournament.id);
         });
+        
+        this.currentTournament.on("newRoom", (room) => {
+            this.addRoomToRoomList(room);
+        })
     }
 
-    this.currentTournament.addPlayer(user);
+    tournament = this.currentTournament;
 
-    reply.send(this.currentTournament.toJSON());
+    tournament.addMember(user);
+
+    reply.send(tournament.toJSON());
 }
 
 export default async function tournament(fastify, options) {

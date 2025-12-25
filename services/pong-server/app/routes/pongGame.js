@@ -2,37 +2,26 @@ import onRequestHook from "../hooks/onRequestHook.js";
 import playWithSomeOne from "./playWithSomeOne.js";
 import inviteFriendToMatch from "./inviteFriendToMatch.js";
 import acceptMatchInvitation from "./acceptMatchInvitation.js";
-import joinMatch from "./joinMatch.js";
-import Room from "../classes/roomClass.js";
 import errorHandler from "../plugins/errorHandler.js";
 import fakeFriends from "./fakeFriends.js";
 import tournament from "./tournament.js";
+import joinMatch from "./joinMatch.js";
+import match from "./match.js";
 
 
-function createRoom() {
-    const room = new Room();
+function addRoomToRoomList(room) {
+    if (room && !this.roomList.get(room.id)) {
+        this.roomList.set(room.id, room);
+        this.log.info(`add room with id: ${room.id}`);
 
-    this.log.info(`create new room with id: ${room.id}`);
-    this.roomList.set(room.id, room);
-    room.on("done", () => {
-        this.roomList.delete(room.id);
-        this.log.info(`delete room with id: ${room.id}`);
-    })
-    return (room);
-}
-
-function addPlayerToRoom(user) {
-
-    if (!this.currentRoom || (this.currentRoom.getState() !== "waiting")) {
-        this.currentRoom = this.createRoom();
+        room.on("done", () => {
+            if ((room.type === "match") && (room.getState() === "done")) {
+                this.db.addMatch(room.toJSON());
+            }
+            this.log.info(`delete room with id: ${room.id}`);
+            this.roomList.delete(room.id);
+        })
     }
-
-    if (this.currentRoom) {
-        this.currentRoom.addPlayer(user);
-        this.log.info(`add player with id: ${user.id} to room with id: ${this.currentRoom.id}`);
-    }
-
-    return (this.currentRoom);
 }
 
 export default async function pongGame(fastify, options) {
@@ -41,8 +30,7 @@ export default async function pongGame(fastify, options) {
     fastify.decorate('roomList', new Map());
     fastify.decorate("invitationList", new Map());
 
-    fastify.decorate('createRoom', createRoom);
-    fastify.decorate('addPlayerToRoom', addPlayerToRoom);
+    fastify.decorate('addRoomToRoomList', addRoomToRoomList);
 
     fastify.register(onRequestHook);
     fastify.register(errorHandler);
@@ -53,6 +41,5 @@ export default async function pongGame(fastify, options) {
     fastify.register(acceptMatchInvitation);
     fastify.register(tournament);
     fastify.register(joinMatch);
-
-    // fastify.register(fakeFriends);
+    fastify.register(match);
 }

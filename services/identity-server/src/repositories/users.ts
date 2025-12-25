@@ -135,7 +135,7 @@ export class UserRepository {
         const likeQuery = `%${query}%`;
         const stmt = this.db.prepare(`
       SELECT
-        uid,
+        uid AS id,
         username,
         first_name,
         last_name,
