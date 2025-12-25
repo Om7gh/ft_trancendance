@@ -7,7 +7,7 @@ function DemiFinal({ players }: Tournaments) {
   for (let i = 0; i < players.length; i++)
     if (i % 2) demiFinal.push(players[i]);
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex  gap-5 row-start-2 row-end-3">
       {demiFinal.map((player: TournamentPlayer, i: number) => (
         <>
           <Participant player={player} key={i} index={i} />

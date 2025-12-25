@@ -220,7 +220,7 @@ export default class GenericRoom extends EventEmitter {
                     invitations.push({
                         id: uuid(),
                         type: "joinMatch",
-                        sneder: {id: this.id, username: "", avatar: ""},
+                        sender: {id: this.id, username: "", avatar: ""},
                         receiver: {id: member.id},
                         expire: (Math.floor(Date.now() / 1000) + 60),
                     });

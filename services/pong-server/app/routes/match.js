@@ -15,7 +15,7 @@ function matchHandler(socket, req) {
     room.setPlayerSocket(uid, socket);
 }
 
-export default async function joinMatch(fastify, options) {
+export default async function match(fastify, options) {
     fastify.route({
         url: '/pongGame/remote/match',
         method: 'GET',
