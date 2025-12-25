@@ -6,10 +6,8 @@ export default fp(async function onRequestHook(fastify, options) {
         try {
             const cookie = request.headers.cookie;
             
-            if (!cookie) {
-                reply.code(401).send();        
-                return ;
-            }
+            if (!cookie) 
+                throw new Error("No cookie");
             const response = await this.axios.get("http://identity:4000/auths/userinfo", {
                 headers: {
                     Cookie: cookie,
@@ -17,7 +15,12 @@ export default fp(async function onRequestHook(fastify, options) {
             });
             request.user = await response.data;
         } catch (err) {
-            reply.code(401).send("Refresh your access token");
+            reply.code(401)
+            reply.send((err.message !== "No cookie")
+                ? "Refresh your access token"
+                : err.message
+            );
+            return reply;
         }
     });
     

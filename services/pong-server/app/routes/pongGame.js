@@ -6,22 +6,21 @@ import joinMatch from "./joinMatch.js";
 import errorHandler from "../plugins/errorHandler.js";
 import fakeFriends from "./fakeFriends.js";
 import tournament from "./tournament.js";
-import GenericRoom from "../classes/genericRoom.js";
 
 
-function createRoom() {
-    const room = new GenericRoom();
+function addRoomToRoomList(room) {
+    if (room && !this.roomList.get(room.id)) {
+        this.roomList.set(room.id, room);
+        this.log.info(`add room with id: ${room.id}`);
 
-    this.log.info(`create new room with id: ${room.id}`);
-    this.roomList.set(room.id, room);
-    room.on("done", () => {
-        this.log.info(`delete room with id: ${room.id}`);
-        if (room.getState() === "done") {
-            this.db.addMatch(room.toJSON());
-        }
-        this.roomList.delete(room.id);
-    })
-    return (room);
+        room.on("done", () => {
+            if ((room.type === "match") && (room.getState() === "done")) {
+                this.db.addMatch(room.toJSON());
+            }
+            this.log.info(`delete room with id: ${room.id}`);
+            this.roomList.delete(room.id);
+        })
+    }
 }
 
 export default async function pongGame(fastify, options) {
@@ -30,7 +29,7 @@ export default async function pongGame(fastify, options) {
     fastify.decorate('roomList', new Map());
     fastify.decorate("invitationList", new Map());
 
-    fastify.decorate('createRoom', createRoom);
+    fastify.decorate('addRoomToRoomList', addRoomToRoomList);
 
     fastify.register(onRequestHook);
     fastify.register(errorHandler);

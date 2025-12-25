@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { v4 as uuid } from "uuid";
 import { EventEmitter } from 'events';
 
@@ -11,7 +12,10 @@ export default class GenericRoom extends EventEmitter {
 
         this.id             = uuid();
         this.state          = "waiting";
+        this.type           = "match";
+
         this.members        = [];
+        this.counter        = 0;
         this.winner         = null;
 
         this.playingId      = null;
@@ -46,6 +50,10 @@ export default class GenericRoom extends EventEmitter {
     joinRoom(user) {
         if ((this.state === "waiting") && this.isMember(user.id)) {
             this.addPlayer(user);
+            this.counter += 1;
+            if (this.counter === 2) {
+                this.startMatch();
+            }
         }
     }
 
@@ -60,6 +68,7 @@ export default class GenericRoom extends EventEmitter {
     addLeftPlayer(user) {
         this.leftPlayer = new Player(user, this.table);
         this.leftPlayer.setPaddleInTable("left");
+
         this.leftPlayer.on("leaveMatch", () => {
             this.rightPlayer.setPoints(7);
             this.stopMatch();
@@ -75,6 +84,7 @@ export default class GenericRoom extends EventEmitter {
     addRightPlayer(user) {
         this.rightPlayer = new Player(user, this.table);
         this.rightPlayer.setPaddleInTable("right");
+
         this.rightPlayer.on("leaveMatch", () => {
             this.leftPlayer.setPoints(7);
             this.stopMatch();
@@ -173,22 +183,6 @@ export default class GenericRoom extends EventEmitter {
         }));
     }
 
-    // generateMatch() {
-    //     return ({
-    //         roomId: this.id,
-    //         leftPlayer: {
-    //             id: this.leftPlayer.id,
-    //             name: this.leftPlayer.username,
-    //             avatar: this.leftPlayer.avatar,
-    //         },
-    //         rightPlayer: {
-    //             id: this.rightPlayer.id,
-    //             name: this.rightPlayer.username,
-    //             avatar: this.rightPlayer.avatar,
-    //         }
-    //     })
-    // }
-
     startMatch() {
         if (this.state === "ready") {
             clearTimeout(this.waitingId);
@@ -197,28 +191,73 @@ export default class GenericRoom extends EventEmitter {
                 this.broadcastMatchState();
                 this.broadcastScore();
                 this.matchLoop();
-            } else {
-                this.waitOpponentToJoin();
+                return ;
             }
+            this.waitOpponentToJoin();
         }
     }
 
     waitOpponentToJoin() {
-        this.waitingId = setTimeout(() => {
-            if (this.state === "waiting") {
+        if (this.state === "ready") {
+            this.waitingId = setTimeout(() => {
                 this.broadcastMessage(JSON.stringify({
                     state: "ok", 
                     data: {
                         event: "matchState",
-                        value: "Wait for Opponent to join match too!!",
+                        value: "Wait for Opponent to join match too long!!",
                     }
                 }))
+                this.stopMatch();
+            }, 15000);
+        }
+    }
+
+    async inviteMembers() {
+        const invitations = [];
+        if (this.state === "waiting") {
+            try {
+                for (let member of this.members) {
+                    invitations.push({
+                        id: uuid(),
+                        type: "joinMatch",
+                        sneder: {id: this.id, username: "", avatar: ""},
+                        receiver: member,
+                        expire: (Math.floor(Date.now() / 1000) + 60),
+                    });
+                }
+                await axios.post("http://notification:9005/send", {
+                    data: invitations,
+                });
+                this.waitMembersToJoin();
+            } catch (error) {
+                console.log(error);
+                this.cancelMatch();
+                this.emit("error");
+            }
+        }
+    }
+
+    waitMembersToJoin() {
+        this.waitingId = setTimeout(() => {
+            if (this.state === "waiting") {
+                if (!this.leftPlayer && !this.rightPlayer) {
+                    this.cancelMatch();
+                    return ;
+                }
                 this.stopMatch();
             }
         }, 15000);
     }
 
+    cancelMatch() {
+        if (this.state === "waiting") {
+            this.state = "canceled";
+            this.emit("done");
+        }
+    }
+
     stopMatch() {
+        this.state = "done";
         this.setWinner();
 
         if (this.playingId) {
@@ -285,15 +324,14 @@ export default class GenericRoom extends EventEmitter {
     }
 
     setWinner() {
-        if ((this.state !== "canceled") && (this.state !== "done")) {
+        if (this.state === "done") {
             if (this.leftPlayer || !this.rightPlayer) {
-                this.winner = this.leftPlayer;
                 this.leftPlayer.setPoints(7);
+                this.winner = this.leftPlayer;
             } else if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints())
                 this.winner = this.rightPlayer.id;
             else if (this.leftPlayer.getPoints() > this.rightPlayer.getPoints())
                 this.winner = this.leftPlayer.id;
-            this.state = "done";
         }
     }
 

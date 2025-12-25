@@ -3,12 +3,11 @@ import User from "./userClass.js";
 
 export default class Invitation {
 
-    constructor(type, sender, receiver, room, timeOut) {
+    constructor(type, sender, receiver, timeOut) {
         this.id             = uuid();
         this.type           = type;
         this.sender         = new User(sender);
         this.receiver       = new User(receiver);
-        this.room           = room;
         this.expireTime     = (timeOut) ? (Math.floor(Date.now() / 1000) + timeOut) : null;
     }
 

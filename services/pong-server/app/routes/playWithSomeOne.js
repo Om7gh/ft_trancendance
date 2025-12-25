@@ -20,7 +20,7 @@ export async function waitForOpponent(room) {
                 resolve();
             } else if (60 < counter) {
                 clearInterval(intervalId);
-                room.stopMatch();
+                room.cancelMatch();
                 const error = new Error("Waiting for opponent too long!!");
                 error.statusCode = 408;
                 reject(error);
@@ -40,7 +40,7 @@ async function playWithSomeOneHandler(request, reply) {
         throw error;
     }
 
-    var room  = alreadyInMatch(this.roomList, user.id);
+    let room = alreadyInMatch(this.roomList, user.id);
         
     if (room && (room.getState() !== "done")) {
         reply.send(JSON.stringify(room.toJSON()));
@@ -48,7 +48,8 @@ async function playWithSomeOneHandler(request, reply) {
     }
     
     if (!this.currentRoom || (this.currentRoom.getState() !== "waiting")) {
-        room = this.createRoom();
+        room = new GenericRoom();
+        this.addRoomToRoomList(room);
         this.currentRoom = room;
     }
 
