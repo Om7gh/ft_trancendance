@@ -64,7 +64,7 @@ export class FriendshipRepository {
 
     getFriendship(user_id: number, friend_id: number): Friendship {
         const params = [user_id, friend_id, friend_id, user_id];
-        const whereClause = 'f.status = 1 AND (f.sender_id = ? AND f.receiver_id = ?) OR (f.sender_id = ? AND f.receiver_id = ?)';
+        const whereClause = 'f.status = 1 AND ((f.sender_id = ? AND f.receiver_id = ?) OR (f.sender_id = ? AND f.receiver_id = ?))';
         const query = this.buildFriendshipQuery(whereClause);
         return this.db.prepare(query).get(...params) as Friendship;
     }

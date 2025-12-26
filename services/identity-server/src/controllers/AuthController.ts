@@ -120,7 +120,7 @@ export default abstract class AuthController {
             return reply.code(400).send({ message: 'user not created' });
         }
         const token = await this.generateNonceToken(user.uid, '1h');
-        const url = `${this.config.HOST}:${this.config.PORT}/auths/confirm?token=${token}`;
+        const url = `${this.config.HOST}:${this.config.PORT}/api/auth/confirm?token=${token}`;
         await this.transporter.sendMail(confirmMailOptions(user.email, url));
         return reply.code(201).send({ message: 'user created' });
     }

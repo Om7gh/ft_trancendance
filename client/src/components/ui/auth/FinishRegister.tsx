@@ -23,7 +23,7 @@ function FinishRegister() {
         formData.append('avatar', file!);
         formData.append('bio', bio);
         try {
-            await axiosApiInstance.post('/auths/complete-profile', formData);
+            await axiosApiInstance.post('/api/auth/complete-profile', formData);
             toast.success('Registration completed successfully');
             navigate('/dashboard');
         } catch (e: any) {

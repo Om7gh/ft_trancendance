@@ -5,13 +5,14 @@ import { useGetFriends } from "@/services/friends";
 import { useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
 
-
 type FieldType = "friend" | "pending" | "blocked"
 
 export default function Friends() {
   const [field, setField] = useState<FieldType>("friend")
 
   const {data, isError, error, isPending} = useGetFriends()
+
+  console.log(data)
 
   const tabBaseClass =
     "group inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm sm:text-base transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50";

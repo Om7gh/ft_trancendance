@@ -23,7 +23,7 @@ const [file, setFile] = useState<File | null>(null);
         formData.append('avatar', file!);
         formData.append('bio', bio);
         try {
-            await axiosApiInstance.post('/auths/complete-profile', formData);
+            await axiosApiInstance.post('/api/auth/complete-profile', formData);
             toast.success('Avatar updated successfully');
         } catch (e: any) {
             toast.error('Registration not completed successfully ' + e.message);

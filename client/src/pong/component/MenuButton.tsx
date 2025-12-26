@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { GiPingPongBat } from 'react-icons/gi';
+import { TbTournament } from "react-icons/tb";
+
 
 import { type ReactNode } from 'react';
 
@@ -39,10 +41,9 @@ export default function MenuButton({ children, destination }: MenuButtonPropsTyp
   return (
     <Link
       to={destination}
-      className="w-full py-4 rounded-xl bg-gradient-to-r from-violet-500 to-orange-500 font-semibold text-black hover:opacity-90 transition-all active:scale-[0.98] shadow-lg shadow-amber-500/25"
+      className="w-full rounded-xl bg-linear-90 from-violet-500 to-neon font-semibold hover:opacity-90 transition-all active:scale-[1.1] shadow-lg shadow-violet-500/25 flex items-center gap-5 px-5 py-5"
     >
-        <GiPingPongBat className="text-5xl text-orange-400 group-hover:text-neon group-hover:rotate-12 transition-all duration-300" />
-        <span className="text-3xl bg-gradient-to-br from-violet-500 to-neon bg-clip-text text-black font-bold group-hover:scale-105 inline-block transition-transform duration-300">
+        <span className="text-2xl bg-gradient-to-br from-violet-500 to-neon bg-clip-text font-bold group-hover:scale-105 transition-transform duration-300 text-slate-950/80 flex items-center gap-5">
           {children}
         </span>
     </Link>
