@@ -44,8 +44,8 @@ async function joinTournamentHandler(request, reply) {
     }
 
     this.currentTournament.addMember(user);
-
-    reply.send(this.currentTournament.toJSON());
+    console.log("+++++++++++++++", this.currentTournament.toJSON(), "++++++++++++++");
+    return reply.send(this.currentTournament.toJSON());
 }
 
 async function leaveTournamentHandler(request, reply) {

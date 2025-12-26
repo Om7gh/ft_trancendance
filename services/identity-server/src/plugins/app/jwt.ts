@@ -93,7 +93,7 @@ async function generateAccessToken(
     return await generateToken({
         sub: uid,
         secret: this.tokenSecrets.accessToken,
-        expiresIn: '15m',
+        expiresIn: '1h',
     });
 }
 
