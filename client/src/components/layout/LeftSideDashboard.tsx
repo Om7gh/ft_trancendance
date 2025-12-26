@@ -4,12 +4,18 @@ import { HiOutlineCog, HiOutlineHome } from 'react-icons/hi';
 import { HiMiniChatBubbleLeft } from 'react-icons/hi2';
 import { PiPingPongFill } from 'react-icons/pi';
 import { GrPowerShutdown } from 'react-icons/gr';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import DropDown from '../ui/utils/DropDown';
 import { useState, type MouseEvent, type ReactNode } from 'react';
 import { useLogout } from '@/services/auth/useLogout';
 
-export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
+export default function LeftSideDashboard({ 
+  isMobile, 
+  onNavigate 
+}: { 
+  isMobile: boolean;
+  onNavigate?: () => void;
+}) {
   const menuItems: {
     name: string;
     path: string;
@@ -50,7 +56,7 @@ export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
   };
 
   return (
-    <aside className="py-6 col-start-1 row-start-2 row-end-3 px-4 flex flex-col h-screen">
+    <aside className="py-6 col-start-1 row-start-2 row-end-3 px-4 flex flex-col h-full">
       <div className="mb-8 flex justify-center">
         <img
           src={Logo}
@@ -68,6 +74,7 @@ export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
                 <div className="flex flex-col">
                   <NavLink
                     to={item.path}
+                    onClick={() => isMobile && onNavigate?.()}
                     className={({ isActive }) =>
                       `px-4 py-3 transition-all duration-200 flex items-center gap-4 justify-between
                       ${
@@ -85,18 +92,16 @@ export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
                               isActive ? 'text-white' : 'text-neon'
                             }`}
                           >
-                            {item.icon}
+                            {item.icon} {" "}
                           </span>
-                          {!isMobile && (
                             <span className="font-medium">{item.name}</span>
-                          )}
                         </div>
 
                         {!isMobile && item.children && (
                           <button
                             aria-expanded={isOpen}
                             onClick={(e) => onToggleClick(e, item.path)}
-                            className="text-xl p-1 text-violet-400 hover:text-slate-200 duration-200 "
+                            className="text-xl p-1 text-violet-900 hover:text-slate-200 duration-200 "
                           >
                             {isOpen ? <FaAngleUp /> : <FaAngleDown />}
                           </button>
@@ -106,7 +111,7 @@ export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
                   </NavLink>
 
                   {item.children && isOpen && (
-                    <DropDown item={item as any} isMobile={isMobile} />
+                    <DropDown item={item as any} isMobile={isMobile} onNavigate={onNavigate} />
                   )}
                 </div>
               </li>
@@ -117,7 +122,7 @@ export default function LeftSideDashboard({ isMobile }: { isMobile: boolean }) {
 
       <button
         className={`mt-auto ${
-          isMobile ? 'p-3' : 'px-4 py-3'
+          isMobile ? 'p-3 text-slate-50' : 'px-4 py-3'
         } flex items-center gap-2 border-l-5 border-r-5 border-l-violet-500 border-r-neon bg-slate-400/10`}
         onClick={() => mutateLogout.mutate()}
       >

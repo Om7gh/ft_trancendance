@@ -30,7 +30,7 @@ export default class Round extends EventEmitter {
 
         if ((this.state === "waiting") && this.participants) {
             for (let i = 0; i < this.participants.length; i++) {
-                if (!(i % 2)){
+                if ((i % 2) === 0) {
                     currentRoom = new GenericRoom();
                     currentRoom.type = "tournament";
                     this.rooms.push(currentRoom);

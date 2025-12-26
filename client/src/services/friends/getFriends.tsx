@@ -4,7 +4,7 @@ import type { ApiResponse, Friend } from "@/types/friendTypes";
 
 async function getFriends() {
   try {
-    const { data } = await axiosApiInstance.get<ApiResponse<Friend[]>>("/friends/list");
+    const { data } = await axiosApiInstance.get<ApiResponse<Friend[]>>("/friends");
     return data;
   } catch (e) {
     throw e;

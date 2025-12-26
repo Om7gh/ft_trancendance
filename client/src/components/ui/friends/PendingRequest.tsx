@@ -54,7 +54,7 @@ function PendingRequest() {
     <div className="space-y-3">
       {requests.map((request: Friend) => (
         <div
-          key={request.uid}
+          key={request.id}
           className="flex items-center gap-4 p-4 bg-slate-900/30 hover:bg-slate-900/50 border border-violet-500/20 rounded-lg transition-all duration-200"
         >
           <img
@@ -72,24 +72,24 @@ function PendingRequest() {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => handleApprove(request.uid)}
-              disabled={processingUid === request.uid}
+              onClick={() => handleApprove(request.id)}
+              disabled={processingUid === request.id}
               className="p-2 text-teal-400 hover:text-teal-300 hover:bg-teal-500/10 rounded-lg transition-colors disabled:opacity-50"
               title="Accept"
             >
-              {processingUid === request.uid && approve.isPending ? (
+              {processingUid === request.id && approve.isPending ? (
                 <BiLoaderAlt className="text-xl animate-spin" />
               ) : (
                 <FaUserCheck className="text-xl" />
               )}
             </button>
             <button
-              onClick={() => handleReject(request.uid)}
-              disabled={processingUid === request.uid}
+              onClick={() => handleReject(request.id)}
+              disabled={processingUid === request.id}
               className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors disabled:opacity-50"
               title="Reject"
             >
-              {processingUid === request.uid && reject.isPending ? (
+              {processingUid === request.id && reject.isPending ? (
                 <BiLoaderAlt className="text-xl animate-spin" />
               ) : (
                 <FaUserTimes className="text-xl" />
