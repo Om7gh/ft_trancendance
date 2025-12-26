@@ -346,7 +346,7 @@ export default class GenericRoom extends EventEmitter {
             state : this.state,
             ...(this.leftPlayer && {leftPlayer : this.leftPlayer.toJSON()}),
             ...(this.rightPlayer && {rightPlayer : this.rightPlayer.toJSON()}),
-            ...(this.winner && {winner : this.winner.toJSON()}),
+            ...(this.winner && {winner : this.winner}),
         })
     }
 }
