@@ -11,48 +11,60 @@ import api from '../clientHttpService';
 
 export default abstract class AuthService {
     static async register(registerForm: RegisterForm) {
-        const res = await api.post('/api/auth/signup', registerForm);
-        return res.data;
+        const { data } = await api.post('/api/auth/signup', registerForm);
+        return data;
     }
 
     static async login(loginForm: LoginForm) {
-        const res = await api.post('/api/auth/login', loginForm);
-        return res.data;
+        const { data } = await api.post('/api/auth/login', loginForm);
+        return data;
     }
 
     static async logout(loginForm: LoginForm) {
-        const res = await api.post('/api/auth/logout', loginForm);
-        console.log('logged out ?', res.data)
-        return res.data;
+        const { data } = await api.post('/api/auth/logout', loginForm);
+        return data;
     }
 
     static async checUsername(username: Username) {
-        const res = await api.post('/api/auth/check-username', username);
-        return res.data;
+        const { data } = await api.post('/api/auth/check-username', username);
+        return data;
     }
 
     static async setUsername(username: Username) {
-        const res = await api.post('/api/auth/set-username', username);
-        return res.data;
+        const { data } = await api.post('/api/auth/set-username', username);
+        return data;
     }
 
     static async completeProfile(profileData: ProfileData) {
-        const res = await api.post('/api/auth/complete-profile', profileData);
-        return res.data;
+        const { data } = await api.post(
+            '/api/auth/complete-profile',
+            profileData
+        );
+        return data;
     }
 
     static async verifyLogin(code: TwoFACode) {
-        const res = await api.post('/api/auth/2fa/verify-login', code);
-        return res.data;
+        const { data } = await api.post('/api/auth/2fa/verify-login', code);
+        return data;
     }
 
     static async forgotPassword(email: Email) {
-        const res = await api.post('/api/auth/forgot-password', email);
-        return res.data;
+        const { data } = await api.post('/api/auth/forgot-password', email);
+        return data;
     }
 
     static async resetPassword(password: PasswordData) {
-        const res = await api.post('/api/auth/reset-password', password);
-        return res.data;
+        const { data } = await api.post('/api/auth/reset-password', password);
+        return data;
+    }
+
+    static async userInfo() {
+        const { data } = await api.get('/api/auth/userinfo');
+        return data;
+    }
+
+    static async getProfile(username: string) {
+        const { data } = await api.get(`/api/users/${username}`);
+        return data;
     }
 }

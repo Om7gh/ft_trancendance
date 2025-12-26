@@ -1,5 +1,5 @@
 import { GlobalContext } from '@/App';
-import api from '@/services/clientHttpService';
+import AuthService from '@/services/auth/auth.service';
 import { useContext, useEffect, useState, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -11,9 +11,10 @@ const ProtectDashboard = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const verify = async () => {
       try {
-        const data = await api.get('/api/auth/userinfo');
+        const data = await AuthService.userInfo()
+        console.log(data)
         setAuthenticated(true);
-        setUser(data.data);
+        setUser(data);
       } catch (err) {
           setAuthenticated(false);
           setUser(null);

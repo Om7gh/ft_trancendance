@@ -1,21 +1,11 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery } from '@tanstack/react-query';
+import AuthService from '../auth/auth.service';
 
-
-async function getProfileData (username: string) {
-        const response = await fetch(`http://localhost:8080/users/${username}`, {
-            method: "GET",
-        })
-        if (!response.ok)
-            throw await response.json()
-        return await response.json()
-}
-
-function useGetProfile (username: string) {
+function useGetProfile(username: string) {
     return useQuery({
-        queryKey:["profile"],
-        queryFn: () => getProfileData(username),
-
-    })
+        queryKey: ['profile'],
+        queryFn: () => AuthService.getProfile(username),
+    });
 }
 
-export default useGetProfile
+export default useGetProfile;

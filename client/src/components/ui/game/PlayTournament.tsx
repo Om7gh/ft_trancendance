@@ -3,8 +3,7 @@ import type { TournamentPlayer } from '@/types/gameTypes';
 import FirstRound from './FirstRound';
 import DemiFinal from './DemiFinal';
 import Final from './Final';
-import axios from 'axios';
-import axiosApiInstance from '@/axiosApiInstance';
+import api from '@/services/clientHttpService';
 
 const mockPlayers = [
   {
@@ -43,7 +42,7 @@ function PlayTournament() {
     let isMounted = true;
     async function fetchTournamentState() {
       try {
-        const response = await axiosApiInstance.get("/pongGame/remote/tournament");
+        const response = await api.get("/pongGame/remote/tournament");
         if (isMounted) {
           setData(response.data);
           setError("");

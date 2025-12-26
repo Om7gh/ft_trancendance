@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { validateMatch } from "../utils/utils.ts";
-import axiosApiInstance from "@/axiosApiInstance.ts";
 import type { MatchType } from "../types/playWithSomeOne.ts";
+import api from "@/services/clientHttpService.ts";
 
 
 export default function useFetchMatch(
@@ -15,7 +15,7 @@ export default function useFetchMatch(
 
         (async function fetchMatch() {
             try {
-                const response = await axiosApiInstance.get(url);
+                const response = await api.get(url);
                 if (!ignored) {
                     if (validateMatch(response.data))
                         setMatch(response.data);

@@ -1,14 +1,14 @@
 import { useEffect } from "react";
-import axiosApiInstance from "@/axiosApiInstance";
+import api from "@/services/clientHttpService";
 
 export default function useFetchFriends(setFriends: ((value: []) => void), setError: (value: string) => void) {
     useEffect(() => {
         let ignored = false;
         (async function fetchFriends() {
             try {
-                const response =  await axiosApiInstance("/friends/list");
+                const response =  await api("/friends");
                 if (!ignored) {
-                    setFriends(response.data); 
+                    setFriends(response.data);
                 }
             } catch (err: unknown) {
                 setError("Fail to fetch friends!!");

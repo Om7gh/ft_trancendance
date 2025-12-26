@@ -1,22 +1,12 @@
-import axiosApiInstance from "@/axiosApiInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { ApiResponse } from "@/types/friendTypes";
+import FriendsService from "../auth/friends.service";
 
-async function approveFriendRequest(uid: string) {
-  try {
-    console.log(uid)
-    const { data } = await axiosApiInstance.put<ApiResponse<null>>(`/friends/requests/${uid}/approve`);
-    return data;
-  } catch (e) {
-    throw e;
-  }
-}
 
 const useApproveFriendRequest = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: approveFriendRequest,
+    mutationFn: FriendsService.accept,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getReceivedRequests"] });
       queryClient.invalidateQueries({ queryKey: ["getFriends"] });
