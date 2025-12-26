@@ -326,7 +326,7 @@ export default class GenericRoom extends EventEmitter {
 
     setWinner() {
         if (this.state === "done") {
-            if (this.leftPlayer || !this.rightPlayer) {
+            if (this.leftPlayer && !this.rightPlayer) {
                 this.leftPlayer.setPoints(7);
                 this.winner = this.leftPlayer;
             } else if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints())

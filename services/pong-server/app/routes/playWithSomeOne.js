@@ -48,9 +48,8 @@ async function playWithSomeOneHandler(request, reply) {
     }
     
     if (!this.currentRoom || (this.currentRoom.getState() !== "waiting")) {
-        room = new GenericRoom();
-        this.addRoomToRoomList(room);
-        this.currentRoom = room;
+        this.currentRoom = new GenericRoom();
+        this.addRoomToRoomList(this.currentRoom);
     }
 
     room = this.currentRoom;

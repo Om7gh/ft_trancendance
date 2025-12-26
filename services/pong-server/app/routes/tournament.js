@@ -9,7 +9,7 @@ export function alreadyInTournament(tournamentList, userId) {
     return (null);
 }
 
-async function tournamentHandler(request, reply) {
+async function joinTournamentHandler(request, reply) {
     const user  = request.user;
     const state = this.validateUser(user);
 
@@ -39,6 +39,7 @@ async function tournamentHandler(request, reply) {
         tournament.on("newRoom", (room) => {
             this.addRoomToRoomList(room);
         })
+
         this.currentTournament = tournament;
     }
 
@@ -47,14 +48,43 @@ async function tournamentHandler(request, reply) {
     reply.send(this.currentTournament.toJSON());
 }
 
+async function leaveTournamentHandler(request, reply) {
+    const user  = request.user;
+    const state = this.validateUser(user);
+
+    if (!state) {
+        const error = new Error("Invalid user passed to handler!!")
+        error.statusCode = 400;
+        throw error;
+    }
+
+    let tournament  = alreadyInTournament(this.tournamentList, user.id);
+    
+    if (!tournament) {
+        const error = new Error("Currently you are not belong to any tournament!!")
+        error.statusCode = 400;
+        throw error;
+    }
+
+    tournament.removeMember(user.id);
+
+    return (reply.send("Leave it successfully"));
+}
+
 export default async function tournament(fastify, options) {
 
     fastify.decorate("currentTournament", null);
     fastify.decorate("tournamentList", new Map());
 
     fastify.route({
-        url     : '/pongGame/remote/tournament',
+        url     : '/pongGame/remote/tournament/join',
         method  : 'GET',
-        handler : tournamentHandler,
+        handler : joinTournamentHandler,
+    })
+
+    fastify.route({
+        url     : '/pongGame/remote/tournament/leave',
+        method  : 'GET',
+        handler : leaveTournamentHandler,
     })
 }

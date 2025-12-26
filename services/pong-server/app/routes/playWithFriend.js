@@ -1,6 +1,33 @@
 import GenericRoom from "../classes/genericRoom.js";
 import inviteQuerySchema from "../schemas/inviteQuerySchema.js";
+import acceptQuerySchema from "../schemas/acceptQuerySchema.js";
 import { alreadyInMatch }  from "./playWithSomeOne.js";
+
+
+async function acceptHandler(request, reply) {
+    const user  = request.user;
+    const state = this.validateUser(user);
+
+    if (!state) {
+        const error = new Error("Invalid user passed to handler!!")
+        error.statusCode = 400;
+        throw error
+    }
+
+    const rid = request.query.rid;
+
+    const room = this.roomList.get(rid);
+
+    if (!room || (room.getState() !== "Waiting") || !room.isMemeber(user.id)) {
+        const error = new Error("Either you are not invited, or invitation is gone");
+        error.statusCode = 400;
+        throw error
+    }
+
+    await room.inviteMembers();
+
+    return reply.send("ok");
+}
 
 async function inviteHandler(request, reply) {
     const user  = request.user;
@@ -50,12 +77,19 @@ async function inviteHandler(request, reply) {
 }
 
 
-export default async function inviteFriendToMatch(fastify, options) {
+export default async function playWithFriend(fastify, options) {
 
     fastify.route({
         url     : '/pongGame/remote/inviteFriend',
         method  : 'GET',
         schema  : inviteQuerySchema,
         handler : inviteHandler,
+    })
+
+    fastify.route({
+        url     : '/pongGame/remote/acceptInvitation',
+        method  : 'GET',
+        schema  : acceptQuerySchema,
+        handler : acceptHandler,
     })
 }

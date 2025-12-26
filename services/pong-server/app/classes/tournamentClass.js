@@ -36,8 +36,8 @@ export default class Tournament extends EventEmitter {
         }
     }
 
-    removePlayer(userId) {
-        if (this.state === "waiting") {
+    removeMember(userId) {
+        if (this.isMember(userId)) {
             this.participants = this.participants.filter((item) => item.id !== userId);
         }
     }
@@ -89,14 +89,6 @@ export default class Tournament extends EventEmitter {
     }
 
     toJSON() {
-        
-        if (this.state === "waiting") {
-            return ({
-                id: this.id,
-                state: this.state,
-                users: this.participants,
-            })
-        }
 
         let rounds = [];
         
@@ -107,8 +99,8 @@ export default class Tournament extends EventEmitter {
         return ({
             id: this.id,
             state: this.state,
-            ...(this.winner && {winner: this.winner.toJSON()}),
-            rounds: rounds,
+            ...((this.state === "waiting") && {participants: this.participants}),
+            ...((this.state !== "waiting") && {rounds: rounds}),
         })
     }
 }
