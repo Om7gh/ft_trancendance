@@ -21,23 +21,60 @@ export class FriendshipController {
             (friendship): Friend => ({
                 id:
                     friendship.sender_id == user.id
-                        ? friendship.sender_uid
-                        : friendship.receiver_uid,
+                        ? friendship.receiver_uid
+                        : friendship.sender_uid,
                 username:
                     friendship.sender_id == user.id
-                        ? friendship.sender_username
-                        : friendship.receiver_username,
+                        ? friendship.receiver_username
+                        : friendship.sender_username,
                 fullname:
                     friendship.sender_id == user.id
-                        ? friendship.sender_fullname
-                        : friendship.receiver_fullname,
+                        ? friendship.receiver_fullname
+                        : friendship.sender_fullname,
                 avatar:
                     friendship.sender_id == user.id
-                        ? friendship.sender_avatar
-                        : friendship.receiver_avatar,
+                        ? friendship.receiver_avatar
+                        : friendship.sender_avatar,
                 friends_since: friendship.updated_at,
             })
         );
+        reply.send(result);
+    }
+
+    static async getFriend(request: FastifyRequest, reply: FastifyReply) {
+        const app: FastifyInstance = request.server;
+        const user: User = request.user;
+        const { uid } = request.params as { uid: string };
+        
+        const target = app.usersRepository.findByUID(uid);
+        if (!target) {
+            return reply.notFound(UserController.ERR_USER_NOT_FOUND);
+        }
+        
+        const friendship: Friendship = app.friendshipRepository.getFriendship(user.id, target.id);
+        if (!friendship) {
+            return reply.notFound(FriendshipController.ERR_NOT_A_FRIEND);
+        }
+        
+        const result: Friend = {
+            id:
+                friendship.sender_id == user.id
+                    ? friendship.receiver_uid
+                    : friendship.sender_uid,
+            username:
+                friendship.sender_id == user.id
+                    ? friendship.receiver_username
+                    : friendship.sender_username,
+            fullname:
+                friendship.sender_id == user.id
+                    ? friendship.receiver_fullname
+                    : friendship.sender_fullname,
+            avatar:
+                friendship.sender_id == user.id
+                    ? friendship.receiver_avatar
+                    : friendship.sender_avatar,
+            friends_since: friendship.updated_at,
+        };
         reply.send(result);
     }
 
