@@ -1,9 +1,9 @@
-import axiosApiInstance from "@/axiosApiInstance"
 import { useQuery } from "@tanstack/react-query"
+import api from "../clientHttpService";
 
 async function getChessHistory(username: string) {
     try {
-        const response = await axiosApiInstance.get(`/game/chess/history?username=${username}`)
+        const response = await api.get(`/game/chess/history?username=${username}`)
         return response.data;
     } catch (e) {
         throw e;

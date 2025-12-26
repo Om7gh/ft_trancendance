@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
 import Modal from './Modal';
-import axiosApiInstance from '@/axiosApiInstance';
 import Notify, { type NotificationType } from '../ui/utils/Notify';
+import api from '@/services/clientHttpService';
 
 function Notification() {
   const [openNotification, setOpenNotification] = useState(false);
@@ -14,7 +14,7 @@ function Notification() {
     let isMounted = true;
     async function fetchNotification() {
       try {
-        const response = await axiosApiInstance.get("/fetch");
+        const response = await api.get("/fetch");
         if (isMounted) {
           setData(response.data);
           setError("");
