@@ -89,7 +89,10 @@ export default abstract class AuthController {
             }
             const [accessToken, refreshToken] =
                 await AuthController.issueTokens(this, user);
-            reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken).clearNonceToken();
+            reply
+                .sendAccessToken(accessToken)
+                .sendRefreshToken(refreshToken)
+                .clearNonceToken();
             return reply.redirect('/dashboard');
         } catch (err: any) {
             return reply.badRequest(err.message);
@@ -197,7 +200,10 @@ export default abstract class AuthController {
             this.usersRepository.update(user.id, {
                 token_id: 'user-logged-out',
             });
-            return reply.clearAccessToken().clearRefreshToken();
+            return reply
+                .clearAccessToken()
+                .clearRefreshToken()
+                .send({ success: true });
         } catch (err: any) {
             return reply.badRequest(err);
         }
