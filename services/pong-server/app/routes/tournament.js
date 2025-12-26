@@ -33,7 +33,7 @@ async function tournamentHandler(request, reply) {
 
         this.currentTournament.on("done", () => {
             console.log("remove the tournament with Id: ", this.currentTournament.id);
-            // this.tournamentList.delete(this.currentTournament.id);
+            this.tournamentList.delete(this.currentTournament.id);
         });
         
         this.currentTournament.on("newRoom", (room) => {

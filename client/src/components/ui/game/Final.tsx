@@ -7,7 +7,7 @@ function DemiFinal({ players }: Tournaments) {
   for (let i = 0; i < players.length; i++)
     if (i === players.length - 1) final.push(players[i]);
   return (
-    <div className="flex flex-col gap-5 relative">
+    <div className="flex flex-col gap-5 relative row-start-3 row-end-4">
       <GiChessKing className="absolute text-4xl text-amber-500 -top-5 -left-5 -rotate-45" />
       <Participant player={final[0]} />
     </div>  

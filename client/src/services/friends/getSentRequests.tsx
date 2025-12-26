@@ -5,7 +5,7 @@ import type { ApiResponse, Friend } from "@/types/friendTypes";
 async function getSentRequests() {
   try {
     const { data } = await axiosApiInstance.get<ApiResponse<Friend[]>>("/friends/requests/sent");
-    return data.data;
+    return data;
   } catch (e) {
     throw e;
   }

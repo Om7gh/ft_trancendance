@@ -1,7 +1,6 @@
 import GenericRoom from "../classes/genericRoom.js";
-import Invitation from "../classes/invitationClass.js";
 import inviteQuerySchema from "../schemas/inviteQuerySchema.js";
-import { alreadyInMatch, waitForOpponent }  from "./playWithSomeOne.js";
+import { alreadyInMatch }  from "./playWithSomeOne.js";
 
 async function inviteHandler(request, reply) {
     const user  = request.user;
@@ -30,26 +29,24 @@ async function inviteHandler(request, reply) {
     }
     
     room = new GenericRoom();
-    room.addPlayer(user);
-    this.roomList.set(room.id, room);
-    room.on("done", () => {
-        if (room.getState() === "done") {
-            this.db.addMatche(room.toJSON());
-        }
-        this.roomList.delete(room.id);
-    })
-    
-    const invitation = new Invitation("InviteToMatch", user, {id: fid, username: "", avatar: ""}, room);
-    
-    this.invitationList.set(invitation.id, invitation);
+    room.addMember(user.id);
+    room.addMember(fid);
+
+    this.addRoomToRoomList(room);
 
     await this.axios.post("http://notification:9005/send",
-        {data: [invitation.toJSON(),]}
+        {data: [{
+            id: room.id,
+            type: "inviteToMatch",
+            sender: {id: user.id, username: user.username, avatar: user.avatar},
+            receiver: {id: fid},
+            expire: (Math.floor(Date.now() / 1000) + 60),
+        },]}
     );
-    
-    await waitForOpponent(room)
-    
-    reply.send(JSON.stringify(room.toJSON()));
+
+    room.waitMembersToJoin();
+
+    return (reply.send("Invited!!"));
 }
 
 

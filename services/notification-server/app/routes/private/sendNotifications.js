@@ -5,6 +5,7 @@ async function sendNotificationHandler(request, reply) {
 
     if (notifications) {
         for (let item of notifications) {
+            console.log("+++++++++", item, "+++++++");
             let receiver = item.receiver;
             if (receiver) {
                 this.db.addNotification(item);

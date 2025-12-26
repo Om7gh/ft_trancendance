@@ -56,6 +56,7 @@ export class UserController {
             }
 
             const users = this.usersRepository.searchUsers(query, limit);
+            console.log(users)
             return reply.send(users);
         } catch (err: any) {
             console.error(err);

@@ -4,6 +4,7 @@ import FirstRound from './FirstRound';
 import DemiFinal from './DemiFinal';
 import Final from './Final';
 import axios from 'axios';
+import axiosApiInstance from '@/axiosApiInstance';
 
 const mockPlayers = [
   {
@@ -34,18 +35,38 @@ const mockPlayers = [
 
 function PlayTournament() {
   const [players, setPlayers] = useState<TournamentPlayer[]>(mockPlayers);
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    (async function fetchTournament() {
-      console.log("********Hello world**********");
-      const tournamnet = await axios({
-        url: "http://localhost:8080/pongGame/remote/tournament",
-        method: "GET",
-        withCredentials: true,
-      });
-      console.log("++++++++++", tournamnet, "++++++++++++++");
-    })();
+    let isMounted = true;
+    async function fetchTournamentState() {
+      try {
+        const response = await axiosApiInstance.get("/pongGame/remote/tournament");
+        if (isMounted) {
+          setData(response.data);
+          setError("");
+          setLoading(false);
+        }
+      } catch (e: any) {
+        if (isMounted) {
+          setError(e.message || "Failed to fetch notifications");
+          setLoading(false);
+        }
+      }
+    }
+    fetchTournamentState();
+    const intervalId = setInterval(() => {
+      fetchTournamentState();
+    }, 10000);
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, [])
+
+  console.log(data)
 
   return (
     <div className="grid place-items-center w-full h-1/2 overflow-auto">
@@ -54,7 +75,7 @@ function PlayTournament() {
         {players[0].round >= 2 && <p>Demi Final</p>}
         {players[0].round == 3 && <p>Winner</p>}
       </div>
-      <div className="grid grid-cols-3 place-items-center w-[1200px] overflow-auto">
+      <div className="grid grid-cols-1 grid-rows-3 place-items-center w-[1200px] overflow-auto gap-10">
         {players[0].round >= 1 && <FirstRound players={players} />}
         {players[0].round >= 2 && <DemiFinal players={players} />}
         {players[0].round >= 3 && <Final players={players} />}

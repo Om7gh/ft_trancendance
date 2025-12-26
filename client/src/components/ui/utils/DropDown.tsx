@@ -8,7 +8,15 @@ interface Item {
   children?: Item[] | null;
 }
 
-function DropDown({ item, isMobile }: { item: Item; isMobile: boolean }) {
+function DropDown({ 
+  item, 
+  isMobile,
+  onNavigate
+}: { 
+  item: Item; 
+  isMobile: boolean;
+  onNavigate?: () => void;
+}) {
   if (!item.children || item.children.length === 0) return null;
 
   return (
@@ -17,6 +25,7 @@ function DropDown({ item, isMobile }: { item: Item; isMobile: boolean }) {
         <li key={child.path}>
           <NavLink
             to={child.path}
+            onClick={() => isMobile && onNavigate?.()}
             className={({ isActive }) =>
               `px-3 py-2 transition-all duration-200 flex items-center gap-3
               ${

@@ -1,15 +1,43 @@
 import { type JSX } from 'react';
 import { Profile, SearchBar } from '../ui';
 import Notification from './Notification';
+import { HiMenuAlt3, HiX } from 'react-icons/hi';
 
-export default function DashboardHeader(): JSX.Element {
+interface DashboardHeaderProps {
+  isMobile?: boolean;
+  toggleSidebar?: () => void;
+  isSidebarOpen?: boolean;
+}
+
+export default function DashboardHeader({ 
+  isMobile = false, 
+  toggleSidebar,
+  isSidebarOpen = false 
+}: DashboardHeaderProps): JSX.Element {
   return (
-    <header className="flex justify-end gap-5 items-center">
-      <div className="max-w-96">
-        <SearchBar />
+    <header className="flex justify-between gap-5 items-center">
+      {/* Hamburger Menu for Mobile */}
+      {isMobile && toggleSidebar && (
+        <button
+          onClick={toggleSidebar}
+          className="text-2xl text-slate-300 hover:text-neon transition-colors p-2"
+          aria-label="Toggle sidebar"
+        >
+          {isSidebarOpen ? <HiX /> : <HiMenuAlt3 />}
+        </button>
+      )}
+
+      {/* Spacer for desktop */}
+      {!isMobile && <div />}
+
+      {/* Right side items */}
+      <div className="flex gap-5 items-center">
+        <div className="max-w-96">
+          <SearchBar />
+        </div>
+        <Notification />
+        <Profile />
       </div>
-      <Notification />
-      <Profile />
     </header>
   );
 }
