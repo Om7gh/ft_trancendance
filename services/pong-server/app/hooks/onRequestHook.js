@@ -8,7 +8,7 @@ export default fp(async function onRequestHook(fastify, options) {
             
             if (!cookie) 
                 throw new Error("No cookie");
-            const response = await this.axios.get("http://identity:4000/api/auth/userinfo", {
+            const response = await this.axios.get("http://identity:4000/auth/userinfo", {
                 headers: {
                     Cookie: cookie,
                 }

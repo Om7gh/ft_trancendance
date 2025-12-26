@@ -21,7 +21,7 @@ function CreateUsername({ next }: { next: () => void }) {
       try {
         setLoading(true);
         setError('');
-        const data = await fetch('http://localhost:8080/api/auth/check-username', {
+        const data = await fetch('http://e2r4p13.1337.ma:8080/api/auth/check-username', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ username }),

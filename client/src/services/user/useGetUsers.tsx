@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 
 async function getUsers (searchQuery: string) {
-        const response = await fetch(`http://localhost:8080/users/search?q=${searchQuery}`, {
+        const response = await fetch(`http://e2r4p13.1337.ma:8080/users/search?q=${searchQuery}`, {
             method: "GET",
         })
         if (!response.ok)

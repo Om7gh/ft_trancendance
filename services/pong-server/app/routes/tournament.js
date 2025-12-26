@@ -27,25 +27,24 @@ async function tournamentHandler(request, reply) {
     }
 
     if (!this.currentTournament || (this.currentTournament.state !== "waiting")) {
-        this.currentTournament = new Tournament();
+        let tournament = new Tournament();
 
-        this.tournamentList.set(this.currentTournament.id, this.currentTournament);
+        this.tournamentList.set(tournament.id, tournament);
 
-        this.currentTournament.on("done", () => {
-            console.log("remove the tournament with Id: ", this.currentTournament.id);
-            this.tournamentList.delete(this.currentTournament.id);
+        tournament.on("done", () => {
+            console.log("remove the tournament with Id: ", tournament.id);
+            this.tournamentList.delete(tournament.id);
         });
         
-        this.currentTournament.on("newRoom", (room) => {
+        tournament.on("newRoom", (room) => {
             this.addRoomToRoomList(room);
         })
+        this.currentTournament = tournament;
     }
 
-    tournament = this.currentTournament;
+    this.currentTournament.addMember(user);
 
-    tournament.addMember(user);
-
-    reply.send(tournament.toJSON());
+    reply.send(this.currentTournament.toJSON());
 }
 
 export default async function tournament(fastify, options) {
