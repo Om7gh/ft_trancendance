@@ -1,22 +1,12 @@
-import axiosApiInstance from "@/axiosApiInstance";
-import { useQuery } from "@tanstack/react-query";
-import type { ApiResponse, Friend } from "@/types/friendTypes";
-
-async function getFriends() {
-  try {
-    const { data } = await axiosApiInstance.get<ApiResponse<Friend[]>>("/friends");
-    return data;
-  } catch (e) {
-    throw e;
-  }
-}
+import { useQuery } from '@tanstack/react-query';
+import FriendsService from '../auth/friends.service';
 
 const useGetFriends = () => {
-  return useQuery({
-    queryKey: ["getFriend"],
-    queryFn: getFriends,
-  });
-  // {data, error, isSuccess, isError}
+    return useQuery({
+        queryKey: ['getFriend'],
+        queryFn: FriendsService.getFriends,
+    });
+    // {data, error, isSuccess, isError}
 };
 
 export default useGetFriends;

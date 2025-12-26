@@ -1,13 +1,13 @@
 import { GlobalContext } from '@/App';
-import axiosApiInstance from '@/axiosApiInstance';
-import React, { useContext, useState } from 'react'
+import AuthService from '@/services/auth/auth.service';
+import React, { useContext, useState } from 'react';
 import { toast } from 'react-toastify';
 
 function UpdateAvatarBio() {
-const [file, setFile] = useState<File | null>(null);
+    const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [bio, setBio] = useState('');
-    const {user} = useContext(GlobalContext)
+    const { user } = useContext(GlobalContext);
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const selected = e.target.files?.[0];
         if (selected) {
@@ -18,12 +18,8 @@ const [file, setFile] = useState<File | null>(null);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('avatar', file!);
-        formData.append('bio', bio);
         try {
-            await axiosApiInstance.post('/api/auth/complete-profile', formData);
+            await AuthService.completeProfile({ avatar: file!, bio });
             toast.success('Avatar updated successfully');
         } catch (e: any) {
             toast.error('Registration not completed successfully ' + e.message);
@@ -36,7 +32,7 @@ const [file, setFile] = useState<File | null>(null);
                 Update Avatar & Bio
             </h2>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-             {(preview || user?.avatar) && (
+                {(preview || user?.avatar) && (
                     <img
                         src={preview ?? user?.avatar}
                         alt="Avatar preview"
@@ -99,4 +95,4 @@ const [file, setFile] = useState<File | null>(null);
     );
 }
 
-export default UpdateAvatarBio
+export default UpdateAvatarBio;

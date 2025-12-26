@@ -8,7 +8,7 @@ export default function useFetchFriends(setFriends: ((value: []) => void), setEr
             try {
                 const response =  await axiosApiInstance("/friends/list");
                 if (!ignored) {
-                    setFriends(response.data); 
+                    setFriends(response.data);
                 }
             } catch (err: unknown) {
                 setError("Fail to fetch friends!!");

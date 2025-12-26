@@ -1,4 +1,4 @@
-import axiosApiInstance from '@/axiosApiInstance';
+import AuthService from '@/services/auth/auth.service';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -18,12 +18,8 @@ function FinishRegister() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('avatar', file!);
-        formData.append('bio', bio);
         try {
-            await axiosApiInstance.post('/api/auth/complete-profile', formData);
+            await AuthService.completeProfile({ avatar: file!, bio });
             toast.success('Registration completed successfully');
             navigate('/dashboard');
         } catch (e: any) {

@@ -1,25 +1,15 @@
-import axiosApiInstance from "@/axiosApiInstance";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { ApiResponse } from "@/types/friendTypes";
-
-async function unfriend(uid: string) {
-  try {
-    const { data } = await axiosApiInstance.delete<ApiResponse<null>>(`/friends/${uid}`);
-    return data;
-  } catch (e) {
-    throw e;
-  }
-}
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import FriendsService from '../auth/friends.service';
 
 const useUnfriend = () => {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: unfriend,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["getFriends"] });
-    },
-  });
+    return useMutation({
+        mutationFn: FriendsService.unfriend,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['getFriends'] });
+        },
+    });
 };
 
 export default useUnfriend;

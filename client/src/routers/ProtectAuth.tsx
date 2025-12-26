@@ -1,5 +1,5 @@
 import { GlobalContext } from '@/App';
-import axiosApiInstance from '@/axiosApiInstance';
+// import AuthService from '@/services/auth/auth.service';
 import { useContext, useEffect, useState, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -11,9 +11,9 @@ const ProtectAuth = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const verify = async () => {
       try {
-        await axiosApiInstance.get('/api/auth/userinfo');
+        await AuthService.userInfo()
         setAuthenticated(true);
-      } catch (err) {      
+      } catch (err) {
           setAuthenticated(false);
           setUser(null);
       }
