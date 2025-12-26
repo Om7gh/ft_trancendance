@@ -1,3 +1,4 @@
+import AuthService from '@/services/auth/auth.service';
 import useCreateUsername from '@/services/auth/useCreateUsername';
 import { useEffect, useState } from 'react';
 import { FaArrowRightLong } from 'react-icons/fa6';
@@ -21,13 +22,7 @@ function CreateUsername({ next }: { next: () => void }) {
       try {
         setLoading(true);
         setError('');
-        const data = await fetch('http://e2r4p13.1337.ma:8080/api/auth/check-username', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ username }),
-          credentials: 'include',
-        });
-        if (!data.ok) throw await data.json();
+        await AuthService.checUsername({username})
         setIsValid(true);
       } catch (err) {
         setIsValid(false);

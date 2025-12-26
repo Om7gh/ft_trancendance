@@ -64,17 +64,14 @@ function PlayTournament() {
     //   clearInterval(intervalId);
     // };
   }, [])
-
-  console.log(data)
+  
+  console.log("users : ",data?.users)
+  console.log("id", data?.id)
+  console.log(data?.state)
 
   return (
-    <div className="grid place-items-center w-full h-1/2 overflow-auto">
-      <div className="grid grid-cols-3 text-center text-slate-300 text-2xl w-[1200px] overflow-auto ">
-        {players[0].round >= 1 && <p>Round 1</p>}
-        {players[0].round >= 2 && <p>Demi Final</p>}
-        {players[0].round == 3 && <p>Winner</p>}
-      </div>
-      <div className="grid grid-cols-1 grid-rows-3 place-items-center w-[1200px] overflow-auto gap-10">
+    <div className="flex items-center justify-center w-full h-1/2 overflow-auto">
+      <div className="grid grid-cols-1 grid-rows-3 place-items-center  overflow-auto gap-10">
         {players[0].round >= 1 && <FirstRound players={players} />}
         {players[0].round >= 2 && <DemiFinal players={players} />}
         {players[0].round >= 3 && <Final players={players} />}
