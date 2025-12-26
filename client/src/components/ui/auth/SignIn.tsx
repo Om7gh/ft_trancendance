@@ -173,13 +173,13 @@ export default function SignIn() {
 
         <div className="flex items-center justify-evenly">
           <a
-            href="/oauth2/google"
+            href="/api/oauth2/google"
             className="bg-linear-180 from-violet-900 to-slate-950 p-2 shadow-lg shadow-violet-900"
           >
             <FcGoogle className="w-12 h-12" />
           </a>
           <a
-            href="/oauth2/discord"
+            href="/api/oauth2/discord"
             className="bg-linear-180 from-violet-900 to-slate-950 p-2 shadow-lg shadow-violet-900"
           >
             <AiOutlineDiscord className="w-12 h-12 text-violet-500" />
