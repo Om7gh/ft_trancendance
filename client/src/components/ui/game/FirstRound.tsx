@@ -7,8 +7,7 @@ function FirstRound({ players }: Tournaments) {
       {players.map((player: TournamentPlayer, i: number) => (
         <>
           <Participant player={player} key={i} index={i} />
-          {i % 2 === 0 && <p className="text-center text-slate-100">vs</p>}
-          {i === 1 && <div className="h-[0.5px] bg-slate-200 w-full"></div>}
+          {i % 2 === 0 && <p className="text-center text-violet-200 text-xl">vs</p>}
         </>
       ))}
     </div>
