@@ -57,13 +57,13 @@ function PlayTournament() {
       }
     }
     fetchTournamentState();
-    const intervalId = setInterval(() => {
-      fetchTournamentState();
-    }, 10000);
-    return () => {
-      isMounted = false;
-      clearInterval(intervalId);
-    };
+    // const intervalId = setInterval(() => {
+    //   fetchTournamentState();
+    // }, 10000);
+    // return () => {
+    //   isMounted = false;
+    //   clearInterval(intervalId);
+    // };
   }, [])
 
   console.log(data)
