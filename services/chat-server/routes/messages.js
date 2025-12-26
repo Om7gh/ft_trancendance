@@ -32,7 +32,7 @@ function messagesPlugin(instance, opt) {
 				}
 				else {
 					(parsedMsg.sender.id !== conv.user1.id) && (conv.user1UnreadCount += 1);
-					(parsedMsg.sender.id !== conv.user2.id) && (conv.user2UnreadCount += 1);	
+					(parsedMsg.sender.id !== conv.user2.id) && (conv.user2UnreadCount += 1);
 					sendToNotification(msg);
 				}
 			}
@@ -98,7 +98,7 @@ function messagesPlugin(instance, opt) {
 			}
 
 			function handleEnterConversation() {
-				let actionByUserId = req.user.id;
+				let actionByUserId = clientReq.user.id;
 
 				if (activeUserConv.has(actionByUserId) && activeUserConv.get(actionByUserId) === parsedMsg.conversationId)
 					return ;
@@ -120,7 +120,7 @@ function messagesPlugin(instance, opt) {
 			}
 
 			function handleWatchUsers(){
-				let userId = req.user.id;
+				let userId = clientReq.user.id;
 				if (presenceInterests.has(userId)){
 					presenceInterests.delete(userId);
 					presenceInterests.set(userId, parsedMsg.users);
@@ -218,7 +218,7 @@ function messagesPlugin(instance, opt) {
 	}
 
 	function broadcastPresenceChange(presenceChange, req){
-		let socketUserId = +req.params.userId;
+		let socketUserId = req.user.id;
 		presenceInterests.forEach((users, interstedUser, map) => {
 			if (users.find((UID) => +UID === socketUserId) !== undefined){
 				if (connectedUsers.has(interstedUser)){

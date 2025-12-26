@@ -37,7 +37,6 @@ function UnblockButton(){
 }
 
 function ChatInput({onSend, connectionState}: ChatInputProp){
-	console.log("connectionState: ", connectionState);
 	return (
 		<form id="chatInputForm" onSubmit={(e) => {onSend(e)}} className="bg-[#354358] h-[10%] justify-center items-center flex gap-2">
 			{connectionState === "blocking_them" && <UnblockButton/>}

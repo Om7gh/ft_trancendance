@@ -6,11 +6,13 @@ import friendConnectionState from '../utils/friendConnectionState.js';
 function contactPlugin(instance, opt){
 	function responseNormelizer(response, clientId){
 		return response.map((user) => {
-			const {id, first_name: name, avatar: photo_url } = user; 
+			const {id, username: name, avatar: photo_url } = user; 
 			return ({
 				id: 0,
 				friend: {
-					...user,
+					id: id,
+					name: name,
+					photo_url: photo_url,
 					connectionState: friendConnectionState(opt.contacts.blockDb, clientId, user.id)
 				},
 				unread_msg: 0,

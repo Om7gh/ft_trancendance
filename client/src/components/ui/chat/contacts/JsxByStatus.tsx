@@ -4,7 +4,7 @@ import type {Message} from "@/types/Message"
 
 import ErrorImg from "@assets/illustrations/errorState.svg";
 import EmptyMsgImg from "@assets/illustrations/Work chat-cuate.svg";
-import EmptyConvImg from "@assets/illustrations/startConversation.svg";
+import EmptyConvImg from "@assets/illustrations/emptyConv.svg";
 import EmptyContactImg from "@assets/illustrations/emptyContacts.svg";
 
 type OnAction = (e: React.MouseEvent<HTMLButtonElement>, tabName: string) => void;

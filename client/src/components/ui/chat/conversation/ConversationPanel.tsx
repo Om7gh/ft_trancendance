@@ -52,7 +52,7 @@ function ConversationPanel({
 	useEventListener(connection.current, "message", incomingMsgHandler);
 
 	const {id, first_name: name, avatar: photo_url} = userInfo?.user as GloblaUser;
-	const currentUser : User = {id, name, photo_url, connectionState: ""};
+	const currentUser : User = {id, name, photo_url, connectionState: "active"};
 
 	useEffect(() => {
 		if (messageStatus === "fulfilled") {
@@ -62,7 +62,6 @@ function ConversationPanel({
 
 	function incomingMsgHandler(event: MessageEvent){
 		const parsedMsg = JSON.parse(event.data);
-
 		if (parsedMsg.senderId === targetUserCard?.friend?.id){
 			setMessages(prev => [...prev, {
 				id: parsedMsg.id,
