@@ -19,8 +19,8 @@ export default class Tournament extends EventEmitter {
     }
 
     isMember(userId) {
-        for (let user of this.participants) {
-            if (user.id === userId) {
+        for (let member of this.participants) {
+            if (member === userId) {
                 return (true);
             }
         }
