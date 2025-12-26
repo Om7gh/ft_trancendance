@@ -33,7 +33,7 @@ export default class GenericRoom extends EventEmitter {
     }
 
     addMember(user) {
-        if ((this.state === "waiting") || (this.members.length < 2) || !this.isMember(user.id)) {
+        if ((this.state === "waiting") || (this.members.length < 4) || !this.isMember(user.id)) {
             this.members.push(user);
         }
     }
@@ -51,7 +51,7 @@ export default class GenericRoom extends EventEmitter {
         if ((this.state === "waiting") && this.isMember(user.id)) {
             this.addPlayer(user);
             this.counter += 1;
-            if (this.counter === 2) {
+            if (this.counter === 4) {
                 this.startMatch();
             }
         }
@@ -208,7 +208,7 @@ export default class GenericRoom extends EventEmitter {
                     }
                 }))
                 this.stopMatch();
-            }, 15000);
+            }, 60000);
         }
     }
 

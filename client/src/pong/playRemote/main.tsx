@@ -3,6 +3,7 @@ import { Outlet, Link } from 'react-router';
 import React from 'react';
 import { MdGamepad } from 'react-icons/md';
 import MenuButton from '../component/MenuButton';
+import { FaBattleNet } from 'react-icons/fa';
 
 export type MenuOptionPropsType = {
   children: React.ReactNode;
@@ -26,8 +27,8 @@ export type MenuPropsType = {
 
 export function Menu({ children }: MenuPropsType) {
   return (
-    <div className="w-fullspace-y-12 flex flex-col text-center">
-      <nav className="bg-slate-900/50  p-4 shadow-xl shadow-slate-900  flex flex-col  w-9/10 m-auto my-4 h-full justify-center">
+   <div className="space-y-8 bg-gradient-to-b from-slate-950/20 to-violet-900/30 w-1/2 sm:w-full md:w-1/2 p-10 shadow-xl shadow-slate-900 text-center">
+      <nav className="">
         <h2 className="text-center bg-linear-0 from-violet-500 to-neon bg-clip-text text-transparent text-4xl flex gap-5 items-center mx-auto mb-5">
           <MdGamepad className="w-16 h-16 text-violet-300 bg-slate-900/50 p-2 shadow-xl" />
           Pong Menu
@@ -41,7 +42,7 @@ export function Menu({ children }: MenuPropsType) {
 export function RemoteOptions() {
   return (
     <Menu>
-      <div className="w-full space-y-12 flex flex-col text-center">       
+      <div className="flex flex-col gap-10 items-center justify-center">       
         <MenuButton destination='/dashboard/games/pingpong/remote/someone' >
           Play Match
         </MenuButton>
@@ -58,7 +59,7 @@ export function RemoteOptions() {
 
 export function PongRemote() {
   return (
-    <div className="flex flex-col w-[35vmax] h-[40vmax] m-auto ">
+    <div className="w-full grid place-items-center">
       <Outlet />
     </div>
   );

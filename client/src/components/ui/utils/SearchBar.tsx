@@ -128,7 +128,7 @@ export default function SearchBar() {
                   </div>
                 )}
 
-                {!isPending && !isError && (!data?.users || data.users.length === 0) && (
+                {!isPending && !isError && (data.length === 0) && (
                   <div className="py-4 text-center text-sm text-slate-400">
                     No results for{' '}
                     <span className="font-semibold text-white">
@@ -137,9 +137,9 @@ export default function SearchBar() {
                   </div>
                 )}
 
-                {!isPending && !isError && data?.users && data.users.length > 0 && (
+                {!isPending && !isError && data.length > 0 && (
                   <ul className="space-y-2">
-                    {data.users.map((user: User) => (
+                    {data.map((user: User) => (
                       <li
                         key={user.id}
                         onClick={() => handleUserClick(user.username)}

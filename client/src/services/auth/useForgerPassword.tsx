@@ -1,24 +1,12 @@
 import type { Error } from '@/types/errorType';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-
-async function forgetPassword(data: { email: string }) {
-  const res = await fetch('http://localhost:8080/auths/forgot-password', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw err;
-  }
-  return await res.json();
-}
+import AuthService from './auth.service';
 
 function useForgetPassword() {
   return useMutation({
     mutationKey: ['forgetPassword'],
-    mutationFn: forgetPassword,
+    mutationFn: AuthService.forgotPassword,
     onSuccess: () => {
       toast.info('check your email');
     },

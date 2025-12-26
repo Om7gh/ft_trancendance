@@ -1002,7 +1002,7 @@ Date:   Wed Dec 10 16:33:53 2025 +0100
 
     feat(identity-server): add password reset routes and update mail + schema configs
     
-    - Added `reset-password` and `forgot-password` routes in `routes/auths/index.ts`
+    - Added `reset-password` and `forgot-password` routes in `routes/api/auth/index.ts`
     - Implemented `resetPasswordOptions` for improved reset-password email styling
     - Updated confirmation email options for consistency and cleaner templates
     - Removed unused fields from `schema.ts` to simplify the identity data model
