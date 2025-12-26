@@ -20,7 +20,7 @@ export default class Tournament extends EventEmitter {
 
     isMember(userId) {
         for (let member of this.participants) {
-            if (member === userId) {
+            if (member.id === userId) {
                 return (true);
             }
         }
@@ -29,7 +29,7 @@ export default class Tournament extends EventEmitter {
 
     addMember(user) {
         if (this.state === "waiting") {
-            this.participants.push(user.id);
+            this.participants.push(user);
             if (this.participants.length === 4) {
                 this.startTournament();
             }
@@ -42,10 +42,19 @@ export default class Tournament extends EventEmitter {
         }
     }
 
+    extractParticipantIds() {
+        let ids = [];
+
+        for (let paraticipent of this.participants) {
+            ids.push(paraticipent.id);
+        }
+        return (ids);
+    }
+
     createNewRound(participants) {
         this.currentRound =  new Round();
         this.rounds.push(this.currentRound);
-        this.currentRound.setParticipants(participants);
+        this.currentRound.setParticipants(this.extractParticipantIds());
 
         this.currentRound.on("newRoom", (room) => {
             this.emit("newRoom", room);

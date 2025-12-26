@@ -30,11 +30,6 @@ async function joinTournamentHandler(request, reply) {
         let tournament = new Tournament();
 
         this.tournamentList.set(tournament.id, tournament);
-
-        tournament.on("done", () => {
-            console.log("remove the tournament with Id: ", tournament.id);
-            this.tournamentList.delete(tournament.id);
-        });
         
         tournament.on("newRoom", (room) => {
             this.addRoomToRoomList(room);
@@ -44,7 +39,6 @@ async function joinTournamentHandler(request, reply) {
     }
 
     this.currentTournament.addMember(user);
-    console.log("+++++++++++++++", this.currentTournament.toJSON(), "++++++++++++++");
     return reply.send(this.currentTournament.toJSON());
 }
 
