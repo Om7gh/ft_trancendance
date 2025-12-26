@@ -11,22 +11,11 @@ const ProtectAuth = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const verify = async () => {
       try {
-        await axiosApiInstance.get('/auths/userinfo', { withCredentials: true });
+        await axiosApiInstance.get('/api/auth/userinfo');
         setAuthenticated(true);
-      } catch (err) {
-        if (err.response?.status === 498 || err.response?.status === 401) {
-          try {
-            await axiosApiInstance.post('/auths/refresh', {}, { withCredentials: true });
-            await axiosApiInstance.get('/auths/userinfo', { withCredentials: true });
-            setAuthenticated(true);
-          } catch (refreshErr) {
-            setAuthenticated(false);
-            setUser(null);
-          }
-        } else {
+      } catch (err) {      
           setAuthenticated(false);
           setUser(null);
-        }
       }
       setLoading(false);
     };

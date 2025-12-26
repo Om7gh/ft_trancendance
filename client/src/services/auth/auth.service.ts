@@ -7,7 +7,7 @@ import type {
     TwoFACode,
     Username,
 } from '@/types/auth.types';
-import api from '../httpService';
+import api from '../clientHttpService';
 
 export default abstract class AuthService {
     static async register(registerForm: RegisterForm) {

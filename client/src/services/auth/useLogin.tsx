@@ -1,31 +1,14 @@
 // useSignUp.ts
 import { useMutation } from '@tanstack/react-query';
-import type { signInData } from '@/types/userType';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import type { Error } from '@/types/errorType';
-
-async function login(userData: signInData) {
-  const res = await fetch('http://localhost:8080/auths/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData),
-  });
-
-  if (!res.ok) {
-    const error = await res.json();
-    throw error;
-  }
-  const data = await res.json();
-  return data;
-}
+import AuthService from './auth.service';
 
 function useLogin() {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: login,
+    mutationFn: AuthService.login,
     onSuccess: (payload) => {
       toast.success(payload.message);
       navigate(payload.next);
