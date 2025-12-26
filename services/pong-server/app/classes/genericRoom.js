@@ -40,7 +40,7 @@ export default class GenericRoom extends EventEmitter {
 
     isMember(userId) {
         for (let member of this.members) {
-            if (member.id === userId) {
+            if (member === userId) {
                 return true;
             }
         }
@@ -222,7 +222,7 @@ export default class GenericRoom extends EventEmitter {
                         id: uuid(),
                         type: "joinMatch",
                         sender: {id: this.id, username: "", avatar: ""},
-                        receiver: {id: member.id},
+                        receiver: {id: member},
                         expire: (Math.floor(Date.now() / 1000) + 60),
                     });
                 }
