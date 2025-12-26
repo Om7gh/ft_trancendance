@@ -27,7 +27,7 @@ function contactPlugin(instance, opt){
 				Cookie: req.headers.cookie
 			}
 		});
-		return (response.data.data);
+		return (response.data);
 	}
 
 	instance.get("/contacts", async (req, reply) => {

@@ -6,11 +6,13 @@ import useAxios from "@/hooks/useAxios.ts";
 import useEventListener from "@/hooks/useEventListener.ts";
 import {useEffect, useContext, useState} from "react";
 import { GlobalContext } from "@/App.tsx";
+import useWebsocketRequest from "@/hooks/useWebsocketRequest.ts";
 
 import type {Card} from "@/types/UserCard.ts"
 import type {User} from "@/types/User.ts"
 import type {User as GloblaUser} from "@/App.tsx"
 import type {Message} from "@/types/Message.ts"
+import type {ServerRequest} from "@/types/serverRequest.ts"
 
 import ConversationImg from "@assets/placeholders/conversation-placeholder.png";
 
@@ -19,16 +21,17 @@ interface ConversationPanelProps{
 	UsersTab: string;
 	isMobile: boolean;
 	connection: React.RefObject<WebSocket | null>;
+	onBlockToggle: (action: "block" | "unblock") => void;
 	changeUserView: (view: string) => void;
 }
 
-function constructReq(sender: User | null, target: User, content: string){
+function constructReq(sender: User | null, target: User, content: string): ServerRequest {
 	return ({
 		action: "send-message",
 		sender: sender,
 		target: target,
 		content: content
-	});
+	} as ServerRequest);
 }
 
 function ConversationPanel({
@@ -36,6 +39,7 @@ function ConversationPanel({
 	targetUserCard,
 	isMobile,
 	connection,
+	onBlockToggle,
 	changeUserView
 }: ConversationPanelProps){
 	const userInfo  = useContext(GlobalContext);
@@ -44,11 +48,11 @@ function ConversationPanel({
 	const [historyMsgs, messageStatus] = useAxios( (targetUserCard && targetUserCard.id)
 			? `/messages/${targetUserCard.id}` 
 			: null);
-	
+	const setRequest = useWebsocketRequest(connection.current);
 	useEventListener(connection.current, "message", incomingMsgHandler);
 
 	const {id, first_name: name, avatar: photo_url} = userInfo?.user as GloblaUser;
-	const currentUser: User = {id, name, photo_url};
+	const currentUser : User = {id, name, photo_url, connectionState: ""};
 
 	useEffect(() => {
 		if (messageStatus === "fulfilled") {
@@ -69,10 +73,16 @@ function ConversationPanel({
 	}
 
 	function handleSendingMsg(e: React.FormEvent<HTMLFormElement>) {
-		const formControl = e.currentTarget.elements.namedItem("messageInput") as HTMLInputElement
-		const inputText = formControl.value.trim();
-
 		e.preventDefault();
+		const inputControl = e.currentTarget.elements.namedItem("messageInput") as HTMLInputElement
+		const button = e.currentTarget.elements.namedItem("button") as HTMLInputElement;
+		
+		if (button.value === "unblock"){
+			handleUserAction(button.value);
+			return;
+		}
+		
+		const inputText = inputControl.value.trim();
 		if (inputText.length !== 0){
 			setMessages([
 				...messages,
@@ -82,26 +92,27 @@ function ConversationPanel({
 					content: inputText
 				}
 			])
-			connection.current?.send(JSON.stringify(constructReq(currentUser, targetUserCard?.friend as User, inputText)));
+			setRequest(constructReq(currentUser, targetUserCard?.friend as User, inputText));
 			setTimeout(() => changeUserView("Chats"), 300);
 		}
-		formControl.value = "";
+		inputControl.value = "";
 	}
 
-	function handleUserAction(e: React.MouseEvent<HTMLDivElement>, action: string){
-		e.stopPropagation();
+	function handleUserAction(action: string){
 		switch (action){
-			case "back":{
+			case "block":
+			case "unblock": {
+				console.log("user clicked: ", action);
+				onBlockToggle(action);
+				break ;
+			}
+			case "back": {
 				changeUserView("contacts");
 				console.log("user clicked Back");
 				break ;
 			}
-			case "invite":{
+			case "invite": {
 				console.log("user clicked invite");
-				break ;
-			}
-			case "block": {
-				console.log("user clicked block");
 				break ;
 			}
 		}
@@ -132,7 +143,7 @@ function ConversationPanel({
 			<StatusResolver status={messageStatus} content={messages} view="Messages">
 				<ChatBody senderUser={currentUser} targetUser={targetUserCard.friend} messages={messages}/>
 			</StatusResolver>
-			<ChatInput onSend={handleSendingMsg}/>
+			<ChatInput onSend={handleSendingMsg} connectionState={targetUserCard.friend.connectionState}/>
 		</div>
 	);
 }
