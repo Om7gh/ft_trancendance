@@ -36,8 +36,8 @@ declare module 'fastify' {
         clearAccessToken: typeof clearAccessToken;
         sendRefreshToken: typeof sendRefreshToken;
         clearRefreshToken: typeof clearRefreshToken;
-        sendNonceToken: typeof sendRefreshToken;
-        clearNonceToken: typeof clearRefreshToken;
+        sendNonceToken: typeof sendNonceToken;
+        clearNonceToken: typeof clearNonceToken;
     }
 }
 
@@ -93,7 +93,7 @@ async function generateAccessToken(
     return await generateToken({
         sub: uid,
         secret: this.tokenSecrets.accessToken,
-        expiresIn: '1h',
+        expiresIn: '15m',
     });
 }
 
@@ -145,7 +145,7 @@ function sendRefreshToken(
     return this.setCookie('refreshToken', refreshToken, {
         httpOnly: true,
         sameSite: 'lax',
-        path: '/',
+        path: '/api/auth/refresh',
         maxAge: 60 * 60 * 24 * 7 * 4 + 2, //30d
     });
 }
@@ -163,7 +163,7 @@ async function verifyRefreshToken(this: FastifyRequest): Promise<JWTPayload> {
 }
 
 function clearRefreshToken(this: FastifyReply): FastifyReply {
-    return this.clearCookie('refreshToken', { path: '/' });
+    return this.clearCookie('refreshToken', { path: '/api/auth/refresh' });
 }
 
 async function generateNonceToken(

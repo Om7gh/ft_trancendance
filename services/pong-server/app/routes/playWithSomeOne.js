@@ -42,7 +42,7 @@ async function playWithSomeOneHandler(request, reply) {
 
     let room = alreadyInMatch(this.roomList, user.id);
         
-    if (room && (room.getState() !== "done")) {
+    if (room && (room.getState() !== "done" || room.getState() !== "canceled")) {
         reply.send(JSON.stringify(room.toJSON()));
         return ;
     }
@@ -58,6 +58,8 @@ async function playWithSomeOneHandler(request, reply) {
     
     await waitForOpponent(room);
     
+    room.startMatch();
+
     reply.send(JSON.stringify(room.toJSON()));
 }
 

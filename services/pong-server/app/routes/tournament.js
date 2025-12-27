@@ -62,6 +62,10 @@ async function leaveTournamentHandler(request, reply) {
 
     tournament.removeMember(user.id);
 
+    if (tournament.participants.length === 0) {
+        this.tournamentList = this.tournamentList.filter((item) => item.id !== tournament.id);
+    }
+
     return (reply.send("Leave it successfully"));
 }
 
@@ -82,3 +86,14 @@ export default async function tournament(fastify, options) {
         handler : leaveTournamentHandler,
     })
 }
+
+
+
+
+
+
+
+
+
+
+

@@ -42,19 +42,10 @@ export default class Tournament extends EventEmitter {
         }
     }
 
-    extractParticipantIds() {
-        let ids = [];
-
-        for (let paraticipent of this.participants) {
-            ids.push(paraticipent.id);
-        }
-        return (ids);
-    }
-
     createNewRound(participants) {
         this.currentRound =  new Round();
         this.rounds.push(this.currentRound);
-        this.currentRound.setParticipants(this.extractParticipantIds());
+        this.currentRound.setParticipants(participants);
 
         this.currentRound.on("newRoom", (room) => {
             this.emit("newRoom", room);

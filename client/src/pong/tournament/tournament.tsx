@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import api from "@/services/clientHttpService";
-import MessageDisplayer from "@/pong/component/MessageDisplayer";
+import MessageDisplayer from "../component/MessageDisplayer";
 
 type PlayerType = {
     id: string;
@@ -16,8 +16,8 @@ type PlayerPropsType = {
 function Player({player}: PlayerPropsType) {
     return (
         <div>
-            <img src={player?.avatar} alt="useImage" />
-            <h2>{player?.username}</h2>
+            <img src={player.avatar} alt="useImage" />
+            <h2>{player.username}</h2>
         </div>
     )
 }
@@ -122,14 +122,14 @@ function ListRounds({roundList}: ListRoundsPropsType) {
     return <MessageDisplayer message="Tournament round list is empty!!" />;
 }
 
-export default function PlayTournament() {
+export default function Tournament() {
     const [data, setData] = useState<any>(null);
 
     useEffect(() => {
         let ignored = false;
-        async function loadTournament() {
+        (async function fetchFriends() {
             try {
-                const response =  await api("/pongGame/remote/tournament/join");
+                const response =  await api("/friends");
                 if (!ignored) {
                     setData({
                         state: "success",
@@ -142,51 +142,21 @@ export default function PlayTournament() {
                     reason: "Failed to fetch tournament!!",
                 });
             }
-        };
-
-        loadTournament();
-
-        const intervalId = setInterval(() => loadTournament(), 5000)
+        })();
         return (() => {
             ignored = true;
-            clearInterval(intervalId);
         })
     }, [])
 
-    console.log(data)
-
-
-    async function leaveTournament () {
-        try {
-            await api.get("/pongGame/remote/tournament/leave");
-            console.log("success")
-        } catch (e) {
-            console.log(e);
-        }
-    } 
-
     if (!data)
-        return <div>
-             <MessageDisplayer message="Fetching Tournament..." />
-             <button onClick={leaveTournament}>leave</button>
-            </div>
+        return <MessageDisplayer message="Fetching Tournament..." />
     else if (data.state === "success") {
         if (data.tournament.state === "waiting") {
-            return <div>
-                (<WaitingList memberList={data.tournament.participants} />)
-             <button onClick={leaveTournament}>leave</button>
-            </div> 
+            return (<WaitingList memberList={data.tournament.participants} />)
         } else if ((data.tournament.state === "going") || (data.tournament.state === "done")) {
-            return <div>
-                <ListRounds roundList={data.tournament.rounds} />
-                <button onClick={leaveTournament}>leave</button>
-            </div> 
+            return <ListRounds roundList={data.tournament.rounds} />
         } else
-            return <div>
-                <MessageDisplayer message="Tournament Canceled!!" />
-             <button onClick={leaveTournament}>leave</button>
-
-            </div> 
+            return <MessageDisplayer message="Tournament Canceled!!" />
     }
     return <MessageDisplayer message={data.reason} />
 }
