@@ -15,7 +15,7 @@ export async function waitForOpponent(room) {
 
     return (new Promise((resolve, reject) => {
         intervalId = setInterval(() => {
-            if (room.getState() === "ready") {
+            if (room.getState() === "going") {
                 clearInterval(intervalId);
                 resolve();
             } else if (60 < counter) {
@@ -57,8 +57,6 @@ async function playWithSomeOneHandler(request, reply) {
     room.addPlayer(user);
     
     await waitForOpponent(room);
-    
-    room.startMatch();
 
     reply.send(JSON.stringify(room.toJSON()));
 }

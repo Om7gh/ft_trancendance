@@ -15,7 +15,6 @@ export default class GenericRoom extends EventEmitter {
         this.type           = "match";
 
         this.members        = [];
-        this.counter        = 0;
         this.winner         = null;
 
         this.playingId      = null;
@@ -54,7 +53,7 @@ export default class GenericRoom extends EventEmitter {
     joinRoom(user) {
         if ((this.state === "waiting") && this.isMember(user.id)) {
             this.addPlayer(user);
-            if (this.counter === 2) {
+            if (this.state === "ready") {
                 this.startMatch();
             }
         }
@@ -68,58 +67,38 @@ export default class GenericRoom extends EventEmitter {
         return false;
     }
 
-    addLeftPlayer(user) {
-        this.leftPlayer = new Player(user, this.table);
-        this.leftPlayer.setPaddleInTable("left");
+    createNewPlayer(user) {
+        const player = new Player(user);
 
-        this.leftPlayer.on("leaveMatch", () => {
-            this.removeMember(this.leftPlayer.id);
-            this.rightPlayer.setPoints(7);
+        this.addMember(user);
+
+        player.on("leaveMatch", () => {
+            this.removeMember(player.id);
             this.stopMatch();
         });
-        this.leftPlayer.on("socketClosed", () => {
+
+        player.on("socketClosed", () => {
             if (this.state === "pause")
                 this.stopMatch();
             else
-                this.pause(this.leftPlayer.id);
+                this.pause(player.id);
         })
-    }
-    
-    addRightPlayer(user) {
-        this.rightPlayer = new Player(user, this.table);
-        this.rightPlayer.setPaddleInTable("right");
 
-        this.rightPlayer.on("leaveMatch", () => {
-            this.removeMember(this.rightPlayer.id);
-            this.leftPlayer.setPoints(7);
-            this.stopMatch();
-        });
-        this.rightPlayer.on("socketClosed", () => {
-            if (this.state === "pause")
-                this.stopMatch();
-            else
-                this.pause(this.rightPlayer.id);
-        })
-        this.state = "ready";
+        return player;
     }
 
     addPlayer(user) {
         if ((this.state === "waiting") && user) {
-            if (!this.leftPlayer || (this.leftPlayer.id === user.id)) {
-                this.addMember(user);
-                if (!this.leftPlayer) {
-                    this.addLeftPlayer(user);
-                    this.counter += 1;
-                }
-                return (true);
-            } else if ((!this.rightPlayer && !this.isPlayer(user.id)) || (this.rightPlayer.id === user.id)) {
-                this.addMember(user);
-                if (!this.rightPlayer) {
-                    this.addRightPlayer(user);
-                    this.counter += 1;
-                }
-                return (true);
+            if (!this.leftPlayer) {
+                this.leftPlayer = this.createNewPlayer(user);
+            } else if (!this.rightPlayer && (this.leftPlayer.id !== user.id)) {
+                this.rightPlayer = this.createNewPlayer(user);
             }
+            if (this.leftPlayer && this.rightPlayer) {
+                this.state = "ready";
+                this.startMatch();
+            }
+            return true;
         }
         return (false);
     }
@@ -138,57 +117,6 @@ export default class GenericRoom extends EventEmitter {
             this.startMatch();
         }
     }
-    
-    updateScore() {
-        if (this.ball.x < 0) {
-            this.rightPlayer.incrementPoints();
-        } else if (this.table.width < this.ball.x) {
-            this.leftPlayer.incrementPoints();
-        }
-    }
-    
-    broadcastMessage(message) {
-        if (this.leftPlayer) {
-            this.leftPlayer.sendMessage(message);
-        }
-        if (this.rightPlayer) {
-            this.rightPlayer.sendMessage(message);
-        }
-    }
-
-    broadcastScore() {
-        this.updateScore();
-        this.broadcastMessage(JSON.stringify({
-            state: "ok",
-            data: {
-                event: "updateScore",
-                leftPlayer: this.leftPlayer.getPoints(),
-                rightPlayer: this.rightPlayer.getPoints(),
-            }
-        }));
-    }
-
-    broadcastView() {
-        this.broadcastMessage(JSON.stringify({
-            state: "ok",
-            data: {
-                event: "updateView",
-                ball: this.ball.toJSON(),
-                leftPaddle: this.leftPlayer.paddle.toJSON(),
-                rightPaddle: this.rightPlayer.paddle.toJSON(),
-            }
-        }));
-    }
-
-    broadcastMatchState() {
-        this.broadcastMessage(JSON.stringify({
-            state: "ok", 
-            data: {
-                event: "matchState",
-                value: this.state,
-            }
-        }));
-    }
 
     startMatch() {
         if (this.state === "ready") {
@@ -200,22 +128,6 @@ export default class GenericRoom extends EventEmitter {
                 this.matchLoop();
                 return ;
             }
-            this.waitOpponentToJoin();
-        }
-    }
-
-    waitOpponentToJoin() {
-        if (this.state === "ready") {
-            this.waitingId = setTimeout(() => {
-                this.broadcastMessage(JSON.stringify({
-                    state: "ok", 
-                    data: {
-                        event: "matchState",
-                        value: "Wait for Opponent to join match too long!!",
-                    }
-                }))
-                this.stopMatch();
-            }, 60000);
         }
     }
 
@@ -254,34 +166,6 @@ export default class GenericRoom extends EventEmitter {
                 this.stopMatch();
             }
         }, 60000);
-    }
-
-    cancelMatch() {
-        if (this.state === "waiting") {
-            this.state = "canceled";
-            this.emit("done");
-        }
-    }
-
-    stopMatch() {
-        this.state = "done";
-        this.setWinner();
-
-        if (this.playingId) {
-            clearInterval(this.playingId);
-            this.broadcastMatchState();
-            this.broadcastScore();
-        }
-
-        if (this.leftPlayer) {
-            this.leftPlayer.closeSocket();
-        }
-
-        if (this.rightPlayer) {
-            this.rightPlayer.closeSocket();
-        }
-
-        this.emit("done");
     }
 
     matchLoop() {
@@ -330,6 +214,35 @@ export default class GenericRoom extends EventEmitter {
         }
     }
 
+    cancelMatch() {
+        if (this.state === "waiting") {
+            this.state = "canceled";
+            this.emit("done");
+        }
+    }
+
+    stopMatch() {
+        this.state = "done";
+        this.setWinner();
+
+        if (this.playingId) {
+            clearInterval(this.playingId);
+            this.broadcastMatchState();
+            this.broadcastScore();
+        }
+
+        if (this.leftPlayer) {
+            this.leftPlayer.closeSocket();
+        }
+
+        if (this.rightPlayer) {
+            this.rightPlayer.closeSocket();
+        }
+
+        this.emit("done");
+    }
+
+
     setWinner() {
         if (this.state === "done") {
             if (this.leftPlayer && !this.rightPlayer) {
@@ -344,6 +257,58 @@ export default class GenericRoom extends EventEmitter {
 
     getWinner() {
         return (this.winner);
+    }
+
+        
+    broadcastMessage(message) {
+        if (this.leftPlayer) {
+            this.leftPlayer.sendMessage(message);
+        }
+        if (this.rightPlayer) {
+            this.rightPlayer.sendMessage(message);
+        }
+    }
+
+    updateScore() {
+        if (this.ball.x < 0) {
+            this.rightPlayer.incrementPoints();
+        } else if (this.table.width < this.ball.x) {
+            this.leftPlayer.incrementPoints();
+        }
+    }
+
+    broadcastScore() {
+        this.updateScore();
+        this.broadcastMessage(JSON.stringify({
+            state: "ok",
+            data: {
+                event: "updateScore",
+                leftPlayer: this.leftPlayer.getPoints(),
+                rightPlayer: this.rightPlayer.getPoints(),
+            }
+        }));
+    }
+
+    broadcastView() {
+        this.broadcastMessage(JSON.stringify({
+            state: "ok",
+            data: {
+                event: "updateView",
+                ball: this.ball.toJSON(),
+                leftPaddle: this.leftPlayer.paddle.toJSON(),
+                rightPaddle: this.rightPlayer.paddle.toJSON(),
+            }
+        }));
+    }
+
+    broadcastMatchState() {
+        this.broadcastMessage(JSON.stringify({
+            state: "ok", 
+            data: {
+                event: "matchState",
+                value: this.state,
+            }
+        }));
     }
 
     toJSON() {
