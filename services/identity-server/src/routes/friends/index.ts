@@ -1,6 +1,6 @@
 import {FastifyInstance} from 'fastify'
 import {FriendshipController} from '../../controllers/FriendshipController.js' 
-import { uidBodySchema, uidParamsSchema } from '../../schemas/profile.js'
+import { uidBodySchema, uidParamsSchema } from '../../schemas/friendship.js'
 
 const plugin = async (fastify: FastifyInstance) => {
   const opts = {
