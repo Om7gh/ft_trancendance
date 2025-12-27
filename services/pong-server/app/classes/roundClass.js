@@ -46,17 +46,19 @@ export default class Round extends EventEmitter {
         })
 
         this.emit("newRoom", room);
+
+        return room;
     }
 
     prepareRound() {
-        let currentRoom = null
+        let room = null;
 
         if ((this.state === "waiting") && this.participants) {
             for (let i = 0; i < this.participants.length; i++) {
                 if ((i % 2) === 0) {
-                    currentRoom = this.createNewRoom();
+                    room = this.createNewRoom();
                 }
-                currentRoom.addMember(this.participants[i]);
+                room.addMember(this.participants[i]);
             }
             this.state = "ready";
         }

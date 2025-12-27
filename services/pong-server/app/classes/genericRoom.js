@@ -104,7 +104,6 @@ export default class GenericRoom extends EventEmitter {
     }
 
     setPlayerSocket(playerId, socket) {
-
         if (this.leftPlayer && (this.leftPlayer.id === playerId)) {
             this.leftPlayer.setSocket(socket);
         } else if (this.rightPlayer && (this.rightPlayer.id === playerId)) {
@@ -131,28 +130,34 @@ export default class GenericRoom extends EventEmitter {
         }
     }
 
-    async inviteMembers() {
+    generateInvitations() {
         const invitations = [];
-        if (this.state === "waiting") {
-            try {
-                for (let member of this.members) {
-                    invitations.push({
-                        id: uuid(),
-                        type: "joinMatch",
-                        sender: {id: this.id, username: "", avatar: ""},
-                        receiver: {id: member.id},
-                        expire: (Math.floor(Date.now() / 1000) + 60),
-                    });
-                }
+
+        for (let member of this.members) {
+            invitations.push({
+                id: uuid(),
+                type: "joinMatch",
+                sender: {id: this.id, username: "", avatar: ""},
+                receiver: {id: member.id},
+                expire: (Math.floor(Date.now() / 1000) + 60),
+            });
+        }
+        return (invitations);
+    }
+
+    async inviteMembers() {
+        try {
+            if (this.state === "waiting") {
+                const invitations = this.generateInvitations();
                 await axios.post("http://notification:9005/send", {
                     data: invitations,
                 });
                 this.waitMembersToJoin();
-            } catch (error) {
-                console.log(error);
-                this.cancelMatch();
-                this.emit("error");
             }
+        } catch (error) {
+            console.log(error);
+            this.cancelMatch();
+            this.emit("error");
         }
     }
 
