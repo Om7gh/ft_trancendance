@@ -30,7 +30,7 @@ export default class Tournament extends EventEmitter {
     addMember(user) {
         if (this.state === "waiting") {
             this.participants.push(user);
-            if (this.participants.length === 4) {
+            if (this.participants.length === 2) {
                 this.startTournament();
             }
         }
@@ -42,19 +42,10 @@ export default class Tournament extends EventEmitter {
         }
     }
 
-    extractParticipantIds() {
-        let ids = [];
-
-        for (let paraticipent of this.participants) {
-            ids.push(paraticipent.id);
-        }
-        return (ids);
-    }
-
     createNewRound(participants) {
         this.currentRound =  new Round();
         this.rounds.push(this.currentRound);
-        this.currentRound.setParticipants(this.extractParticipantIds());
+        this.currentRound.setParticipants(this.participants);
 
         this.currentRound.on("newRoom", (room) => {
             this.emit("newRoom", room);
@@ -72,7 +63,7 @@ export default class Tournament extends EventEmitter {
 
     startTournament() {
         if (this.state === "waiting") {
-            if (this.participants.length === 4) {
+            if (this.participants.length === 2) {
                 this.state = "going";
                 this.createNewRound(this.participants);
                 this.currentRound.startRound();

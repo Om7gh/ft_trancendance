@@ -330,9 +330,9 @@ export default class GenericRoom extends EventEmitter {
                 this.leftPlayer.setPoints(7);
                 this.winner = this.leftPlayer;
             } else if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints())
-                this.winner = this.rightPlayer.id;
+                this.winner = this.rightPlayer;
             else if (this.leftPlayer.getPoints() > this.rightPlayer.getPoints())
-                this.winner = this.leftPlayer.id;
+                this.winner = this.leftPlayer;
         }
     }
 
@@ -344,9 +344,15 @@ export default class GenericRoom extends EventEmitter {
         return ({
             id : this.id,
             state : this.state,
-            ...(this.leftPlayer && {leftPlayer : this.leftPlayer.toJSON()}),
-            ...(this.rightPlayer && {rightPlayer : this.rightPlayer.toJSON()}),
-            ...(this.winner && {winner : this.winner}),
+            ...((this.state === "waiting") && {
+                ...((0 < this.members.length) && {leftPlayer: this.members[0]}),
+                ...((1 < this.members.length) && {rightPlayer: this.members[1]}),
+            }),
+            ...((this.state !== "going") && {
+                leftPlayer: this.leftPlayer.toJSON(),
+                rightPlayer: this.rightPlayer.toJSON(),
+            }),
+            ...((this.state === "done") && {winner : this.winner}),
         })
     }
 }
