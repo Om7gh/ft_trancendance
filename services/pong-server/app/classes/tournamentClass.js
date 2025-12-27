@@ -44,7 +44,9 @@ export default class Tournament extends EventEmitter {
 
     createNewRound(participants) {
         this.currentRound =  new Round();
+
         this.rounds.push(this.currentRound);
+        
         this.currentRound.setParticipants(participants);
 
         this.currentRound.on("newRoom", (room) => {
