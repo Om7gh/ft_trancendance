@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import api from "@/services/clientHttpService";
-import MessageDisplayer from "@/pong/component/MessageDisplayer";
+import MessageDisplayer from "../component/MessageDisplayer";
 
 type PlayerType = {
     id: string;
@@ -122,7 +122,7 @@ function ListRounds({roundList}: ListRoundsPropsType) {
     return <MessageDisplayer message="Tournament round list is empty!!" />;
 }
 
-export default function PlayTournament() {
+export default function Tournament() {
     const [data, setData] = useState<any>(null);
 
     useEffect(() => {
