@@ -42,10 +42,10 @@ export default abstract class AuthService {
     }
 
     static async completeProfile(profileData: ProfileData) {
-        const { data } = await api.post(
-            '/api/auth/complete-profile',
-            profileData
-        );
+        const formData = new FormData();
+        formData.append('avatar', profileData.avatar);
+        formData.append('bio', profileData.bio);
+        const { data } = await api.post('/api/auth/complete-profile', formData);
         return data;
     }
 
