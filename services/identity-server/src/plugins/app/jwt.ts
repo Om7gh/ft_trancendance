@@ -36,8 +36,8 @@ declare module 'fastify' {
         clearAccessToken: typeof clearAccessToken;
         sendRefreshToken: typeof sendRefreshToken;
         clearRefreshToken: typeof clearRefreshToken;
-        sendNonceToken: typeof sendRefreshToken;
-        clearNonceToken: typeof clearRefreshToken;
+        sendNonceToken: typeof sendNonceToken;
+        clearNonceToken: typeof clearNonceToken;
     }
 }
 
