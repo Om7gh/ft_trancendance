@@ -146,7 +146,7 @@ export default function PlayTournament() {
 
         loadTournament();
 
-        const intervalId = setInterval(() => loadTournament(), [5000])
+        const intervalId = setInterval(() => loadTournament(), 5000)
         return (() => {
             ignored = true;
             clearInterval(intervalId);
