@@ -16,8 +16,8 @@ type PlayerPropsType = {
 function Player({player}: PlayerPropsType) {
     return (
         <div>
-            <img src={player.avatar} alt="useImage" />
-            <h2>{player.username}</h2>
+            <img src={player?.avatar} alt="useImage" />
+            <h2>{player?.username}</h2>
         </div>
     )
 }
