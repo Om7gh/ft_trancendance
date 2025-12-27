@@ -101,6 +101,7 @@ export default class Tournament extends EventEmitter {
             state: this.state,
             ...((this.state === "waiting") && {participants: this.participants}),
             ...((this.state !== "waiting") && {rounds: rounds}),
+            ...(this.winner && {winner: this.winner}),
         })
     }
 }
