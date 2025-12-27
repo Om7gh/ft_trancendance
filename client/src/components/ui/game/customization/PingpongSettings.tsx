@@ -2,7 +2,6 @@ import type { FormEvent } from "react";
 
 function PingpongSettings() {
 
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formdData = new FormData(e.currentTarget);

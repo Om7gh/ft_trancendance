@@ -38,9 +38,13 @@ export default class GenericRoom extends EventEmitter {
         }
     }
 
+    removeMember(userId) {
+        this.members = this.members.filter((user) => user.id !== userId)
+    }
+
     isMember(userId) {
         for (let member of this.members) {
-            if (member === userId) {
+            if (member.id === userId) {
                 return true;
             }
         }
@@ -69,6 +73,7 @@ export default class GenericRoom extends EventEmitter {
         this.leftPlayer.setPaddleInTable("left");
 
         this.leftPlayer.on("leaveMatch", () => {
+            this.removeMember(this.leftPlayer.id);
             this.rightPlayer.setPoints(7);
             this.stopMatch();
         });
@@ -85,6 +90,7 @@ export default class GenericRoom extends EventEmitter {
         this.rightPlayer.setPaddleInTable("right");
 
         this.rightPlayer.on("leaveMatch", () => {
+            this.removeMember(this.rightPlayer.id);
             this.leftPlayer.setPoints(7);
             this.stopMatch();
         });
@@ -222,7 +228,7 @@ export default class GenericRoom extends EventEmitter {
                         id: uuid(),
                         type: "joinMatch",
                         sender: {id: this.id, username: "", avatar: ""},
-                        receiver: {id: member},
+                        receiver: {id: member.id},
                         expire: (Math.floor(Date.now() / 1000) + 60),
                     });
                 }
@@ -348,9 +354,9 @@ export default class GenericRoom extends EventEmitter {
                 ...((0 < this.members.length) && {leftPlayer: this.members[0]}),
                 ...((1 < this.members.length) && {rightPlayer: this.members[1]}),
             }),
-            ...((this.state !== "going") && {
-                leftPlayer: this.leftPlayer.toJSON(),
-                rightPlayer: this.rightPlayer.toJSON(),
+            ...(((this.state !== "waiting") && (this.state !== "canceled")) && {
+                ...(this.leftPlayer && {leftPlayer:  this.leftPlayer.toJSON()}),
+                ...(this.rightPlayer && {rightPlayer:  this.rightPlayer.toJSON()}),
             }),
             ...((this.state === "done") && {winner : this.winner}),
         })

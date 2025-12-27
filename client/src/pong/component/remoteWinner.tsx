@@ -10,23 +10,21 @@ export type WinnerPropsType = {
 };
 
 export default function RemoteWinner({ score, match }: WinnerPropsType) {
-    const [winner, setWinner] = useState<PlayerType | null>(null);
+    let winner : PlayerType | null = null;
 
-    useEffect(() => {
-        if (score && match) {
-            if (score.leftPlayer < score.rightPlayer)
-                setWinner(match.rightPlayer);
-            else if (score.rightPlayer < score.leftPlayer)
-                setWinner(match.leftPlayer);
-        }
-    }, []);
+    if (score && match) {
+        if (score.leftPlayer < score.rightPlayer)
+            winner = match.rightPlayer;
+        else (score.leftPlayer > score.rightPlayer)
+            winner = match.leftPlayer
+    }
 
     if (score && match) {
         return (
             <div className="border rounded absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 tflex flex-col m-auto">
                 <img className="w-1/4 m-auto my-4" src={winner?.avatar} />
                 <h1 className="text-[1em] m-auto text-center m-auto my-4">
-                    Winner is: {(winner && winner.name) || 'No Winner!!'}
+                    Winner is: {(winner && winner.username) || 'No Winner!!'}
                 </h1>
             </div>
         );

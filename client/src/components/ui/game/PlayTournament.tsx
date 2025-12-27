@@ -127,9 +127,9 @@ export default function PlayTournament() {
 
     useEffect(() => {
         let ignored = false;
-        (async function fetchFriends() {
+        async function loadTournament() {
             try {
-                const response =  await api("/friends");
+                const response =  await api("/pongGame/remote/tournament/join");
                 if (!ignored) {
                     setData({
                         state: "success",
@@ -142,21 +142,51 @@ export default function PlayTournament() {
                     reason: "Failed to fetch tournament!!",
                 });
             }
-        })();
+        };
+
+        loadTournament();
+
+        const intervalId = setInterval(() => loadTournament(), [5000])
         return (() => {
             ignored = true;
+            clearInterval(intervalId);
         })
     }, [])
 
+    console.log(data)
+
+
+    async function leaveTournament () {
+        try {
+            await api.get("/pongGame/remote/tournament/leave");
+            console.log("success")
+        } catch (e) {
+            console.log(e);
+        }
+    } 
+
     if (!data)
-        return <MessageDisplayer message="Fetching Tournament..." />
+        return <div>
+             <MessageDisplayer message="Fetching Tournament..." />
+             <button onClick={leaveTournament}>leave</button>
+            </div>
     else if (data.state === "success") {
         if (data.tournament.state === "waiting") {
-            return (<WaitingList memberList={data.tournament.participants} />)
+            return <div>
+                (<WaitingList memberList={data.tournament.participants} />)
+             <button onClick={leaveTournament}>leave</button>
+            </div> 
         } else if ((data.tournament.state === "going") || (data.tournament.state === "done")) {
-            return <ListRounds roundList={data.tournament.rounds} />
+            return <div>
+                <ListRounds roundList={data.tournament.rounds} />
+                <button onClick={leaveTournament}>leave</button>
+            </div> 
         } else
-            return <MessageDisplayer message="Tournament Canceled!!" />
+            return <div>
+                <MessageDisplayer message="Tournament Canceled!!" />
+             <button onClick={leaveTournament}>leave</button>
+
+            </div> 
     }
     return <MessageDisplayer message={data.reason} />
 }
