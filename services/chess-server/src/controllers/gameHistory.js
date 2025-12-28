@@ -12,6 +12,8 @@ const gameHistory = function (req, rep) {
 
     const history = getPlayerGameHistory(req.server.db, username);
     const stats = getGameStats(req.server.db, username);
+    
+    console.log(history, stats)
 
     return rep.send({
       success: true,
@@ -39,10 +41,8 @@ const gameHistory = function (req, rep) {
       }))
     });
   } catch (error) {
-    req.server.log.error('Error fetching game history:', error);
-    return rep.status(500).send({
-      error: 'Failed to fetch game history'
-    });
+    req.server.log.error('Error fetching game history:', error.message);
+   throw error
   }
 };
 

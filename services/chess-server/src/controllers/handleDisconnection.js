@@ -60,6 +60,14 @@ function handleDisconnect(app, playerId, disconnectingConnection) {
               blackIdSnapshot,
             });
           } else {
+            console.log('🎮 Recording game result (disconnect):', {
+              roomId,
+              white: whiteIdSnapshot,
+              black: blackIdSnapshot,
+              winner: winnerTeam,
+              hasRecordGame: typeof app.recordGame === 'function'
+            });
+            
             app.recordGame({
               roomId,
               whiteId: whiteIdSnapshot,

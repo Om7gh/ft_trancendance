@@ -22,7 +22,8 @@ async function joinMatchHandler(request, reply) {
     }
 
     room = this.roomList.get(rid);
-
+    if (room)
+        console.log("-------------++++++", room.id, " -----------+++++", room.state)
     if (!room || (room.getState() === "done") || (room.getState() === "canceled") || !room.isMember(user.id)) {
         const error = new Error("Currently you don't have any match to join!!")
         error.statusCode = 404;

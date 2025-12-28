@@ -37,9 +37,13 @@ export default class GenericRoom extends EventEmitter {
         }
     }
 
+    removeMember(playerId) {
+        this.members = this.members.filter((p) => p.id !== playerId)
+    }
+
     isMember(userId) {
         for (let member of this.members) {
-            if (member.id === userId) {
+            if (member && member.id === userId) {
                 return true;
             }
         }
@@ -69,6 +73,15 @@ export default class GenericRoom extends EventEmitter {
 
         player.on("leaveMatch", () => {
             this.removeMember(player.id);
+            if (this.leftPlayer && (this.leftPlayer.id === player.id)){
+                if (this.rightPlayer && this.isMember(this.rightPlayer.id)) {
+                    this.rightPlayer.points = 7;
+                }
+            } else if (this.rightPlayer && (this.rightPlayer.id === player.id)) {
+                if (this.leftPlayer && this.isMember(this.leftPlayer.id)) {
+                    this.leftPlayer.points = 7;
+                }
+            }
             this.stopMatch();
         });
 
