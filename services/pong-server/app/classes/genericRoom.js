@@ -78,7 +78,6 @@ export default class GenericRoom extends EventEmitter {
             else
                 this.pause(player.id);
         })
-
         return player;
     }
 
@@ -143,6 +142,7 @@ export default class GenericRoom extends EventEmitter {
 
     async inviteMembers() {
         try {
+            console.log("hello world ---- >  ++++----*****%%%%%////")
             if (this.state === "waiting") {
                 const invitations = this.generateInvitations();
 

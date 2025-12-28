@@ -35,9 +35,9 @@ type WaitingListPropsType = {
 function WaitingList({memberList}: WaitingListPropsType) {
     if (memberList) {
         return (
-            <div className="space-y-4">
-                <h2 className="text-2xl font-bold text-violet-200 mb-6 text-center">
-                    Waiting for Players ({memberList.length}/4)
+            <div className="space-y-4 bg-slate-950/20 shadow-xl shadow-slate-800 p-4">
+                <h2 className="text-xl p-4 font-bold text-violet-200  text-center">
+                    Waiting for Players <span className="text-violet-500">({memberList.length}/4)</span> 
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
                     {
@@ -167,8 +167,8 @@ type ListRoundsPropsType = {
 function ListRounds({roundList}: ListRoundsPropsType) {
     if (roundList) {
         const getRoundLabel = (index: number, total: number) => {
-            if (total === 1) return "Finals";
-            if (index === 0) return "First-round";
+            if (total === 1) return "Round 1st";
+            if (index === 0) return "Round 1st";
             if (index === 1) return "Finals";
             return `Round ${index + 1}`;
         };
@@ -178,7 +178,7 @@ function ListRounds({roundList}: ListRoundsPropsType) {
                 {
                     roundList.map((round, index) => {
                         return (
-                            <div key={round.id} className="relative">
+                            <div key={round.id} className="relative w-[50vmax]">
                                 <div className="flex items-center gap-3 mb-4 justify-center">
                                     <h3 className="text-xl font-bold text-violet-200">
                                         {getRoundLabel(index, roundList.length)}
@@ -250,6 +250,7 @@ export default function PlayTournament() {
         }
     } 
 
+    console.log(data)
     if (!data)
         return (
             <div className="h-full bg-slate-950/20 p-8">
@@ -268,11 +269,10 @@ export default function PlayTournament() {
         if (data.tournament.state === "waiting") {
             return (
                 <div className="h-full grid place-items-center">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="bg-slate-800/20 rounded-2xl p-8 border border-slate-900/50 shadow-xl shadow-slate-900">
-                            <h2 className="text-3xl font-bold text-violet-200 mb-8 text-center">Tournament Lobby</h2>
+                    <div className="max-w-8xl mx-auto">
+                        <div className="bg-slate-900/20 rounded-2xl p-8 border border-slate-900/20 shadow-xl shadow-slate-900">
                             <WaitingList memberList={data.tournament.participants} />
-                            <div className="flex justify-center mt-8">
+                            <div className="flex flex-col justify-center mt-8">
                                 <button 
                                     onClick={leaveTournament}
                                     className="px-8 py-3 bg-pink-600 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"

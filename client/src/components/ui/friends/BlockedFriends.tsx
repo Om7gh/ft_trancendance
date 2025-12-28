@@ -1,5 +1,3 @@
-// Note: The backend API doesn't have block/unblock endpoints yet
-// This component is a placeholder for future implementation
 
 function BlockedFriends() {
   return (

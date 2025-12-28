@@ -1,12 +1,17 @@
+import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 
 interface MobileMenu {
   name: string;
   path: string;
-  icon: HTMLElement;
+  icon: ReactNode;
 }
 
-export default function MobileMenu({ mobileMenu }: MobileMenu[]) {
+interface MenuMobileArr {
+  mobileMenu: MobileMenu[]
+}
+
+export default function MobileMenu({ mobileMenu }: MenuMobileArr) {
   return (
     <>
       {mobileMenu.map((item: MobileMenu) => (

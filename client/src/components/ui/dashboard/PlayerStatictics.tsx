@@ -1,4 +1,5 @@
 export default function PlayerStatistics({type}: {type: string}) {
+  console.log(type)
   return (
     <div className="p-4 bg-slate-800/30  border border-slate-700">
       <h3 className="text-lg font-medium text-slate-300 mb-4">

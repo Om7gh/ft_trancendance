@@ -2,7 +2,6 @@ import { useState, type JSX } from "react";
 
 export default function LandingNavbar({
   mobile = false,
-  className,
 }: {
   mobile?: boolean;
   className?: string;
