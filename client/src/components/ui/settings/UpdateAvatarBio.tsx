@@ -27,7 +27,7 @@ function UpdateAvatarBio() {
             }
             toast.success('Profile updated successfully');
         } catch (e: any) {
-            toast.error('Failed to update profile');
+            toast.error('Failed to update profile' + (e.message ? `: ${e.message}` : ''));
         }
     }
 
