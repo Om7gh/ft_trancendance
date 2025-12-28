@@ -32,7 +32,26 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
     return 'Offline';
   };
 
-  console.log(userData)
+  const getTimeSinceLastLogin = () => {
+    if (!userData?.last_login) return 'Unknown';
+    
+    const now = Date.now();
+    const lastLogin = userData.last_login * 1000; // Convert seconds to milliseconds
+    const diffMs = now - lastLogin;
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    const diffMonths = Math.floor(diffDays / 30);
+    const diffYears = Math.floor(diffDays / 365);
+
+    if (diffSeconds < 60) return 'Just now';
+    if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+    if (diffDays < 30) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+    if (diffMonths < 12) return `${diffMonths} month${diffMonths !== 1 ? 's' : ''} ago`;
+    return `${diffYears} year${diffYears !== 1 ? 's' : ''} ago`;
+  };
 
   return (
     <div className="h-96 bg-slate-950/30 shadow-lg shadow-slate-900 mb-5 p-3 flex justify-around items-center">
@@ -72,16 +91,18 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
             {userData?.email}
           </p>
         </div>
+        {!isOwnProfile && (
         <div className="flex gap-5 items-center justify-between w-full">
           <p className="text-lg tracking-wider">Status</p>
           <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xl">
             {getOnlineStatus()}
           </p>
         </div>
+        )}
         <div className="flex gap-5 items-center justify-between w-full">
           <p className="text-lg tracking-wider">Last login</p>
           <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xl">
-            {new Date(userData?.last_login).getFullYear()}
+            {getTimeSinceLastLogin()}
           </p>
         </div>
       </div>

@@ -8,6 +8,7 @@ import {
 import { asUserInfo } from '../dto/user-dto.js';
 import { User } from '../models/user.js';
 import { UsernameBody } from '../schemas/auth.js';
+import { saveUploadedAvatar } from '../utils/avatar-utils.js';
 
 export class UserController {
     static readonly ERR_USER_NOT_FOUND: string = 'User not found';
@@ -17,15 +18,31 @@ export class UserController {
         reply.send(user);
     }
 
-    //TODO: Implement a getter for CONNECTIONS
-
     static async update(request: FastifyRequest, reply: FastifyReply) {
         const fastify = request.server;
-        const data = request.body as User;
         const user = request.user;
-
+        
         try {
-            fastify.usersRepository.update(user.id, data);
+            let bio: string | undefined;
+            let avatar: string | undefined;
+
+            for await (const part of request.parts()) {
+                if (part.type === 'file' && part.fieldname === 'avatar') {
+                    avatar = await saveUploadedAvatar(
+                        user.uid,
+                        user.username,
+                        part
+                    );
+                } else if (part.type === 'field' && part.fieldname === 'bio') {
+                    bio = String(part.value);
+                }
+            }
+
+            const updateData: Partial<User> = {};
+            if (avatar !== undefined) updateData.avatar = avatar;
+            if (bio !== undefined) updateData.bio = bio;
+
+            fastify.usersRepository.update(user.id, updateData);
             const response = {
                 success: true,
                 message: 'Updated',
