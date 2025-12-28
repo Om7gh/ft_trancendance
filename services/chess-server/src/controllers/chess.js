@@ -23,6 +23,8 @@ function chessHandler(connection, req) {
     desiredId = u.searchParams.get('playerId'); // username
   } catch {}
 
+  console.log(desiredId)
+
   let playerId =
     desiredId && typeof desiredId === 'string' && desiredId.length <= 64
       ? desiredId

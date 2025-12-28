@@ -43,6 +43,8 @@ services:
       - '9000:9000'
     env_file:
       - ./services/chess-server/.env
+    volumes:
+      - $HOME/data:/usr/src/app/data
     networks:
       - pingpong
     # depends_on:
@@ -128,3 +130,6 @@ services:
 networks:
   pingpong:
     driver: bridge
+
+volumes:
+  chess-data:

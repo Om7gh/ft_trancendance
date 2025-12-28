@@ -1,6 +1,6 @@
 const { getPlayerGameHistory, getGameStats } = require('../repositories');
 
-const gameHistory = function (req, rep) {
+const gameHistory = async function (req, rep) {
   try {
     const { username } = req.query;
     
@@ -10,10 +10,14 @@ const gameHistory = function (req, rep) {
       });
     }
 
-    const history = getPlayerGameHistory(req.server.db, username);
-    const stats = getGameStats(req.server.db, username);
+    console.log('🔍 Fetching game history for:', username);
+    console.log('🔍 Database instance:', !!req.server.db);
     
-    console.log(history, stats)
+    const history = await getPlayerGameHistory(req.server.db, username);
+    const stats = await getGameStats(req.server.db, username);
+    
+    console.log('📊 History results:', history.length, 'games');
+    console.log('📊 Stats:', stats);
 
     return rep.send({
       success: true,

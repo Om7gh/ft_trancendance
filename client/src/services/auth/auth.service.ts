@@ -88,4 +88,9 @@ export default abstract class AuthService {
         const { data } = await api.get(`/api/users/${username}`);
         return data;
     }
+
+    static async searchUser(username: string) {
+        const { data } = await api.get(`/api/users/search?q=${username}`);
+        return data;
+    }
 }
