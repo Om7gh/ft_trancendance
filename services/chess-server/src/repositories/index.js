@@ -9,6 +9,7 @@ const getPieceStyle = (db, username) => {
 };
 
 const getPlayerGameHistory = (db, username) => {
+  console.log(username)
   return db
     .prepare(
       `

@@ -37,9 +37,13 @@ export default class GenericRoom extends EventEmitter {
         }
     }
 
+    removeMember(playerId) {
+        this.members = this.members.filter((p) => p.id !== playerId)
+    }
+
     isMember(userId) {
         for (let member of this.members) {
-            if (member.id === userId) {
+            if (member && member.id === userId) {
                 return true;
             }
         }

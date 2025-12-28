@@ -1,6 +1,5 @@
 const send = require('../utils/send');
 const { rooms, players, lastOpponents } = require('../utils/state');
-const app = require('../index');
 
 function handleCheckmate(app, playerId, winnerTeam) {
   const player = players.get(playerId);
@@ -24,6 +23,14 @@ function handleCheckmate(app, playerId, winnerTeam) {
     const white = room.players.find((p) => p.team === 'WHITE');
     const black = room.players.find((p) => p.team === 'BLACK');
     if (white?.playerId && black?.playerId) {
+      console.log('🎮 Recording game result:', {
+        roomId: player.roomId,
+        white: white.playerId,
+        black: black.playerId,
+        winner,
+        hasRecordGame: typeof app.recordGame === 'function'
+      });
+      
       app.recordGame({
         roomId: player.roomId,
         whiteId: white.playerId,
@@ -34,6 +41,7 @@ function handleCheckmate(app, playerId, winnerTeam) {
         startedAt: room.createdAt ?? null,
         endedAt: Math.floor(Date.now() / 1000),
       });
+      
     } else {
       console.warn('Skipping recordGame (checkmate): missing IDs', {
         white: white?.playerId,
