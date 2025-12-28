@@ -142,7 +142,6 @@ export default class GenericRoom extends EventEmitter {
 
     async inviteMembers() {
         try {
-            console.log("hello world ---- >  ++++----*****%%%%%////")
             if (this.state === "waiting") {
                 const invitations = this.generateInvitations();
 

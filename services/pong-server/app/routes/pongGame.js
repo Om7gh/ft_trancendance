@@ -12,7 +12,7 @@ function addRoomToRoomList(room) {
         this.log.info(`add room with id: ${room.id}`);
 
         room.on("done", () => {
-            if ((room.type === "match") && (room.getState() === "done")) {
+            if (!room.tournament && (room.getState() === "done")) {
                 this.db.addMatch(room.toJSON());
             }
             this.log.info(`delete room with id: ${room.id}`);

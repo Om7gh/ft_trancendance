@@ -27,7 +27,7 @@ export default class Round extends EventEmitter {
     }
 
     createNewRoom() {
-        const room = new GenericRoom(tournament);
+        const room = new GenericRoom(this.tournament);
 
         this.rooms.push(room);
 

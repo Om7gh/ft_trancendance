@@ -15,7 +15,7 @@ async function joinMatchHandler(request, reply) {
 
     let room = alreadyInMatch(this.roomList, user.id);
 
-    if (room && (room.getState() !== "done") && (room.getState() !== "canceled")) {
+    if (room && (room.id !== rid) && (room.getState() !== "done") && (room.getState() !== "canceled")) {
         const error = new Error("You are already in other match!!")
         error.statusCode = 400;
         throw error;
