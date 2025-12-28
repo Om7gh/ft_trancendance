@@ -41,6 +41,21 @@ export default abstract class AuthService {
         return data;
     }
 
+    static async updateProfile(profileData: ProfileData) {
+        const formData = new FormData();
+        if (profileData.avatar) {
+            formData.append('avatar', profileData.avatar);
+        }
+        if (profileData.bio) {
+            formData.append('bio', profileData.bio);
+        }
+        const { data } = await api.patch('/api/profile/', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return data;
+    }
+
+
     static async completeProfile(profileData: ProfileData) {
         const formData = new FormData();
         formData.append('avatar', profileData.avatar);

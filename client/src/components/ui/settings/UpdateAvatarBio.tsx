@@ -19,10 +19,10 @@ function UpdateAvatarBio() {
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         try {
-            await AuthService.completeProfile({ avatar: file!, bio });
-            toast.success('Avatar updated successfully');
+            await AuthService.updateProfile({ avatar: file!, bio });
+            toast.success('Profile updated successfully');
         } catch (e: any) {
-            toast.error('Registration not completed successfully ' + e.message);
+            toast.error('Failed to update profile');
         }
     }
 
