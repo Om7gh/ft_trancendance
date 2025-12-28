@@ -23,7 +23,7 @@ async function joinMatchHandler(request, reply) {
 
     room = this.roomList.get(rid);
 
-    if (!room || (room.getState() !== "waiting") || !room.isMember(user.id)) {
+    if (!room || ((room.getState() !== "waiting") && (room.getState() !== "going")) || !room.isMember(user.id)) {
         const error = new Error("Currently you don't have any match to join!!")
         error.statusCode = 404;
         throw error;
@@ -31,10 +31,7 @@ async function joinMatchHandler(request, reply) {
 
     if (room.tournament) {
         if (room.tournament && !room.tournament.isMember(user.id)) {
-            if ((room.getState() !== "done") && (room.getState() !== "canceled")) {
-                room.
-            }
-            const error = new Error("Currently you don't have any match to join!!")
+            const error = new Error("You don't have access to this tournament anymore!!")
             error.statusCode = 404;
             throw error;
         }
