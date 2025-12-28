@@ -98,13 +98,11 @@ export default function defineConfig ({ mode } : {mode:string}) {
   
   server: {
     port: 3000,
-    host: '0.0.0.0',
+    host: true,
     open: false,
     cors: true,
     strictPort: true,
-    allowedHosts: env.VITE_ALLOWED_HOSTS
-    ? env.VITE_ALLOWED_HOSTS.split(",")
-    : ["e2r4p11:8080"],
+    allowedHosts: true,
     hmr: {
       overlay: false,
       clientPort: 3000,

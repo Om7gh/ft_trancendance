@@ -37,8 +37,11 @@ export default class GenericRoom extends EventEmitter {
         }
     }
 
-    removeMember(userId) {
+    memberleaved(memberId) {
         this.members = this.members.filter((user) => user.id !== userId)
+        if (this.state === "going") {
+            this.cu
+        }
     }
 
     isMember(userId) {
@@ -64,10 +67,12 @@ export default class GenericRoom extends EventEmitter {
         return false;
     }
 
-    createNewPlayer(user) {
+    createNewPlayer(user, side) {
         const player = new Player(user, this.table);
 
         this.addMember(user);
+
+        player.setPaddleInTable(side);
 
         player.on("leaveMatch", () => {
             this.removeMember(player.id);
@@ -86,11 +91,9 @@ export default class GenericRoom extends EventEmitter {
     addPlayer(user) {
         if ((this.state === "waiting") && user) {
             if (!this.leftPlayer) {
-                this.leftPlayer = this.createNewPlayer(user);
-                this.leftPlayer.setPaddleInTable("left");
+                this.leftPlayer = this.createNewPlayer(user, "left");
             } else if (!this.rightPlayer && (this.leftPlayer.id !== user.id)) {
-                this.rightPlayer = this.createNewPlayer(user);
-                this.rightPlayer.setPaddleInTable("right");
+                this.rightPlayer = this.createNewPlayer(user, "right");
             }
             if (this.leftPlayer && this.rightPlayer) {
                 this.state = "ready";
@@ -131,13 +134,15 @@ export default class GenericRoom extends EventEmitter {
         const invitations = [];
 
         for (let member of this.members) {
-            invitations.push({
-                id: uuid(),
-                type: "joinMatch",
-                sender: {id: this.id, username: "", avatar: ""},
-                receiver: {id: member.id},
-                expire: (Math.floor(Date.now() / 1000) + 60),
-            });
+            if (member) {
+                invitations.push({
+                    id: uuid(),
+                    type: "joinMatch",
+                    sender: {id: this.id, username: "", avatar: ""},
+                    receiver: {id: member.id},
+                    expire: (Math.floor(Date.now() / 1000) + 60),
+                });
+            }
         }
         return (invitations);
     }
@@ -247,15 +252,17 @@ export default class GenericRoom extends EventEmitter {
     }
 
 
+
+
     setWinner() {
         if (this.state === "done") {
             if (this.leftPlayer && !this.rightPlayer) {
                 this.leftPlayer.setPoints(7);
-                this.winner = this.leftPlayer;
+                this.winner = this.leftPlayer.toJSON();
             } else if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints())
-                this.winner = this.rightPlayer;
+                this.winner = this.rightPlayer.toJSON();
             else if (this.leftPlayer.getPoints() > this.rightPlayer.getPoints())
-                this.winner = this.leftPlayer;
+                this.winner = this.leftPlayer.toJSON();
         }
     }
 
@@ -327,7 +334,7 @@ export default class GenericRoom extends EventEmitter {
                 ...(this.leftPlayer && {leftPlayer:  this.leftPlayer.toJSON()}),
                 ...(this.rightPlayer && {rightPlayer:  this.rightPlayer.toJSON()}),
             }),
-            ...((this.state === "done") && {winner : this.winner}),
+            ...((this.state === "done") && {winner : this.winner})
         })
     }
 }
