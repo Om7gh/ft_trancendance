@@ -37,10 +37,12 @@ function generateAvatar(
     const textColor = isDarkColor(bgColor) ? '#FFFFFF' : '#000000';
 
     const svg = new UIAvatarSvg()
-        .text(initials)
+        .text(initials.toUpperCase())
         .size(size)
         .bgColor(bgColor)
         .textColor(textColor)
+        .fontFamily("'Bungee', sans-serif")
+        .fontWeight('bold')
         .generate();
 
     fs.writeFileSync(filePath, svg);
