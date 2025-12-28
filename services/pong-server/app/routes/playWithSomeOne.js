@@ -43,8 +43,7 @@ async function playWithSomeOneHandler(request, reply) {
     let room = alreadyInMatch(this.roomList, user.id);
         
     if (room && (room.getState() !== "done" || room.getState() !== "canceled")) {
-        reply.send(JSON.stringify(room.toJSON()));
-        return ;
+        return reply.send(JSON.stringify(room.toJSON()));
     }
     
     if (!this.currentRoom || (this.currentRoom.getState() !== "waiting")) {
