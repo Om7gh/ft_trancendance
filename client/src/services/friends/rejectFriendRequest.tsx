@@ -5,7 +5,7 @@ const useRejectFriendRequest = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: FriendsService.rejectRequest,
+        mutationFn: FriendsService.reject,
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ['getReceivedRequests'],

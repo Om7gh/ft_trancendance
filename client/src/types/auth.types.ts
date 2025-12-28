@@ -6,7 +6,8 @@ export interface LoginForm {
 export interface RegisterForm extends LoginForm {
     first_name: string;
     last_name: string;
-    confirmPassword: string;
+    password: string;
+    email: string
 }
 
 export type TwoFACode = {

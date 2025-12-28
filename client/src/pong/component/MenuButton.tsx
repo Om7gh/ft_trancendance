@@ -1,7 +1,4 @@
 import { Link } from 'react-router-dom';
-import { GiPingPongBat } from 'react-icons/gi';
-import { TbTournament } from "react-icons/tb";
-
 
 import { type ReactNode } from 'react';
 

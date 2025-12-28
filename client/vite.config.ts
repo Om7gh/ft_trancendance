@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from "vite";
+import { loadEnv} from "vite";
 import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath } from "url";
@@ -11,7 +11,7 @@ import tailwindcss from "@tailwindcss/vite";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRootDir = resolve(__dirname);
 
-export default function defineConfig ({ mode }) {
+export default function defineConfig ({ mode } : {mode:string}) {
   const env = loadEnv(mode, process.cwd(), "")
   console.log(env);
   return ({

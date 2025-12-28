@@ -7,6 +7,8 @@ function PongChart({user}: {user: User}) {
       { name: 'Losses', value: 12, color: '#8A2BE2' },
     ];
 
+    console.log(user)
+
     return (
       <div className="flex items-center gap-8 p-4 bg-slate-800/30  border border-slate-700">
       <div className="space-y-4 min-w-[120px]">

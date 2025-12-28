@@ -69,7 +69,7 @@ export default function FileInput({
             <div className="absolute bottom-2 left-2 flex items-center bg-gray-800/80 px-2 py-1  text-xs text-violet-400">
               <CheckCircleIcon className="h-4 w-4 mr-1" />
               {file?.name.substring(0, 20)}
-              {file?.name?.length > 20 ? '...' : ''}
+              {file?.name && file?.name?.length > 20 ? '...' : ''}
             </div>
           </div>
         ) : (

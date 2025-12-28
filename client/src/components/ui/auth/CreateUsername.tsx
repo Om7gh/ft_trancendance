@@ -26,7 +26,7 @@ function CreateUsername({ next }: { next: () => void }) {
         setIsValid(true);
       } catch (err) {
         setIsValid(false);
-        setError(err?.message || 'Username already taken');
+        setError('Username already taken');
       } finally {
         setLoading(false);
       }
