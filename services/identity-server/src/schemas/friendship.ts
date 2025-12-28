@@ -1,7 +1,7 @@
 import { Type } from '@fastify/type-provider-typebox';
 
 const uidSchema = Type.Object({
-  username: Type.String()
+  uid: Type.String()
 });
 
 export const uidBodySchema = {
