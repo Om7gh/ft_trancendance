@@ -31,22 +31,22 @@ class ConversationManager{
 
 	addConversation(firstUser, secodeUser){
 		const recentConversation = this.#dbInstance.prepare(
-			`INSERT INTO conversations VALUES(@user1ID, @user2ID, @user1Info, @user2Info)
+			`INSERT INTO conversations (firstUserID, secondUserID, firstUserJson, secondUserJson)
+			VALUES(@user1ID, @user2ID, @user1Info, @user2Info)
 			RETURNING *;`
 		)
 		.get({
 			user1ID: firstUser.id,
 			user2ID: secodeUser.id,
-			user1Info: firstUser,
-			user2Info: secodeUser
+			user1Info: JSON.stringify(firstUser),
+			user2Info: JSON.stringify(secodeUser)
 		});
-
 		return (recentConversation);
 	}
 
 	findConversation(convId){
 		const result = this.#dbInstance.prepare(
-			`SELECT * FROM conversations WHERE convID = ? `
+			`SELECT * FROM conversations WHERE id = ? `
 		)
 		.get(convId);
 		return (result);

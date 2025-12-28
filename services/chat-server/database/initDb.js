@@ -4,7 +4,7 @@ function initDb(dbInstance){
 	dbInstance.exec(`PRAGMA foreign_keys = ON;`);
 	
 	dbInstance.exec(`CREATE TABLE IF NOT EXISTS conversations (
-		convID INTEGER PRIMARY KEY,
+		id INTEGER PRIMARY KEY,
 		firstUserID TEXT NOT NULL UNIQUE,
 		secondUserID TEXT NOT NULL UNIQUE,
 		firstUserJson TEXT NOT NULL UNIQUE,
@@ -16,11 +16,11 @@ function initDb(dbInstance){
 
 	dbInstance.exec(`
 		CREATE TABLE IF NOT EXISTS messages(
-		messageID INTEGER PRIMARY KEY,
+		id INTEGER PRIMARY KEY,
 		convID INTEGER NOT NULL,
 		senderID INTEGER NOT NULL,
 		content TEXT NOT NULL,
-		FOREIGN KEY (convID) REFERENCES conversations (convID)
+		FOREIGN KEY (convID) REFERENCES conversations (id)
 		);`);
 
 	dbInstance.exec(`

@@ -103,7 +103,7 @@ function messagesPlugin(instance, opt) {
 					// let message = new Messages(conversation.id, parsedMsg.sender.id, parsedMsg.content);
 					let message = instance.messageManager.addMessage(conversation.id, parsedMsg.sender.id, parsedMsg.content);
 					// opt.msg.msgDb.push(message);
-					notifyOrSend(message.message, conversation);
+					notifyOrSend(message, conversation);
 				}
 				catch(e){
 					clientSocket.send(JSON.stringify({
@@ -290,13 +290,13 @@ function messagesPlugin(instance, opt) {
 		// 	throw new Error(`You don't belong to conversation ${convId}`);
 		// }
 
-		if (userInConversation(req.user.id, convId, instance.conversationManager))
+		if (!userInConversation(req.user.id, convId, instance.conversationManager))
 		{
 			reply.code(403);
 			throw new Error(`You don't belong to conversation ${convId}`);
 		}
 		// let historyMsgs = opt.msg.msgDb.filter((msg) => msg.convId === convId).map((msg) => msg.message);
-		let historyMsgs = instance.messageManager.getUserHistoryMsgs(msg.convId);
+		let historyMsgs = instance.messageManager.getUserHistoryMsgs(convId);
 		return (historyMsgs);
 	});
 }

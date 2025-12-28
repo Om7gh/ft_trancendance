@@ -42,9 +42,9 @@ function OutgoingMsgBubble({user, msgContent}: MsgBubbleProps)
 
 function MsgBubbleResolverProps({sender, target, message}: MsgBubbleResolverProps)
 {
-    if (message.senderId === sender.id)
+    if (message.senderID === sender.id)
         return (<OutgoingMsgBubble key={message.id} user={sender} msgContent={message.content}/>);
-    else if (message.senderId === target.id)
+    else if (message.senderID === target.id)
         return (<IncomingMsgBubble key={message.id} user={target} msgContent={message.content}/>);
 }
 

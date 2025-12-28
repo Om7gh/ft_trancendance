@@ -6,8 +6,10 @@ class MessageManager{
     }
 
     addMessage(convId, senderId, content){
+        // console.log("====== ==== ===== Adding message to DB:", {convId, senderId, content});
         const recentMessage = this.#dbInstance.prepare(
-            `INSERT INTO messages VALUES (@convID, @senderID, @msg)
+            `INSERT INTO messages (convID, senderID, content)
+            VALUES (@convID, @senderID, @msg)
             RETURNING *;`
         )
         .get({

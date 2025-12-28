@@ -14,7 +14,7 @@ class UsersBlockManager{
     }
 
     addBlock(blockerId, targetId){
-        this.#dbInstance.prepare(`INSERT INTO users_blocks VALUES (?, ?)`)
+        this.#dbInstance.prepare(`INSERT INTO users_blocks (blockerID, targetID) VALUES (?, ?)`)
         .run(blockerId, targetId);
     }
 

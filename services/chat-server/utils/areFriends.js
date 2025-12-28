@@ -1,3 +1,4 @@
+import axios from "axios";
 
 async function areFriends(cookie, userID){
 	try {

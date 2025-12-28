@@ -49,7 +49,6 @@ function ConversationPanel({
 			? `/messages/${targetUserCard.id}` 
 			: null);
 	const setRequest = useWebsocketRequest(connection.current);
-	useEventListener(connection.current, "message", incomingMsgHandler);
 
 	const {id, first_name: name, avatar: photo_url} = userInfo?.user as GloblaUser;
 	const currentUser : User = {id, name, photo_url, connectionState: "active"};
@@ -60,16 +59,21 @@ function ConversationPanel({
 		}
 	}, [historyMsgs, messageStatus]);
 
-	function incomingMsgHandler(event: MessageEvent){
-		const parsedMsg = JSON.parse(event.data);
-		if (parsedMsg.senderId === targetUserCard?.friend?.id){
-			setMessages(prev => [...prev, {
-				id: parsedMsg.id,
-				senderId: parsedMsg.senderId,
-				content: parsedMsg.content
-			}]);
+	useEffect(() =>{
+		function incomingMsgHandler(event: MessageEvent){
+			console.log("message event received in ConversationPanel.tsx: ", event.data);
+			const parsedMsg = JSON.parse(event.data);
+			if (parsedMsg.senderId === targetUserCard?.friend?.id){
+				setMessages([...messages, {
+					id: parsedMsg.id,
+					senderID: parsedMsg.senderId,
+					content: parsedMsg.content
+				}]);
+			}
 		}
-	}
+		connection.current?.addEventListener("message", incomingMsgHandler);
+		return () => connection.current?.removeEventListener("message", incomingMsgHandler);
+	});
 
 	function handleSendingMsg(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -87,7 +91,7 @@ function ConversationPanel({
 				...messages,
 				{
 					id: crypto.randomUUID(),
-					senderId: currentUser.id,
+					senderID: currentUser.id,
 					content: inputText
 				}
 			])

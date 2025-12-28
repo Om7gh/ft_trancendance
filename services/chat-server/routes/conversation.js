@@ -5,11 +5,19 @@ import getBlockState from '../utils/getBlockState.js';
 function conversationPlugin(instance, opt){
 
 	function constructReply(userId){
-		// let conversations = opt.conv.convDb.filter((conv) => conv.user1.id === userId || conv.user2.id === userId);
+		// let conversations = opt.conv.convDb.filter((conv) => conv.firstUser.id === userId || conv.secondUser.id === userId);
 		let conversations = instance.conversationManager.getUserConversations(userId);
+		// console.log("Fetched conversations from DB:", conversations);
 		conversations = conversations.map((conv) => {
-			let unreadMsgs = (conv.user1.id === userId) ? conv.user1UnreadCount : conv.user2UnreadCount;
-			let user = (conv.user1.id === userId) ? conv.user2 : conv.user1;
+			conv = {
+				id: conv.id,
+				firstUser: JSON.parse(conv.firstUserJson),
+				secondUser: JSON.parse(conv.secondUserJson),
+				firstUserUnreadCount: conv.firstUserUnreadCount,
+				secondUserUnreadCount: conv.secondUserUnreadCount
+			}
+			const unreadMsgs = (conv.firstUser.id === userId) ? conv.firstUserUnreadCount : conv.secondUserUnreadCount;
+			let user = (conv.firstUser.id === userId) ? conv.secondUser : conv.firstUser;
 			// user = {...user, connectionState: friendConnectionState(opt.conv.blockDb, userId, user.id)}
 			user = {...user, connectionState: getBlockState(userId, user.id, instance.blockManager)}
 			return ({
