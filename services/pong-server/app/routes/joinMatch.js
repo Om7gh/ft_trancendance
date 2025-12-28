@@ -25,7 +25,7 @@ async function joinMatchHandler(request, reply) {
 
     if (!room || (room.getState() !== "waiting") || !room.isMember(user.id)) {
         const error = new Error("Currently you don't have any match to join!!")
-        error.statusCode = 400;
+        error.statusCode = 499;
         throw error;
     }
 
