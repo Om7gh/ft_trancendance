@@ -1,25 +1,5 @@
 import { Type } from '@fastify/type-provider-typebox';
 
-export const newUserSchema = {
-  body: Type.Object({
-    username: Type.String(),
-    first_name: Type.String({
-      pattern: '^[\\p{L}]+$',
-      minLength: 1,
-      maxLength: 50
-    }),
-    last_name: Type.String({
-      pattern: '^[\\p{L}]+$',
-      minLength: 1,
-      maxLength: 50
-    }),
-    bio: Type.Optional(Type.String({
-      maxLength: 300
-    })),
-    avatar: Type.Optional(Type.String())
-  })
-}
-
 export const updateUserSchema = {
   body: Type.Object({
     username: Type.Optional(Type.String()),

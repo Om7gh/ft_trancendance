@@ -22,7 +22,7 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
 
   const sendRequest = () => {
     if (userData?.id) {
-      mutateFriend.mutate({ uid: userData.id });
+      mutateFriend.mutate(userData.id);
     }
   };
 

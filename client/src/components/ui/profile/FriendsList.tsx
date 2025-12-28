@@ -29,7 +29,7 @@ function FriendsList({ friendsList }: FriendsListProps) {
     <div className="space-y-3">
       {friendsList.map((friend: Friend) => (
         <div
-          key={friend.uid}
+          key={friend.id}
           className="flex items-center gap-4 p-4 bg-slate-900/30 hover:bg-slate-900/50 border border-violet-500/10 rounded-lg transition-all duration-200"
         >
           <img
@@ -51,7 +51,7 @@ function FriendsList({ friendsList }: FriendsListProps) {
             )}
           </div>
           <button
-            onClick={() => handleUnfriend(friend.uid, friend.username)}
+            onClick={() => handleUnfriend(friend.id, friend.username)}
             disabled={unfriend.isPending}
             className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors disabled:opacity-50"
             title="Unfriend"
