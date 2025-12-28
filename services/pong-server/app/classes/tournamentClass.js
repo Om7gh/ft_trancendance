@@ -38,7 +38,7 @@ export default class Tournament extends EventEmitter {
 
     removeMember(userId) {
         if (this.isMember(userId)) {
-            this.participants = this.participants.filter((item) => item.id !== userId);
+            this.participants = this.participants.filter((member) => member.id !== userId);
         }
     }
 
