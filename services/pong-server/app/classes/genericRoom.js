@@ -7,15 +7,15 @@ import Player from "./playerClass.js";
 
 export default class GenericRoom extends EventEmitter {
 
-    constructor() {
+    constructor(tournament = null) {
         super();
 
         this.id             = uuid();
         this.state          = "waiting";
-        this.type           = "match";
 
         this.members        = [];
         this.winner         = null;
+        this.tournament     = tournament;
 
         this.playingId      = null;
         this.waitingId      = null;
@@ -34,13 +34,6 @@ export default class GenericRoom extends EventEmitter {
     addMember(user) {
         if ((this.state === "waiting") || (this.members.length < 2) || !this.isMember(user.id)) {
             this.members.push(user);
-        }
-    }
-
-    memberleaved(memberId) {
-        this.members = this.members.filter((user) => user.id !== userId)
-        if (this.state === "going") {
-            this.cu
         }
     }
 

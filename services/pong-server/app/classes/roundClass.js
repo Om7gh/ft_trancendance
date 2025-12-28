@@ -5,10 +5,11 @@ import GenericRoom from './genericRoom.js';
 
 export default class Round extends EventEmitter {
 
-    constructor() {
+    constructor(tournament = null) {
         super();
 
         this.id             = uuid();
+        this.tournament     = tournament;
         this.state          = "waiting";
         this.participants   = null;
         this.rooms          = [];
@@ -21,15 +22,12 @@ export default class Round extends EventEmitter {
 
     setParticipants(participants) {
         if (this.state === "waiting") {
-            console.log("+++++++++++", participants, "++++++");
             this.participants = participants;
         }
     }
 
     createNewRoom() {
-        const room = new GenericRoom();
-
-        room.type = "tournament";
+        const room = new GenericRoom(tournament);
 
         this.rooms.push(room);
 

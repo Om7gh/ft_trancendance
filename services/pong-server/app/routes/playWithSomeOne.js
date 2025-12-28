@@ -13,7 +13,6 @@ export async function waitForOpponent(room) {
     let counter = 0;
     let intervalId = null;
 
-    console.log("##########@@@@@@@##########");
     return (new Promise((resolve, reject) => {
         intervalId = setInterval(() => {
             if (room.getState() === "ready") {
@@ -23,7 +22,7 @@ export async function waitForOpponent(room) {
                 clearInterval(intervalId);
                 room.cancelMatch();
                 const error = new Error("Waiting for opponent too long!!");
-                error.statusCode = 419;
+                error.statusCode = 418;
                 reject(error);
             }
             counter++;

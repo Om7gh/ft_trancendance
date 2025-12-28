@@ -11,22 +11,33 @@ async function joinMatchHandler(request, reply) {
         throw error;
     }
 
+    const rid = request.query.rid
+
     let room = alreadyInMatch(this.roomList, user.id);
-            
+
     if (room && (room.getState() !== "done") && (room.getState() !== "canceled")) {
         const error = new Error("You are already in other match!!")
         error.statusCode = 400;
         throw error;
     }
 
-    const rid = request.query.rid
-
     room = this.roomList.get(rid);
 
     if (!room || (room.getState() !== "waiting") || !room.isMember(user.id)) {
         const error = new Error("Currently you don't have any match to join!!")
-        error.statusCode = 499;
+        error.statusCode = 404;
         throw error;
+    }
+
+    if (room.tournament) {
+        if (room.tournament && !room.tournament.isMember(user.id)) {
+            if ((room.getState() !== "done") && (room.getState() !== "canceled")) {
+                room.
+            }
+            const error = new Error("Currently you don't have any match to join!!")
+            error.statusCode = 404;
+            throw error;
+        }
     }
 
     room.joinRoom(user);
