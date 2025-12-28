@@ -21,7 +21,11 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         AuthController.login
     );
 
-    fastify.post('/logout', AuthController.logout);
+    fastify.post(
+        '/logout',
+        { onRequest: [fastify.authenticate] },
+        AuthController.logout
+    );
 
     fastify.get(
         '/confirm',
@@ -55,7 +59,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
 
     fastify.get(
         '/userinfo',
-        { onRequest: fastify.authenticate },
+        { onRequest: [fastify.authenticate] },
         AuthController.userInfo
     );
 

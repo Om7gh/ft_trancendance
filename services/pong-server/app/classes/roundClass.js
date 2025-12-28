@@ -25,32 +25,40 @@ export default class Round extends EventEmitter {
         }
     }
 
+    createNewRoom() {
+        const room = new GenericRoom();
+
+        room.type = "tournament";
+
+        this.rooms.push(room);
+
+        room.on("done", () => {
+            this.counter += 1;
+            if (this.counter === this.rooms.length) {
+                this.state = "done";
+                this.emit("done");
+            }
+        })
+
+        room.on("error", () => {
+            this.state = "canceled";
+            this.emit("error");
+        })
+
+        this.emit("newRoom", room);
+
+        return room;
+    }
+
     prepareRound() {
-        let currentRoom = null
+        let room = null;
 
         if ((this.state === "waiting") && this.participants) {
             for (let i = 0; i < this.participants.length; i++) {
                 if ((i % 2) === 0) {
-                    currentRoom = new GenericRoom();
-                    currentRoom.type = "tournament";
-                    this.rooms.push(currentRoom);
-
-                    currentRoom.on("done", () => {
-                        this.counter += 1;
-                        if (this.counter === this.rooms.length) {
-                            this.state = "done";
-                            this.emit("done");
-                        }
-                    })
-
-                    currentRoom.on("error", () => {
-                        this.state = "canceled";
-                        this.emit("error");
-                    })
-
-                    this.emit("newRoom", currentRoom);
+                    room = this.createNewRoom();
                 }
-                currentRoom.addMember(this.participants[i]);
+                room.addMember(this.participants[i]);
             }
             this.state = "ready";
         }
@@ -58,6 +66,7 @@ export default class Round extends EventEmitter {
 
     startRound() {
         this.prepareRound();
+        
         if (this.state === "ready") {
             this.state = "going";
             for (let room of this.rooms) {

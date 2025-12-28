@@ -20,9 +20,15 @@ export default abstract class AuthService {
         return data;
     }
 
-    static async logout(loginForm: LoginForm) {
-        const { data } = await api.post('/api/auth/logout', loginForm);
-        return data;
+    static async logout() {
+        const [revokeResponse, logoutResponse] = await Promise.all([
+            api.post('/api/auth/refresh/revoke'),
+            api.post('/api/auth/logout'),
+        ]);
+        return {
+            revoked: revokeResponse.data,
+            logout: logoutResponse.data,
+        };
     }
 
     static async checUsername(username: Username) {
@@ -36,10 +42,10 @@ export default abstract class AuthService {
     }
 
     static async completeProfile(profileData: ProfileData) {
-        const { data } = await api.post(
-            '/api/auth/complete-profile',
-            profileData
-        );
+        const formData = new FormData();
+        formData.append('avatar', profileData.avatar);
+        formData.append('bio', profileData.bio);
+        const { data } = await api.post('/api/auth/complete-profile', formData);
         return data;
     }
 

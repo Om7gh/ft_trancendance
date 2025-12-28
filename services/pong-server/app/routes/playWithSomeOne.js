@@ -15,7 +15,7 @@ export async function waitForOpponent(room) {
 
     return (new Promise((resolve, reject) => {
         intervalId = setInterval(() => {
-            if (room.getState() === "ready") {
+            if (room.getState() === "going") {
                 clearInterval(intervalId);
                 resolve();
             } else if (60 < counter) {
@@ -42,15 +42,13 @@ async function playWithSomeOneHandler(request, reply) {
 
     let room = alreadyInMatch(this.roomList, user.id);
         
-    if (room && (room.getState() !== "done")) {
-        reply.send(JSON.stringify(room.toJSON()));
-        return ;
+    if (room && (room.getState() !== "done" || room.getState() !== "canceled")) {
+        return reply.send(JSON.stringify(room.toJSON()));
     }
     
     if (!this.currentRoom || (this.currentRoom.getState() !== "waiting")) {
-        room = new GenericRoom();
-        this.addRoomToRoomList(room);
-        this.currentRoom = room;
+        this.currentRoom = new GenericRoom();
+        this.addRoomToRoomList(this.currentRoom);
     }
 
     room = this.currentRoom;
@@ -58,7 +56,7 @@ async function playWithSomeOneHandler(request, reply) {
     room.addPlayer(user);
     
     await waitForOpponent(room);
-    
+
     reply.send(JSON.stringify(room.toJSON()));
 }
 

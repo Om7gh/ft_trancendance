@@ -5,7 +5,7 @@ import axios, {
 } from 'axios';
 
 export const api = axios.create({
-    baseURL: 'http://localhost:8080',
+    baseURL: import.meta.env.VITE_API_URL,
     withCredentials: true,
 });
 
@@ -13,15 +13,18 @@ let isRefreshing = false;
 
 type FailedRequestQueueType = {
     resolve: (value: unknown) => void;
-    reject: (reasion?: any) => void;
+    reject: (reason?: any) => void;
 };
 
 let failedRequestQueue: FailedRequestQueueType[] = [];
 
 function processRequestsQueue(error: unknown) {
     failedRequestQueue.forEach((prom) => {
-        if (error) prom.reject(error);
-        else prom.resolve(undefined);
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(undefined);
+        }
     });
 
     failedRequestQueue = [];
@@ -30,9 +33,16 @@ function processRequestsQueue(error: unknown) {
 api.interceptors.response.use(
     (response: AxiosResponse) => response,
     async (error: AxiosError) => {
-        const originalRequest = error.config as InternalAxiosRequestConfig;
+        const originalRequest = error.config as InternalAxiosRequestConfig & {
+            _retry?: boolean;
+        };
 
-        if (error.response?.status !== 401 || originalRequest._retry) {
+        if (
+            !originalRequest ||
+            error.response?.status !== 401 ||
+            originalRequest._retry ||
+            originalRequest.url === '/api/auth/refresh'
+        ) {
             return Promise.reject(error);
         }
 
@@ -43,19 +53,22 @@ api.interceptors.response.use(
                 .then(() => api(originalRequest))
                 .catch((err) => Promise.reject(err));
         }
-
         originalRequest._retry = true;
-
         isRefreshing = true;
 
         try {
-            await api.post('/api/auth/refresh', null);
-
+            const refreshResponse = await api.post('/api/auth/refresh', null, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            console.log('Token refreshed successfully', refreshResponse.data);
             processRequestsQueue(null);
-            return api(originalRequest);
-        } catch (error) {
-            processRequestsQueue(error);
-            throw error;
+            return await api(originalRequest);
+        } catch (refreshError) {
+            console.error('Token refresh failed', refreshError);
+            processRequestsQueue(refreshError);
+            return Promise.reject(refreshError);
         } finally {
             isRefreshing = false;
         }

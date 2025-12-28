@@ -10,7 +10,7 @@ export default fp(async function onRequestHook(fastify, options) {
                 reply.code(401).send();        
                 return ;
             }
-            const response = await this.axios.get("http://identity:4000/api/auth/userinfo", {
+            const response = await this.axios.get("http://identity:4000/auth/userinfo", {
                 headers: {
                     Cookie: cookie,
                 }

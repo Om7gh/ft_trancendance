@@ -1,7 +1,7 @@
 const userSchema = {
   body: {
     type: 'object',
-    required: ['id', 'username', 'avatar'],
+    required: ['id', 'username'],
     additionalProperties: true,
     properties: {
       id: {
@@ -9,10 +9,6 @@ const userSchema = {
         minLength: 1
       },
       username: {
-        type: 'string',
-        minLength: 1
-      },
-      avatar: {
         type: 'string',
         minLength: 1
       }

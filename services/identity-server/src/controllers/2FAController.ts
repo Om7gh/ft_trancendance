@@ -52,9 +52,8 @@ export default abstract class MFAController {
                 return reply.forbidden('2fa already enabled');
             }
             const secret = decrypt(user2FA.secret);
-            const token = authenticator.generate(secret);
-            const isValid = authenticator.verify({ token, secret });
-            if (!isValid || token != code) {
+            const isValid = authenticator.verify({ token: code, secret });
+            if (!isValid) {
                 return reply.badRequest('invalid code');
             }
             this.mfaRepository.update(user.id, { enabled: 1 });
@@ -77,9 +76,8 @@ export default abstract class MFAController {
                 return reply.badRequest('you dont have permission for this');
             }
             const secret = decrypt(user2fa.secret);
-            const token = authenticator.generate(secret);
-            const isValid = authenticator.verify({ token, secret });
-            if (!isValid || token != code) {
+            const isValid = authenticator.verify({ token: code, secret });
+            if (!isValid) {
                 return reply.badRequest('invalid code');
             }
             if (!user2fa.enabled) {

@@ -89,7 +89,10 @@ export default abstract class AuthController {
             }
             const [accessToken, refreshToken] =
                 await AuthController.issueTokens(this, user);
-            reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken).clearNonceToken();
+            reply
+                .sendAccessToken(accessToken)
+                .sendRefreshToken(refreshToken)
+                .clearNonceToken();
             return reply.redirect('/dashboard');
         } catch (err: any) {
             return reply.badRequest(err.message);
@@ -181,26 +184,10 @@ export default abstract class AuthController {
 
     static async logout(
         this: FastifyInstance,
-        request: FastifyRequest,
+        _request: FastifyRequest,
         reply: FastifyReply
     ) {
-        const token = request.cookies.refreshToken;
-        if (!token) {
-            return reply.badRequest('already logged out');
-        }
-        try {
-            const payload = await request.verifyRefreshToken();
-            const user = this.usersRepository.findByUID(payload.sub!);
-            if (!user) {
-                return reply.badRequest('user not found');
-            }
-            this.usersRepository.update(user.id, {
-                token_id: 'user-logged-out',
-            });
-            return reply.clearAccessToken().clearRefreshToken();
-        } catch (err: any) {
-            return reply.badRequest(err);
-        }
+        return reply.clearAccessToken().send({ success: true });
     }
 
     static async confirmEmail(

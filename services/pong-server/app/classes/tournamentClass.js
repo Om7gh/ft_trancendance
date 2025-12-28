@@ -19,8 +19,8 @@ export default class Tournament extends EventEmitter {
     }
 
     isMember(userId) {
-        for (let user of this.participants) {
-            if (user.id === userId) {
+        for (let member of this.participants) {
+            if (member.id === userId) {
                 return (true);
             }
         }
@@ -30,21 +30,23 @@ export default class Tournament extends EventEmitter {
     addMember(user) {
         if (this.state === "waiting") {
             this.participants.push(user);
-            if (this.participants.length === 2) {
+            if (this.participants.length === 4) {
                 this.startTournament();
             }
         }
     }
 
-    removePlayer(userId) {
-        if (this.state === "waiting") {
+    removeMember(userId) {
+        if (this.isMember(userId)) {
             this.participants = this.participants.filter((item) => item.id !== userId);
         }
     }
 
     createNewRound(participants) {
         this.currentRound =  new Round();
+
         this.rounds.push(this.currentRound);
+        
         this.currentRound.setParticipants(participants);
 
         this.currentRound.on("newRoom", (room) => {
@@ -63,7 +65,7 @@ export default class Tournament extends EventEmitter {
 
     startTournament() {
         if (this.state === "waiting") {
-            if (this.participants.length === 2) {
+            if (this.participants.length === 4) {
                 this.state = "going";
                 this.createNewRound(this.participants);
                 this.currentRound.startRound();
@@ -89,14 +91,6 @@ export default class Tournament extends EventEmitter {
     }
 
     toJSON() {
-        
-        if (this.state === "waiting") {
-            return ({
-                id: this.id,
-                state: this.state,
-                users: this.participants,
-            })
-        }
 
         let rounds = [];
         
@@ -107,8 +101,9 @@ export default class Tournament extends EventEmitter {
         return ({
             id: this.id,
             state: this.state,
-            ...(this.winner && {winner: this.winner.toJSON()}),
-            rounds: rounds,
+            ...((this.state === "waiting") && {participants: this.participants}),
+            ...((this.state !== "waiting") && {rounds: rounds}),
+            ...(this.winner && {winner: this.winner}),
         })
     }
 }
