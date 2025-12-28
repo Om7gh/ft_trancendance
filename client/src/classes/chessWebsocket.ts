@@ -30,6 +30,14 @@ class ChessWebSocket {
   private messageHandlers: Map<string, Function[]> = new Map();
 
   connect(url: string) {
+    // Avoid parallel connections (can cause multiple players in matchmaking)
+    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+      try {
+        this.ws.onclose = null;
+        this.ws.close();
+      } catch {}
+    }
+
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
@@ -86,6 +94,18 @@ class ChessWebSocket {
       this.ws.close();
     }
     this.connect(url);
+  }
+
+  disconnect() {
+    if (!this.ws) return;
+    try {
+      this.ws.onclose = null;
+      this.ws.onopen = null;
+      this.ws.onmessage = null;
+      this.ws.onerror = null;
+      this.ws.close();
+    } catch {}
+    this.ws = null;
   }
 
   sendChat(text: string) {

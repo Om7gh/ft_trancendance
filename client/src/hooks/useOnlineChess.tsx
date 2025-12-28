@@ -31,13 +31,12 @@ export function useOnlineChess() {
 
   console.log(user?.username)
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const pid = urlParams.get('playerId') || localStorage.getItem('playerId');
+    if (!user?.username) return;
+
     const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const baseWs = `${wsProto}://${window.location.host}/game/chess?playerId=${user?.username}`;
-    const wsUrl = pid
-      ? `${baseWs}?playerId=${encodeURIComponent(pid)}`
-      : baseWs;
+    const wsUrl = `${wsProto}://${window.location.host}/game/chess?playerId=${encodeURIComponent(user.username)}`;
+
+    console.log('🔌 Connecting to chess WebSocket with playerId:', user.username);
     chessSocket.connect(wsUrl);
 
     chessSocket.on('connected', () => {
@@ -136,14 +135,9 @@ export function useOnlineChess() {
       setState((prev) => ({ ...prev }));
 
       setTimeout(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const pid =
-          urlParams.get('playerId') || localStorage.getItem('playerId');
+        if (!user?.username) return;
         const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const baseWs = `${wsProto}://${window.location.host}/game/chess?playerId=${user.first_name}`;
-        const wsUrl = pid
-          ? `${baseWs}?playerId=${encodeURIComponent(pid)}`
-          : baseWs;
+        const wsUrl = `${wsProto}://${window.location.host}/game/chess?playerId=${encodeURIComponent(user.username)}`;
         chessSocket.reconnect(wsUrl);
       }, 1000);
     });
@@ -299,8 +293,10 @@ export function useOnlineChess() {
       chessSocket.off('rematchPending');
       chessSocket.off('rematchDeclined');
       chessSocket.off('error');
+
+      chessSocket.disconnect();
     };
-  }, []);
+  }, [user?.username]);
 
   const enterMatchmaking = () => chessSocket.matchmaking();
   const leaveMatchmaking = () => chessSocket.leaveMatchmaking();
