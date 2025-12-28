@@ -12,8 +12,8 @@ const gameHistory = function (req, rep) {
 
     const history = getPlayerGameHistory(req.server.db, username);
     const stats = getGameStats(req.server.db, username);
-
-    console.Console(history, stats)
+    
+    console.log(history, stats)
 
     return rep.send({
       success: true,
