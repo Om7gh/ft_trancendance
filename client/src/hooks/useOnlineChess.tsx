@@ -28,19 +28,14 @@ export function useOnlineChess() {
     gameOver: null,
     rematch: { incomingOffer: false, requested: false, declined: false },
   });
-
-  console.log(user?.username)
   useEffect(() => {
     if (!user?.username) return;
 
     const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const wsUrl = `${wsProto}://${window.location.host}/game/chess?playerId=${encodeURIComponent(user.username)}`;
-
-    console.log('🔌 Connecting to chess WebSocket with playerId:', user.username);
     chessSocket.connect(wsUrl);
 
     chessSocket.on('connected', () => {
-      console.log('✅ Connected to server');
       setState((prev) => ({ ...prev }));
     });
 
@@ -150,7 +145,6 @@ export function useOnlineChess() {
       'gameOver',
       ({ winner, message }: { winner: string; message: string }) => {
         if (gameOverRef.current) {
-          console.log('Suppressing stale gameOver during matchmaking');
           return;
         }
         setState((prev) => ({
@@ -206,10 +200,8 @@ export function useOnlineChess() {
           },
         }));
 
-        // Update chess store with resumed game state
         useChessStore.setState({ currentTurn, turns });
 
-        // Sync the board if board data is provided
         if (board) {
           window.dispatchEvent(
             new CustomEvent('syncBoard', {

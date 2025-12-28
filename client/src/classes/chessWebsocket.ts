@@ -41,7 +41,6 @@ class ChessWebSocket {
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
-      console.log('Connected to chess server');
       this.emit('connected');
     };
 
@@ -55,7 +54,6 @@ class ChessWebSocket {
     };
 
     this.ws.onclose = () => {
-      console.log('Disconnected from socket');
       this.emit('disconnected');
     };
 
@@ -66,7 +64,6 @@ class ChessWebSocket {
   }
 
   matchmaking() {
-    console.log('enter here ...');
     this.send({ type: 'matchmaking' });
   }
 

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import api from "../clientHttpService";
 
-async function getChessHistory(username: string) {
+async function getChessHistory(username: string | null) {
     try {
         const response = await api.get(`/game/chess/history?username=${username}`)
         console.log(response.data)
@@ -11,7 +11,7 @@ async function getChessHistory(username: string) {
     }
 }
 
-const useGetChessHistory = (username: string) => {
+const useGetChessHistory = (username: string | null) => {
   return useQuery({
     queryKey: ["chessHistory", username],
     queryFn: () => getChessHistory(username),

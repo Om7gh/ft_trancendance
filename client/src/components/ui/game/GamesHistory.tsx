@@ -3,6 +3,7 @@ import { useContext } from "react"
 
 function GamesHistory({type} : {type: string}) {
     const {user} = useContext(GlobalContext)
+    console.log(user);
     if (type === 'chess')
         return <div>GamesHistory</div>
     else if (type === "pong")

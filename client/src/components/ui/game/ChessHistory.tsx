@@ -1,12 +1,5 @@
+import type { User } from '@/App';
 import { FaChess } from 'react-icons/fa';
-
-interface UserData {
-  id: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  avatar: string;
-}
 
 interface ChessMatch {
   blackPlayerId: string,
@@ -22,12 +15,8 @@ interface ChessMatch {
       winnerTeam: string
 }
 
-/*
- 
-*/
-
 interface ChessHistoryProps {
-  userData: UserData;
+  userData: User | null;
   matchData: {
     stats: {
       totalGames: number;
