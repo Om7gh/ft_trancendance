@@ -72,7 +72,7 @@ export async function saveUploadedAvatar(
     await fs.promises.mkdir(userDir, { recursive: true });
 
     const ext = path.extname(file.filename) || '.png';
-    const fileName = `${username}${ext}`;
+    const fileName = `${username + Date.now() + ext}`;
     const filePath = path.join(userDir, fileName);
 
     await pipeline(file.file, fs.createWriteStream(filePath));

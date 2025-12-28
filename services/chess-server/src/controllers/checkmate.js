@@ -30,7 +30,7 @@ function handleCheckmate(app, playerId, winnerTeam) {
         winner,
         hasRecordGame: typeof app.recordGame === 'function'
       });
-      
+      console.log("---------------> ", white.playerId, black.playerId);
       app.recordGame({
         roomId: player.roomId,
         whiteId: white.playerId,

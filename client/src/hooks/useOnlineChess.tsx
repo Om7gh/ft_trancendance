@@ -29,6 +29,7 @@ export function useOnlineChess() {
     rematch: { incomingOffer: false, requested: false, declined: false },
   });
 
+  console.log(user?.username)
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const pid = urlParams.get('playerId') || localStorage.getItem('playerId');
