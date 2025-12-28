@@ -65,8 +65,8 @@ export default class Round extends EventEmitter {
     }
 
     startRound() {
-        console.log(this.participants);
         this.prepareRound();
+        
         if (this.state === "ready") {
             this.state = "going";
             for (let room of this.rooms) {

@@ -68,7 +68,7 @@ export default class GenericRoom extends EventEmitter {
     }
 
     createNewPlayer(user) {
-        const player = new Player(user);
+        const player = new Player(user, this.table);
 
         this.addMember(user);
 
@@ -149,6 +149,7 @@ export default class GenericRoom extends EventEmitter {
             console.log("hello world ---- >  ++++----*****%%%%%////")
             if (this.state === "waiting") {
                 const invitations = this.generateInvitations();
+
                 await axios.post("http://notification:9005/send", {
                     data: invitations,
                 });
