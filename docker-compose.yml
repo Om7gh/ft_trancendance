@@ -121,8 +121,8 @@ services:
     #   - ./server/chat-server/.env
     networks:
       - pingpong
-    # volumes:
-    #   - $HOME/data/chat:/var/local
+    volumes:
+      - $HOME/data/chat:/var/lib/sqlite/
     # depends_on:
     #   rabbitmq:
     #     condition: service_healthy

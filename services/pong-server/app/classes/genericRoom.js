@@ -7,15 +7,15 @@ import Player from "./playerClass.js";
 
 export default class GenericRoom extends EventEmitter {
 
-    constructor() {
+    constructor(tournament = null) {
         super();
 
         this.id             = uuid();
         this.state          = "waiting";
-        this.type           = "match";
 
         this.members        = [];
         this.winner         = null;
+        this.tournament     = tournament;
 
         this.playingId      = null;
         this.waitingId      = null;
@@ -35,10 +35,6 @@ export default class GenericRoom extends EventEmitter {
         if ((this.state === "waiting") || (this.members.length < 2) || !this.isMember(user.id)) {
             this.members.push(user);
         }
-    }
-
-    removeMember(userId) {
-        this.members = this.members.filter((user) => user.id !== userId)
     }
 
     isMember(userId) {
@@ -64,13 +60,24 @@ export default class GenericRoom extends EventEmitter {
         return false;
     }
 
-    createNewPlayer(user) {
+    createNewPlayer(user, side) {
         const player = new Player(user, this.table);
 
         this.addMember(user);
 
+        player.setPaddleInTable(side);
+
         player.on("leaveMatch", () => {
             this.removeMember(player.id);
+            if (this.leftPlayer && (this.leftPlayer.id === player.id)){
+                if (this.rightPlayer && this.isMember(this.rightPlayer.id)) {
+                    this.rightPlayer.points = 7;
+                }
+            } else if (this.rightPlayer && (this.rightPlayer.id === player.id)) {
+                if (this.leftPlayer && this.isMember(this.leftPlayer.id)) {
+                    this.leftPlayer.points = 7;
+                }
+            }
             this.stopMatch();
         });
 
@@ -80,18 +87,15 @@ export default class GenericRoom extends EventEmitter {
             else
                 this.pause(player.id);
         })
-
         return player;
     }
 
     addPlayer(user) {
         if ((this.state === "waiting") && user) {
             if (!this.leftPlayer) {
-                this.leftPlayer = this.createNewPlayer(user);
-                this.leftPlayer.setPaddleInTable("left");
+                this.leftPlayer = this.createNewPlayer(user, "left");
             } else if (!this.rightPlayer && (this.leftPlayer.id !== user.id)) {
-                this.rightPlayer = this.createNewPlayer(user);
-                this.rightPlayer.setPaddleInTable("right");
+                this.rightPlayer = this.createNewPlayer(user, "right");
             }
             if (this.leftPlayer && this.rightPlayer) {
                 this.state = "ready";
@@ -132,13 +136,15 @@ export default class GenericRoom extends EventEmitter {
         const invitations = [];
 
         for (let member of this.members) {
-            invitations.push({
-                id: uuid(),
-                type: "joinMatch",
-                sender: {id: this.id, username: "", avatar: ""},
-                receiver: {id: member.id},
-                expire: (Math.floor(Date.now() / 1000) + 60),
-            });
+            if (member) {
+                invitations.push({
+                    id: uuid(),
+                    type: "joinMatch",
+                    sender: {id: this.id, username: "", avatar: ""},
+                    receiver: {id: member.id},
+                    expire: (Math.floor(Date.now() / 1000) + 60),
+                });
+            }
         }
         return (invitations);
     }
@@ -247,15 +253,17 @@ export default class GenericRoom extends EventEmitter {
     }
 
 
+
+
     setWinner() {
         if (this.state === "done") {
             if (this.leftPlayer && !this.rightPlayer) {
                 this.leftPlayer.setPoints(7);
-                this.winner = this.leftPlayer;
+                this.winner = this.leftPlayer.toJSON();
             } else if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints())
-                this.winner = this.rightPlayer;
+                this.winner = this.rightPlayer.toJSON();
             else if (this.leftPlayer.getPoints() > this.rightPlayer.getPoints())
-                this.winner = this.leftPlayer;
+                this.winner = this.leftPlayer.toJSON();
         }
     }
 
@@ -327,7 +335,7 @@ export default class GenericRoom extends EventEmitter {
                 ...(this.leftPlayer && {leftPlayer:  this.leftPlayer.toJSON()}),
                 ...(this.rightPlayer && {rightPlayer:  this.rightPlayer.toJSON()}),
             }),
-            ...((this.state === "done") && {winner : this.winner}),
+            ...((this.state === "done") && {winner : this.winner})
         })
     }
 }

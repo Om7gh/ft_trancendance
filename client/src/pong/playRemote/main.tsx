@@ -3,7 +3,6 @@ import { Outlet, Link } from 'react-router';
 import React from 'react';
 import { MdGamepad } from 'react-icons/md';
 import MenuButton from '../component/MenuButton';
-import { FaBattleNet } from 'react-icons/fa';
 
 export type MenuOptionPropsType = {
   children: React.ReactNode;

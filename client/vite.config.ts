@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from "vite";
+import { loadEnv} from "vite";
 import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath } from "url";
@@ -11,7 +11,7 @@ import tailwindcss from "@tailwindcss/vite";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRootDir = resolve(__dirname);
 
-export default function defineConfig ({ mode }) {
+export default function defineConfig ({ mode } : {mode:string}) {
   const env = loadEnv(mode, process.cwd(), "")
   console.log(env);
   return ({
@@ -98,13 +98,11 @@ export default function defineConfig ({ mode }) {
   
   server: {
     port: 3000,
-    host: '0.0.0.0',
+    host: true,
     open: false,
     cors: true,
     strictPort: true,
-    allowedHosts: env.VITE_ALLOWED_HOSTS
-    ? env.VITE_ALLOWED_HOSTS.split(",")
-    : ["e2r4p11:8080"],
+    allowedHosts: true,
     hmr: {
       overlay: false,
       clientPort: 3000,

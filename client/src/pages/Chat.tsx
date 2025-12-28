@@ -12,7 +12,7 @@ import visibleCardsResolver from "@/utils/cardsResolver.ts"
 import type {ServerRequest} from "@/types/serverRequest.ts";
 import type {Card} from "../types/UserCard.ts";
 
-function App(){
+function Chat(){
 
 	const selectedTab = useRef("Chats");
 	
@@ -210,4 +210,4 @@ function App(){
 	);
 }
 
-export default App;
+export default Chat

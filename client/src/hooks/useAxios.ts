@@ -1,18 +1,15 @@
 import { useEffect, useRef, useState } from "react"
-import axiosApiInstance from '@/axiosApiInstance';
+import api from "@/services/clientHttpService";
 
 function useAxios(uri: string | null): [React.RefObject<any>, string]{
 	const  [fetchStatus, setFetchStatus] = useState("loading");
 	const resource = useRef<any>([]);
 
 	useEffect(() => {
-		const cancelController = new AbortController();
 		async function fetchData(){
 			let response;
 			try{
-				response = await axiosApiInstance.get(`http://localhost:8080${uri}`, {
-					signal: cancelController.signal
-				});
+				response = await api.get(`${uri}`);
 				resource.current = response.data;
 				setFetchStatus("fulfilled");
 			}
@@ -33,7 +30,6 @@ function useAxios(uri: string | null): [React.RefObject<any>, string]{
 			setTimeout(test, 500);
 
 		return () => {
-			cancelController.abort();
 		}
 
 	}, [uri]);

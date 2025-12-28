@@ -2,14 +2,10 @@ import type { BoardUpdateData, Position, Props } from '../types';
 import { useEffect, useRef, useState } from 'react';
 import { ChessRules } from '../classes/chessRules';
 import { boardTile } from '../utils/boardTiles';
-import { draggableEvent } from '../events';
-import {
-    getBoardCoordinates,
-    getCurrentPiece,
-    handleValidMove,
-    validateTurn,
-} from '../events/dropEvent';
+
 import { useChessStore } from '../store/useChessStore';
+import { getBoardCoordinates, getCurrentPiece, handleValidMove, validateTurn } from '@/events/dropEvent';
+import { draggableEvent } from '@/events';
 
 export default function Board({
     pieces,

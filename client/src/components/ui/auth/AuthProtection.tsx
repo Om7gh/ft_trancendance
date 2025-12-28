@@ -1,5 +1,4 @@
 import { GlobalContext } from '@/App';
-import useAuthenticated from '@/services/auth/useAuthenticated';
 import { useContext, useEffect, type ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 

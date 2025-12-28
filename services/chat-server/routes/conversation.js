@@ -1,14 +1,17 @@
 import fp from 'fastify-plugin';
-import friendConnectionState from '../utils/friendConnectionState.js';
+// import friendConnectionState from '../utils/friendConnectionState.js';
+import getBlockState from '../utils/getBlockState.js';
 
 function conversationPlugin(instance, opt){
 
 	function constructReply(userId){
-		let conversations = opt.conv.convDb.filter((conv) => conv.user1.id === userId || conv.user2.id === userId);
+		// let conversations = opt.conv.convDb.filter((conv) => conv.user1.id === userId || conv.user2.id === userId);
+		let conversations = instance.conversationManager.getUserConversations(userId);
 		conversations = conversations.map((conv) => {
 			let unreadMsgs = (conv.user1.id === userId) ? conv.user1UnreadCount : conv.user2UnreadCount;
 			let user = (conv.user1.id === userId) ? conv.user2 : conv.user1;
-			user = {...user, connectionState: friendConnectionState(opt.conv.blockDb, userId, user.id)}
+			// user = {...user, connectionState: friendConnectionState(opt.conv.blockDb, userId, user.id)}
+			user = {...user, connectionState: getBlockState(userId, user.id, instance.blockManager)}
 			return ({
 				id: conv.id,
 				friend: user,

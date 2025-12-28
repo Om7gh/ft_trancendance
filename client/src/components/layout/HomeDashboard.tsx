@@ -15,7 +15,7 @@ type GameType = 'pingpong' | 'chess';
 export default function HomeDashboard() {
   const [activeGame, setActiveGame] = useState<GameType>('pingpong');
   const {user} = useContext(GlobalContext)
-  const {data: chess, isPending, isError, error} = useGetChessHistory(user?.username)
+  const {data: chess, isPending, isError} = useGetChessHistory(user?.username)
   return (
     <div className="h-full p-5 space-y-6 overflow-auto">
       <div>

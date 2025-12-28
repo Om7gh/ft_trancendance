@@ -38,15 +38,15 @@ export default class Tournament extends EventEmitter {
 
     removeMember(userId) {
         if (this.isMember(userId)) {
-            this.participants = this.participants.filter((item) => item.id !== userId);
+            this.participants = this.participants.filter((member) => member.id !== userId);
         }
     }
 
     createNewRound(participants) {
-        this.currentRound =  new Round();
+        this.currentRound =  new Round(this);
 
         this.rounds.push(this.currentRound);
-        
+
         this.currentRound.setParticipants(participants);
 
         this.currentRound.on("newRoom", (room) => {

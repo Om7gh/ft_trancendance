@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeftCircleIcon } from '@heroicons/react/24/solid';
+import type { MouseEvent } from 'react';
 
 export default function BackBtn() {
   const navigate = useNavigate();
 
-  const handleClick = (e) => {
+  const handleClick = (e : MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     navigate(-1);
   };

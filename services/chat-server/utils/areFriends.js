@@ -1,12 +1,18 @@
-import contact from "./friends.js";
 
-function areFriends(user1ID, user2ID){
-    // will check if the two users given are friends. wierd :(
-    if (contact.find((user) => user.id === user2ID)){
-        console.log(`${user1ID} and ${user2ID} are friends`);
-        return (true); 
-    }
-    return (false);
+async function areFriends(cookie, userID){
+	try {
+		const response = await axios.request({
+			url: `http://identity:4000/friends/${userID}`,
+				headers:{
+					Cookie: cookie
+				}
+			});
+		return (response.status === 200);
+	}
+	catch (error){
+		console.error("error happend while fetching friend status: ", error);
+		return (false);
+	}
 }
 
 export default areFriends;

@@ -1,10 +1,15 @@
 import fastify from 'fastify';
+import Database from 'better-sqlite3'
+import fastifyBetterSqlite3 from '@punkish/fastify-better-sqlite3';
 import websocket from '@fastify/websocket';
-import cors from '@fastify/cors';
+// import cors from '@fastify/cors';
 import onRequestHook from "../hooks/onRequestHandler.js"
 import contacts from "../routes/contacts.js";
 import messages from "../routes/messages.js";
 import conversation from "../routes/conversation.js";
+import initDb from '../database/initDb.js';
+
+
 
 const serverOptions = {
 	logger: {
@@ -15,17 +20,24 @@ const serverOptions = {
 	}
 }
 
+const sqlite3Options = {
+	"class": Database,
+	pathToDb: "/var/lib/sqlite/chat.db"
+}
+
 async function main() {
 
 	let convDb = [];
 	let msgDb = [];
 	let usersBlocksDb = [];
 
-	let app = fastify(serverOptions);
+	const app = fastify(serverOptions);
 
+	app.register(fastifyBetterSqlite3, sqlite3Options);
+	
 	app.register(onRequestHook);
 
-	app.register(cors);
+	// app.register(cors);
 	
 	app.register(websocket);
 	
@@ -49,6 +61,14 @@ async function main() {
 			convDb: convDb,
 			blockDb: usersBlocksDb
 		}
+	});
+
+	app.ready()
+	.then(() => {
+		initDb(app.betterSqlite3);
+	})
+	.catch((err) => {
+		app.log.info(`error accured: ${err}`);
 	});
 
 	app.listen({port: 9004, host: "0.0.0.0"})

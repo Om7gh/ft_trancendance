@@ -14,7 +14,7 @@ function LeftPlayer({ player }: PlayerPropsType) {
         src={player.avatar}
       />
       <h1 className="absolute text-[1em] top-1/2 -translate-y-1/2 left-2/4 w-2/6 m-auto">
-        {player.name}
+        {player.username}
       </h1>
     </div>
   );
@@ -28,7 +28,7 @@ function RightPlayer({ player }: PlayerPropsType) {
         src={player.avatar}
       />
       <h1 className="absolute text-[1em] top-1/2 -translate-y-1/2 left-1/8 w-2/6 m-auto">
-        {player.name}
+        {player.username}
       </h1>
     </div>
   );

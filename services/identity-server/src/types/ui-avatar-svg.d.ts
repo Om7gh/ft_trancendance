@@ -12,6 +12,8 @@ declare module 'ui-avatar-svg' {
     size(value: number): this;
     bgColor(value: string): this;
     textColor(value: string): this;
+    fontFamily(value: string): this;
+    fontWeight(value: string|number): this;
     generate(): string;
   }
 

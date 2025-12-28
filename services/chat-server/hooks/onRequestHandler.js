@@ -8,7 +8,7 @@ function onRequestHook(instance, opt){
 			if (!cookie)
 				throw new Error("No cookie is set");
 			const response = await axios.request({
-				url: "http://identity:4000/auths/userinfo",
+				url: "http://identity:4000/auth/userinfo",
 				headers: {
 					Cookie: cookie
 				}
