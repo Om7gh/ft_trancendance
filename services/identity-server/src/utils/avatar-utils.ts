@@ -41,7 +41,6 @@ function generateAvatar(
         .size(size)
         .bgColor(bgColor)
         .textColor(textColor)
-        .fontFamily("'Bungee', sans-serif")
         .fontWeight('bold')
         .generate();
 
