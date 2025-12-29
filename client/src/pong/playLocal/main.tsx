@@ -28,7 +28,7 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
   useLocalMatch(canvasRef, setError, setMatchState, setScore);
   
   return (
-    <div className="flex flex-col w-9/10 m-auto my-4">
+    <div className="flex flex-col">
       <canvas
         width="700"
         height="400"
@@ -50,7 +50,7 @@ export function PlayLocal() {
   if (error)
     return <MessageDisplayer message={error} />
   return (
-    <div className="relative">
+    <div className="relative bg-amber-50">
       <LocalScoreBar score={score} />
       <Match
         setError={setError}

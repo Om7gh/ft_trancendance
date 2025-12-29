@@ -31,6 +31,23 @@ export function initDatabase(dbPath = './pong.db') {
             FOREIGN KEY (winner_id) REFERENCES users(id)
         );
 
+        CREATE TABLE IF NOT EXISTS customizations (
+            id TEXT PRIMARY KEY,
+            ball_color TEXT DEFAULT '#FF8C00',
+            left_paddle_color TEXT DEFAULT '#00FF00',
+            right_paddle_color TEXT DEFULAT '#FF0000',
+            table_color TEXT DEFAULT '#FFFFFF',
+            chess_peice TEXT DEFAULT 'alpha',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS customizations (
+            id TEXT PRIMARY KEY,
+            username TEXT NOT NULL,
+            avatar TEXT,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
     `);
 
     return db;

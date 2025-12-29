@@ -1,17 +1,10 @@
+import type { User } from '@/App';
 import ChessHistory from '../game/ChessHistory';
 import PongHistory from '../game/PongHistory';
 
-interface UserData {
-  id: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  avatar: string;
-}
-
 interface MyGamesHistoryProps {
   type: string;
-  userData: UserData;
+  userData: User | null;
   matchData: any;
 }
 

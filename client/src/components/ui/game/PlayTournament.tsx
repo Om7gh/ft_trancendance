@@ -3,6 +3,7 @@ import { FaRankingStar } from "react-icons/fa6";
 
 import api from "@/services/clientHttpService";
 import MessageDisplayer from "@/pong/component/MessageDisplayer";
+import { useNavigate } from "react-router-dom";
 
 type PlayerType = {
     id: string;
@@ -17,7 +18,7 @@ type PlayerPropsType = {
 
 function Player({player}: PlayerPropsType) {
     return (
-        <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-slate-800/50 to-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 transition-all">
+        <div className="flex items-center gap-3 p-3 bg-linear-to-r from-slate-800/50 to-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 transition-all">
             <img 
                 src={player?.avatar || '/default-avatar.png'} 
                 alt={player?.username} 
@@ -209,6 +210,7 @@ function ListRounds({roundList}: ListRoundsPropsType) {
 
 export default function PlayTournament() {
     const [data, setData] = useState<any>(null);
+    const navigate = useNavigate()
 
     useEffect(() => {
         let ignored = false;
@@ -241,15 +243,14 @@ export default function PlayTournament() {
     async function leaveTournament () {
         try {
             await api.get("/pongGame/remote/tournament/leave");
-            console.log("success")
+            navigate("/dashboard/games/portal")
         } catch (e) {
              setData({
                     state: "error",
                     reason: "Failed to leave match!",
                 });
         }
-    } 
-
+    }
     console.log(data)
     if (!data)
         return (
@@ -258,7 +259,7 @@ export default function PlayTournament() {
                     <MessageDisplayer message="Fetching Tournament..." />
                     <button 
                         onClick={leaveTournament}
-                        className="mt-6 px-6 py-2 bg-pink-600 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
+                        className="mt-6 px-6 py-2 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
                     >
                         Leave Tournament
                     </button>
@@ -271,11 +272,11 @@ export default function PlayTournament() {
                 <div className="h-full grid place-items-center">
                     <div className="max-w-8xl mx-auto">
                         <div className="bg-slate-900/20 rounded-2xl p-8 border border-slate-900/20 shadow-xl shadow-slate-900">
-                            <WaitingList memberList={data.tournament.participants} />
+                            <WaitingList memberList={data.tournament.members} />
                             <div className="flex flex-col justify-center mt-8">
                                 <button 
                                     onClick={leaveTournament}
-                                    className="px-8 py-3 bg-pink-600 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
+                                    className="px-8 py-3 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
                                 >
                                     Leave Tournament
                                 </button>
@@ -290,7 +291,7 @@ export default function PlayTournament() {
                     <div className="max-w-6xl mx-auto">
                         <div className="bg-slate-950/20 p-8 border border-slate-700/50 shadow-2xl">
                             <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-3xl font-bold bg-gradient-to-l from-violet-500 to-neon bg-clip-text text-transparent">
+                                <h2 className="text-3xl font-bold bg-linear-to-l from-violet-500 to-neon bg-clip-text text-transparent">
                                     < FaRankingStar className="text-5xl text-neon" />
                                     Tournament Stats</h2>
                                 <span className={`px-4 py-2 text-sm font-bold shadow-xl shadow-slate-900 ${
@@ -302,10 +303,13 @@ export default function PlayTournament() {
                                 </span>
                             </div>
                             <ListRounds roundList={data.tournament.rounds} />
+                            {data.tournament.state === "done" && <div>
+                                
+                                </div>}
                             <div className="flex justify-center mt-8">
                                 <button 
                                     onClick={leaveTournament}
-                                    className="px-8 py-3 bg-pink-600 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
+                                    className="px-8 py-3 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
                                 >
                                     Leave Tournament
                                 </button>
@@ -316,12 +320,12 @@ export default function PlayTournament() {
             )
         } else
             return (
-                <div className="h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 grid place-items-center">
+                <div className="h-full bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 p-8 grid place-items-center">
                     <div className="max-w-6xl mx-auto">
                         <MessageDisplayer message="Tournament Canceled!!" />
                         <button 
                             onClick={leaveTournament}
-                            className="mt-6 px-6 py-2 bg-pink-600 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
+                            className="mt-6 px-6 py-2 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
                         >
                             Leave Tournament
                         </button>

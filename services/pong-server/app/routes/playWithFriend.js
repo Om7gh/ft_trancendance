@@ -1,7 +1,7 @@
+import { alreadyInMatch } from "./pongGame.js";
 import GenericRoom from "../classes/genericRoom.js";
 import inviteQuerySchema from "../schemas/inviteQuerySchema.js";
 import acceptQuerySchema from "../schemas/acceptQuerySchema.js";
-import { alreadyInMatch }  from "./playWithSomeOne.js";
 
 
 async function acceptHandler(request, reply) {
@@ -18,7 +18,7 @@ async function acceptHandler(request, reply) {
 
     const room = this.roomList.get(rid);
 
-    if (!room || (room.getState() !== "Waiting") || !room.isMemeber(user.id)) {
+    if (!room || !room.isMemeber(user.id) || !room.isWaiting()) {
         const error = new Error("Either you are not invited, or invitation is gone");
         error.statusCode = 400;
         throw error
@@ -47,19 +47,23 @@ async function inviteHandler(request, reply) {
         throw error;
     }
 
-    var room = alreadyInMatch(this.roomList, user.id);
+    let room = alreadyInMatch(this.roomList, user.id);
     
-    if (room && (room.getState() !== "done")) {
+    if (room && !room.isDone()) {
         const error = new Error("You are already in match!!");
         error.statusCode = 409;
         throw error;
     }
     
     room = new GenericRoom();
+
+    this.addToRoomList(room);
+
     room.addMember(user.id);
+
     room.addMember(fid);
 
-    this.addRoomToRoomList(room);
+    room.waitMembersToJoin();
 
     await this.axios.post("http://notification:9005/send",
         {data: [{
@@ -67,11 +71,9 @@ async function inviteHandler(request, reply) {
             type: "inviteToMatch",
             sender: {id: user.id, username: user.username, avatar: user.avatar},
             receiver: {id: fid},
-            expire: (Math.floor(Date.now() / 1000) + 60),
+            expireTime: (Math.floor(Date.now() / 1000) + 60),
         },]}
     );
-
-    room.waitMembersToJoin();
 
     return (reply.send("Invited!!"));
 }

@@ -25,15 +25,14 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
       <RemoteScoreBar score={score} match={match} />
       <div className="flex flex-col m-auto my-10">
         <canvas
-          width="700"
-          height="400"
-          ref={canvasRef}
+          width="700" height="400" ref={canvasRef}
           className="border w-full aspec-[7/4] m-auto bg-slate-950/60"
         >
           Your browser does not support HTML canvas API!!
         </canvas>
         {(matchState === 'done') && <RemoteWinner score={score} match={match} />}
         {(matchState === 'pause') && <CounterDown />}
+        {(matchState === 'waiting') && <MessageDisplayer message='loading...' />}
       </div>
       <button
           className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-1/2"
@@ -49,9 +48,9 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
 }
 
 export default function PlayMatch({ match }: PlayMatchPropsType) {
-  const connection  = useRef<{ ws: WebSocket | null }>({ ws: null });
   const [error, setError] = useState<string | null>(null);
   const [matchState, setMatchState] = useState<string | null>(null);
+  const connection  = useRef<{ ws: WebSocket | null }>({ ws: null });
   const url = `${import.meta.env.VITE_API_URL}/pongGame/remote/match?rid=${match.id}`;
 
   useWebSocket(url, connection.current, setMatchState, setError);

@@ -32,7 +32,7 @@ async function joinTournamentHandler(request, reply) {
         this.tournamentList.set(tournament.id, tournament);
         
         tournament.on("newRoom", (room) => {
-            this.addRoomToRoomList(room);
+            this.addToRoomList(room);
         })
 
         this.currentTournament = tournament;
@@ -55,15 +55,15 @@ async function leaveTournamentHandler(request, reply) {
     let tournament  = alreadyInTournament(this.tournamentList, user.id);
     
     if (!tournament) {
-        const error = new Error("Currently you are not belong to any tournament!!")
+        const error = new Error("Currently you are not belong to any tournament!!");
         error.statusCode = 400;
         throw error;
     }
 
     tournament.removeMember(user.id);
 
-    if (tournament.participants.length === 0) {
-        this.tournamentList = this.tournamentList.filter((item) => item.id !== tournament.id);
+    if ((tournament.members.length === 0) && (tournament.state !== "waiting")) {
+        this.tournamentList.delete(tournament.id);
     }
 
     return (reply.send("Leave it successfully"));

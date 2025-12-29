@@ -1,13 +1,6 @@
+import { alreadyInMatch } from "./pongGame.js";
 import GenericRoom from "../classes/genericRoom.js";
 
-export function alreadyInMatch(roomList, userId) {
-    for (let [id, room] of roomList) {
-        if (room.isPlayer(userId)) {
-            return (room);
-        }
-    }
-    return (null);
-}
 
 export async function waitForOpponent(room) {
     let counter = 0;
@@ -15,12 +8,12 @@ export async function waitForOpponent(room) {
 
     return (new Promise((resolve, reject) => {
         intervalId = setInterval(() => {
-            if (room.getState() === "ready") {
+            if (room.isReady()) {
                 clearInterval(intervalId);
                 resolve();
             } else if (60 < counter) {
-                clearInterval(intervalId);
                 room.cancelMatch();
+                clearInterval(intervalId);
                 const error = new Error("Waiting for opponent too long!!");
                 error.statusCode = 418;
                 reject(error);
@@ -31,8 +24,9 @@ export async function waitForOpponent(room) {
 }
 
 async function playWithSomeOneHandler(request, reply) {
-    const user  = request.user;
-    const state = this.validateUser(user);
+    const user          = request.user;
+    const state         = this.validateUser(user);
+    let   currentRoom   = this.currentRoom;
 
     if (!state) {
         const error = new Error("Invalid user passed to handler!!")
@@ -41,23 +35,28 @@ async function playWithSomeOneHandler(request, reply) {
     }
 
     let room = alreadyInMatch(this.roomList, user.id);
-        
-    if (room && (room.getState() !== "done" || room.getState() !== "canceled")) {
-        return reply.send(JSON.stringify(room.toJSON()));
-    }
     
-    if (!this.currentRoom || (this.currentRoom.getState() !== "waiting")) {
-        this.currentRoom = new GenericRoom();
-        this.addRoomToRoomList(this.currentRoom);
+    if (room && !room.isDone()) {
+        if (room.tournament) {
+            if (room.tournament.isMember(user.id)) {
+                return reply.send(room.toJSON());
+            }
+        } else {
+            return reply.send(room.toJSON());
+        }
     }
 
-    room = this.currentRoom;
-    
-    room.addPlayer(user);
-    
-    await waitForOpponent(room);
+    if (!currentRoom || !currentRoom.isWaiting()) {
+        currentRoom = new GenericRoom();
+        this.addToRoomList(currentRoom);
+        this.currentRoom = currentRoom;
+    }
 
-    reply.send(JSON.stringify(room.toJSON()));
+    currentRoom.addPlayer(user);
+    
+    await waitForOpponent(currentRoom);
+
+    reply.send(JSON.stringify(currentRoom.toJSON()));
 }
 
 export default async function playWithSomeOne(fastify, options) {

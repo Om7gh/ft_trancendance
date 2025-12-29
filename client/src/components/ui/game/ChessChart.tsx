@@ -2,8 +2,8 @@ import type { User } from '@/App';
 import useGetChessHistory from '@/services/chess/useChessHistory';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
-function ChessChart({user} : {user: User}) {
-    const {data: gameState, isError, error, isPending} = useGetChessHistory(user?.username)
+function ChessChart({user} : {user: User | null}) {
+    const {data: gameState, isError, error, isPending} = useGetChessHistory(user?.username!)
     if (isPending)
       return <p className='text-center text-violet-500'>Loading...</p>
     if (isError)

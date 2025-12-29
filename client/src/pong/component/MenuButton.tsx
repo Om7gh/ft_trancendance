@@ -38,9 +38,9 @@ export default function MenuButton({ children, destination }: MenuButtonPropsTyp
   return (
     <Link
       to={destination}
-      className="w-full rounded-xl bg-linear-90 from-violet-500 to-neon font-semibold hover:opacity-90 transition-all active:scale-[1.1] shadow-lg shadow-violet-500/25 flex items-center gap-5 px-5 py-5"
+      className="w-full rounded-xl bg-linear-90 from-violet-500 to-neon font-semibold hover:opacity-90 transition-all active:scale-[1.1] shadow-lg shadow-violet-500/25 flex items-center gap-5 px-4 py-3"
     >
-        <span className="text-2xl bg-gradient-to-br from-violet-500 to-neon bg-clip-text font-bold group-hover:scale-105 transition-transform duration-300 text-slate-950/80 flex items-center gap-5">
+        <span className="text-2xl bg-linear-to-br from-violet-500 to-neon bg-clip-text font-bold group-hover:scale-105 transition-transform duration-300 text-slate-950/80 flex items-center gap-5">
           {children}
         </span>
     </Link>

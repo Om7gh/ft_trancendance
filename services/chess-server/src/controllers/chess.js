@@ -23,18 +23,17 @@ function chessHandler(connection, req) {
     desiredId = u.searchParams.get('playerId'); // username
   } catch {}
 
-  console.log(desiredId)
-
   let playerId =
     desiredId && typeof desiredId === 'string' && desiredId.length <= 64
       ? desiredId
       : uuid();
 
+      console.log(playerId)
+
   if (players.has(playerId)) {
     const existingPlayer = players.get(playerId);
     const oldConnection = existingPlayer.connection;
-    
-    // Close old connection to prevent race conditions
+
     if (oldConnection && oldConnection.readyState === 1) {
       oldConnection.close();
     }

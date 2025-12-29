@@ -11,7 +11,7 @@ export default class Round extends EventEmitter {
         this.id             = uuid();
         this.tournament     = tournament;
         this.state          = "waiting";
-        this.participants   = null;
+        this.members        = null;
         this.rooms          = [];
         this.counter        = 0;
     }
@@ -20,9 +20,9 @@ export default class Round extends EventEmitter {
         return (this.state);
     }
 
-    setParticipants(participants) {
+    setMembers(members) {
         if (this.state === "waiting") {
-            this.participants = participants;
+            this.members = members;
         }
     }
 
@@ -52,12 +52,12 @@ export default class Round extends EventEmitter {
     prepareRound() {
         let room = null;
 
-        if ((this.state === "waiting") && this.participants) {
-            for (let i = 0; i < this.participants.length; i++) {
+        if ((this.state === "waiting") && this.members) {
+            for (let i = 0; i < this.members.length; i++) {
                 if ((i % 2) === 0) {
                     room = this.createNewRoom();
                 }
-                room.addMember(this.participants[i]);
+                room.addMember(this.members[i]);
             }
             this.state = "ready";
         }
@@ -81,7 +81,7 @@ export default class Round extends EventEmitter {
         if (this.state === "done") {
             for (let room of this.rooms) {
                 if (room.getState() === "done") {
-                    winners.push(room.getWinner());
+                    winners.push(room.getWinnerId());
                 }
             }
             return (winners);

@@ -17,6 +17,16 @@ export default class DatabaseService {
             )
         `);
 
+        this.insertCustomization = this.db.prepare(`
+            INSERT OR IGNORE INTO matches (
+                id, left_player_id, left_player_points,
+                right_player_id, right_player_points, winner_id
+            ) VALUES (
+                @id, @left_player_id, @left_points,
+                @right_player_id, @right_points, @winner_id
+            )
+        `);
+
         this.fetchMatchesByUser = this.db.prepare(`
             SELECT
                 m.id AS match_id,

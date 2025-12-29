@@ -51,8 +51,7 @@ function handleMatchmaking(playerId, connection) {
   if (matchmakingQueue.length >= 2) {
     const player1 = matchmakingQueue.shift();
     const player2 = matchmakingQueue.shift();
-    
-    // Prevent a player from matching with themselves
+
     if (player1.playerId === player2.playerId) {
       console.log(`⚠️ Player ${player1.playerId} attempted to match with themselves`);
       // Put one back in the queue
@@ -69,10 +68,11 @@ function handleMatchmaking(playerId, connection) {
 }
 
 function createMatch(player1, player2) {
-  // Object.keys(rooms).forEach((key) => {
-  //   const value = user[key];
-  //   console.log(value);
-  // });
+  console.log('🎮 Creating match between:', {
+    player1Id: player1.playerId,
+    player2Id: player2.playerId
+  });
+  
   const roomId = uuid();
   rooms[roomId] = {
     players: [
@@ -92,6 +92,11 @@ function createMatch(player1, player2) {
     turns: 1,
     createdAt: Date.now(),
   };
+
+  console.log('🎮 Room created:', {
+    roomId,
+    players: rooms[roomId].players.map(p => ({ playerId: p.playerId, team: p.team }))
+  });
 
   players.set(player1.playerId, { connection: player1.connection, roomId });
   players.set(player2.playerId, { connection: player2.connection, roomId });

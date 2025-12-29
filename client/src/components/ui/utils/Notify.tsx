@@ -1,4 +1,7 @@
 import { useNavigate } from "react-router-dom"
+import { FaHourglassStart } from "react-icons/fa";
+import { toast } from "react-toastify";
+
 
 interface SenderType {
   username: string,
@@ -18,16 +21,35 @@ export interface NotificationType  {
   receiver: ReceiverType
 }
 
-function Notify({data} : {data : NotificationType}) {
+function Notify({data, close} : {data : NotificationType, close: () => void}) {
   const navigate = useNavigate()
-  if (data.type === "joinMatch") { 
+  const currentDate = Date.now() / 1000;
+  const diff = data.expireTime - currentDate;
+  if (data.type === "joinMatch" && diff > 0) {
     const url = `/dashboard/games/pingpong/remote/joinMatch?rid=${data.sender.id}`;
-      return <div className="flex items-center justify-between gap-4 text-violet-200 bg-violet-950/20 px-4 py-3 my-2 rounded-lg border border-blue-500/30 hover:border-blue-500/60 transition-all">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(url)}>
-            <p>Join Tournament Match</p>
-            <span>vs</span>
-            <span>{}</span>
+    const redirectToMatch = () => {
+      const diff = data.expireTime - currentDate;
+      if (diff <= 0) {
+        toast.warning(`${data.sender.id} is expired`, {
+          delay: 100,
+          position: "top-center"
+        })
+        return ;
+      }
+      navigate(url)
+    }
+      return <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950/30 py-1 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all mx-8" onClick={close}>
+        <div className="flex items-center gap-3 w-full">
+          <button onClick={redirectToMatch} className="px-6 py-3 flex justify-between items-center w-full" >
+            <div className="flex  items-center gap-5">
+              <FaHourglassStart className="w-10 h-10 p-2 text-violet-500 bg-slate-800" />
+              <div className="flex flex-col justify-start items-start gap-2">
+                <p className="">Tournament</p>
+                <span className="text-xs text-violet-300">{data.sender.id}</span>
+              </div>
+            </div>
+            <p  className=" relative w-10 h-10 bg-neon/50 flex items-center justify-center before:content-['→'] before:absolute before:inset-0 before:flex before:items-center before:justify-center before:text-3xl before:text-white before:bg-violet-900 before:translate-x-1 before:translate-y-1 before:z-10
+  "></p>
           </button>
         </div>
         </div>
@@ -36,7 +58,7 @@ function Notify({data} : {data : NotificationType}) {
     const url = `profile/${data.sender.username}`
     const navigate = useNavigate()
     return (
-      <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950/30 px-4 py-3 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all">
+      <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950/30 px-3 py-2 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all mx-8">
         <div className="flex items-center gap-3">
           <img 
             src={data.sender.avatar} 
@@ -98,7 +120,7 @@ function Notify({data} : {data : NotificationType}) {
         </div>
       </div>
     );
-  } 
+  }
   
   return null;
 }

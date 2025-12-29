@@ -1,12 +1,5 @@
+import type { User } from '@/App';
 import { PiPingPongBold } from 'react-icons/pi';
-
-interface UserData {
-  id: string;
-  username: string;
-  first_name: string;
-  last_name: string;
-  avatar: string;
-}
 
 interface PongMatch {
   id: string;
@@ -18,7 +11,7 @@ interface PongMatch {
 }
 
 interface PongHistoryProps {
-  userData: UserData;
+  userData: User | null;
   matchData: {
     wins: number;
     loses: number;
@@ -69,15 +62,15 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
           </div>
         </div>
 
-        {matchData.matches.length === 0 ? (
+        {matchData.matches?.length === 0 ? (
           <div className="text-center py-8 text-slate-400">
             No pong games played yet
           </div>
         ) : (
           <div className="space-y-3">
-            {matchData.matches.map((game) => {
-              const isWinning = game.winner === userData.username || game.winner === userData.id;
-              const opponent = game.player1 === userData.username || game.player1 === userData.id ? game.player2 : game.player1;
+            {matchData.matches?.map((game) => {
+              const isWinning = game.winner === userData?.username || game.winner === String(userData?.id);
+              const opponent = game.player1 === userData?.username || game.player1 === String(userData?.id) ? game.player2 : game.player1;
               
               return (
                 <div
@@ -98,7 +91,7 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
                         }`}
                       />
                       <div>
-                        <p className="font-medium text-slate-100">{userData.username}</p>
+                        <p className="font-medium text-slate-100">{userData?.username}</p>
                         <p className="text-xs text-slate-400">vs {opponent}</p>
                       </div>
                     </div>

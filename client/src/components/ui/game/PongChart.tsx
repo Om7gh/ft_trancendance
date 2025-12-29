@@ -1,7 +1,7 @@
 import type { User } from "@/App";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
 
-function PongChart({user}: {user: User}) {
+function PongChart({user}: {user: User | null}) {
   const data = [
       { name: 'Wins', value: 10, color: '#00E5FF' },
       { name: 'Losses', value: 12, color: '#8A2BE2' },

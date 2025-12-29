@@ -13,3 +13,23 @@ export interface Tournament {
 export interface Tournaments {
   players: TournamentPlayer[];
 }
+
+
+export interface ChessStats {
+  totalGames: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  winRate: string;
+}
+
+export interface PongStats {
+  wins: number;
+  loses: number;
+  matches: any[];
+}
+
+export interface GamesStatisticsProps {
+  chessStats: ChessStats;
+  pongStats: PongStats;
+}

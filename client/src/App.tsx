@@ -1,6 +1,6 @@
 import { RouterProvider } from 'react-router-dom';
 import { routes } from '@routers';
-import { useContext, useState, type JSX } from 'react';
+import { useState, type JSX, type Dispatch, type SetStateAction} from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -16,20 +16,21 @@ export interface User {
   last_name: string;
   last_login: number;
   last_logout: number;
-  username: string
+  username: string;
 }
 
-interface GlobalContexyType {
+interface GlobalContextType {
   user: User | null;
-  setUser: (user: User) => void;
+  setUser: Dispatch<SetStateAction<User | null>>;
 }
 
-export const GlobalContext = createContext<GlobalContexyType | null>(null);
+export const GlobalContext = createContext<GlobalContextType>({
+  user: null,
+  setUser: () => {},
+});
 
 const App = (): JSX.Element => {
-  const [user, setUser] = useState<User | null>();
-  console.log(user);
-
+  const [user, setUser] = useState<User | null>(null);
 
   return (
     <div className="App">

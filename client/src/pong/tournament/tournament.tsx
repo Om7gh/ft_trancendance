@@ -152,7 +152,7 @@ export default function Tournament() {
         return <MessageDisplayer message="Fetching Tournament..." />
     else if (data.state === "success") {
         if (data.tournament.state === "waiting") {
-            return (<WaitingList memberList={data.tournament.participants} />)
+            return (<WaitingList memberList={data.tournament.members} />)
         } else if ((data.tournament.state === "going") || (data.tournament.state === "done")) {
             return <ListRounds roundList={data.tournament.rounds} />
         } else
