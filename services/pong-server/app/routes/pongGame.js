@@ -24,8 +24,8 @@ function addRoomToRoomList(room) {
             if (room.isDone() && !room.tournament && !room.isCanceled()) {
                 this.db.addMatch(room.toJSON());
             }
-            this.roomList.delete(room.id);
             this.log.info(`delete room with id: ${room.id}`);
+            this.roomList.delete(room.id);
         })
     }
 }
