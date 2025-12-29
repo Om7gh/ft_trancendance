@@ -298,6 +298,13 @@ export default class GenericRoom extends EventEmitter {
         }
     }
 
+    getWinnerId() {
+        if (this.winner) {
+            return (this.winner.id);
+        }
+        return null;
+    }
+
     getWinner() {
         return (this.winner);
     }

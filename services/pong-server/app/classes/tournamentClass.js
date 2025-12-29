@@ -20,7 +20,7 @@ export default class Tournament extends EventEmitter {
 
     isMember(userId) {
         for (let member of this.participants) {
-            if (member.id === userId) {
+            if (member === userId) {
                 return (true);
             }
         }
@@ -29,7 +29,7 @@ export default class Tournament extends EventEmitter {
 
     addMember(user) {
         if (this.state === "waiting") {
-            this.participants.push(user);
+            this.participants.push(user.id);
             if (this.participants.length === 4) {
                 this.startTournament();
             }
@@ -38,7 +38,7 @@ export default class Tournament extends EventEmitter {
 
     removeMember(userId) {
         if (this.isMember(userId)) {
-            this.participants = this.participants.filter((member) => member.id !== userId);
+            this.participants = this.participants.filter((member) => member !== userId);
         }
     }
 
