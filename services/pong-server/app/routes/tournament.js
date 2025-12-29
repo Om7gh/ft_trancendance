@@ -32,7 +32,7 @@ async function joinTournamentHandler(request, reply) {
         this.tournamentList.set(tournament.id, tournament);
         
         tournament.on("newRoom", (room) => {
-            this.addRoomToRoomList(room);
+            this.addToRoomList(room);
         })
 
         this.currentTournament = tournament;
@@ -63,7 +63,7 @@ async function leaveTournamentHandler(request, reply) {
     tournament.removeMember(user.id);
 
     if (tournament.participants.length === 0) {
-        this.tournamentList = this.tournamentList.filter((item) => item.id !== tournament.id);
+        this.tournamentList.delete(tournament.id);
     }
 
     return (reply.send("Leave it successfully"));

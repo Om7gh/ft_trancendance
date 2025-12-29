@@ -1,7 +1,7 @@
+import { alreadyInMatch } from "./pongGame.js";
 import GenericRoom from "../classes/genericRoom.js";
 import inviteQuerySchema from "../schemas/inviteQuerySchema.js";
 import acceptQuerySchema from "../schemas/acceptQuerySchema.js";
-import { alreadyInMatch }  from "./playWithSomeOne.js";
 
 
 async function acceptHandler(request, reply) {
@@ -49,7 +49,7 @@ async function inviteHandler(request, reply) {
 
     var room = alreadyInMatch(this.roomList, user.id);
     
-    if (room && (room.getState() !== "done")) {
+    if (room && (room.getState() === "going")) {
         const error = new Error("You are already in match!!");
         error.statusCode = 409;
         throw error;
