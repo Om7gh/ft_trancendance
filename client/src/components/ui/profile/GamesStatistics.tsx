@@ -1,25 +1,7 @@
 import { PiPingPongBold } from 'react-icons/pi';
 import { FaChess } from 'react-icons/fa';
 import { MdAutoAwesome } from 'react-icons/md';
-
-interface ChessStats {
-  totalGames: number;
-  wins: number;
-  losses: number;
-  draws: number;
-  winRate: string;
-}
-
-interface PongStats {
-  wins: number;
-  loses: number;
-  matches: any[];
-}
-
-interface GamesStatisticsProps {
-  chessStats: ChessStats;
-  pongStats: PongStats;
-}
+import type { GamesStatisticsProps } from '@/types/gameTypes';
 
 function Progress({
   label,
@@ -34,8 +16,8 @@ function Progress({
   return (
     <div className="space-y-1">
       <div className="flex justify-between mb-4 text-slate-300">
-        <span className="text-lg">{label}</span>
-        <span className="text-xl bg-violet-700/40 shadow-xl w-10 h-10 grid place-items-center rounded-full">
+        <span className="text-md md:text-lg self-end">{label}</span>
+        <span className="text-lg md:text-xl bg-violet-700/40 shadow-xl w-7 md:w-10 h-7 md:h-10 grid place-items-center rounded-full">
           {value}
         </span>
       </div>
@@ -70,10 +52,10 @@ function StatHUD({
       <div className="relative z-10">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-3  bg-violet-500/15 border border-violet-500/30">
-            <Icon className="text-5xl text-violet-300" />
+            <Icon className="text-2xl md:text-5xl text-violet-300" />
           </div>
           <div>
-            <h3 className="text-2xl font-semibold tracking-wide text-violet-200">
+            <h3 className="text-lg md:text-2xl font-semibold tracking-wide text-violet-200">
               {title}
             </h3>
             <p className="text-sm text-slate-400">Total matches: {total}</p>

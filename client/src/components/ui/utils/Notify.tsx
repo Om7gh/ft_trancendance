@@ -19,19 +19,6 @@ export interface NotificationType  {
 }
 
 function Notify({data} : {data : NotificationType}) {
-  const navigate = useNavigate()
-  if (data.type === "joinMatch") { 
-    const url = `/dashboard/games/pingpong/remote/joinMatch?rid=${data.sender.id}`;
-      return <div className="flex items-center justify-between gap-4 text-violet-200 bg-violet-950/20 px-4 py-3 my-2 rounded-lg border border-blue-500/30 hover:border-blue-500/60 transition-all">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(url)}>
-            <p>Join Tournament Match</p>
-            <span>vs</span>
-            <span>{}</span>
-          </button>
-        </div>
-        </div>
-  }
   if (data.type === "friend-request") {
     const url = `profile/${data.sender.username}`
     const navigate = useNavigate()
