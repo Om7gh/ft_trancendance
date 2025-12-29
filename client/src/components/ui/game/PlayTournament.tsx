@@ -272,7 +272,7 @@ export default function PlayTournament() {
                 <div className="h-full grid place-items-center">
                     <div className="max-w-8xl mx-auto">
                         <div className="bg-slate-900/20 rounded-2xl p-8 border border-slate-900/20 shadow-xl shadow-slate-900">
-                            <WaitingList memberList={data.tournament.participants} />
+                            <WaitingList memberList={data.tournament.members} />
                             <div className="flex flex-col justify-center mt-8">
                                 <button 
                                     onClick={leaveTournament}

@@ -62,7 +62,7 @@ async function leaveTournamentHandler(request, reply) {
 
     tournament.removeMember(user.id);
 
-    if (tournament.participants.length === 0) {
+    if ((tournament.members.length === 0) && (tournament.state !== "waiting")) {
         this.tournamentList.delete(tournament.id);
     }
 

@@ -39,7 +39,7 @@ function PingpongSettings() {
         </div>
         <div className="grid grid-cols-2 gap-4 items-center">
           <label className="text-violet-200 text-lg">Table</label>
-          <input type="color" id="table" name="table" defaultValue="#19171d" className="w-full h-12 cursor-pointer rounded" />
+          <input type="color" id="table" name="table" defaultValue="#ff00ff" className="w-full h-12 cursor-pointer rounded" />
         </div>
       </div>
       <button
