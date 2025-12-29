@@ -75,9 +75,13 @@ export default defineConfig(({ mode }) => {
 
     server: {
       port: 3000,
-      host: true,
-      cors: true,
+      host: true,          // listen on all interfaces
+      cors: true,          // allow all origins
       strictPort: true,
+      allowedHosts: [
+      'bramzil.42.fr'
+      ], // allow any Host header
+      
       hmr: {
         overlay: false,
         clientPort: 3000,

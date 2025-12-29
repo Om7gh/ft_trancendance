@@ -36,6 +36,10 @@ function Notification() {
       clearInterval(intervalId);
     };
   }, [])
+
+
+  console.log(data);
+
   return (
     <div className="relative">
       <IoIosNotificationsOutline
