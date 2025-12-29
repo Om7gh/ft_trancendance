@@ -258,7 +258,7 @@ export default function PlayTournament() {
                     <MessageDisplayer message="Fetching Tournament..." />
                     <button 
                         onClick={leaveTournament}
-                        className="mt-6 px-6 py-2 bg-pink-600 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
+                        className="mt-6 px-6 py-2 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
                     >
                         Leave Tournament
                     </button>
@@ -275,7 +275,7 @@ export default function PlayTournament() {
                             <div className="flex flex-col justify-center mt-8">
                                 <button 
                                     onClick={leaveTournament}
-                                    className="px-8 py-3 bg-pink-600 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
+                                    className="px-8 py-3 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
                                 >
                                     Leave Tournament
                                 </button>
@@ -305,7 +305,7 @@ export default function PlayTournament() {
                             <div className="flex justify-center mt-8">
                                 <button 
                                     onClick={leaveTournament}
-                                    className="px-8 py-3 bg-pink-600 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
+                                    className="px-8 py-3 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
                                 >
                                     Leave Tournament
                                 </button>
@@ -316,12 +316,12 @@ export default function PlayTournament() {
             )
         } else
             return (
-                <div className="h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 grid place-items-center">
+                <div className="h-full bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 p-8 grid place-items-center">
                     <div className="max-w-6xl mx-auto">
                         <MessageDisplayer message="Tournament Canceled!!" />
                         <button 
                             onClick={leaveTournament}
-                            className="mt-6 px-6 py-2 bg-pink-600 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
+                            className="mt-6 px-6 py-2 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
                         >
                             Leave Tournament
                         </button>
