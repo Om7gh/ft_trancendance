@@ -96,17 +96,14 @@ function ConversationPanel({
 		switch (action){
 			case "block":
 			case "unblock": {
-				console.log("user clicked: ", action);
 				onBlockToggle(action);
 				break ;
 			}
 			case "back": {
 				changeUserView("contacts");
-				console.log("user clicked Back");
 				break ;
 			}
 			case "invite": {
-				console.log("user clicked invite");
 				break ;
 			}
 		}

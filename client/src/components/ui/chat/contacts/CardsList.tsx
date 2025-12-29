@@ -39,7 +39,6 @@ function Avatar({imgUrl, name, type}: AvatarProps){
     <div className={"max-w-[18%] overflow-clip " + avatarStyle[type]}
       onClick={(e) => {
         e.stopPropagation();
-        console.log("=== userName: ", name);
         navigate(`/dashboard/profile/${name}`);
       }}>
       <img src={imgUrl}
