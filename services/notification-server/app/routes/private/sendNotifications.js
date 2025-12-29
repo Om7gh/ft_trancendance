@@ -4,11 +4,12 @@ async function sendNotificationHandler(request, reply) {
     const notifications = request.body.data;
 
     if (notifications) {
-        for (let item of notifications) {
-            console.log("+++++++++", item, "+++++++");
-            let receiver = item.receiver;
-            if (receiver) {
-                this.db.addNotification(item);
+        for (let notification of notifications) {
+            if (notification) {
+                let receiver = notification.receiver;
+                if (receiver && receiver.id) {
+                    this.db.addNotification(notification);
+                }
             }
         }
     }

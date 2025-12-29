@@ -55,23 +55,23 @@ export default class GenericRoom extends EventEmitter {
         return ((this.state === "done") || (this.state === "canceled"));
     }
 
-    addMember(user) {
-        if (this.isWaiting() || (this.members.length < 2) || !this.isMember(user.id)) {
-            this.members.push(user);
+    addMember(userId) {
+        if (this.isWaiting() || (this.members.length < 2) || !this.isMember(userId)) {
+            this.members.push(userId);
         }
     }
 
     removeMember(memberId) {
-        this.members = this.members.filter((m) => {
-            if (m && (m.id !== memberId)) {
-                return (m);
+        this.members = this.members.filter((id) => {
+            if (id && (id !== memberId)) {
+                return (id);
             }
         })
     }
 
     isMember(userId) {
         for (let member of this.members) {
-            if (member && (member.id === userId)) {
+            if (member && (member === userId)) {
                 return true;
             }
         }
@@ -95,7 +95,7 @@ export default class GenericRoom extends EventEmitter {
     createNewPlayer(user, side) {
         const player = new Player(user, this.table);
 
-        this.addMember(user);
+        this.addMember(user.id);
 
         player.setPaddleInTable(side);
 
@@ -119,16 +119,18 @@ export default class GenericRoom extends EventEmitter {
             else
                 this.pause(player.id);
         })
+
         return player;
     }
 
     addPlayer(user) {
-        if ((this.isWaiting) && user) {
+        if (user && this.isWaiting()) {
             if (!this.leftPlayer) {
                 this.leftPlayer = this.createNewPlayer(user, "left");
             } else if (!this.rightPlayer && (this.leftPlayer.id !== user.id)) {
                 this.rightPlayer = this.createNewPlayer(user, "right");
             }
+
             if (this.leftPlayer && this.rightPlayer) {
                 this.state = "ready";
             }
@@ -174,7 +176,7 @@ export default class GenericRoom extends EventEmitter {
                     type: "joinMatch",
                     sender: {id: this.id, username: "", avatar: ""},
                     receiver: {id: member.id},
-                    expire: (Math.floor(Date.now() / 1000) + 60),
+                    expireTime: (Math.floor(Date.now() / 1000) + 60),
                 });
             }
         }
@@ -193,8 +195,8 @@ export default class GenericRoom extends EventEmitter {
             }
         } catch (error) {
             console.log(error);
-            this.cancelMatch();
             this.emit("error");
+            this.cancelMatch();
         }
     }
 
@@ -287,8 +289,8 @@ export default class GenericRoom extends EventEmitter {
     setWinner() {
         if (this.isDone()) {
             if (this.leftPlayer && !this.rightPlayer) {
-                this.leftPlayer.setPoints(7);
                 this.winner = this.leftPlayer.toJSON();
+                this.leftPlayer.setPoints(7);
             } else if (this.leftPlayer.getPoints() < this.rightPlayer.getPoints())
                 this.winner = this.rightPlayer.toJSON();
             else if (this.leftPlayer.getPoints() > this.rightPlayer.getPoints())
@@ -356,11 +358,7 @@ export default class GenericRoom extends EventEmitter {
         return ({
             id : this.id,
             state : this.state,
-            ...((this.isWaiting()) && {
-                ...((0 < this.members.length) && {leftPlayer: this.members[0]}),
-                ...((1 < this.members.length) && {rightPlayer: this.members[1]}),
-            }),
-            ...(((!this.isWaiting()) && (!this.isCanceled())) && {
+            ...((!this.isWaiting() && (!this.isCanceled())) && {
                 ...(this.leftPlayer && {leftPlayer:  this.leftPlayer.toJSON()}),
                 ...(this.rightPlayer && {rightPlayer:  this.rightPlayer.toJSON()}),
             }),

@@ -9,9 +9,18 @@ function matchHandler(socket, req) {
             reason: "Currently you don't have any match to join!!",
         }));
 
-        socket.close();
-        return ;
+        return socket.close();
     }
+
+    if (room.tournament && !room.tournament.isMember(uid)) {
+        socket.send(JSON.stringify({
+            state: "!ok",
+            reason: "User is not member of room's tournament!!",
+        }));
+
+        return socket.close();
+    }
+
     room.setPlayerSocket(uid, socket);
 }
 
