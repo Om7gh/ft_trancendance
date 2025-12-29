@@ -28,7 +28,7 @@ export default class Tournament extends EventEmitter {
     }
 
     addMember(user) {
-        if (this.state === "waiting") {
+        if (this.state === "waiting" && !this.isMember(user.id)) {
             this.participants.push(user);
             if (this.participants.length === 4) {
                 this.startTournament();

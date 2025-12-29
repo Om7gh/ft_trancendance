@@ -13,6 +13,8 @@ async function fetchNotificationHandler(request, reply) {
 
     const result = this.db.getNotificationsByUser(user.id);
 
+    console.log("++++++++++++++", result, "+++++++++++++++");
+
     reply.send(result);
 }
 

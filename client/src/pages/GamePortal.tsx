@@ -1,20 +1,15 @@
 import { Link } from 'react-router-dom';
-import { GiPortal } from 'react-icons/gi';
 
 function GamePortal() {
   return (
-    <>
-      <div className="pb-6 text-2xl bg-linear-30 from-violet-500 to-neon bg-clip-text text-transparent w-fit flex gap-4 items-center">
-        <GiPortal className="w-16 h-16 text-violet-500" />
-        <p>Game Portal</p>
-      </div>
+    <div className='w-full h-full'>
 
-      <div className="flex lg:flex-row justify-between items-center gap-5 h-full text-center">
-        <div
-          className="group flex-1 w-full h-60 lg:h-full 
+      <div className=" grid grid-cols-1 md:grid-cols-3 h-full text-center gap-5 place-items-center p-2">
+        <Link to={'/dashboard/games/pingpong'}
+          className="group flex-1 w-full lg:h-full 
         bg-slate-950/30 relative rounded-lg overflow-hidden 
         hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] 
-        duration-300 cursor-pointer"
+        duration-300 cursor-pointer h-96"
         >
           <img
             src="/pingpong_portal.jpeg"
@@ -26,34 +21,23 @@ function GamePortal() {
           />
 
           <div
-            className="absolute inset-0 bg-gradient-to-b 
+            className="absolute inset-0 bg-linear-to-b 
           from-black/40 to-black/60 
           group-hover:from-black/20 group-hover:to-black/80 
           duration-500"
           />
 
           <div className="h-full flex items-center justify-center relative z-10">
-            <Link
-              to={'/dashboard/games/pingpong'}
-              className="relative bg-slate-950/80 text-violet-200 
-                       px-8 py-3 sm:px-10 sm:py-4 
-                       w-60 sm:w-80 md:w-96 
-                       text-lg sm:text-xl md:text-2xl
-                       cursor-pointer
-                       group-hover:text-white
-                       duration-300
-                       rounded-lg
-                       border-2 border-violet-500/30
-                       hover:border-neon
-                       hover:shadow-[0_0_20px_rgba(139,92,246,0.6)]"
+            <p
+              className='text-xl md:text-5xl text-neon'
             >
-              <span className="relative z-10">Play PingPong</span>
-            </Link>
+              Play Pong
+            </p>
           </div>
-        </div>
+        </Link>
 
-        <div
-          className="group flex-1 w-full h-60 lg:h-full 
+        <Link to={'/dashboard/games/chess'}
+          className="group flex-1 w-full h-96 lg:h-full 
         bg-slate-950/30 relative rounded-lg overflow-hidden 
         hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] 
         duration-300 cursor-pointer"
@@ -68,34 +52,23 @@ function GamePortal() {
           />
 
           <div
-            className="absolute inset-0 bg-gradient-to-b 
+            className="absolute inset-0 bg-linear-to-b 
           from-black/40 to-black/60 
           group-hover:from-black/20 group-hover:to-black/80 
           duration-500"
           />
 
           <div className="h-full flex items-center justify-center relative z-10">
-            <Link
-              to={'/dashboard/games/chess'}
-              className="relative bg-slate-950/80 text-violet-200 
-            px-8 py-3 sm:px-10 sm:py-4 
-            w-60 sm:w-80 md:w-96 
-            text-lg sm:text-xl md:text-2xl
-            cursor-pointer
-            group-hover:text-white
-            duration-300
-            rounded-lg
-            border-2 border-violet-500/30
-            hover:border-neon
-            hover:shadow-[0_0_20px_rgba(139,92,246,0.6)]"
+          <p
+              className='text-xl md:text-5xl text-neon'
             >
-              <span className="relative z-10">Play Chess</span>
-            </Link>
+              Play Chess
+            </p>
           </div>
-        </div>
+        </Link>
 
-        <div
-          className="group flex-1 w-full h-60 lg:h-full 
+        <Link to={'/dashboard/games/customization'}
+          className="group flex-1 w-full h-96 lg:h-full 
         bg-slate-950/30 relative rounded-lg overflow-hidden 
         hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] 
         duration-300 cursor-pointer"
@@ -110,33 +83,22 @@ function GamePortal() {
           />
 
           <div
-            className="absolute inset-0 bg-gradient-to-b 
+            className="absolute inset-0 bg-linear-to-b 
           from-black/40 to-black/60 
           group-hover:from-black/20 group-hover:to-black/80 
           duration-500"
           />
 
           <div className="h-full flex items-center justify-center relative z-10">
-            <Link
-              to={'/dashboard/games/customization'}
-              className="relative bg-slate-950/80 text-violet-200 
-            px-8 py-3 sm:px-10 sm:py-4 
-            w-60 sm:w-80 md:w-96 
-            text-lg sm:text-xl md:text-2xl
-            cursor-pointer
-            group-hover:text-white
-            duration-300
-            rounded-lg
-            border-2 border-violet-500/30
-            hover:border-neon
-            hover:shadow-[0_0_20px_rgba(139,92,246,0.6)]"
+            <p
+              className='text-xl md:text-5xl text-neon'
             >
-              <span className="relative z-10">Customization</span>
-            </Link>
+              Game Customization
+            </p>
           </div>
-        </div>
+        </Link>
       </div>
-    </>
+    </div>
   );
 }
 

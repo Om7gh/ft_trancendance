@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { FaHourglassStart } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 
 interface SenderType {
@@ -21,14 +22,18 @@ export interface NotificationType  {
 }
 
 function Notify({data, close} : {data : NotificationType, close: () => void}) {
-  console.log(data)
   const navigate = useNavigate()
   if (data.type === "joinMatch") {
     const url = `/dashboard/games/pingpong/remote/joinMatch?rid=${data.sender.id}`;
     const redirectToMatch = () => {
       const diff = data.expireTime - Date.now();
-      if (diff < 0)
+      if (diff < 0) {
+        toast.warning(`${data.sender.id} is expired`, {
+          delay: 100,
+          position: "top-center"
+        })
         return ;
+      }
       navigate(url)
     }
       return <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950/30 py-1 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all mx-8" onClick={close}>
