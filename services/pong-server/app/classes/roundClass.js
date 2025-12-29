@@ -81,7 +81,7 @@ export default class Round extends EventEmitter {
         if (this.state === "done") {
             for (let room of this.rooms) {
                 if (room.getState() === "done") {
-                    winners.push(room.getWinner());
+                    winners.push(room.getWinnerId());
                 }
             }
             return (winners);
