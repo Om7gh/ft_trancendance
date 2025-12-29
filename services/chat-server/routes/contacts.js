@@ -1,10 +1,8 @@
 import axios from 'axios';
 import fp from 'fastify-plugin';
-// import findConversation from "../utils/findConversatoin.js";
-// import friendConnectionState from '../utils/friendConnectionState.js';
 import getBlockState from '../utils/getBlockState.js';
 
-function contactPlugin(instance, opt){
+function contactPlugin(instance){
 	function responseNormelizer(response, clientId){
 		return response.map((user) => {
 			const {id, username: name, avatar: photo_url } = user; 
@@ -15,7 +13,6 @@ function contactPlugin(instance, opt){
 					name: name,
 					photo_url: photo_url,
 					connectionState: getBlockState(clientId, user.id, instance.blockManager)
-					// connectionState: friendConnectionState(opt.contacts.blockDb, clientId, user.id)
 				},
 				unread_msg: 0,
 				presence: instance.connectedUsers.has(id) ? "online" : "offline"
@@ -44,7 +41,6 @@ function contactPlugin(instance, opt){
 		}
 		const filterdContacts = contacts.filter((contact) => {
 			return (
-				// !findConversation(opt.contacts.convDB, req.user.id, contact.id)
 				!instance.conversationManager.hasConversation(req.user.id, contact.id)
 			)
 		});

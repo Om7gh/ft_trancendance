@@ -2,14 +2,11 @@ import fastify from 'fastify';
 import Database from 'better-sqlite3'
 import fastifyBetterSqlite3 from '@punkish/fastify-better-sqlite3';
 import websocket from '@fastify/websocket';
-// import cors from '@fastify/cors';
 import onRequestHook from "../hooks/onRequestHandler.js"
 import contacts from "../routes/contacts.js";
 import messages from "../routes/messages.js";
 import conversation from "../routes/conversation.js";
 import initDb from '../database/initDb.js';
-
-
 
 const serverOptions = {
 	logger: {
@@ -26,42 +23,19 @@ const sqlite3Options = {
 }
 
 async function main() {
-
-	let convDb = [];
-	let msgDb = [];
-	let usersBlocksDb = [];
-
 	const app = fastify(serverOptions);
 
 	app.register(fastifyBetterSqlite3, sqlite3Options);
 	
 	app.register(onRequestHook);
-
-	// app.register(cors);
 	
 	app.register(websocket);
 	
-	app.register(messages, {
-		msg: {
-			convDb: convDb,
-			msgDb: msgDb,
-			blockDb: usersBlocksDb
-		}
-	});
+	app.register(messages);
 
-	app.register(contacts, {
-		contacts: {
-			convDB: convDb,
-			blockDb: usersBlocksDb
-		}
-	});
+	app.register(contacts);
 
-	app.register(conversation, {
-		conv: {
-			convDb: convDb,
-			blockDb: usersBlocksDb
-		}
-	});
+	app.register(conversation);
 
 	app.ready()
 	.then(() => {

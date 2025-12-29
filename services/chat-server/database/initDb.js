@@ -5,10 +5,10 @@ function initDb(dbInstance){
 	
 	dbInstance.exec(`CREATE TABLE IF NOT EXISTS conversations (
 		id INTEGER PRIMARY KEY,
-		firstUserID TEXT NOT NULL UNIQUE,
-		secondUserID TEXT NOT NULL UNIQUE,
-		firstUserJson TEXT NOT NULL UNIQUE,
-		secondUserJson TEXT NOT NULL UNIQUE,
+		firstUserID TEXT NOT NULL,
+		secondUserID TEXT NOT NULL,
+		firstUserJson TEXT NOT NULL,
+		secondUserJson TEXT NOT NULL,
 		firstUserUnreadCount INTEGER NOT NULL DEFAULT 0,
 		secondUserUnreadCount INTEGER NOT NULL DEFAULT 0,
 		lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP

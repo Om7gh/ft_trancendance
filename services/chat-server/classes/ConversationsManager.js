@@ -53,6 +53,7 @@ class ConversationManager{
 	}
 
 	resetUserUnreadCount(userID){
+		console.log("=========  Resetting unread count for user ID:", userID);
 		this.#dbInstance.prepare(
 			`UPDATE conversations SET
 			firstUserUnreadCount = CASE WHEN
@@ -71,17 +72,18 @@ class ConversationManager{
 	}
 
 	incrementUserUnreadCount(userID){
+		console.log("====== Incrementing unread count for user ID:", userID);
 		this.#dbInstance.prepare(
 			`UPDATE conversations SET
 			firstUserUnreadCount = CASE WHEN
-				firstUserID = @inputId THEN firstUserUnreadCount + 1
-			ELSE 
+				firstUserID <> @inputId THEN firstUserUnreadCount + 1
+			ELSE
 				firstUserUnreadCount END,
 			secondUserUnreadCount = CASE WHEN
-				secondUserID = @inputId THEN secondUserUnreadCount + 1
+				secondUserID <> @inputId THEN secondUserUnreadCount + 1
 			ELSE
 				secondUserUnreadCount END
-			WHERE firstUserID = @inputId OR secondUserID = @inputId`
+			WHERE firstUserID =  @inputId OR secondUserID = @inputId`
 		)
 		.run({
 			inputId: userID,

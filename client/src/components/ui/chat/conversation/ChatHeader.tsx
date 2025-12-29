@@ -5,8 +5,6 @@ import { VscChevronLeft } from "react-icons/vsc";
 import type {User} from "@/types/User";
 
 type OnAction = (action: string) => void;
-type BlockButton = "block"  | "unblock";
-
 interface ActionButtonProps{
 	wrapperStyle: string;
 }
@@ -17,7 +15,6 @@ interface InviteButtonProps extends ActionButtonProps{
 
 interface BlockButtonProps extends ActionButtonProps{
 	onBlock: OnAction;
-	blockState: BlockButton
 }
 
 interface ContactinfoProps{
@@ -30,7 +27,6 @@ interface UserActionsProps{
 	showActions: boolean;
 	onAction: OnAction;
 	onTap: () => void;
-	blockButtonText: BlockButton
 }
 
 
@@ -76,19 +72,19 @@ function UserInvite({wrapperStyle, onInvite}: InviteButtonProps){
 	);
 }
 
-function UserBlock({wrapperStyle, onBlock, blockState}: BlockButtonProps){
+function UserBlock({wrapperStyle, onBlock}: BlockButtonProps){
 	return (
 		<div className={wrapperStyle} onClick={(e) => {
 			e.stopPropagation()
-			onBlock(blockState)
+			onBlock("block")
 			}}>
-			<label htmlFor="blockButton" className="uppercase">{blockState}</label>
+			<label htmlFor="blockButton" className="uppercase">block</label>
 			<input onClick={(e) => e.stopPropagation()} id="blockButton" type="button"/>
 		</div>
 	);
 }
 
-function UserActions({isMobile, showActions, onTap, onAction, blockButtonText}: UserActionsProps){
+function UserActions({isMobile, showActions, onTap, onAction}: UserActionsProps){
 	if (isMobile)
 	{
 		return (
@@ -101,7 +97,7 @@ function UserActions({isMobile, showActions, onTap, onAction, blockButtonText}: 
 					showActions && 
 					<div className="relative w-full h-[40%]">
 						<UserInvite onInvite={onAction} wrapperStyle="bg-[#0D9488] text-center h-full font-bold leading-[2.2] text-sm"/>
-						{blockButtonText === "block" && <UserBlock blockState={blockButtonText} onBlock={onAction} wrapperStyle="bg-[#F97316] text-center h-full font-bold leading-[2.2] text-sm"/>}
+						<UserBlock onBlock={onAction} wrapperStyle="bg-[#F97316] text-center h-full font-bold leading-[2.2] text-sm"/>
 					</div>
 				}
 			</div>
@@ -110,7 +106,7 @@ function UserActions({isMobile, showActions, onTap, onAction, blockButtonText}: 
 	return (
 		<div className="basis-[25%] flex h-full gap-3 items-center text-[70%] text-center leading-5 font-bold justify-center">
 			<UserInvite onInvite={onAction} wrapperStyle="bg-[#0D9488] flex-1 h-[23%] rounded-2xl"/>
-			{blockButtonText === "block" &&<UserBlock blockState={blockButtonText} onBlock={onAction} wrapperStyle="bg-[#F97316] flex-1 h-[23%] rounded-2xl"/>}
+			<UserBlock onBlock={onAction} wrapperStyle="bg-[#F97316] flex-1 h-[23%] rounded-2xl"/>
 		</div>
 	);
 }
@@ -135,9 +131,13 @@ function ChatHeader({contact, UsersTab, isMobile, onTap, onAction, showActions, 
 			{isMobile && <BackButton lastView={UsersTab} onBack={onAction}/>}
 			<Avatar imgUrl={contact.photo_url} name={contact.name} type="contact" />
 			<Contactinfo name={contact.name} userPresence={presence}/>
-			<UserActions onTap={onTap} isMobile={isMobile} onAction={onAction} showActions={showActions}
-				blockButtonText={(contact.connectionState === "blocking_them") ? "unblock" : "block"}
-			/>
+			{
+				(contact.connectionState === "active") && <UserActions
+					onTap={onTap}
+					isMobile={isMobile}
+					onAction={onAction}
+					showActions={showActions}/>
+			}
 		</div>
 	);
 }

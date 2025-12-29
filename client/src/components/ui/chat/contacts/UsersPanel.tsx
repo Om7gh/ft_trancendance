@@ -5,21 +5,20 @@ import StatusResolver from "./JsxByStatus.tsx";
 import type {Card} from "@/types/UserCard.ts";
 
 interface UsersPanelProps{
-  selectedCard: Card | null,
-  visibleCards: Card[],
-  updateVisibleCards: React.Dispatch<React.SetStateAction<number>>,
-  setSearchQuery: React.Dispatch<React.SetStateAction<string>>,
-  selectedTab: React.RefObject<string>,
-  onCardSelect: (selectedCard: Card) => void,
+  selectedCard: Card | null;
+  visibleCards: Card[];
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  selectedTab: string;
+  updateTabName:  React.Dispatch<React.SetStateAction<string>>;
+  onCardSelect: (selectedCard: Card) => void;
   getCardStatus: (tabName: string) => string
 }
 
-function UsersPanel({ selectedCard, onCardSelect, visibleCards, updateVisibleCards, setSearchQuery, selectedTab, getCardStatus}: UsersPanelProps){
+function UsersPanel({ selectedCard, onCardSelect, visibleCards, setSearchQuery, selectedTab, updateTabName, getCardStatus}: UsersPanelProps){
 
   function handelTabNavigation(e: React.MouseEvent<HTMLButtonElement>, tabName: string){
     e.stopPropagation();
-    selectedTab.current = tabName;
-    updateVisibleCards(prev => ++prev);
+    updateTabName(tabName);
     setSearchQuery("");
   }
   
@@ -29,10 +28,10 @@ function UsersPanel({ selectedCard, onCardSelect, visibleCards, updateVisibleCar
 
   return (
     <div id="UsersPanel" className="flex-1 h-full flex flex-col">
-      <Header key={selectedTab.current} onSearch={handleUserSearch}>
-        <FilterTabs selectedTab={selectedTab.current} onNav={handelTabNavigation}/>
+      <Header key={selectedTab} onSearch={handleUserSearch}>
+        <FilterTabs selectedTab={selectedTab} onNav={handelTabNavigation}/>
       </Header>
-      <StatusResolver status={getCardStatus(selectedTab.current)} content={visibleCards} view={selectedTab.current} onAction={handelTabNavigation}>
+      <StatusResolver status={getCardStatus(selectedTab)} content={visibleCards} view={selectedTab} onAction={handelTabNavigation}>
         <CardsList cards={visibleCards} selectedCard={selectedCard} onSelect={onCardSelect}/>
       </StatusResolver>
     </div>

@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from "react"
 import api from "@/services/clientHttpService";
 
-function useAxios(uri: string | null): [React.RefObject<any>, string]{
-	const  [fetchStatus, setFetchStatus] = useState("loading");
-	const resource = useRef<any>([]);
+function useAxios(uri: string | null): [any, React.Dispatch<any>, string]{
+	const [fetchStatus, setFetchStatus] = useState("loading");
+	const [resource, setResource] = useState<any>([]);
 
 	useEffect(() => {
 		async function fetchData(){
 			let response;
 			try{
 				response = await api.get(`${uri}`);
-				resource.current = response.data;
+				setResource(response.data);
 				setFetchStatus("fulfilled");
 			}
 			catch (err){
@@ -34,7 +34,7 @@ function useAxios(uri: string | null): [React.RefObject<any>, string]{
 
 	}, [uri]);
 
-	return ([resource, fetchStatus]);
+	return ([resource, setResource, fetchStatus]);
 }
 
 export default useAxios;

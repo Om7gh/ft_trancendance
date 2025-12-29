@@ -5,6 +5,12 @@
             "driver": "SQLite",
             "name": "users",
             "database": "/home/alafdili/data/users.sqlite3"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "/home/alafdili/data/chat/chat.db",
+            "name": "chat"
         }
     ]
 }

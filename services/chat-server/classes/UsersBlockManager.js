@@ -5,7 +5,7 @@ class UsersBlockManager{
         this.#dbInstance = dbInstance;
     }
 
-    hasBlocked(blockerId, blockedId){
+    hasBlockedBy(blockerId, blockedId){
         const blockEntry = this.#dbInstance.prepare(
             `SELECT * FROM users_blocks WHERE blockerID = ? AND targetID = ?`
         )
@@ -20,7 +20,7 @@ class UsersBlockManager{
 
     removeBlock(blockerId, targetId){
         this.#dbInstance.prepare(
-            `DELETE FROM users_blocks WHERE blockerID = ? && targetID = ?`
+            `DELETE FROM users_blocks WHERE blockerID = ? AND targetID = ?`
         )
         .run(blockerId, targetId);
     }

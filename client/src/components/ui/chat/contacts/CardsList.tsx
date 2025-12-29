@@ -1,30 +1,32 @@
 import type {Card} from "@/types/UserCard.ts"
+import { useNavigate } from "react-router-dom";
 
 type OnSelect = (selectedCard: Card) => void;
 
 interface AvatarProps{
-  imgUrl: string,
-  name: string,
+  imgUrl: string;
+  name: string;
   type: "CardItem"
       | "contact"
       | "sender"
-      | "receiver"
+      | "receiver";
 }
 
 interface CardItemProps{
-  card: Card,
-  isSelected: boolean,
-  onSelect: OnSelect
+  card: Card;
+  isSelected: boolean;
+  onSelect: OnSelect;
 }
 
 interface CardsListProps {
-  cards: Card[],
-  selectedCard: Card | null,
-  onSelect: OnSelect
+  cards: Card[];
+  selectedCard: Card | null;
+  onSelect: OnSelect;
 }
 
 
 function Avatar({imgUrl, name, type}: AvatarProps){
+  const navigate = useNavigate()
 
   const avatarStyle = {
     "CardItem": "rounded-xl",
@@ -34,7 +36,12 @@ function Avatar({imgUrl, name, type}: AvatarProps){
   }
   
   return (
-    <div className={"max-w-[18%] overflow-clip " + avatarStyle[type]}>
+    <div className={"max-w-[18%] overflow-clip " + avatarStyle[type]}
+      onClick={(e) => {
+        e.stopPropagation();
+        console.log("=== userName: ", name);
+        navigate(`/dashboard/profile/${name}`);
+      }}>
       <img src={imgUrl}
         alt={name + "'s profile"}
         className="h-full w-full object-cover"/>
@@ -67,8 +74,13 @@ function CardItem({card, isSelected, onSelect}: CardItemProps){
     shadow-2xl border-l-[3px] p-[3px] border-l-[#0D9488]";
   return (
     <li className={listStyle} onClick={() => onSelect(card)}>
-      <Avatar imgUrl={friend.photo_url} name={friend.name} type="CardItem"/>
-      <UserInfo name={friend.name} unread_msg={card.unread_msg}/>
+      <Avatar imgUrl={friend.photo_url}
+        name={friend.name}
+        type="CardItem"
+      />
+      <UserInfo name={friend.name}
+        unread_msg={card.unread_msg}
+      />
     </li>
   );
 }

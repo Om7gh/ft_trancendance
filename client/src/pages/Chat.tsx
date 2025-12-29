@@ -5,40 +5,40 @@ import useWebsocket from "../hooks/useWebsocket.ts";
 import useEventListener from "../hooks/useEventListener.ts";
 import UsersPanel from "../components/ui/chat/contacts/UsersPanel.tsx";
 import ConversationPanel from "../components/ui/chat/conversation/ConversationPanel.tsx";
-import {useState, useRef, useEffect} from "react";
-import useWebsocketRequest from "../hooks/useWebsocketRequest.ts"
+import {useState, useRef} from "react";
+import useWsRequest from "@/hooks/useWsRequest.ts"
+import useWsResponse from "@/hooks/useWsResponse.ts"
 import visibleCardsResolver from "@/utils/cardsResolver.ts"
 
 import type {ServerRequest} from "@/types/serverRequest.ts";
 import type {Card} from "../types/UserCard.ts";
 
 function Chat(){
-
-	const selectedTab = useRef("Chats");
 	
+	const [selectedTab, setSelectedTab] = useState("Chats");
 	const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 	const [selectedCard, setSelectedCard] = useState<Card | null>(null);
-	const [updateVisibleCards, setUpdateVisibleCards] = useState(0);
 	const [serachQuery, setSearchQuery] = useState("");
 	const [mobileView, setMobileView] = useState("contacts");
 	
-	const [chatCards, conversationStatus] = useAxios(`/conversations`);
-	const [contactCards, contactStatus] = useAxios(`/contacts`);
+	const [chatCards, setChatCards, conversationStatus] = useAxios(`/conversations`);
+	const [contactCards, setContactCards, contactStatus] = useAxios(`/contacts`);
 	const socket = useWebsocket(`/messages`);
-	const setRequest = useWebsocketRequest(socket.current);
+	const setRequest = useWsRequest(socket.current);
 
-	
+	const selectedCardRef = useRef<Card>(selectedCard);
 	const isMobile = screenWidth <= 500;
 	const showContact = (!isMobile || mobileView ===  "contacts"); 
 	const showConversation = (!isMobile || mobileView === "conversation");
 
-	usePresence(chatCards.current, contactCards.current, socket);
+	usePresence(chatCards, contactCards, socket);
 	useEventListener(window, "resize", () => setScreenWidth(window.innerWidth));
+	useWsResponse(socket, incomingMsgResolver);
 
 	const visibleCards = visibleCardsResolver(
-		chatCards.current,
-		contactCards.current,
-		selectedTab.current,
+		chatCards,
+		contactCards,
+		selectedTab,
 		serachQuery
 	);
 
@@ -48,34 +48,35 @@ function Chat(){
 		return contactStatus;
 	}
 
-	function handleUserCardSelection(selectedCard: Card)
+	function handleUserCardSelection(userCardSelected: Card)
 	{
-		if (selectedCard.id !== 0){
-			chatCards.current = chatCards.current.map((card: Card) => {
-				if (card.id === selectedCard.id)
+		if (userCardSelected.id !== 0){
+			setChatCards(chatCards.map((card: Card) => {
+				if (card.id === userCardSelected.id)
 					return ({...card, unread_msg: 0});
 				return (card);
-			});
+			}));
 			setRequest({
 				action: "enter-conversation",
-				conversationId: selectedCard.id
+				conversationId: userCardSelected.id
 			} as ServerRequest);
 		}
 		setMobileView("conversation");
-		setSelectedCard(selectedCard);
+		setSelectedCard(userCardSelected);
+		selectedCardRef.current = userCardSelected;
 	}
 
 	function changeUserView(view: string){
 		if (view === "Chats"){
-			selectedTab.current = view;
-			contactCards.current = contactCards.current.filter((card: Card) => {
+			setSelectedTab(view);
+			setContactCards(contactCards.filter((card: Card) => {
 				return (card.friend.id !== selectedCard?.friend.id);
-			})
-			setUpdateVisibleCards(updateVisibleCards + 1);
+			}));
 			return;
 		}
 		setMobileView(view);
 		setSelectedCard(null);
+		selectedCardRef.current = null;
 		if (selectedCard && selectedCard.id > 0){
 			setRequest({
 				action: "leave-conversation",
@@ -86,107 +87,112 @@ function Chat(){
 
 	function handleBlockToggle(action: "block" | "unblock"){
 		const blockState = (action === "block") ? "blocking_them" : "active";
-		chatCards.current = chatCards.current.map((card: Card) => {
-			if (card.friend.id === selectedCard?.friend.id)
+		const selectedCardUpdate = {
+			...selectedCard,
+			friend:{
+				...selectedCard?.friend,
+				connectionState: blockState
+			}
+		}
+
+		setChatCards(chatCards.map((card: Card) => {
+			if (card.friend.id === selectedCard?.friend.id){
 				return ({
 					...card,
 					friend:{
 						...card.friend,
 						connectionState: blockState
 					}});
-				return (card);
-			});
-			setSelectedCard({
-				...selectedCard,
-				friend: {
-					...selectedCard?.friend,
-					connectionState: blockState
-			}} as Card);
+			}
+			return (card);
+			}));
+			setSelectedCard(selectedCardUpdate as Card);
+			selectedCardRef.current = selectedCardUpdate as Card;
 			setRequest({
 				action: action + "-user",
 				targetID: selectedCard?.friend.id
 			} as ServerRequest);
 	}
 
-	useEffect(() => {
-		function incomingMsgHandler(event: MessageEvent) {
-	
-			console.log("message event received in Chat.tsx: ", event.data);
-	
-			const incomingMsg = JSON.parse(event.data);
-			switch (incomingMsg.type){
-				case "message": {
-					if (incomingMsg.senderId !== selectedCard?.friend?.id){
-						chatCards.current.forEach((card: Card) => {
-							if (card.friend.id === incomingMsg.senderId)
-								card = {...card, unread_msg: card.unread_msg + 1};
-						});
-						setUpdateVisibleCards(prev => ++prev);
-					}
-					break ;
-				}
-				case "user-presence": {
-					chatCards.current.forEach((card: Card) => {
-						if (card.friend.id === incomingMsg.userId)
-							card = {...card, presence: incomingMsg.presence};
-					});
-					contactCards.current.forEach((card: Card) => {
-						if (card.friend.id === incomingMsg.userId)
-							card = {...card, presence: incomingMsg.presence};
-					});
-					if (incomingMsg.userId === selectedCard?.friend?.id){
-						setSelectedCard({...selectedCard, presence: incomingMsg.presence} as Card);
-					}
-					setUpdateVisibleCards(prev => ++prev);
-					break ;
-				}
-				case "new-conversation":{
-					chatCards.current.push(incomingMsg.conversation);
-					contactCards.current = contactCards.current.filter((contact: Card) => {
-						return (contact.friend.id !== incomingMsg.conversation.friend.id);
-					})
-					break ;
-				}
-				case "connection-update":{
-					chatCards.current.forEach((card: Card) => {
-						if (card.friend.id ===  incomingMsg.stateBy){
-							card = {
-								...card,
-								friend:{
-									...card.friend,
-									connectionState: incomingMsg.connectionState
-								}};
+	function incomingMsgResolver(msg: any) : void {
+		switch (msg.type){
+			case "message": {
+				if (msg.senderID !== selectedCardRef.current?.friend?.id){
+					setChatCards((prev: Card[]) => prev.map((card: Card) => {
+						if (card.friend.id === msg.senderID){
+							return ({...card, unread_msg: card.unread_msg + 1});
 						}
-					});
-					contactCards.current.forEach((card: Card) => {
-						if (card.friend.id ===  incomingMsg.stateBy){
-							card = {
-								...card,
-								friend:{
-									...card.friend,
-									connectionState: incomingMsg.connectionState
-								}};
-						}
-					});
-					if (incomingMsg.stateBy === selectedCard?.friend?.id){
-						setSelectedCard({
-							...selectedCard,
-							friend: {
-								...selectedCard?.friend,
-								connectionState: incomingMsg.connectionState
-							}
-						} as Card);
+						return (card);
+					}));
+				}
+				break ;
+			}
+			case "user-presence": {
+				setChatCards((prev: Card[]) => prev.map((card: Card) => {
+					if (card.friend.id === msg.userId)
+						return ({...card, presence: msg.presence});
+					return (card);
+				}));
+
+				setContactCards((prev: Card[]) => prev.map((card: Card) => {
+					if (card.friend.id === msg.userId)
+						return ({...card, presence: msg.presence});
+				}));
+				if (msg.userId === selectedCardRef.current?.friend?.id){
+					const selectedCardUpdate = {
+						...selectedCardRef.current,
+						presence: msg.presence
+					};
+					selectedCardRef.current = selectedCardUpdate as Card;
+					setSelectedCard(selectedCardUpdate as Card);
+				}
+				break ;
+			}
+			case "new-conversation":{
+				setChatCards((prev: Card[]) => [...prev, msg.conversation]);
+				setContactCards((prev: Card[]) => prev.filter((contact: Card) => {
+					return (contact.friend.id !== msg.conversation.friend.id);
+				}));
+				break ;
+			}
+			case "connection-update":{
+				setChatCards((prev: Card[]) => prev.map((card: Card) => {
+					if (card.friend.id ===  msg.stateBy){
+						return ({
+							...card,
+							friend:{
+								...card.friend,
+								connectionState: msg.connectionState
+							}}
+						);
 					}
-					setUpdateVisibleCards(updateVisibleCards + 1);
+					return (card);
+				}));
+				setContactCards((prev: Card[]) => prev.map((card: Card) => {
+					if (card.friend.id ===  msg.stateBy){
+						return ({
+							...card,
+							friend:{
+								...card.friend,
+								connectionState: msg.connectionState
+							}});
+					}
+					return (card);
+				}));
+				if (msg.stateBy === selectedCardRef.current?.friend?.id){
+					const selectedCardUpdate = {
+						...selectedCardRef.current,
+						friend: {
+							...selectedCardRef.current?.friend,
+							connectionState: msg.connectionState
+						}
+					};
+					selectedCardRef.current = selectedCardUpdate as Card;
+					setSelectedCard(selectedCardUpdate as Card);
 				}
 			}
 		}
-		socket.current?.addEventListener("message", incomingMsgHandler);
-		return () => {
-			socket.current?.removeEventListener("message", incomingMsgHandler);
-		};
-	}, [selectedCard, socket, contactCards, chatCards]);
-
+	}
 
 	const style = "p-5 h-full w-full items-start " + (!isMobile ? "flex" : "");
 
@@ -197,8 +203,8 @@ function Chat(){
 					selectedCard={selectedCard}
 					onCardSelect={handleUserCardSelection}
 					visibleCards={visibleCards}
-					updateVisibleCards={setUpdateVisibleCards}
 					setSearchQuery={setSearchQuery}
+					updateTabName={setSelectedTab}
 					selectedTab={selectedTab}
 					getCardStatus={getFetchStatusByTab}
 				/>
@@ -206,7 +212,7 @@ function Chat(){
 			{
 				showConversation && <ConversationPanel
 					key={selectedCard?.friend?.id}
-					UsersTab={selectedTab.current}
+					UsersTab={selectedTab}
 					targetUserCard={selectedCard}
 					isMobile={isMobile}
 					connection={socket}

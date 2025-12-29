@@ -3,18 +3,17 @@ import ChatInput from "./ChatInput.tsx";
 import ChatHeader from "./ChatHeader.tsx";
 import StatusResolver from "../contacts/JsxByStatus.tsx";
 import useAxios from "@/hooks/useAxios.ts";
-import useEventListener from "@/hooks/useEventListener.ts";
-import {useEffect, useContext, useState} from "react";
+import {useContext, useState} from "react";
 import { GlobalContext } from "@/App.tsx";
-import useWebsocketRequest from "@/hooks/useWebsocketRequest.ts";
+import useWsRequest from "@/hooks/useWsRequest.ts";
 
 import type {Card} from "@/types/UserCard.ts"
 import type {User} from "@/types/User.ts"
 import type {User as GloblaUser} from "@/App.tsx"
-import type {Message} from "@/types/Message.ts"
 import type {ServerRequest} from "@/types/serverRequest.ts"
 
 import ConversationImg from "@assets/placeholders/conversation-placeholder.png";
+import useWsResponse from "@/hooks/useWsResponse.ts";
 
 interface ConversationPanelProps{
 	targetUserCard: Card | null;
@@ -25,7 +24,11 @@ interface ConversationPanelProps{
 	changeUserView: (view: string) => void;
 }
 
-function constructReq(sender: User | null, target: User, content: string): ServerRequest {
+function constructReq(
+	sender: User | null,
+	target: User,
+	content: string
+): ServerRequest{
 	return ({
 		action: "send-message",
 		sender: sender,
@@ -44,36 +47,24 @@ function ConversationPanel({
 }: ConversationPanelProps){
 	const userInfo  = useContext(GlobalContext);
 	const [showActions, setShowActions] = useState(false);
-	const [messages, setMessages] = useState<Message[]>([]);
-	const [historyMsgs, messageStatus] = useAxios( (targetUserCard && targetUserCard.id)
+	const [messages, setMessages, messageStatus] = useAxios( (targetUserCard && targetUserCard.id)
 			? `/messages/${targetUserCard.id}` 
 			: null);
-	const setRequest = useWebsocketRequest(connection.current);
+	const setRequest = useWsRequest(connection.current);
+	useWsResponse(connection, incomingMsgHandler, targetUserCard?.friend.id);
 
-	const {id, first_name: name, avatar: photo_url} = userInfo?.user as GloblaUser;
+	const {id, username: name, avatar: photo_url} = userInfo?.user as GloblaUser;
 	const currentUser : User = {id, name, photo_url, connectionState: "active"};
 
-	useEffect(() => {
-		if (messageStatus === "fulfilled") {
-			setMessages(historyMsgs.current);
+	function incomingMsgHandler(msg: any){
+		if (msg.senderID === targetUserCard?.friend?.id){
+			setMessages((prev: any) => [...prev, {
+				id: msg.id,
+				senderID: msg.senderID,
+				content: msg.content
+			}]);
 		}
-	}, [historyMsgs, messageStatus]);
-
-	useEffect(() =>{
-		function incomingMsgHandler(event: MessageEvent){
-			console.log("message event received in ConversationPanel.tsx: ", event.data);
-			const parsedMsg = JSON.parse(event.data);
-			if (parsedMsg.senderId === targetUserCard?.friend?.id){
-				setMessages([...messages, {
-					id: parsedMsg.id,
-					senderID: parsedMsg.senderId,
-					content: parsedMsg.content
-				}]);
-			}
-		}
-		connection.current?.addEventListener("message", incomingMsgHandler);
-		return () => connection.current?.removeEventListener("message", incomingMsgHandler);
-	});
+	}
 
 	function handleSendingMsg(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();

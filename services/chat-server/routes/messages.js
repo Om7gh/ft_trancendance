@@ -1,19 +1,12 @@
 import Websocket from 'ws';
 import fp from 'fastify-plugin';
-// import Messages from "../classes/Messages.js";
-// import Conversations from "../classes/Conversations.js";
-// import findConversation from "../utils/findConversatoin.js";
-// import UsersBlocks from '../classes/users_blocks.js';
-// import isBlockedBy from "../utils/isBlockedBy.js";
 import areFriends from "../utils/areFriends.js";
-
 import userInConversation from '../utils/userInConversation.js';
-
 import ConversationManager from '../classes/ConversationsManager.js';
 import UsersBlocksManager from '../classes/UsersBlockManager.js';
 import MessageManager from "../classes/MessageManager.js"
 
-function messagesPlugin(instance, opt) {
+function messagesPlugin(instance) {
 
     let connectedUsers = new Map();
 	let activeUserConv = new Map();
@@ -34,16 +27,12 @@ function messagesPlugin(instance, opt) {
 				if (connectedUsers.has(parsedMsg.target.id)){
 					if (!activeUserConv.has(parsedMsg.target.id) || activeUserConv.get(parsedMsg.target.id) !== conv.id){
 						instance.conversationManager.incrementUserUnreadCount(parsedMsg.sender.id);
-						// (parsedMsg.sender.id !== conv.user1.id) && (conv.user1UnreadCount += 1);
-						// (parsedMsg.sender.id !== conv.user2.id) && (conv.user2UnreadCount += 1);
 					}
 					connectedUsers.get(parsedMsg.target.id).send(JSON.stringify({type: "message", ...msg}));
 					clientReq.log.debug(`server send via websocket: ${JSON.stringify({type: "message", ...msg})}`);
 				}
 				else {
 					instance.conversationManager.incrementUserUnreadCount(parsedMsg.sender.id);
-					// (parsedMsg.sender.id !== conv.user1.id) && (conv.user1UnreadCount += 1);
-					// (parsedMsg.sender.id !== conv.user2.id) && (conv.user2UnreadCount += 1);
 					sendToNotification(msg);
 				}
 			}
@@ -54,7 +43,6 @@ function messagesPlugin(instance, opt) {
 
 			function handleNewConversation(){
 				let conversation = instance.conversationManager.addConversation(parsedMsg.sender, parsedMsg.target);
-				// let conversation = new Conversations(parsedMsg.sender, parsedMsg.target);
 				let targetIsConnected = connectedUsers.has(parsedMsg.target.id);
 				
 				if (targetIsConnected){
@@ -80,7 +68,6 @@ function messagesPlugin(instance, opt) {
 						}
 					}));
 				}
-				// opt.msg.convDb.push(conversation);
 				return (conversation)
 			}
 			
@@ -93,16 +80,11 @@ function messagesPlugin(instance, opt) {
 					if (!result)
 						throw Error("You can only message your contacts.");
 
-					// if (isBlockedBy(opt.msg.blockDb, parsedMsg.target.id, parsedMsg.sender.id))
-					if (instance.blockManager.hasBlocked(parsedMsg.target.id, parsedMsg.sender.id))
+					if (instance.blockManager.hasBlockedBy(parsedMsg.target.id, parsedMsg.sender.id))
 						throw Error("You can't send messages to this user");
-
-					// let conversation = findConversation(opt.msg.convDb, parsedMsg.sender.id, parsedMsg.target.id);
 					let conversation = instance.conversationManager.hasConversation(parsedMsg.sender.id, parsedMsg.target.id);
 					conversation === undefined && (conversation = handleNewConversation());
-					// let message = new Messages(conversation.id, parsedMsg.sender.id, parsedMsg.content);
 					let message = instance.messageManager.addMessage(conversation.id, parsedMsg.sender.id, parsedMsg.content);
-					// opt.msg.msgDb.push(message);
 					notifyOrSend(message, conversation);
 				}
 				catch(e){
@@ -115,21 +97,13 @@ function messagesPlugin(instance, opt) {
 
 			function handleEnterConversation() {
 				let actionByUserId = clientReq.user.id;
-				// let conv;
 
 				if (activeUserConv.has(actionByUserId) && activeUserConv.get(actionByUserId) === parsedMsg.conversationId)
 					return ;
-				// let conv = opt.msg.convDb.find((conv) => conv.id === parsedMsg.conversationId);
-				// if (conv === undefined || (conv.user1.id !== actionByUserId && conv.user2.id !== actionByUserId)){
-				// 	clientSocket.send(`You don't belong to conversation ${parsedMsg.conversationId}`);
-				// 	return ;
-				// }
 				if (!userInConversation(actionByUserId, parsedMsg.conversationId, instance.conversationManager)){
 					clientSocket.send(`You don't belong to conversation ${parsedMsg.conversationId}`);
 					return ;
 				}
-				// (actionByUserId === conv.user1.id) && (conv.user1UnreadCount = 0);
-				// (actionByUserId === conv.user2.id) && (conv.user2UnreadCount = 0);
 				instance.conversationManager.resetUserUnreadCount(actionByUserId);
 				activeUserConv.set(actionByUserId, parsedMsg.conversationId);
 			}
@@ -156,13 +130,14 @@ function messagesPlugin(instance, opt) {
 						throw Error("You cannot block yourself!");
 					const result = areFriends(clientReq.headers.cookie, parsedMsg.targetID);
 					if (!result)
-						throw Error("You are not allowed to Block this user");
-					// if (isBlockedBy(opt.msg.blockDb, clientReq.user.id, parsedMsg.targetID))
-					if (instance.blockManager.hasBlocked(clientReq.user.id, parsedMsg.targetID))
-						throw Error("User already blocked!");
-
-					// opt.msg.blockDb.push(new UsersBlocks(clientReq.user.id, parsedMsg.targetID));
-					instance.blockeManager.addBlock(clientReq.user.id, parsedMsg.targetID);
+						throw Error("You are not allowed to block this user");
+					if (
+						instance.blockManager.hasBlockedBy(clientReq.user.id, parsedMsg.targetID)
+						||
+						instance.blockManager.hasBlockedBy(parsedMsg.targetID, clientReq.user.id)
+					)
+						throw Error("You cannot block this user!");
+					instance.blockManager.addBlock(clientReq.user.id, parsedMsg.targetID);
 					if (connectedUsers.has(parsedMsg.targetID)){
 						connectedUsers.get(parsedMsg.targetID).send(JSON.stringify({
 							type: "connection-update",
@@ -185,10 +160,9 @@ function messagesPlugin(instance, opt) {
 						throw Error("You cannot Unblock yourself!");
 					const result = await areFriends(clientReq.headers.cookie, parsedMsg.targetID);
 					if (!result)
-						throw Error("You are not allowed to Unblock this user");
-					// if (!isBlockedBy(opt.msg.blockDb, clientReq.user.id, parsedMsg.targetID))
-					if (!instance.blockManager.hasBlocked(clientReq.user.id, parsedMsg.targetID))
-						throw Error("User already Unblocked!");
+						throw Error("You are not allowed to unblock this user");
+					if (!instance.blockManager.hasBlockedBy(clientReq.user.id, parsedMsg.targetID))
+						throw Error("User is not blocked!");
 					if (connectedUsers.has(parsedMsg.targetID)){
 						connectedUsers.get(parsedMsg.targetID).send(JSON.stringify({
 							type: "connection-update",
@@ -197,11 +171,6 @@ function messagesPlugin(instance, opt) {
 						}));
 					}
 					instance.blockManager.removeBlock(clientReq.user.id, parsedMsg.targetID);
-					// opt.msg.blockDb = opt.msg.blockDb.filter((entry) => {
-					// 	return (
-					// 		entry.blockerID !== clientReq.user.id
-					// 	)
-					// });
 				}
 				catch(e) {
 					clientSocket.send(JSON.stringify({
@@ -249,14 +218,12 @@ function messagesPlugin(instance, opt) {
 	function broadcastPresenceChange(presenceChange, req){
 		let socketUserId = req.user.id;
 		presenceInterests.forEach((users, interstedUser, map) => {
-			if (users.find((UID) => +UID === socketUserId) !== undefined){
-				if (connectedUsers.has(interstedUser)){
-					connectedUsers.get(interstedUser).send(JSON.stringify({
-						type: "user-presence",
-						presence: presenceChange,
-						userId: socketUserId
-					}));
-				}
+			if (users.find((id) => id === socketUserId) !== undefined){
+				connectedUsers.get(interstedUser).send(JSON.stringify({
+					type: "user-presence",
+					presence: presenceChange,
+					userId: socketUserId
+				}));
 			}
 		});
 	}
@@ -265,6 +232,7 @@ function messagesPlugin(instance, opt) {
 		broadcastPresenceChange('offline', req);
 		connectedUsers.delete(req.user.id);
 		activeUserConv.delete(req.user.id);
+		presenceInterests.delete(req.user.id);
 		req.log.info('client close its connection');
 		req.log.info(`its code: ${code} and its reason: ${reason}`);
 	}
@@ -283,19 +251,12 @@ function messagesPlugin(instance, opt) {
 
 	instance.get("/messages/:convId", async (req, reply) => {
 		const convId = Number(req.params.convId);
-		// let conv = opt.msg.convDb.find((conv) => conv.id === convId);
-		// if (conv === undefined || (conv.user1.id !== req.user.id && conv.user2.id !== req.user.id))
-		// {
-		// 	reply.code(403);
-		// 	throw new Error(`You don't belong to conversation ${convId}`);
-		// }
 
 		if (!userInConversation(req.user.id, convId, instance.conversationManager))
 		{
 			reply.code(403);
 			throw new Error(`You don't belong to conversation ${convId}`);
 		}
-		// let historyMsgs = opt.msg.msgDb.filter((msg) => msg.convId === convId).map((msg) => msg.message);
 		let historyMsgs = instance.messageManager.getUserHistoryMsgs(convId);
 		return (historyMsgs);
 	});
