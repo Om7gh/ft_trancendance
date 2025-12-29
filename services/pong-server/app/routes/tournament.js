@@ -55,7 +55,7 @@ async function leaveTournamentHandler(request, reply) {
     let tournament  = alreadyInTournament(this.tournamentList, user.id);
     
     if (!tournament) {
-        const error = new Error("Currently you are not belong to any tournament!!")
+        const error = new Error("Currently you are not belong to any tournament!!");
         error.statusCode = 400;
         throw error;
     }

@@ -23,11 +23,13 @@ export interface NotificationType  {
 
 function Notify({data, close} : {data : NotificationType, close: () => void}) {
   const navigate = useNavigate()
-  if (data.type === "joinMatch") {
+  const currentDate = Date.now() / 1000;
+  const diff = data.expireTime - currentDate;
+  if (data.type === "joinMatch" && diff > 0) {
     const url = `/dashboard/games/pingpong/remote/joinMatch?rid=${data.sender.id}`;
     const redirectToMatch = () => {
-      const diff = data.expireTime - Date.now();
-      if (diff < 0) {
+      const diff = data.expireTime - currentDate;
+      if (diff <= 0) {
         toast.warning(`${data.sender.id} is expired`, {
           delay: 100,
           position: "top-center"
@@ -46,25 +48,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
                 <span className="text-xs text-violet-300">{data.sender.id}</span>
               </div>
             </div>
-            <p  className="
-    relative
-    w-10 h-10
-    bg-neon/50
-    flex items-center justify-center
-
-    before:content-['→']
-    before:absolute
-    before:inset-0
-    before:flex
-    before:items-center
-    before:justify-center
-    before:text-3xl
-    before:text-white
-
-    before:bg-violet-900
-    before:translate-x-1
-    before:translate-y-1
-    before:z-10
+            <p  className=" relative w-10 h-10 bg-neon/50 flex items-center justify-center before:content-['→'] before:absolute before:inset-0 before:flex before:items-center before:justify-center before:text-3xl before:text-white before:bg-violet-900 before:translate-x-1 before:translate-y-1 before:z-10
   "></p>
           </button>
         </div>
@@ -136,7 +120,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
         </div>
       </div>
     );
-  } 
+  }
   
   return null;
 }

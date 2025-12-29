@@ -12,7 +12,7 @@ async function chessDb(fastify) {
   const dbPath = path.join(dataDir, 'chess.sqlite');
   const db = new Database(dbPath);
   
-  console.log('📁 Database file location:', dbPath);
+  console.log('Database file location:', dbPath);
   
   db.pragma('foreign_keys = OFF');
   
@@ -34,11 +34,7 @@ async function chessDb(fastify) {
   fastify.decorate('db', db);
 
   fastify.decorate('recordGame', (gameData) => {
-    try {
-      console.log('💾 recordGame called with full gameData:', JSON.stringify(gameData, null, 2));
-      console.log('💾 whiteId type:', typeof gameData.whiteId, 'value:', gameData.whiteId);
-      console.log('💾 blackId type:', typeof gameData.blackId, 'value:', gameData.blackId);
-      
+    try {      
       const stmt = db.prepare(`
         INSERT INTO games (
           room_id, white_player_id, black_player_id, 
@@ -56,17 +52,6 @@ async function chessDb(fastify) {
         gameData.startedAt,
         gameData.endedAt
       );
-      
-      console.log('✅ Game recorded successfully ----> ', {
-        roomId: gameData.roomId,
-        white: gameData.whiteId,
-        black: gameData.blackId,
-        winner: gameData.winnerTeam,
-        reason: gameData.reason
-      });
-      // to remove later
-      const count = db.prepare('SELECT COUNT(*) as count FROM games').get();
-      console.log('📊 Total games in DB after insert:', count.count);
     } catch (error) {
       console.error('❌ Failed to record game:', error);
       throw error;

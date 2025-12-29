@@ -62,13 +62,13 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
           </div>
         </div>
 
-        {matchData.matches.length === 0 ? (
+        {matchData.matches?.length === 0 ? (
           <div className="text-center py-8 text-slate-400">
             No pong games played yet
           </div>
         ) : (
           <div className="space-y-3">
-            {matchData.matches.map((game) => {
+            {matchData.matches?.map((game) => {
               const isWinning = game.winner === userData?.username || game.winner === String(userData?.id);
               const opponent = game.player1 === userData?.username || game.player1 === String(userData?.id) ? game.player2 : game.player1;
               

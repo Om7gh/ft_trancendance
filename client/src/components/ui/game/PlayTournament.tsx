@@ -3,6 +3,7 @@ import { FaRankingStar } from "react-icons/fa6";
 
 import api from "@/services/clientHttpService";
 import MessageDisplayer from "@/pong/component/MessageDisplayer";
+import { useNavigate } from "react-router-dom";
 
 type PlayerType = {
     id: string;
@@ -209,6 +210,7 @@ function ListRounds({roundList}: ListRoundsPropsType) {
 
 export default function PlayTournament() {
     const [data, setData] = useState<any>(null);
+    const navigate = useNavigate()
 
     useEffect(() => {
         let ignored = false;
@@ -241,15 +243,14 @@ export default function PlayTournament() {
     async function leaveTournament () {
         try {
             await api.get("/pongGame/remote/tournament/leave");
-            console.log("success")
+            navigate("/dashboard/games/portal")
         } catch (e) {
              setData({
                     state: "error",
                     reason: "Failed to leave match!",
                 });
         }
-    } 
-
+    }
     console.log(data)
     if (!data)
         return (
@@ -290,7 +291,7 @@ export default function PlayTournament() {
                     <div className="max-w-6xl mx-auto">
                         <div className="bg-slate-950/20 p-8 border border-slate-700/50 shadow-2xl">
                             <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-3xl font-bold bg-gradient-to-l from-violet-500 to-neon bg-clip-text text-transparent">
+                                <h2 className="text-3xl font-bold bg-linear-to-l from-violet-500 to-neon bg-clip-text text-transparent">
                                     < FaRankingStar className="text-5xl text-neon" />
                                     Tournament Stats</h2>
                                 <span className={`px-4 py-2 text-sm font-bold shadow-xl shadow-slate-900 ${
@@ -302,6 +303,9 @@ export default function PlayTournament() {
                                 </span>
                             </div>
                             <ListRounds roundList={data.tournament.rounds} />
+                            {data.tournament.state === "done" && <div>
+                                
+                                </div>}
                             <div className="flex justify-center mt-8">
                                 <button 
                                     onClick={leaveTournament}

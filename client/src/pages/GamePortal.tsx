@@ -29,7 +29,7 @@ function GamePortal() {
 
           <div className="h-full flex items-center justify-center relative z-10">
             <p
-              className='text-xl md:text-5xl text-neon'
+              className='text-xl md:text-4xl text-neon'
             >
               Play Pong
             </p>
@@ -60,7 +60,7 @@ function GamePortal() {
 
           <div className="h-full flex items-center justify-center relative z-10">
           <p
-              className='text-xl md:text-5xl text-neon'
+              className='text-xl md:text-4xl text-neon'
             >
               Play Chess
             </p>
@@ -91,7 +91,7 @@ function GamePortal() {
 
           <div className="h-full flex items-center justify-center relative z-10">
             <p
-              className='text-xl md:text-5xl text-neon'
+              className='text-xl md:text-4xl text-neon'
             >
               Game Customization
             </p>
