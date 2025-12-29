@@ -10,9 +10,7 @@ export default class DatabaseService {
         this.insertNotification = this.db.prepare(`
             INSERT OR IGNORE INTO notifications (
                 id, type, sender_id, receiver_id, expire_time
-            ) VALUES (
-                @id, @type, @sender_id, @receiver_id, @expire_time
-            )
+            ) VALUES (@id, @type, @sender_id, @receiver_id, @expire_time)
         `);
 
         this.fetchNotificationsByUser = this.db.prepare(`
@@ -35,6 +33,8 @@ export default class DatabaseService {
 
     addNotification({ id, type, sender, receiver, expireTime }) {
         this.addUser(sender);
+
+        console.log(expireTime, typeof(expireTime));
 
         this.insertNotification.run({
             id,
