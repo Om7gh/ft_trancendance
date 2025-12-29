@@ -6,8 +6,9 @@ import { toast } from 'react-toastify';
 function UpdateAvatarBio() {
     const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
-    const [bio, setBio] = useState('');
-    const { user } = useContext(GlobalContext);
+    const { user, setUser } = useContext(GlobalContext);
+    const [bio, setBio] = useState(() => user?.bio || '');
+
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const selected = e.target.files?.[0];
         if (selected) {
@@ -20,9 +21,13 @@ function UpdateAvatarBio() {
         e.preventDefault();
         try {
             await AuthService.updateProfile({ avatar: file!, bio });
+
+            if (user) {
+                setUser({ ...user, bio });
+            }
             toast.success('Profile updated successfully');
         } catch (e: any) {
-            toast.error('Failed to update profile');
+            toast.error('Failed to update profile' + (e.message ? `: ${e.message}` : ''));
         }
     }
 

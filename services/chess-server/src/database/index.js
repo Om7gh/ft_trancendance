@@ -1,8 +1,18 @@
 const fp = require('fastify-plugin');
 const Database = require('better-sqlite3');
+const fs = require('fs');
+const path = require('path');
 
 async function chessDb(fastify) {
-  const db = new Database('./chess.sqlite');
+  const dataDir = path.join(__dirname, '../../data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
+  
+  const dbPath = path.join(dataDir, 'chess.sqlite');
+  const db = new Database(dbPath);
+  
+  console.log('📁 Database file location:', dbPath);
   
   db.pragma('foreign_keys = OFF');
   
@@ -46,8 +56,12 @@ async function chessDb(fastify) {
         roomId: gameData.roomId,
         white: gameData.whiteId,
         black: gameData.blackId,
-        winner: gameData.winnerTeam
+        winner: gameData.winnerTeam,
+        reason: gameData.reason
       });
+      // to remove later
+      const count = db.prepare('SELECT COUNT(*) as count FROM games').get();
+      console.log('Total games in DB after insert:', count.count);
     } catch (error) {
       console.error('❌ Failed to record game:', error);
       throw error;

@@ -9,7 +9,10 @@ const getPieceStyle = (db, username) => {
 };
 
 const getPlayerGameHistory = (db, username) => {
-  return db
+  console.log('🗄️ getPlayerGameHistory called with username:', username);
+  console.log('🗄️ Database instance exists:', !!db);
+
+  const result = db
     .prepare(
       `
         SELECT 
@@ -23,36 +26,44 @@ const getPlayerGameHistory = (db, username) => {
           started_at as startedAt,
           ended_at as endedAt
         FROM games
-        WHERE white_player_id = ? OR black_player_id = ?
+        WHERE LOWER(white_player_id) = LOWER(?) OR LOWER(black_player_id) = LOWER(?)
         ORDER BY ended_at DESC
         LIMIT 50
       `
     )
     .all(username, username);
+  
+  console.log('🗄️ Query returned:', result.length, 'results');
+  return result;
 };
 
 const getGameStats = (db, username) => {
-  return db
+  console.log('📈 getGameStats called with username:', username);
+  
+  const result = db
     .prepare(
       `
         SELECT 
           COUNT(*) as totalGames,
           SUM(CASE 
-            WHEN (winner_team = 'WHITE' AND white_player_id = ?) OR 
-                 (winner_team = 'BLACK' AND black_player_id = ?) 
+            WHEN (winner_team = 'WHITE' AND LOWER(white_player_id) = LOWER(?)) OR 
+                 (winner_team = 'BLACK' AND LOWER(black_player_id) = LOWER(?)) 
             THEN 1 ELSE 0 
           END) as wins,
           SUM(CASE 
-            WHEN (winner_team = 'BLACK' AND white_player_id = ?) OR 
-                 (winner_team = 'WHITE' AND black_player_id = ?) 
+            WHEN (winner_team = 'BLACK' AND LOWER(white_player_id) = LOWER(?)) OR 
+                 (winner_team = 'WHITE' AND LOWER(black_player_id) = LOWER(?)) 
             THEN 1 ELSE 0 
           END) as losses,
           SUM(CASE WHEN winner_team = 'DRAW' THEN 1 ELSE 0 END) as draws
         FROM games
-        WHERE white_player_id = ? OR black_player_id = ?
+        WHERE LOWER(white_player_id) = LOWER(?) OR LOWER(black_player_id) = LOWER(?)
       `
     )
     .get(username, username, username, username, username, username);
+  
+  console.log('📈 Stats result:', result);
+  return result;
 };
 
 module.exports = { getPieceStyle, getPlayerGameHistory, getGameStats };

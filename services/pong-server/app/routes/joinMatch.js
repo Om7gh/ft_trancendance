@@ -14,8 +14,6 @@ async function joinMatchHandler(request, reply) {
 
     const rid = request.query.rid;
 
-    console.log("___________________> ", rid);
-
     let room = alreadyInMatch(this.roomList, user.id);
 
     if (room && (room.id !== rid) && !room.isDone()) {

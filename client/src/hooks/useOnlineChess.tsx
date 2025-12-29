@@ -28,19 +28,14 @@ export function useOnlineChess() {
     gameOver: null,
     rematch: { incomingOffer: false, requested: false, declined: false },
   });
-
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const pid = urlParams.get('playerId') || localStorage.getItem('playerId');
+    if (!user?.username) return;
+
     const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const baseWs = `${wsProto}://${window.location.host}/game/chess?playerId=${user?.username}`;
-    const wsUrl = pid
-      ? `${baseWs}?playerId=${encodeURIComponent(pid)}`
-      : baseWs;
+    const wsUrl = `${wsProto}://${window.location.host}/game/chess?playerId=${encodeURIComponent(user.username)}`;
     chessSocket.connect(wsUrl);
 
     chessSocket.on('connected', () => {
-      console.log('✅ Connected to server');
       setState((prev) => ({ ...prev }));
     });
 
@@ -135,14 +130,9 @@ export function useOnlineChess() {
       setState((prev) => ({ ...prev }));
 
       setTimeout(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const pid =
-          urlParams.get('playerId') || localStorage.getItem('playerId');
+        if (!user?.username) return;
         const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const baseWs = `${wsProto}://${window.location.host}/game/chess?playerId=${user.first_name}`;
-        const wsUrl = pid
-          ? `${baseWs}?playerId=${encodeURIComponent(pid)}`
-          : baseWs;
+        const wsUrl = `${wsProto}://${window.location.host}/game/chess?playerId=${encodeURIComponent(user.username)}`;
         chessSocket.reconnect(wsUrl);
       }, 1000);
     });
@@ -155,7 +145,6 @@ export function useOnlineChess() {
       'gameOver',
       ({ winner, message }: { winner: string; message: string }) => {
         if (gameOverRef.current) {
-          console.log('Suppressing stale gameOver during matchmaking');
           return;
         }
         setState((prev) => ({
@@ -211,10 +200,8 @@ export function useOnlineChess() {
           },
         }));
 
-        // Update chess store with resumed game state
         useChessStore.setState({ currentTurn, turns });
 
-        // Sync the board if board data is provided
         if (board) {
           window.dispatchEvent(
             new CustomEvent('syncBoard', {
@@ -298,8 +285,10 @@ export function useOnlineChess() {
       chessSocket.off('rematchPending');
       chessSocket.off('rematchDeclined');
       chessSocket.off('error');
+
+      chessSocket.disconnect();
     };
-  }, []);
+  }, [user?.username]);
 
   const enterMatchmaking = () => chessSocket.matchmaking();
   const leaveMatchmaking = () => chessSocket.leaveMatchmaking();

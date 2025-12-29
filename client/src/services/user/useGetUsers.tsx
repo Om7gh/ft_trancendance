@@ -5,7 +5,7 @@ import AuthService from "../auth/auth.service"
 function useGetUsers (searchQuery: string) {
     return useQuery({
         queryKey:["users", searchQuery],
-        queryFn: () => AuthService.getProfile(searchQuery),
+        queryFn: () => AuthService.searchUser(searchQuery),
         enabled: searchQuery.length > 0,
     })
 }
