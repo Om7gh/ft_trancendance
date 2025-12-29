@@ -14,12 +14,12 @@ export default class Tournament extends EventEmitter {
         this.currentRound   = null;
         this.winner         = null;
 
-        this.participants   = [];
+        this.members        = [];
         this.rounds         = [];
     }
 
     isMember(userId) {
-        for (let member of this.participants) {
+        for (let member of this.members) {
             if (member.id === userId) {
                 return (true);
             }
@@ -29,25 +29,23 @@ export default class Tournament extends EventEmitter {
 
     addMember(user) {
         if (this.state === "waiting") {
-            this.participants.push(user);
-            if (this.participants.length === 2) {
+            this.members.push(user);
+            if (this.members.length === 2) {
                 this.startTournament();
             }
         }
     }
 
     removeMember(userId) {
-        if (this.isMember(userId)) {
-            this.participants = this.participants.filter((member) => member.id !== userId);
-        }
+        this.members = this.members.filter((member) => member.id !== userId);
     }
 
-    createNewRound(participants) {
+    createNewRound(members) {
         this.currentRound =  new Round(this);
 
         this.rounds.push(this.currentRound);
 
-        this.currentRound.setParticipants(participants);
+        this.currentRound.setMembers(members);
 
         this.currentRound.on("newRoom", (room) => {
             this.emit("newRoom", room);
@@ -63,10 +61,10 @@ export default class Tournament extends EventEmitter {
         });
     }
 
-    extractParticipantsIds() {
+    extractMembersIds() {
         const ids = [];
 
-        for (let member of this.participants) {
+        for (let member of this.members) {
             if (member) {
                 ids.push(member.id);
             }
@@ -76,9 +74,9 @@ export default class Tournament extends EventEmitter {
 
     startTournament() {
         if (this.state === "waiting") {
-            if (this.participants.length === 2) {
+            if (this.members.length === 2) {
                 this.state = "going";
-                this.createNewRound(this.extractParticipantsIds());
+                this.createNewRound(this.extractMembersIds());
                 this.currentRound.startRound();
             }
         }
@@ -118,7 +116,7 @@ export default class Tournament extends EventEmitter {
         return ({
             id: this.id,
             state: this.state,
-            ...((this.state === "waiting") && {participants: this.participants}),
+            ...((this.state === "waiting") && {members: this.members}),
             ...((this.state !== "waiting") && {rounds: rounds}),
             ...(this.winner && {winner: this.winner}),
         })
