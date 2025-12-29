@@ -20,7 +20,7 @@ export default class Tournament extends EventEmitter {
 
     isMember(userId) {
         for (let member of this.participants) {
-            if (member === userId) {
+            if (member.id === userId) {
                 return (true);
             }
         }
@@ -29,7 +29,7 @@ export default class Tournament extends EventEmitter {
 
     addMember(user) {
         if (this.state === "waiting") {
-            this.participants.push(user.id);
+            this.participants.push(user);
             if (this.participants.length === 4) {
                 this.startTournament();
             }
@@ -38,7 +38,7 @@ export default class Tournament extends EventEmitter {
 
     removeMember(userId) {
         if (this.isMember(userId)) {
-            this.participants = this.participants.filter((member) => member !== userId);
+            this.participants = this.participants.filter((member) => member.id !== userId);
         }
     }
 
@@ -63,11 +63,22 @@ export default class Tournament extends EventEmitter {
         });
     }
 
+    extractParticipantsIds() {
+        const ids = [];
+
+        for (let member of this.participants) {
+            if (member) {
+                ids.push(member.id);
+            }
+        }
+        return (ids);
+    }
+
     startTournament() {
         if (this.state === "waiting") {
             if (this.participants.length === 4) {
                 this.state = "going";
-                this.createNewRound(this.participants);
+                this.createNewRound(this.extractParticipantsIds());
                 this.currentRound.startRound();
             }
         }

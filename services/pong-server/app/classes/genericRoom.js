@@ -175,7 +175,7 @@ export default class GenericRoom extends EventEmitter {
                     id: uuid(),
                     type: "joinMatch",
                     sender: {id: this.id, username: "", avatar: ""},
-                    receiver: {id: member.id},
+                    receiver: {id: member},
                     expireTime: (Math.floor(Date.now() / 1000) + 60),
                 });
             }
