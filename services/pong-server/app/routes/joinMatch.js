@@ -7,7 +7,7 @@ async function joinMatchHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
+        const error = new Error("Invalid user passed to handler!!");
         error.statusCode = 400;
         throw error;
     }
@@ -17,7 +17,7 @@ async function joinMatchHandler(request, reply) {
     let room = alreadyInMatch(this.roomList, user.id);
 
     if (room && (room.id !== rid) && !room.isDone()) {
-        const error = new Error("You are already in other match!!")
+        const error = new Error("You are already in other match!!");
         error.statusCode = 404;
         throw error;
     }
@@ -25,19 +25,13 @@ async function joinMatchHandler(request, reply) {
     room = this.roomList.get(rid);
 
     if (!room || !room.isMember(user.id) || room.isDone()) {
-        const error = new Error("Currently you don't have any match to join!!")
+        const error = new Error("Currently you don't have any match to join!!");
         error.statusCode = 404;
         throw error;
     }
 
-    if (!room.tournament) {
-        const error = new Error("Room is not belong to any tournament!!")
-        error.statusCode = 404;
-        throw error;
-    }
-
-    if (!room.tournament.isMember(user.id)) {
-        const error = new Error("User is not a tournamnet's member!!")
+    if (room.tournament && !room.tournament.isMember(user.id)) {
+        const error = new Error("User is not member of room's tournament!!");
         error.statusCode = 404;
         throw error;
     }
