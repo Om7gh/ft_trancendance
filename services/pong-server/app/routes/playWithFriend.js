@@ -3,7 +3,6 @@ import GenericRoom from "../classes/genericRoom.js";
 import inviteSchema from "../schemas/inviteSchema.js";
 import acceptSchema from "../schemas/acceptSchema.js";
 
-
 async function acceptHandler(request, reply) {
     const user  = request.user;
     const state = this.validateUser(user);
@@ -77,7 +76,6 @@ async function inviteHandler(request, reply) {
 
     return (reply.send("Invited!!"));
 }
-
 
 export default async function playWithFriend(fastify, options) {
 
