@@ -229,11 +229,13 @@ function messagesPlugin(instance) {
 		let socketUserId = req.user.id;
 		presenceInterests.forEach((users, interstedUser, map) => {
 			if (users.find((id) => id === socketUserId) !== undefined){
-				connectedUsers.get(interstedUser).send(JSON.stringify({
-					type: "user-presence",
-					presence: presenceChange,
-					userId: socketUserId
-				}));
+				if (connectedUsers.has(interstedUser)){
+					connectedUsers.get(interstedUser).send(JSON.stringify({
+						type: "user-presence",
+						presence: presenceChange,
+						userId: socketUserId
+					}));
+				}
 			}
 		});
 	}

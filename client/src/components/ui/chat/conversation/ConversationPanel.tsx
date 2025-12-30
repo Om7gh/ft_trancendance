@@ -118,12 +118,12 @@ function ConversationPanel({
 	if (targetUserCard?.friend === undefined)
 		return (
 			<div id="ConversationPanel" className="h-full flex-2 ml-4 pl-2 flex flex-col items-center justify-center">
-				<img src={ConversationImg} className="w-[68%]"  alt="decorator image for unselected conversation"/>
+				<img src={ConversationImg} className="w-[68%]" alt="decorator image for unselected conversation"/>
 				<p className="text-gray-200 font-bold">Conversation missing. Target a conversation</p>
 			</div>
 		)
 	return (
-		<div key={targetUserCard.friend.id} id="ConversationPanel" className="h-full flex-2 bg-[#232c38] ml-4 pl-2 flex flex-col">
+		<div key={targetUserCard.friend.id} id="ConversationPanel" className="h-full flex-2 p-2 ml-4 flex flex-col">
 			<ChatHeader
 				contact={targetUserCard.friend}
 				isMobile={isMobile}

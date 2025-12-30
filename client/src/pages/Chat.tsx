@@ -194,7 +194,7 @@ function Chat(){
 		}
 	}
 
-	const style = "p-5 h-full w-full items-start " + (!isMobile ? "flex" : "");
+	const style = "p-5 h-full w-full text-[clamp(12px,0.8vw,25px)] " + (!isMobile ? "flex" : "");
 
 	return (
 		<div id="Chat" className={style}>
@@ -210,15 +210,20 @@ function Chat(){
 				/>
 			}
 			{
-				showConversation && <ConversationPanel
-					key={selectedCard?.friend?.id}
-					UsersTab={selectedTab}
-					targetUserCard={selectedCard}
-					isMobile={isMobile}
-					connection={socket}
-					onBlockToggle={handleBlockToggle}
-					changeUserView={changeUserView}
-				/>
+				<>
+					{!isMobile && <div className="w-0.5 h-full self-center ml-10 rounded-b-4xl bg-violet-500"></div>}
+					{
+						showConversation && <ConversationPanel
+							key={selectedCard?.friend?.id}
+							UsersTab={selectedTab}
+							targetUserCard={selectedCard}
+							isMobile={isMobile}
+							connection={socket}
+							onBlockToggle={handleBlockToggle}
+							changeUserView={changeUserView}
+						/>
+					}
+				</>
 			}
 		</div>
 	);

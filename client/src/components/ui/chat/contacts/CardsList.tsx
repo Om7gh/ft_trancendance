@@ -29,14 +29,14 @@ function Avatar({imgUrl, name, type}: AvatarProps){
   const navigate = useNavigate()
 
   const avatarStyle = {
-    "CardItem": "rounded-xl",
-    contact: "rounded-[50%]",
-    sender: "rounded-[50%] border-2 border-[#F97316] h-[40px] self-end",
-    receiver: "rounded-[50%] border-2 border-[#0D9488] h-[40px] self-end"
+    "CardItem": "rounded-[50%]",
+    contact: "rounded-[50%] max-w-30 max-h-20",
+    sender: "rounded-[50%] border-2 border-neon h-[40px] self-end",
+    receiver: "rounded-[50%] border-2 border-violet-500 h-[40px] self-end"
   }
   
   return (
-    <div className={"max-w-[18%] overflow-clip " + avatarStyle[type]}
+    <div className={"overflow-clip aspect-square " + avatarStyle[type]}
       onClick={(e) => {
         e.stopPropagation();
         navigate(`/dashboard/profile/${name}`);
@@ -56,7 +56,7 @@ function UserInfo({name, unread_msg}: {name: string, unread_msg: number}){
         {
           unread_msg > 0 &&
           <div className="min-w-4 absolute text-center top-0 left-[94%] ml-auto text-[0.6em]
-                overflow-clip rounded-[30px] bg-[#F97316]">
+                overflow-clip rounded-[30px] bg-neon">
             {unread_msg}
           </div >
         }
@@ -68,9 +68,11 @@ function UserInfo({name, unread_msg}: {name: string, unread_msg: number}){
 function CardItem({card, isSelected, onSelect}: CardItemProps){
 
   const friend = card.friend;
-  const listStyle = (!isSelected) ? "flex gap-2 mt-3 w-full h-[8%]" :
-    "flex gap-2 mt-3 w-full h-[8%] bg-[#0D9488]/30 rounded-xl \
-    shadow-2xl border-l-[3px] p-[3px] border-l-[#0D9488]";
+  let listStyle = "flex gap-4 bg-blue-100/0 mt-3 p-2 w-full h-20"
+  if (isSelected){
+    listStyle += " bg-violet-500/20 rounded-xl  \
+    shadow-2xl border-l-[3px]  border-l-violet-500";
+  }
   return (
     <li className={listStyle} onClick={() => onSelect(card)}>
       <Avatar imgUrl={friend.photo_url}
@@ -87,7 +89,7 @@ function CardItem({card, isSelected, onSelect}: CardItemProps){
 function CardsList({cards, selectedCard, onSelect}: CardsListProps){
 
   return  (
-    <ul id="CardsList" className="h-[87%] scrollbar overflow-auto">
+    <ul id="CardsList" className="h-[87%] mt-3 scrollbar overflow-auto">
       {
           cards.map(card => <CardItem
             key={card.friend.id}
