@@ -2,7 +2,7 @@ import type {User} from "./User"
 
 interface BlockToggle{
     action: "block" | "unblock";
-    targetID: string
+    targetId: string
 }
 
 interface SendMessage{

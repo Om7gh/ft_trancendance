@@ -5,16 +5,25 @@ import userInConversation from '../utils/userInConversation.js';
 import ConversationManager from '../classes/ConversationsManager.js';
 import UsersBlocksManager from '../classes/UsersBlockManager.js';
 import MessageManager from "../classes/MessageManager.js"
+import messageSchema from '../schemas/messages.js';
+import RequestValidator from '../classes/RequestValidator.js';
 
 function messagesPlugin(instance) {
 
-    let connectedUsers = new Map();
-	let activeUserConv = new Map();
-	let presenceInterests = new Map();
+    const connectedUsers = new Map();
+	const activeUserConv = new Map();
+	const presenceInterests = new Map();
 
 	instance.decorate('conversationManager', new ConversationManager(instance.betterSqlite3));
 	instance.decorate('messageManager', new MessageManager(instance.betterSqlite3));
 	instance.decorate('blockManager', new UsersBlocksManager(instance.betterSqlite3));
+	
+	const reqValidator = new RequestValidator();
+	const getOptions = {
+		schema: {
+			params: messageSchema
+		}
+	}
 
 	instance.decorate('connectedUsers', connectedUsers);
 
@@ -97,7 +106,6 @@ function messagesPlugin(instance) {
 
 			function handleEnterConversation() {
 				let actionByUserId = clientReq.user.id;
-
 				if (activeUserConv.has(actionByUserId) && activeUserConv.get(actionByUserId) === parsedMsg.conversationId)
 					return ;
 				if (!userInConversation(actionByUserId, parsedMsg.conversationId, instance.conversationManager)){
@@ -109,10 +117,12 @@ function messagesPlugin(instance) {
 			}
 
 			function handleLeaveConversation() {
-				let actionByuserId = req.user.id;
-				if (!activeUserConv.has(actionByuserId) || activeUserConv.get(actionByuserId) !== parsedMsg.conversationId)
+				let actionByuserId = clientReq.user.id;
+				if (!activeUserConv.has(actionByuserId) || activeUserConv.get(actionByuserId) !== parsedMsg.conversationId){
+					clientSocket.send("Can't leave this conversation");
 					return ;
-				activeUserConv.delete(actionByuserId, parsedMsg.conversationId);
+				}
+				activeUserConv.delete(actionByuserId);
 			}
 
 			function handleWatchUsers(){
@@ -126,20 +136,20 @@ function messagesPlugin(instance) {
 
 			async function handleUserBlock(){
 				try {
-					if (clientReq.user.id === parsedMsg.targetID)
+					if (clientReq.user.id === parsedMsg.targetId)
 						throw Error("You cannot block yourself!");
-					const result = areFriends(clientReq.headers.cookie, parsedMsg.targetID);
+					const result = areFriends(clientReq.headers.cookie, parsedMsg.targetId);
 					if (!result)
 						throw Error("You are not allowed to block this user");
 					if (
-						instance.blockManager.hasBlockedBy(clientReq.user.id, parsedMsg.targetID)
+						instance.blockManager.hasBlockedBy(clientReq.user.id, parsedMsg.targetId)
 						||
-						instance.blockManager.hasBlockedBy(parsedMsg.targetID, clientReq.user.id)
+						instance.blockManager.hasBlockedBy(parsedMsg.targetId, clientReq.user.id)
 					)
 						throw Error("You cannot block this user!");
-					instance.blockManager.addBlock(clientReq.user.id, parsedMsg.targetID);
-					if (connectedUsers.has(parsedMsg.targetID)){
-						connectedUsers.get(parsedMsg.targetID).send(JSON.stringify({
+					instance.blockManager.addBlock(clientReq.user.id, parsedMsg.targetId);
+					if (connectedUsers.has(parsedMsg.targetId)){
+						connectedUsers.get(parsedMsg.targetId).send(JSON.stringify({
 							type: "connection-update",
 							stateBy: clientReq.user.id,
 							connectionState: "blocked_by_them"
@@ -156,21 +166,21 @@ function messagesPlugin(instance) {
 
 			async function handleUserUnblock(){
 				try {
-					if (clientReq.user.id === parsedMsg.targetID)
+					if (clientReq.user.id === parsedMsg.targetId)
 						throw Error("You cannot Unblock yourself!");
-					const result = await areFriends(clientReq.headers.cookie, parsedMsg.targetID);
+					const result = await areFriends(clientReq.headers.cookie, parsedMsg.targetId);
 					if (!result)
 						throw Error("You are not allowed to unblock this user");
-					if (!instance.blockManager.hasBlockedBy(clientReq.user.id, parsedMsg.targetID))
+					if (!instance.blockManager.hasBlockedBy(clientReq.user.id, parsedMsg.targetId))
 						throw Error("User is not blocked!");
-					if (connectedUsers.has(parsedMsg.targetID)){
-						connectedUsers.get(parsedMsg.targetID).send(JSON.stringify({
+					if (connectedUsers.has(parsedMsg.targetId)){
+						connectedUsers.get(parsedMsg.targetId).send(JSON.stringify({
 							type: "connection-update",
 							stateBy: clientReq.user.id,
 							connectionState: "active"
 						}));
 					}
-					instance.blockManager.removeBlock(clientReq.user.id, parsedMsg.targetID);
+					instance.blockManager.removeBlock(clientReq.user.id, parsedMsg.targetId);
 				}
 				catch(e) {
 					clientSocket.send(JSON.stringify({
@@ -182,26 +192,26 @@ function messagesPlugin(instance) {
 
 			switch (parsedMsg.action) {
 				case "send-message": {
+					reqValidator.isValidRequest(parsedMsg, "message-action");
 					handleSendMessage();
 					break ;
 				}
 				case "watch-users": {
+					reqValidator.isValidRequest(parsedMsg, "presence-action");
 					handleWatchUsers();
 					break;
 				}
-				case "enter-conversation":{
-					handleEnterConversation();
-					break ;
-				}
+				case "enter-conversation":
 				case "leave-conversation":{
+					reqValidator.isValidRequest(parsedMsg, "conversation-action");
+					(parsedMsg.action === "enter-conversation") ? handleEnterConversation() :
 					handleLeaveConversation();
 					break ;
 				}
-				case "block-user": {
-					handleUserBlock();
-					break ;
-				}
+				case "block-user":
 				case "unblock-user":{
+					reqValidator.isValidRequest(parsedMsg, "block-action");
+					(parsedMsg.action === "block-user") ? handleUserBlock() :
 					handleUserUnblock();
 					break;
 				}
@@ -249,7 +259,7 @@ function messagesPlugin(instance) {
 		socket.on('error', (err) => handleConnectionError(err, req));
 	})
 
-	instance.get("/messages/:convId", async (req, reply) => {
+	instance.get("/messages/:convId", getOptions ,async (req, reply) => {
 		const convId = Number(req.params.convId);
 
 		if (!userInConversation(req.user.id, convId, instance.conversationManager))

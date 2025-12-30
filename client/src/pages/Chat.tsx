@@ -110,7 +110,7 @@ function Chat(){
 			selectedCardRef.current = selectedCardUpdate as Card;
 			setRequest({
 				action: action + "-user",
-				targetID: selectedCard?.friend.id
+				targetId: selectedCard?.friend.id
 			} as ServerRequest);
 	}
 
