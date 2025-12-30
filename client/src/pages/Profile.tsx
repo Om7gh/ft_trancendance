@@ -36,8 +36,10 @@ function Profile() {
     );
   }
 
-  const { user, chess, pong, friends } = data;
-  console.log("friend", friends)
+  const { user, chess, pong } = data;
+
+  console.log(chess)
+
   return (
     <div className='p-5 md:p-2'>
       <ProfileHeader userData={user} isOwnProfile={currentUser?.id === user.id} />
