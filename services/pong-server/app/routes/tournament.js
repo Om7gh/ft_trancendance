@@ -39,6 +39,7 @@ async function joinTournamentHandler(request, reply) {
     }
 
     this.currentTournament.addMember(user);
+    
     return reply.send(this.currentTournament.toJSON());
 }
 
