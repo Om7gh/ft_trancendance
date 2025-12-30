@@ -33,6 +33,12 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         AuthController.confirmEmail
     );
 
+        fastify.get(
+            '/auto-login',
+            { schema: { querystring: ConfirmToken } },
+            AuthController.autoLogin
+        );
+
     fastify.post(
         '/check-username',
         {

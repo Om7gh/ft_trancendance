@@ -13,7 +13,7 @@ import {
     UsernameBody,
 } from '../schemas/auth.js';
 import saveAvatar, { saveUploadedAvatar } from '../utils/avatar-utils.js';
-import { confirmMailOptions } from '../utils/mail-options.js';
+import { confirmMailOptions, magicLinkOptions } from '../utils/mail-options.js';
 
 export default abstract class AuthController {
     private static async issueTokens(
@@ -21,15 +21,24 @@ export default abstract class AuthController {
         user: User
     ): Promise<[string, string]> {
         const jti = randomUUID();
+        const now = Math.floor(Date.now() / 1000);
+
+        const allowed = fastify.usersRepository.updateTokenWithCooldown(
+            user.id,
+            jti,
+            now
+        );
+
+        if (!allowed) {
+            throw new Error('TOKEN_RATE_LIMITED');
+        }
+
         const accessToken = await fastify.generateAccessToken(user.uid);
         const refreshToken = await fastify.generateRefreshToken(user.uid, jti);
-        const now = Math.floor(Date.now() / 1000);
-        fastify.usersRepository.update(user.id, {
-            last_login: now,
-            token_id: jti,
-        });
+
         return [accessToken, refreshToken];
     }
+
     static async redirect(
         this: FastifyInstance,
         request: FastifyRequest,
@@ -164,16 +173,24 @@ export default abstract class AuthController {
             return reply.send({ success: true, next: '/auth/verify-2fa' });
         }
 
-        /**
-      //TODO check if the user already online, if yes send notification and wait until user approve or deny
-      //if (user.online) {
-      //  notify user with suspecius login attempt
-        //* use websocket to send notification
-        //  if (user.deny || timeout) {
-          //    block the new login and optionaly save ip and browser to let user know the logging in happen from where
-        //  }
-      //} else let them login normal and remove tokens from the logged user
-   */
+        const _30d = user.token_updated_at + 30 * 24 * 60 * 60;
+        const expired = Math.floor(Date.now() / 1000) > _30d;
+        if (!expired) {
+            const allowed = this.usersRepository.touchLoginRateLimit(user.id);
+
+            if (!allowed) {
+                return reply.tooManyRequests(
+                    'Please wait before requesting another login email.'
+                );
+            }
+            const token = await this.generateNonceToken(user.uid, '1h');
+            const url = `${this.config.HOST}:${this.config.PORT}/api/auth/auto-login?token=${token}`;
+            await this.transporter.sendMail(magicLinkOptions(user.email, url));
+            return reply.badRequest(
+                'You already logged in on another device, we sent you an email to revoke old sessions before you make new logging'
+            );
+        }
+
         const [accessToken, refreshToken] = await AuthController.issueTokens(
             this,
             user
@@ -184,9 +201,16 @@ export default abstract class AuthController {
 
     static async logout(
         this: FastifyInstance,
-        _request: FastifyRequest,
+        request: FastifyRequest,
         reply: FastifyReply
     ) {
+        const last_logout = Math.floor(Date.now() / 1000);
+
+        this.usersRepository.update(request.user.id, {
+            last_logout,
+            token_id: '',
+            token_updated_at: 0,
+        });
         return reply.clearAccessToken().send({ success: true });
     }
 
@@ -212,6 +236,34 @@ export default abstract class AuthController {
             return reply.redirect('/auth/complete-registration');
         } catch (err: any) {
             return reply.forbidden('invalid-token');
+        }
+    }
+
+    static async autoLogin(
+        this: FastifyInstance,
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+        try {
+            const { sub } = await request.verifyConfirmToken();
+            if (!sub) {
+                return reply.badRequest('invalid magic link token');
+            }
+            const user = this.usersRepository.findByUID(sub);
+            if (!user) {
+                return reply.badRequest('user not found');
+            }
+            const [accessToken, refreshToken] =
+                await AuthController.issueTokens(this, user);
+            reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
+            return reply.send({ success: true, next: '/dashboard' });
+        } catch (err: any) {
+            if (err.message === 'TOKEN_RATE_LIMITED') {
+                return reply.tooManyRequests(
+                    'Magic link already used. Try again in 1 hour.'
+                );
+            }
+            return reply.forbidden('invalid-magic-token');
         }
     }
 
@@ -343,8 +395,19 @@ export default abstract class AuthController {
         }
     }
 
-    static async userInfo(request: FastifyRequest, reply: FastifyReply) {
-        const userInfo = asUserInfo(request.user);
+    static async userInfo(
+        this: FastifyInstance,
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+        let userInfo = asUserInfo(request.user);
+        const userMfa = this.mfaRepository.findById(request.user.id);
+        if (userMfa) {
+            userInfo = {
+                ...userInfo,
+                mfa_enabled: userMfa.enabled ? true : false,
+            };
+        }
         return reply.send(userInfo);
     }
 }

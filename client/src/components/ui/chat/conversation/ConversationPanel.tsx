@@ -14,6 +14,7 @@ import type {ServerRequest} from "@/types/serverRequest.ts"
 
 import ConversationImg from "@assets/placeholders/conversation-placeholder.png";
 import useWsResponse from "@/hooks/useWsResponse.ts";
+import inviteRedirection from "@/services/chat/inviteToMatch.ts" 
 
 interface ConversationPanelProps{
 	targetUserCard: Card | null;
@@ -104,7 +105,8 @@ function ConversationPanel({
 				break ;
 			}
 			case "invite": {
-				break ;
+				console.log("user is invited ...");
+				inviteRedirection(targetUserCard?.friend?.id as string);
 			}
 		}
 	}
