@@ -1,13 +1,33 @@
 import type { Pieces } from '../types';
 import { PieceType, Teams } from '../types/enums';
+import { useChessStore } from '../store/useChessStore';
 
 export const VERTICAL_AXIS = new Array(8).fill(0).map((_, i) => i + 1);
 export const HORIZONTAL_AXIS = new Array(8)
   .fill(0)
   .map((_, i) => String.fromCharCode(i + 97));
 
-export const Piece = (type: string): string => {
-  return `/assets/piece/fantasy/${type}.svg`;
+export const getPieceAssetKey = (team: Teams, type: PieceType): string => {
+  const prefix = team === Teams.WHITE ? 'w' : 'b';
+  const suffix =
+    type === PieceType.PAWN
+      ? 'P'
+      : type === PieceType.ROCK
+        ? 'R'
+        : type === PieceType.KNIGHT
+          ? 'N'
+          : type === PieceType.BISHOP
+            ? 'B'
+            : type === PieceType.QUEEN
+              ? 'Q'
+              : 'K';
+  return `${prefix}${suffix}`;
+};
+
+export const Piece = (type: string, pieceName?: string): string => {
+  const storePieceSetName = useChessStore.getState().pieceSetName;
+  const folder = (pieceName ?? storePieceSetName ?? 'fantasy').trim();
+  return `/assets/piece/${folder}/${type}.svg`;
 };
 
 export const getPiece = (type: string, name: string) => {

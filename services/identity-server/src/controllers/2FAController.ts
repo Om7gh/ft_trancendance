@@ -22,18 +22,27 @@ export default abstract class MFAController {
         const html = `<img src=${qrcode} />`;
 
         const mfa = this.mfaRepository.findByUserId(user.id);
+        if (mfa?.enabled) {
+            return reply.forbidden('2fa already enabled');
+        }
+
+        // Ensure the stored secret matches the QR code we just generated.
+        // If the record exists but is disabled, rotate the secret.
         if (!mfa) {
             this.mfaRepository.create({
                 user_id: user.id,
                 secret: encrypt(secret),
                 enabled: 0,
             });
+        } else {
+            this.mfaRepository.update(user.id, {
+                secret: encrypt(secret),
+                enabled: 0,
+            });
         }
 
-        if (mfa?.enabled) {
-            return reply.forbidden('2fa already enabled');
-        }
-        return reply.send(html);
+        // Settings UI expects JSON; keep html for any older consumer.
+        return reply.send({ success: true, qrcode, uri, html });
     }
 
     static async verify(

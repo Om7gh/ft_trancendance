@@ -1,4 +1,5 @@
 import type { User } from "@/App";
+import { useMobile } from "@/hooks/useMobile";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 function PongChart({user}: {user: User | null}) {
@@ -7,11 +8,13 @@ function PongChart({user}: {user: User | null}) {
       { name: 'Losses', value: 12, color: '#8A2BE2' },
     ];
 
-    console.log(user)
+    const isMobile = useMobile()
 
     return (
       <div className="flex items-center gap-8 p-4 bg-slate-800/30  border border-slate-700">
-      <div className="space-y-4 min-w-[120px]">
+       {
+          !isMobile &&
+          <div className="space-y-4 min-w-30">
         {data.map((item) => (
           <div key={item.name} className="flex items-center gap-3">
             <span
@@ -25,8 +28,8 @@ function PongChart({user}: {user: User | null}) {
           </div>
         ))}
       </div>
-
-      <ResponsiveContainer width="70%" height={200}>
+      }
+      <ResponsiveContainer width="100%" height={200}>
         <PieChart>
           <Pie
             data={data}

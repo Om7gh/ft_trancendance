@@ -1,16 +1,12 @@
 const chessCustomizationSchema = {
   body : {
     "type": "object",
-    "required": ["id", "chess_peice"],
+    "required": ["chess_piece"],
     "additionalProperties": false,
     "properties": {
-      "id": { 
+      "chess_piece": { 
         "type": "string", 
-        "minLength": 10
-      },
-      "chess_peice": { 
-        "type": "string", 
-        "minLength": 10,
+        "minLength": 1
       }
     }
   }

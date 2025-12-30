@@ -12,9 +12,13 @@ type Store = {
   setIsKingInCheck?: () => void;
   prevMove: PrevMove;
   setPrevMove: (pm: PrevMove) => void;
+  pieceSetName: string;
+  setPieceSetName: (name: string) => void;
 };
 
 const useChessStore = create<Store>()((set) => ({
+  pieceSetName: 'fantasy',
+  setPieceSetName: (name: string) => set(() => ({ pieceSetName: name })),
   prevMove: null,
   setPrevMove: (pm: PrevMove) => set(() => ({ prevMove: pm })),
   currentTurn: 'WHITE',

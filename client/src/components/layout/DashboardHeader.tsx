@@ -15,8 +15,7 @@ export default function DashboardHeader({
   isSidebarOpen = false 
 }: DashboardHeaderProps): JSX.Element {
   return (
-    <header className="flex justify-between gap-5 items-center">
-      {/* Hamburger Menu for Mobile */}
+    <header className="flex justify-end mr-0 md:mr-4 lg:mr-4 gap-5 items-center">
       {isMobile && toggleSidebar && (
         <button
           onClick={toggleSidebar}
@@ -27,10 +26,8 @@ export default function DashboardHeader({
         </button>
       )}
 
-      {/* Spacer for desktop */}
       {!isMobile && <div />}
 
-      {/* Right side items */}
       <div className="flex gap-5 items-center">
         <div className="max-w-96">
           <SearchBar />

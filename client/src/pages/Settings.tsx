@@ -5,9 +5,11 @@ import { IoSettings } from "react-icons/io5";
 import { GrUpdate } from "react-icons/gr";
 import { SiAwssecretsmanager } from "react-icons/si";
 import { Si2Fas } from "react-icons/si";
-
+import { useContext } from "react";
+import { GlobalContext } from "@/App";
 
 function Settings() {
+   const {user} = useContext(GlobalContext)
   return (
     <div className="w-full h-full">
       <div className="px-4 pt-2">
@@ -32,8 +34,9 @@ function Settings() {
           </div>
         </div>
 
-
-        <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 ">
+        {
+          user?.provider === "local" &&
+          <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 ">
           <div className="w-full md:w-1/2">
             <UpdatePassword />
           </div>
@@ -45,6 +48,7 @@ function Settings() {
             </p>
           </div>
         </div>
+        }
 
 
 

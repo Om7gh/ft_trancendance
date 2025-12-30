@@ -61,7 +61,7 @@ export default class DatabaseService {
             where id = ?    
         `);
 
-        this.fetchChessCustomization = this.db.prepare(`
+        this.fetchChessCustomizations = this.db.prepare(`
             SELECT
                 c.chess_piece
             FROM chess_customizations c

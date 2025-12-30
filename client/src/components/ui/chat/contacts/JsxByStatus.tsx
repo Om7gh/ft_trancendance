@@ -33,7 +33,7 @@ function EmptyConversations({onAction}: {onAction: OnAction}){
         <img src={EmptyConvImg}/>
         <p className="font-bold text-gray-200"> No conversation found</p>
         <p>Chat with a contact to start.</p>
-        <button onClick={(e) => {onAction(e, "Contacts")}} className="m-6 bg-[#F97316]/80 p-1.5 rounded-4xl text-gray-200">Start a conversation</button>
+        <button onClick={(e) => {onAction(e, "Contacts")}} className="m-6 bg-neon/80 p-1.5 rounded-4xl text-gray-200">Start a conversation</button>
     </div>
   );
 }
@@ -62,7 +62,7 @@ function LoadingStatus(){
     <div className="h-[87%] flex flex-col justify-center items-center">
       <p className="text-gray-200 font-bold"> Getting things ready</p>
       <p className="text-gray-200 "> Just a moment... </p>
-      <BarLoader color="#ff9100"
+      <BarLoader color="#22d3eecc"
         height={3}
         width={200}
         cssOverride={{ margin: "15px", borderRadius: "10px" }}/>

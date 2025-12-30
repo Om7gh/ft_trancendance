@@ -189,12 +189,12 @@ export class FriendshipController {
         });
         try {
             const sender = {
-                uid: user.uid,
+                id: user.uid,
                 username: user.username,
                 avatar: user.avatar,
             };
             const receiver = {
-                uid,
+                id: uid
             };
             await axios.post('http://notification:9005/send', {
                 id: randomUUID(),

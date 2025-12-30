@@ -43,12 +43,12 @@ export class UserController {
             if (bio !== undefined) updateData.bio = bio;
 
             fastify.usersRepository.update(user.id, updateData);
-            const response = {
-                success: true,
-                message: 'Updated',
-                next: null,
-            };
-            return reply.send(response);
+            // const response = {
+            //     success: true,
+            //     message: 'Updated',
+            //     next: null,
+            // };
+            return reply.send(request.user);
         } catch (err) {
             if (err instanceof SqliteError || err instanceof Error) {
                 return reply.badRequest(err.message);

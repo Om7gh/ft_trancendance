@@ -55,7 +55,6 @@ export default abstract class AuthService {
         return data;
     }
 
-
     static async completeProfile(profileData: ProfileData) {
         const formData = new FormData();
         formData.append('avatar', profileData.avatar);
@@ -66,6 +65,16 @@ export default abstract class AuthService {
 
     static async verifyLogin(code: TwoFACode) {
         const { data } = await api.post('/api/auth/2fa/verify-login', code);
+        return data;
+    }
+
+    static async getChessPiece() {
+        const {data} = await api.get("/pongGame/remote/chessCustomization/fetch");
+        return data;
+    }
+
+    static async updateChessPiece(payload: { id: string; chess_piece: string }) {
+        const { data } = await api.put('/pongGame/remote/chessCustomization/update', payload);
         return data;
     }
 

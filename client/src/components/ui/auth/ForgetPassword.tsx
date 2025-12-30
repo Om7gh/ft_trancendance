@@ -13,7 +13,6 @@ function ForgetPassword(): JSX.Element {
     const data = {
       email: formData.get('email') as string,
     };
-
     mutateForgetPassword.mutate(data);
   };
 
@@ -21,7 +20,7 @@ function ForgetPassword(): JSX.Element {
     return <p className="text-red-500">Failed to send reset email.</p>;
   }
   if (mutateForgetPassword.isSuccess) {
-    return <p className="text-green-500">Reset link sent! Check your inbox.</p>;
+    return <p className="text-green-500 text-center mt-5 text-xl">Reset link sent! Check your inbox.</p>;
   }
 
   return (

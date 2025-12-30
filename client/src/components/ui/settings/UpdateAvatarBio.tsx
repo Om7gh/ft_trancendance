@@ -1,13 +1,14 @@
 import { GlobalContext } from '@/App';
-import AuthService from '@/services/auth/auth.service';
+import { useUpdateBioAndAvatar } from '@/services/user/useUpdateAvatarAndBio';
+import type { ProfileData } from '@/types/auth.types';
 import React, { useContext, useState } from 'react';
-import { toast } from 'react-toastify';
 
 function UpdateAvatarBio() {
     const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
-    const { user, setUser } = useContext(GlobalContext);
+    const { user } = useContext(GlobalContext);
     const [bio, setBio] = useState(() => user?.bio || '');
+    const mutateUpdate = useUpdateBioAndAvatar()
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const selected = e.target.files?.[0];
@@ -19,16 +20,11 @@ function UpdateAvatarBio() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        try {
-            await AuthService.updateProfile({ avatar: file!, bio });
-
-            if (user) {
-                setUser({ ...user, bio });
-            }
-            toast.success('Profile updated successfully');
-        } catch (e: any) {
-            toast.error('Failed to update profile' + (e.message ? `: ${e.message}` : ''));
-        }
+        const updatedData = {
+            avatar: file,
+            bio
+        } as ProfileData
+        mutateUpdate.mutate(updatedData)
     }
 
     return (
