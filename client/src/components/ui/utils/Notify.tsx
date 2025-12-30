@@ -98,12 +98,10 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
       </div>
     );
   } if (data.type === "inviteToMatch") {
-    const {refetch, error, isError} = useAcceptMatch();
+    const {refetch} = useAcceptMatch(data.id);
     const handleClick = () => {
       refetch()
     }
-    if (isError)
-      return toast.error(error.message)
     return (
       <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950 px-4 py-3 my-2 rounded-lg border border-blue-500/30 hover:border-blue-500/60 transition-all">
         <div className="flex items-center gap-3">
