@@ -7,6 +7,7 @@ import tournament from "./tournament.js";
 import customization from "./customization.js";
 import playWithFriend from "./playWithFriend.js";
 import playWithSomeOne from "./playWithSomeOne.js";
+import pongStatistics from "./pongStatistics.js";
 
 export function alreadyInMatch(roomList, userId) {
     for (let [id, room] of roomList) {
@@ -23,12 +24,12 @@ function addToRoomList(room) {
         this.log.info(`add room with id: ${room.id}`);
 
         room.on("done", () => {
-            if (room.isDone() && !room.tournament && !room.isCanceled()) {
+            if (this.validateRoom(room.toJSON())) {
                 this.db.addMatch(room.toJSON());
             }
             this.log.info(`delete room with id: ${room.id}`);
             this.roomList.delete(room.id);
-        })
+        });
     }
 }
 
@@ -46,6 +47,7 @@ export default async function pongGame(fastify, options) {
 
     fastify.register(playWithSomeOne);
     fastify.register(playWithFriend);
+    fastify.register(pongStatistics);
     fastify.register(customization);
     fastify.register(tournament);
     fastify.register(joinMatch);

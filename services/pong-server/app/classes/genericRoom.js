@@ -52,7 +52,7 @@ export default class GenericRoom extends EventEmitter {
     }
     
     isDone() {
-        return ((this.state === "done") || (this.state === "canceled"));
+        return (this.state === "done");
     }
 
     addMember(userId) {
@@ -148,15 +148,15 @@ export default class GenericRoom extends EventEmitter {
 
         if (this.isPaused()) {
             this.continue(playerId);
-        } else if (this.leftPlayer.isJoind() && this.rightPlayer.isJoind()) {
+        } else if (this.leftPlayer.socket && this.rightPlayer.socket) {
             this.startMatch();
         }
     }
 
     startMatch() {
-        if (this.isReady) {
+        if (this.isReady()) {
             clearTimeout(this.waitingId);
-            if (this.leftPlayer.isJoind() && this.rightPlayer.isJoind()) {
+            if (this.leftPlayer.socket && this.rightPlayer.socket) {
                 this.state = "going";
                 this.broadcastMatchState();
                 this.broadcastScore();
@@ -207,7 +207,7 @@ export default class GenericRoom extends EventEmitter {
                     this.cancelMatch();
                     return ;
                 }
-                this.cancelMatch();
+                this.stopMatch();
             }
         }, 60000);
     }
@@ -223,7 +223,7 @@ export default class GenericRoom extends EventEmitter {
                         this.stopMatch();
                     }
                 } else if (!this.leftPlayer.socket && !this.rightPlayer.socket) {
-                    this.stopMatch();
+                    this.cancelMatch();
                 }
                 this.ball.getNextPosition(this.table, this.leftPlayer.paddle, this.rightPlayer.paddle);
                 this.broadcastView();
@@ -232,7 +232,7 @@ export default class GenericRoom extends EventEmitter {
     }
 
     continue(playerId) {
-        if ((this.isPaused()) && this.isPlayer(playerId)) {
+        if (this.isPaused() && this.isPlayer(playerId)) {
             clearTimeout(this.pausingId);
             this.state = "going";
             this.broadcastScore();
@@ -244,7 +244,7 @@ export default class GenericRoom extends EventEmitter {
     pause(playerId) {
         if ((this.isGoing()) && this.isPlayer(playerId)) {
             clearInterval(this.playingId);
-            this.state = "pause";
+            this.state = "paused";
             this.broadcastMatchState()
             this.pausingId = setTimeout(() => {
                 if (this.isPaused()) {
@@ -260,7 +260,7 @@ export default class GenericRoom extends EventEmitter {
 
     cancelMatch() {
         if (this.isWaiting()) {
-            this.state = "canceled";
+            this.state = "done";
             this.emit("done");
         }
     }
@@ -365,10 +365,8 @@ export default class GenericRoom extends EventEmitter {
         return ({
             id : this.id,
             state : this.state,
-            ...((!this.isWaiting() && (!this.isCanceled())) && {
-                ...(this.leftPlayer && {leftPlayer:  this.leftPlayer.toJSON()}),
-                ...(this.rightPlayer && {rightPlayer:  this.rightPlayer.toJSON()}),
-            }),
+            ...(this.leftPlayer && {leftPlayer:  this.leftPlayer.toJSON()}),
+            ...(this.rightPlayer && {rightPlayer:  this.rightPlayer.toJSON()}),
             ...((this.isDone()) && {winner : this.winner})
         })
     }

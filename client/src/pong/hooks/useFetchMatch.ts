@@ -9,7 +9,6 @@ export default function useFetchMatch(
     setMatch: ((match: MatchType) => void),
     setError: ((error: string) => void)
 ) {
-
     useEffect(() => {
         let ignored = false;
 
@@ -31,5 +30,5 @@ export default function useFetchMatch(
         return (() => {
             ignored = true;
         })
-    }, []);
+    }, [url]);
 }

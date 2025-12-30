@@ -7,13 +7,12 @@ import MessageDisplayer from "../component/MessageDisplayer.tsx";
 import PlayMatch from "./playMatch.tsx";
 
 export default function JoinMatch() {
-    const [searchParams]    = useSearchParams();
-    const matchId           = searchParams.get("rid");
     const [error, setError] = useState<string | null>(null);
     const [match, setMatch] = useState<MatchType | null>(null);
-    const url = `/pongGame/remote/joinMatch?rid=${matchId}`;
+    const [searchParams]    = useSearchParams();
+    const matchId           = searchParams.get("rid");
 
-    useFetchMatch(url, setMatch, setError);
+    useFetchMatch(`/pongGame/remote/joinMatch?rid=${matchId}`, setMatch, setError);
     
     if (error)
     return <MessageDisplayer message={error} />;

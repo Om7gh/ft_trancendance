@@ -98,7 +98,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
       </div>
     );
   } if (data.type === "inviteToMatch"  && diff > 0) {
-    const {refetch} = useAcceptMatch(data.id);
+    const {refetch} = useAcceptMatch(data.sender.id);
     const handleClick = () => {
       refetch()
     }

@@ -67,7 +67,7 @@ function UserInvite({wrapperStyle, onInvite}: InviteButtonProps){
 			onInvite("invite")
 			}}>
 			<label htmlFor="inviteButton">INVITE</label>
-			<input id="inviteButton" type="button"/>
+			<input id="inviteButton" type="button" onClick={(e) => e.stopPropagation()}/>
 		</div>
 	);
 }

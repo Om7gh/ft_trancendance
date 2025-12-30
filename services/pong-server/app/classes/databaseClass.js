@@ -41,13 +41,13 @@ export default class DatabaseService {
         this.insertChessCustomizations = this.db.prepare(`
             INSERT INTO chess_customizations (
                 id,
-                chess_peice
+                chess_piece
             ) VALUES (
                 @id,
-                @chess_peice
+                @chess_piece
             )
             ON CONFLICT(id) DO UPDATE SET
-                chess_peice = COALESCE(excluded.chess_peice, chess_customizations.chess_peice)
+                chess_piece = COALESCE(excluded.chess_piece, chess_customizations.chess_piece)
         `);
 
 
@@ -63,7 +63,7 @@ export default class DatabaseService {
 
         this.fetchChessCustomization = this.db.prepare(`
             SELECT
-                c.chess_peice
+                c.chess_piece
             FROM chess_customizations c
             where id = ?    
         `);
@@ -72,6 +72,7 @@ export default class DatabaseService {
             SELECT
                 m.id AS match_id,
                 m.winner_id,
+                m.created_at,
                 u1.id AS left_id, u1.username AS left_username, u1.avatar AS left_avatar, m.left_player_points AS left_points,
                 u2.id AS right_id, u2.username AS right_username, u2.avatar AS right_avatar, m.right_player_points AS right_points
             FROM matches m
@@ -107,6 +108,7 @@ export default class DatabaseService {
         return rows.map(r => ({
             id: r.match_id,
             winner: r.winner_id,
+            createdAt: r.created_at,
             leftPlayer: {
                 id: r.left_id,
                 username: r.left_username,

@@ -3,9 +3,10 @@ import websocket from '@fastify/websocket';
 import cookie from '@fastify/cookie';
 import axios from 'fastify-axios';
 import corsPlugin from './plugins/corsPlugin.js';
-import validateUser from './plugins/validateUser.js';
 import dataBase from './plugins/dataBase.js';
 import statistics from './routes/statistics.js';
+import validateUserPlugin from './plugins/validateUser.js';
+import validateRoomPlugin from './plugins/validateRoom.js';
 
 import pongGame from './routes/pongGame.js';
 
@@ -18,7 +19,8 @@ app.register(websocket);
 
 app.register(cookie);
 app.register(corsPlugin);
-app.register(validateUser);
+app.register(validateUserPlugin);
+app.register(validateRoomPlugin);
 app.register(dataBase, {
   dbPath: "/var/local/pong.db",
 });

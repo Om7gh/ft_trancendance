@@ -77,7 +77,7 @@ export default async function customization(fastify, options) {
 
     fastify.route({
         url     : '/pongGame/remote/pongCustomization/update',
-        method  : 'POST',
+        method  : 'PUT',
         schema  : pongCustomizationSchema,
         handler : pongCustomizationUpdateHandler,
     })
@@ -90,7 +90,7 @@ export default async function customization(fastify, options) {
 
     fastify.route({
         url     : '/pongGame/remote/chessCustomization/update',
-        method  : 'POST',
+        method  : 'PUT',
         schema  : chessCustomizationSchema,
         handler : chessCustomizationUpdateHandler,
     })

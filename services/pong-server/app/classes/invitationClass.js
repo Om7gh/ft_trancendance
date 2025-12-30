@@ -4,6 +4,8 @@ import { EventEmitter } from 'events';
 export default class Invitation extends EventEmitter {
 
     constructor(senderId, inviteeId) {
+        super();
+        
         this.id         = uuid();
         this.state      = "waiting";
         this.senderId   = senderId;
@@ -18,7 +20,9 @@ export default class Invitation extends EventEmitter {
         let counter = 0;
 
         const intervalId = setInterval(() => {
-            if ((this.state === "accepted") || (60 < counter)) {
+            if (this.state === "accepted") {
+                clearInterval(intervalId);
+            } else if (60 < counter) {
                 clearInterval(intervalId);
                 this.emit("done");
             }
@@ -27,6 +31,7 @@ export default class Invitation extends EventEmitter {
 
     accepted() {
         this.state = "accepted";
+        this.emit("done");
     }
 
     isAlreadyInvited(inviteeId) {

@@ -4,6 +4,7 @@ import joinMatchSchema from "../schemas/joinMatchSchema.js";
 
 async function joinMatchHandler(request, reply) {
     const user  = request.user;
+    const rid = request.query.rid;
     const state = this.validateUser(user);
 
     if (!state) {
@@ -11,8 +12,6 @@ async function joinMatchHandler(request, reply) {
         error.statusCode = 400;
         throw error;
     }
-
-    const rid = request.query.rid;
 
     let room = alreadyInMatch(this.roomList, user.id);
 
@@ -36,6 +35,10 @@ async function joinMatchHandler(request, reply) {
         throw error;
     }
 
+    if (room.isPaused()) {
+        return reply.send(room.toJSON());
+    }
+    
     room.joinRoom(user);
 
     await waitForOpponent(room);

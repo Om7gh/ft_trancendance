@@ -2,16 +2,12 @@ import Ajv from 'ajv';
 import fp from 'fastify-plugin';
 import userSchema from '../schemas/userSchema.js';
 
-export default fp(async function validateUser(fastify, options) {
+export default fp(async function validateUserPlugin(fastify, options) {
   try {
 
-    const ajv = new Ajv({
-      allErrors: true,
-      removeAdditional: true,
-      coerceTypes: true
-    });
+    const ajv = new Ajv();
     
-    const validateUser = ajv.compile(userSchema.body);
+    const validateUser = ajv.compile(userSchema);
     
     fastify.decorate('validateUser', validateUser);
   } catch (e) {

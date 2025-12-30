@@ -2,7 +2,6 @@ import onRequestHookHandler from "../../hooks/onRequestHook.js";
 
 async function fetchNotificationHandler(request, reply) {
     const user  = request.user;
-    console.log("++++++", user, "++++++++");
     const state = this.validateUser(user);
 
     if (!state) {
@@ -12,9 +11,6 @@ async function fetchNotificationHandler(request, reply) {
     }
 
     const result = this.db.getNotificationsByUser(user.id);
-
-    console.log("++++++++++++++", result, "+++++++++++++++");
-
     reply.send(result);
 }
 

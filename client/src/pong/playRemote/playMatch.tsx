@@ -30,9 +30,8 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
         >
           Your browser does not support HTML canvas API!!
         </canvas>
+        {(matchState === 'paused') && <CounterDown />}
         {(matchState === 'done') && <RemoteWinner score={score} match={match} />}
-        {(matchState === 'pause') && <CounterDown />}
-        {(matchState === 'waiting') && <MessageDisplayer message='loading...' />}
       </div>
       <button
           className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-1/2"
@@ -51,6 +50,7 @@ export default function PlayMatch({ match }: PlayMatchPropsType) {
   const [error, setError] = useState<string | null>(null);
   const [matchState, setMatchState] = useState<string | null>(null);
   const connection  = useRef<{ ws: WebSocket | null }>({ ws: null });
+  
   const url = `${import.meta.env.VITE_API_URL}/pongGame/remote/match?rid=${match.id}`;
 
   useWebSocket(url, connection.current, setMatchState, setError);

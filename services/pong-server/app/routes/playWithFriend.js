@@ -4,16 +4,16 @@ import acceptSchema from "../schemas/acceptSchema.js";
 import Invitation from "../classes/invitationClass.js";
 
 function checkIsInvited(senderId, inviteeId) {
-    const invitations = this.invitaionList.get(senderId);
+    const invitations = this.invitationList.get(senderId);
 
     if (invitations) {
-        for (let invitaion of invitations) {
-            if (invitaion && invitaion.isInvited(inviteeId)) {
-                return true;
+        for (let [id, invitation] of invitations) {
+            if (invitation.isInvited(inviteeId)) {
+                return invitation;
             }
         }
     }
-    return false;
+    return null;
 }
 
 function addToInvitationList(invitation) {
@@ -22,19 +22,17 @@ function addToInvitationList(invitation) {
         let invitations = this.invitationList.get(senderId);
         
         if (!invitations) {
-            invitations = [];
+            invitations = new Map();
             this.invitationList.set(senderId, invitations);
         }
 
         this.log.info(`add invitation with id: ${invitation.id}`);
 
-        if (!invitations.find((inv) => inv.id === invitation.id)) {
-            invitations.push(invitation);
+        if (!invitations.get(invitation.id)) {
+            invitations.set(invitation.id, invitation);
             invitation.on("done", () => {
                 this.log.info(`delete invitation with id: ${invitation.id}`);
-                this.invitaionList.set(
-                    senderId, invitations.filter((inv) => inv.id !== invitation.id)
-                );
+                invitations.delete(invitation.id);
             });
         }
     }
@@ -52,23 +50,24 @@ async function acceptHandler(request, reply) {
 
     const sid = request.query.sid;
 
-    if (!checkIsInvited(sid, user.id)) {
+    const invitation = this.checkIsInvited(sid, user.id);
+
+    if (!invitation) {
         const error = new Error("Either you are not invited, or invitation is gone!!");
         error.statusCode = 400;
         throw error
+    } else {
+        invitation.accepted();
     }
 
     const room = new GenericRoom();
-
     this.addToRoomList(room);
-
     room.addMember(user.id);
-
     room.addMember(sid);
 
     await room.inviteMembers();
 
-    return reply.send("ok");
+    return reply.send("accepted successfully");
 }
 
 async function inviteHandler(request, reply) {
@@ -96,9 +95,7 @@ async function inviteHandler(request, reply) {
     }
 
     const invitation = new Invitation(user.id, fid);
-
     this.addToInvitationList(invitation);
-
     invitation.waitForInvitee();
 
     await this.axios.post("http://notification:9005/send",
@@ -114,11 +111,11 @@ async function inviteHandler(request, reply) {
     return (reply.send("Invited!!"));
 }
 
-export default async function playWithFriend(fastify, options) {
+export default async function playWithFriend(fastify) {
 
     fastify.decorate("invitationList", new Map());
     fastify.decorate("checkIsInvited", checkIsInvited);
-    fastify.decorate("addToInvitaionList", addToInvitationList);
+    fastify.decorate("addToInvitationList", addToInvitationList);
 
     fastify.route({
         url     : '/pongGame/remote/inviteFriend',
