@@ -147,7 +147,7 @@ export class UserRepository {
         created_at,
         updated_at,
         last_login,
-        last_logout,
+        last_logout
       FROM users
       WHERE username LIKE ? OR first_name LIKE ? OR last_name LIKE ?
       LIMIT ?

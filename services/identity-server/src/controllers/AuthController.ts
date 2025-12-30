@@ -22,20 +22,12 @@ export default abstract class AuthController {
     ): Promise<[string, string]> {
         const jti = randomUUID();
         const now = Math.floor(Date.now() / 1000);
-
-        const allowed = fastify.usersRepository.updateTokenWithCooldown(
-            user.id,
-            jti,
-            now
-        );
-
-        if (!allowed) {
-            throw new Error('TOKEN_RATE_LIMITED');
-        }
-
         const accessToken = await fastify.generateAccessToken(user.uid);
         const refreshToken = await fastify.generateRefreshToken(user.uid, jti);
-
+        fastify.usersRepository.update(user.id, {
+            last_login: now,
+            token_id: jti,
+        });
         return [accessToken, refreshToken];
     }
 
@@ -153,7 +145,7 @@ export default abstract class AuthController {
         }
         const user = this.usersRepository.findByEmail(email);
         if (!user || !compare(password, user.password)) {
-            return reply.unauthorized('wrong credentials');
+            return reply.badRequest('wrong credentials');
         }
         if (!user.email_verified) {
             return reply.forbidden('email not verified yet');
@@ -176,19 +168,27 @@ export default abstract class AuthController {
         const _30d = user.token_updated_at + 30 * 24 * 60 * 60;
         const expired = Math.floor(Date.now() / 1000) > _30d;
         if (!expired) {
-            const allowed = this.usersRepository.touchLoginRateLimit(user.id);
-
-            if (!allowed) {
-                return reply.tooManyRequests(
-                    'Please wait before requesting another login email.'
+            try {
+                const allowed = this.usersRepository.touchLoginRateLimit(
+                    user.id
                 );
+
+                if (!allowed) {
+                    return reply.tooManyRequests(
+                        'Please wait before requesting another login email.'
+                    );
+                }
+                const token = await this.generateNonceToken(user.uid, '1h');
+                const url = `${this.config.HOST}:${this.config.PORT}/api/auth/auto-login?token=${token}`;
+                await this.transporter.sendMail(
+                    magicLinkOptions(user.email, url)
+                );
+                return reply.badRequest(
+                    'You already logged in on another device, we sent you an email to revoke old sessions before you make new logging'
+                );
+            } catch (err: any) {
+                return reply.badRequest(err.message);
             }
-            const token = await this.generateNonceToken(user.uid, '1h');
-            const url = `${this.config.HOST}:${this.config.PORT}/api/auth/auto-login?token=${token}`;
-            await this.transporter.sendMail(magicLinkOptions(user.email, url));
-            return reply.badRequest(
-                'You already logged in on another device, we sent you an email to revoke old sessions before you make new logging'
-            );
         }
 
         const [accessToken, refreshToken] = await AuthController.issueTokens(
