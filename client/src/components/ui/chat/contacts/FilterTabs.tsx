@@ -19,14 +19,14 @@ function TabBar({tabName, selected, onNav}: TabProps){
   if (selected)
     return (
       <button
-        className="flex-1 font-bold border rounded-xl border-[#0D9488] bg-[#0D9488]/20"
+        className="flex-1 p-0.5 font-bold border rounded-xl border-violet-500 bg-violet-500/20"
         onClick={ (e) => onNav(e, tabName)  }>
           {tabName}
       </button>
     );
   return (
     <button
-      className="flex-1 font-normal"
+      className="flex-1"
       onClick={ (e) => { onNav(e, tabName) } }>
         {tabName}
     </button>
@@ -36,7 +36,7 @@ function TabBar({tabName, selected, onNav}: TabProps){
 function FilterTabs({selectedTab, onNav}: FilterTabProps){
 
   return (
-    <div id="FilterTabs" className="text-white flex gap-3 p-[5px] mt-5">
+    <div id="FilterTabs" className="text-white flex flex-wrap gap-2 mt-5">
       <TabBar tabName={"Chats"} selected={selectedTab === "Chats"} onNav={onNav}/>
       <TabBar tabName={"Unread"} selected={selectedTab === "Unread"} onNav={onNav}/>
       <TabBar tabName={"Contacts"} selected={selectedTab === "Contacts"} onNav={onNav}/>
