@@ -24,7 +24,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="w-[600px] bg-gradient-to-b from-slate-800/50 to-violet-800/20 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center rounded-3xl">
+    <div className="w-150 bg-linear-to-b from-slate-800/50 to-violet-800/20 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center rounded-3xl">
       {openModel && (
         <Model onClose={() => setOpenModel(false)}>
           <ForgetPassword />
@@ -38,7 +38,7 @@ export default function SignIn() {
         <div className="flex flex-col items-center">
           <img src={Logo} alt="logo" className="w-52 h-52" />
 
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-neon">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-neon">
             Game On!
           </h2>
           <p className="mt-2 text-center text-sm text-slate-400">
@@ -118,7 +118,7 @@ export default function SignIn() {
           </div>
 
           <div className="relative group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-400 to-neon  blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
+            <div className="absolute -inset-0.5 bg-linear-to-r from-violet-400 to-neon  blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
             <button
               type="submit"
               disabled={isSubmitting}
