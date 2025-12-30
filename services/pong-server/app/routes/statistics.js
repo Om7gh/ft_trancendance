@@ -1,6 +1,6 @@
 import errorHandler from "../plugins/errorHandler.js";
 import Statistics from "../classes/statisticsClass.js";
-import statisticsQuerySchema from "../schemas/statisticsQuerySchema.js";
+import statisticsSchema from "../schemas/statisticsSchema.js";
 
 async function statisticsHandler(request, reply) {
     const uid  = request.query.uid;
@@ -21,7 +21,7 @@ export default async function statistics(fastify, options) {
     fastify.route({
         url     : '/statistics',
         method  : 'GET',
-        schema  : statisticsQuerySchema,
+        schema  : statisticsSchema,
         handler : statisticsHandler,
     })
 }
