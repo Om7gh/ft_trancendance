@@ -1,7 +1,7 @@
-import { Database } from 'better-sqlite3'
+import { Database } from 'better-sqlite3';
 
 export function initializeSchema(db: Database): void {
-  db.exec(`
+    db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       uid TEXT DEFAULT (lower(hex(randomblob(16)))),
@@ -18,11 +18,13 @@ export function initializeSchema(db: Database): void {
       last_logout INTEGER DEFAULT NULL,
       email_verified BOOLEAN DEFAULT FALSE,
       provider TEXT DEFAULT NULL, -- To be removed. (moved to connections table)
-      token_id TEXT DEFAULT NULL
+      token_id TEXT DEFAULT NULL,
+      token_updated_at INTEGER DEFAULT NULL,
+      login_rate_limit_at INTEGER
     )
   `);
 
-  db.exec(`
+    db.exec(`
     CREATE TABLE IF NOT EXISTS connections (
       user_id INTEGER NOT NULL,
       provider TEXT NOT NULL,
@@ -32,7 +34,7 @@ export function initializeSchema(db: Database): void {
     )
   `);
 
-  db.exec(`
+    db.exec(`
     CREATE TABLE IF NOT EXISTS tfa (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       user_id INTEGER NOT NULL UNIQUE,
@@ -41,9 +43,9 @@ export function initializeSchema(db: Database): void {
       created_at INTEGER DEFAULT (strftime('%s','now')),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
-  `)
+  `);
 
-  db.exec(`
+    db.exec(`
     CREATE TABLE IF NOT EXISTS friendships (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       sender_id INTEGER NOT NULL,
@@ -59,5 +61,17 @@ export function initializeSchema(db: Database): void {
 
     CREATE INDEX IF NOT EXISTS idx_sender_status ON friendships(sender_id, status);
     CREATE INDEX IF NOT EXISTS idx_receiver_status ON friendships(receiver_id, status);
-  `)
+  `);
+
+  db.exec(`
+  CREATE TRIGGER IF NOT EXISTS users_token_update_time
+    AFTER UPDATE OF token_id ON users
+    FOR EACH ROW
+    WHEN NEW.token_id IS NOT OLD.token_id
+    BEGIN
+      UPDATE users
+      SET token_updated_at = strftime('%s','now')
+      WHERE id = NEW.id;
+    END;
+`);
 }
