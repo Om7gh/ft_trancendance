@@ -84,9 +84,9 @@ export default class DatabaseService {
 
     addMatch({ id, leftPlayer, rightPlayer, winner }) {
 
-        this.insertUser(leftPlayer);
+        this.insertUser.run(leftPlayer);
 
-        this.insertUser(rightPlayer);
+        this.insertUser.run(rightPlayer);
 
         this.insertMatch.run({
             id,
@@ -101,6 +101,7 @@ export default class DatabaseService {
     }
 
     getMatchesByUser(userId) {
+        
         const rows = this.fetchMatchesByUser.all(userId, userId);
 
         return rows.map(r => ({

@@ -1,8 +1,44 @@
-import { alreadyInMatch } from "./pongGame.js";
 import GenericRoom from "../classes/genericRoom.js";
 import inviteSchema from "../schemas/inviteSchema.js";
 import acceptSchema from "../schemas/acceptSchema.js";
+import Invitation from "../classes/invitationClass.js";
 
+function checkIsInvited(senderId, inviteeId) {
+    const invitations = this.invitaionList.get(senderId);
+
+    if (invitations) {
+        for (let invitaion of invitations) {
+            if (invitaion && invitaion.isInvited(inviteeId)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function addToInvitationList(invitation) {
+    if (invitation) {
+        const senderId = invitation.senderId;
+        let invitations = this.invitationList.get(senderId);
+        
+        if (!invitations) {
+            invitations = [];
+            this.invitationList.set(senderId, invitations);
+        }
+
+        this.log.info(`add invitation with id: ${invitation.id}`);
+
+        if (!invitations.find((inv) => inv.id === invitation.id)) {
+            invitations.push(invitation);
+            invitation.on("done", () => {
+                this.log.info(`delete invitation with id: ${invitation.id}`);
+                this.invitaionList.set(
+                    senderId, invitations.filter((inv) => inv.id !== invitation.id)
+                );
+            });
+        }
+    }
+}
 
 async function acceptHandler(request, reply) {
     const user  = request.user;
@@ -14,15 +50,21 @@ async function acceptHandler(request, reply) {
         throw error
     }
 
-    const rid = request.query.rid;
+    const sid = request.query.sid;
 
-    const room = this.roomList.get(rid);
-
-    if (!room || !room.isMember(user.id) || !room.isWaiting()) {
-        const error = new Error("Either you are not invited, or invitation is gone");
+    if (!checkIsInvited(sid, user.id)) {
+        const error = new Error("Either you are not invited, or invitation is gone!!");
         error.statusCode = 400;
         throw error
     }
+
+    const room = new GenericRoom();
+
+    this.addToRoomList(room);
+
+    room.addMember(user.id);
+
+    room.addMember(sid);
 
     await room.inviteMembers();
 
@@ -46,28 +88,22 @@ async function inviteHandler(request, reply) {
         error.statusCode = 400;
         throw error;
     }
-
-    let room = alreadyInMatch(this.roomList, user.id);
     
-    if (room && !room.isDone()) {
-        const error = new Error("You are already in match!!");
-        error.statusCode = 409;
+    if (this.checkIsInvited(user.id, fid)) {
+        const error = new Error("You already invite him!!");
+        error.statusCode = 400;
         throw error;
     }
-    
-    room = new GenericRoom();
 
-    this.addToRoomList(room);
+    const invitation = new Invitation(user.id, fid);
 
-    room.addMember(user.id);
+    this.addToInvitationList(invitation);
 
-    room.addMember(fid);
-
-    room.waitMembersToJoin();
+    invitation.waitForInvitee();
 
     await this.axios.post("http://notification:9005/send",
         {data: [{
-            id: room.id,
+            id: invitation.id,
             type: "inviteToMatch",
             sender: {id: user.id, username: user.username, avatar: user.avatar},
             receiver: {id: fid},
@@ -78,8 +114,11 @@ async function inviteHandler(request, reply) {
     return (reply.send("Invited!!"));
 }
 
-
 export default async function playWithFriend(fastify, options) {
+
+    fastify.decorate("invitationList", new Map());
+    fastify.decorate("checkIsInvited", checkIsInvited);
+    fastify.decorate("addToInvitaionList", addToInvitationList);
 
     fastify.route({
         url     : '/pongGame/remote/inviteFriend',

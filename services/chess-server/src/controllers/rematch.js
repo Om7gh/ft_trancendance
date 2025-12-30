@@ -29,12 +29,14 @@ function startRematchBetween(aId, bId, requesterId) {
     type: 'gameStart',
     yourTeam: 'WHITE',
     opponentConnected: true,
+    opponentName: bId,
     roomId,
   });
   send(b.connection, {
     type: 'gameStart',
     yourTeam: 'BLACK',
     opponentConnected: true,
+    opponentName: aId,
     roomId,
   });
 }

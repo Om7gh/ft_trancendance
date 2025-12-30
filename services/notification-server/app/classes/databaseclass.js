@@ -27,12 +27,9 @@ export default class DatabaseService {
         `);
     }
 
-    addUser({ id, username, avatar }) {
-        this.insertUser.run({ id, username, avatar });
-    }
-
     addNotification({ id, type, sender, receiver, expireTime }) {
-        this.addUser(sender);
+
+        this.insertUser.run(sender);
 
         console.log(expireTime, typeof(expireTime));
 
@@ -48,6 +45,7 @@ export default class DatabaseService {
     }
 
     getNotificationsByUser(userId) {
+        
         const rows = this.fetchNotificationsByUser.all(userId);
 
         return rows.map(r => ({

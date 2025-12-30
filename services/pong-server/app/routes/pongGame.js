@@ -17,7 +17,7 @@ export function alreadyInMatch(roomList, userId) {
     return (null);
 }
 
-function addRoomToRoomList(room) {
+function addToRoomList(room) {
     if (room && !this.roomList.get(room.id)) {
         this.roomList.set(room.id, room);
         this.log.info(`add room with id: ${room.id}`);
@@ -38,7 +38,7 @@ export default async function pongGame(fastify, options) {
     fastify.decorate('currentRoom', null);
     fastify.decorate("invitationList", new Map());
 
-    fastify.decorate('addToRoomList', addRoomToRoomList);
+    fastify.decorate('addToRoomList', addToRoomList);
 
     fastify.register(onRequestHook);
     fastify.register(errorHandler);
