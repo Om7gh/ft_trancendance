@@ -1,5 +1,5 @@
-import pongCustomizationSchema from "../schemas/pongCustomizationSchema";
-import chessCustomizationSchema from "../schemas/chessCustomizationSchema";
+import pongCustomizationSchema from "../schemas/pongCustomizationSchema.js";
+import chessCustomizationSchema from "../schemas/chessCustomizationSchema.js";
 
 async function pongCustomizationUpdateHandler(request, reply) {
     const user          = request.user;
