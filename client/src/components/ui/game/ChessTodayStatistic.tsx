@@ -76,7 +76,7 @@ function ChessTodayStatistic() {
   
   return (
     <div className="p-4 bg-slate-800/30  border border-slate-700">
-      <h3 className="text-lg font-medium text-slate-300 mb-4">
+      <h3 className="text-lg font-medium text-slate-300 mb-4 max-h-48 overflow-auto">
         Today's Chess <span className="text-neon">Statistics</span>
       </h3>
 
@@ -91,7 +91,7 @@ function ChessTodayStatistic() {
       ) : todayGames.length === 0 ? (
         <p className="text-slate-200 opacity-40 text-center">No activities for today</p>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-72 overflow-auto">
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="border border-slate-700 bg-slate-900/20 p-3">
               <p className="text-xs text-slate-400">Wins</p>
@@ -107,7 +107,7 @@ function ChessTodayStatistic() {
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 max-h-96">
             {todayGames.map((game) => {
               const outcome = getMatchOutcome(game)
               return (

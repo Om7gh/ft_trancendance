@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { FaHourglassStart } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useAcceptMatch } from "@/services/friends/AcceptMatch";
 
 
 interface SenderType {
@@ -97,6 +98,12 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
       </div>
     );
   } if (data.type === "inviteToMatch") {
+    const {refetch, error, isError} = useAcceptMatch();
+    const handleClick = () => {
+      refetch()
+    }
+    if (isError)
+      return toast.error(error.message)
     return (
       <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950 px-4 py-3 my-2 rounded-lg border border-blue-500/30 hover:border-blue-500/60 transition-all">
         <div className="flex items-center gap-3">
@@ -111,7 +118,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium transition-colors">
+          <button className="px-4 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-md text-sm font-medium transition-colors" onClick={handleClick}>
             Join
           </button>
           <button className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-md text-sm font-medium transition-colors">

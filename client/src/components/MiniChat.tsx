@@ -20,7 +20,7 @@ export default function MiniChat(): JSX.Element {
   };
 
   return (
-    <div className="w-full h-96 flex flex-col bg-slate-900/80  border border-slate-700 shadow-sm">
+    <div className="w-[40vmax] h-64 md:h-96 flex flex-col bg-slate-900/80  border border-slate-700 shadow-sm">
       <div className="px-4 py-2 border-b border-slate-700 flex items-center justify-between">
         <h4 className="text-sm font-semibold text-slate-100">Chat</h4>
         <span className="text-xs text-slate-400">Private</span>

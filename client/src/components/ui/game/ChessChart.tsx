@@ -18,7 +18,7 @@ function ChessChart({user} : {user: User | null}) {
     
     return (
       <div className="flex items-center gap-8 p-4 bg-slate-800/30  border border-slate-700">
-      <div className="space-y-4 min-w-[120px]">
+      <div className="space-y-4 min-w-30">
         {data.map((item) => (
           <div key={item.name} className="flex items-center gap-3">
             <span

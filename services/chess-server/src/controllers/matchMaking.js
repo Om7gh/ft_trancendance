@@ -4,36 +4,42 @@ const { players, rooms } = require('../utils/state');
 
 const matchmakingQueue = []; // {playerId, player socket}
 function handleMatchmaking(playerId, connection) {
-  if (players.has(playerId)) {
-    const { roomId } = players.get(playerId);
-    const room = rooms[roomId];
+  const existingPlayer = players.get(playerId);
+  if (existingPlayer) {
+    existingPlayer.connection = connection;
 
-    if (room) {
-      const player = room.players.find((p) => p.playerId === playerId);
-      if (player) {
-        player.connection = connection;
+    if (existingPlayer.roomId) {
+      const roomId = existingPlayer.roomId;
+      const room = rooms[roomId];
+
+      if (room) {
+        const roomPlayer = room.players.find((p) => p.playerId === playerId);
+        if (roomPlayer) {
+          roomPlayer.connection = connection;
+        }
+        players.set(playerId, existingPlayer);
+        send(connection, {
+          type: 'gameResume',
+          roomId,
+          board: room.board,
+          yourTeam: roomPlayer?.team,
+          currentTurn: room.currentTurn,
+          turns: room.turns,
+          opponentConnected: room.players.length === 2,
+        });
+
+        return;
       }
-
-      players.set(playerId, { connection, roomId });
-
-      send(connection, {
-        type: 'gameResume',
-        roomId,
-        board: room.board,
-        yourTeam: player.team,
-        currentTurn: room.currentTurn,
-        turns: room.turns,
-        opponentConnected: room.players.length === 2,
-      });
-
-      return;
+      existingPlayer.roomId = null;
+      players.set(playerId, existingPlayer);
+    } else {
+      players.set(playerId, existingPlayer);
     }
-
-    players.delete(playerId);
+  } else {
+    players.set(playerId, { connection, roomId: null });
   }
 
   if (matchmakingQueue.some((p) => p.playerId === playerId)) {
-    console.log(`⚠️ Player ${playerId} is already in matchmaking queue`);
     send(connection, {
       type: 'error',
       message: 'You are already in the matchmaking queue',
@@ -53,8 +59,6 @@ function handleMatchmaking(playerId, connection) {
     const player2 = matchmakingQueue.shift();
 
     if (player1.playerId === player2.playerId) {
-      console.log(`⚠️ Player ${player1.playerId} attempted to match with themselves`);
-      // Put one back in the queue
       matchmakingQueue.unshift(player1);
       send(player1.connection, {
         type: 'error',
@@ -62,17 +66,11 @@ function handleMatchmaking(playerId, connection) {
       });
       return;
     }
-    
     createMatch(player1, player2);
   }
 }
 
 function createMatch(player1, player2) {
-  console.log('🎮 Creating match between:', {
-    player1Id: player1.playerId,
-    player2Id: player2.playerId
-  });
-  
   const roomId = uuid();
   rooms[roomId] = {
     players: [
@@ -93,18 +91,16 @@ function createMatch(player1, player2) {
     createdAt: Date.now(),
   };
 
-  console.log('🎮 Room created:', {
-    roomId,
-    players: rooms[roomId].players.map(p => ({ playerId: p.playerId, team: p.team }))
-  });
-
-  players.set(player1.playerId, { connection: player1.connection, roomId });
-  players.set(player2.playerId, { connection: player2.connection, roomId });
+  const p1 = players.get(player1.playerId) || {};
+  const p2 = players.get(player2.playerId) || {};
+  players.set(player1.playerId, { ...p1, connection: player1.connection, roomId });
+  players.set(player2.playerId, { ...p2, connection: player2.connection, roomId });
 
   send(player1.connection, {
     type: 'gameStart',
     yourTeam: 'WHITE',
     opponentConnected: true,
+    opponnet: player2.playerId,
     roomId,
   });
 
@@ -112,11 +108,13 @@ function createMatch(player1, player2) {
     type: 'gameStart',
     yourTeam: 'BLACK',
     opponentConnected: true,
+    opponnet: player1.playerId,
     roomId,
   });
 }
 
 function removeFromQueue(playerId) {
+  console.log(playerId)
   const index = matchmakingQueue.findIndex((p) => p.playerId === playerId);
   if (index !== -1) matchmakingQueue.splice(index, 1);
 }

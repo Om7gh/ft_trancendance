@@ -31,7 +31,6 @@ function handleDisconnect(app, playerId, disconnectingConnection) {
   const opponent = room.players[0];
   if (opponent) {
     send(opponent.connection, { type: 'opponentDisconnected' });
-    setTimeout(() => {
       const isReconnected = room.players.some((p) => p.playerId === playerId);
 
       if (!isReconnected) {
@@ -93,7 +92,6 @@ function handleDisconnect(app, playerId, disconnectingConnection) {
           lastOpponents.set(playerId, opponent.playerId);
         }
       }
-    }, 15000);
   } else {
     delete rooms[roomId];
     console.log(`🗑️ Room ${roomId} deleted (empty)`);

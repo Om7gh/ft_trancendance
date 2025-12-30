@@ -21,14 +21,14 @@ function chessHandler(connection, req) {
   try {
     const u = new URL(req.url, 'http://localhost');
     desiredId = u.searchParams.get('playerId'); // username
-  } catch {}
+  } catch (e) {
+    throw e
+  }
 
   let playerId =
     desiredId && typeof desiredId === 'string' && desiredId.length <= 64
       ? desiredId
       : uuid();
-
-      console.log(playerId)
 
   if (players.has(playerId)) {
     const existingPlayer = players.get(playerId);
@@ -58,7 +58,6 @@ function chessHandler(connection, req) {
     }
     handleMessage(app, playerId, msg);
   });
-
   connection.on('close', () => handleDisconnect(app, playerId, connection));
 }
 
