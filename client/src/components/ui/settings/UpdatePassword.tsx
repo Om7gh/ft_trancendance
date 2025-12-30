@@ -2,10 +2,7 @@ import { InputField } from "../utils/Button"
 
 function UpdatePassword() {
   return (
-    <div>
-      <h2 className="text-center text-2xl mb-6 text-slate-100">
-                Update Password
-            </h2>
+    <div className="flex-1 p-6 ">
       <form className="flex flex-col gap-5">
         <div>
         <InputField type="password" placeholder="old password" name="oldpassword" id="oldpassword" />

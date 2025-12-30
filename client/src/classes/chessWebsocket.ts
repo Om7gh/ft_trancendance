@@ -28,6 +28,16 @@ class ChessWebSocket {
   private roomId: string | null = null;
   private myTeam: 'WHITE' | 'BLACK' | null = null;
   private messageHandlers: Map<string, Function[]> = new Map();
+  opponentName: string | null = null;
+
+  private readOpponentName(message: any): string | null {
+    const name =
+      message?.opponentName ??
+      message?.opponent ??
+      message?.opponnet ??
+      message?.opponentId;
+    return typeof name === 'string' && name.length ? name : null;
+  }
 
   connect(url: string) {
     // Avoid parallel connections (can cause multiple players in matchmaking)
@@ -154,10 +164,12 @@ class ChessWebSocket {
       case 'gameStart':
         this.myTeam = message.yourTeam;
         this.roomId = message.roomId;
+        this.opponentName = this.readOpponentName(message);
         this.emit('gameStart', {
           myTeam: message.yourTeam,
           opponentConnected: true,
           roomId: message.roomId,
+          opponentName: this.opponentName,
         });
         break;
 
@@ -189,6 +201,7 @@ class ChessWebSocket {
       case 'gameResume':
         this.roomId = message.roomId;
         this.myTeam = message.yourTeam;
+        this.opponentName = this.readOpponentName(message) ?? this.opponentName;
         this.emit('gameResume', {
           roomId: message.roomId,
           myTeam: message.yourTeam,
@@ -196,6 +209,7 @@ class ChessWebSocket {
           currentTurn: message.currentTurn,
           turns: message.turns,
           opponentConnected: message.opponentConnected,
+          opponentName: this.opponentName,
         });
         break;
       case 'rematchOffer':
@@ -250,6 +264,7 @@ class ChessWebSocket {
   clearRoom() {
     this.roomId = null;
     this.myTeam = null;
+    this.opponentName = null;
   }
 }
 

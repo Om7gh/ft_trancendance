@@ -32,10 +32,7 @@ function UpdateAvatarBio() {
     }
 
     return (
-        <div className="">
-            <h2 className="text-center text-2xl mb-6 text-slate-100">
-                Update Avatar & Bio
-            </h2>
+        <div className="flex-1  p-6">
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 {(preview || user?.avatar) && (
                     <img

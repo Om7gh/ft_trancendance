@@ -10,6 +10,7 @@ interface OnlineState {
   roomId: string | null;
   myTeam: 'WHITE' | 'BLACK' | null;
   opponentConnected: boolean;
+  opponentName: string | null;
   gameOver: { winner: string; message: string } | null;
   rematch: {
     incomingOffer: boolean;
@@ -25,6 +26,7 @@ export function useOnlineChess() {
     roomId: null,
     myTeam: null,
     opponentConnected: false,
+    opponentName: null,
     gameOver: null,
     rematch: { incomingOffer: false, requested: false, declined: false },
   });
@@ -52,6 +54,7 @@ export function useOnlineChess() {
           roomId,
           myTeam,
           opponentConnected: false,
+          opponentName: null,
           gameOver: null,
           rematch: {
             incomingOffer: false,
@@ -71,10 +74,12 @@ export function useOnlineChess() {
         myTeam,
         opponentConnected,
         roomId,
+        opponentName,
       }: {
         myTeam: 'WHITE' | 'BLACK' | 'DRAW' | null;
         opponentConnected: boolean;
         roomId: string;
+        opponentName?: string | null;
       }) => {
         setState((prev) => ({
           ...prev,
@@ -82,6 +87,7 @@ export function useOnlineChess() {
             myTeam === 'WHITE' || myTeam === 'BLACK' ? myTeam : prev.myTeam,
           opponentConnected,
           roomId: roomId ?? prev.roomId,
+          opponentName: opponentName ?? prev.opponentName,
           gameOver: null,
           rematch: {
             incomingOffer: false,
@@ -172,6 +178,7 @@ export function useOnlineChess() {
         currentTurn,
         turns,
         opponentConnected,
+        opponentName,
       }: {
         roomId: string;
         myTeam: 'WHITE' | 'BLACK';
@@ -179,6 +186,7 @@ export function useOnlineChess() {
         currentTurn: 'WHITE' | 'BLACK';
         turns: number;
         opponentConnected: boolean;
+        opponentName?: string | null;
       }) => {
         console.log('🔄 Resuming game:', {
           roomId,
@@ -192,6 +200,7 @@ export function useOnlineChess() {
           roomId,
           myTeam,
           opponentConnected,
+          opponentName: opponentName ?? prev.opponentName,
           gameOver: null,
           rematch: {
             incomingOffer: false,

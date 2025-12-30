@@ -15,6 +15,8 @@ export interface User {
   email_verified: 0 | 1
   provider: string
   token_id: string
+  token_updated_at: number
+  mfa_enabled: boolean
 }
 
 export interface TwoFactor {

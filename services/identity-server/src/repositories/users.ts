@@ -17,6 +17,7 @@ export class UserRepository {
         'email_verified',
         'provider',
         'token_id',
+        'token_updated_at',
     ]);
 
     private validateColumns(keys: string[]): void {
@@ -55,8 +56,9 @@ export class UserRepository {
                 last_login,
                 email_verified,
                 provider,
-                token_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                token_id,
+                token_updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
             )
             .run(
                 user.username,
@@ -69,7 +71,8 @@ export class UserRepository {
                 user.last_login,
                 user.email_verified ? 1 : 0,
                 user.provider,
-                user.token_id
+                user.token_id,
+                user.token_updated_at
             );
 
         const newUser = this.findById(Number(result.lastInsertRowid));
@@ -144,7 +147,7 @@ export class UserRepository {
         created_at,
         updated_at,
         last_login,
-        last_logout
+        last_logout,
       FROM users
       WHERE username LIKE ? OR first_name LIKE ? OR last_name LIKE ?
       LIMIT ?
@@ -152,10 +155,40 @@ export class UserRepository {
         return stmt.all(likeQuery, likeQuery, likeQuery, limit) as User[];
     }
 
-    delete(id: number): boolean {
-        const result = this.db
-            .prepare('DELETE FROM users WHERE id = ?')
-            .run(id);
-        return result.changes > 0;
+    updateTokenWithCooldown(
+        userId: number,
+        newTokenId: string,
+        lastLogin: number,
+        cooldownSeconds = 3600
+    ): boolean {
+        const stmt = this.db.prepare(`
+        UPDATE users
+        SET
+            token_id = ?,
+            last_login = ?
+        WHERE id = ?
+          AND (
+            token_updated_at IS NULL
+            OR token_updated_at <= strftime('%s','now') - ?
+          )
+    `);
+
+        const result = stmt.run(newTokenId, lastLogin, userId, cooldownSeconds);
+
+        return result.changes === 1;
+    }
+
+    touchLoginRateLimit(userId: number, cooldownSeconds = 3600): boolean {
+        const stmt = this.db.prepare(`
+        UPDATE users
+        SET login_rate_limit_at = strftime('%s','now')
+        WHERE id = ?
+          AND (
+            login_rate_limit_at IS NULL
+            OR login_rate_limit_at <= strftime('%s','now') - ?
+          )
+    `);
+
+        return stmt.run(userId, cooldownSeconds).changes === 1;
     }
 }

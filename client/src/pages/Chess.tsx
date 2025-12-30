@@ -8,6 +8,7 @@ function Chess() {
     roomId,
     myTeam,
     opponentConnected,
+    opponentName,
     enterMatchmaking,
     leaveMatchmaking,
     syncBoard,
@@ -20,19 +21,9 @@ function Chess() {
     declineRematch,
   } = useOnlineChess();
   const [findingMatch, setFindingMatch] = useState(false);
-  const isVideoPlayed = localStorage.getItem('video');
 
-  console.log(isVideoPlayed);
 
-  // if (!isVideoPlayed) {
-  //   return (
-  //     <div className="w-full h-full">
-  //       <video className="w-full h-full" autoPlay controls>
-  //         <source src="/chess.mp4" type="video/webm" />
-  //       </video>
-  //     </div>
-  //   );
-  // }
+  console.log(opponentName)
 
   console.log(roomId, isConnected);
   return (
@@ -45,16 +36,16 @@ function Chess() {
         )}
 
         {!roomId && isConnected && (
-          <div className="flex items-center gap-6 h-[40vmax]">
+          <div className="flex items-center gap-6 h-[40vmax] flex-col-reverse md:flex-row lg:flex-row">
             <img src="/chessbg.png" />
-            <div className="bg-slate-950/50 h-full p-6 w-72 flex justify-center items-center">
+            <div className="flex justify-center items-center text-center">
               {!findingMatch && (
                 <button
                   onClick={() => {
                     enterMatchmaking();
                     setFindingMatch(true);
                   }}
-                  className="px-6 py-3  text-lg font-semibold bg-neon/50 text-white hover:border-4 hover:border-neon duration-200 cursor-pointer"
+                  className="px-6 py-3  text-lg font-semibold bg-neon/60 text-violet-200 hover:border-4 hover:border-neon duration-200 cursor-pointer"
                 >
                   Find Opponent
                 </button>
@@ -69,7 +60,7 @@ function Chess() {
                       leaveMatchmaking();
                       setFindingMatch(false);
                     }}
-                    className="px-6 py-3  text-lg font-semibold bg-violet-500 text-white hover:bg-violet-600 transition"
+                    className="px-6 py-3  text-lg font-semibold bg-violet-500 text-violet-200 hover:bg-violet-600 transition"
                   >
                     Cancel Matchmaking
                   </button>
@@ -80,13 +71,13 @@ function Chess() {
         )}
 
         {roomId && (
-          <div className="flex items-center gap-6">
-            <div className="flex  flex-col gap-5 items-start">
+          <div className="flex items-center gap-6 flex-col">
+            <div className="flex flex-col gap-5 items-start">
               <div className="text-left">
-                <h3 className="text-2xl font-bold text-white">
+                <h3 className="text-2xl font-bold text-violet-200">
                   Opponent ID:{' '}
                   <span className="text-yellow-400">
-                    {opponentConnected ? 'Opponent' : 'Waiting...'}
+                    {opponentConnected ? (opponentName ?? 'Opponent') : 'Waiting...'}
                   </span>
                 </h3>
               </div>
@@ -106,7 +97,7 @@ function Chess() {
               />
               <div className="text-left bg-slate-900 px-5 py-5  flex justify-between w-full text-slate-100">
                 <h3 className="text-2xl font-bold text-slate-100">
-                  Your ID: <span className="text-neon">{roomId}</span>
+                  <span className="text-neon">{opponentName ?? 'Opponent'}</span>
                 </h3>
               </div>
             </div>

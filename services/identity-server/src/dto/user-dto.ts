@@ -49,5 +49,7 @@ export function asUserInfo(user: User) {
     last_login: user.last_login,
     last_logout: user.last_logout,
     username: user.username,
+    provider: user.provider,
+    mfa_enabled: user.mfa_enabled
   };
 }

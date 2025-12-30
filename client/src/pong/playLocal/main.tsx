@@ -28,12 +28,12 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
   useLocalMatch(canvasRef, setError, setMatchState, setScore);
   
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col perspective-distant">
       <canvas
         width="700"
         height="400"
         ref={canvasRef}
-        className="border rounded w-1/1 aspec-[7/4] m-auto"
+        className="bg-slate-950/40 my-5 rotate-x-45 shadow-xl shadow-slate-900 w-72 h-72 md:w-full md:h-full"
       >
         Your browser does not support HTML canvas API!!
       </canvas>
@@ -50,7 +50,7 @@ export function PlayLocal() {
   if (error)
     return <MessageDisplayer message={error} />
   return (
-    <div className="relative bg-amber-50">
+    <div className="relative text-violet-200">
       <LocalScoreBar score={score} />
       <Match
         setError={setError}

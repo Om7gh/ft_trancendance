@@ -22,10 +22,18 @@ html {
   min-height: 100vh;
 }
 
+.scrollbar {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: gray rgb(0 0 0 / 0%);
+  scrollbar-gutter: stable;
+}
+
 ::-webkit-scrollbar {
   height: 6px;
   width: 5px;
 }
+
 ::-webkit-scrollbar-track {
   background: rgba(30, 41, 59, 0.5);
   border-radius: 3px;

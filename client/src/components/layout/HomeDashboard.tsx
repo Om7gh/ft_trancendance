@@ -2,7 +2,6 @@ import { useContext, useState } from 'react';
 import MyGamesHistory from '../ui/dashboard/MyGamesHistory';
 import PlayerChart from '../ui/dashboard/PlayerChart';
 import PlayerStatistics from '../ui/dashboard/PlayerStatictics';
-import TopPlayers from '../ui/dashboard/TopPlayers';
 import DashboardWrapper from './DashboardWrapper';
 import { GiChessQueen } from 'react-icons/gi';
 import { FaTableTennisPaddleBall } from 'react-icons/fa6';
@@ -56,7 +55,7 @@ export default function HomeDashboard() {
           <PlayerStatistics type="pingpong" />
         </div>
 
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+       <div className="grid grid-cols-1 gap-6">
           {
             isPending ? <p>Loading...</p> : isError ? <p></p> : <MyGamesHistory type="pong" userData={user} matchData={chess} />
           }
@@ -73,7 +72,7 @@ export default function HomeDashboard() {
           <PlayerStatistics type="chess" />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {
             isPending ? <p>Loading...</p> : isError ? <p></p> : <MyGamesHistory type="chess" userData={user} matchData={chess} />
           }
