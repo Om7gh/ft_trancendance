@@ -1,10 +1,12 @@
 import onRequestHook from "../hooks/onRequestHook.js";
-import playWithSomeOne from "./playWithSomeOne.js";
 import errorHandler from "../plugins/errorHandler.js";
-import tournament from "./tournament.js";
-import joinMatch from "./joinMatch.js";
+
 import match from "./match.js";
+import joinMatch from "./joinMatch.js";
+import tournament from "./tournament.js";
+import customization from "./customization.js";
 import playWithFriend from "./playWithFriend.js";
+import playWithSomeOne from "./playWithSomeOne.js";
 
 export function alreadyInMatch(roomList, userId) {
     for (let [id, room] of roomList) {
@@ -41,8 +43,10 @@ export default async function pongGame(fastify, options) {
     fastify.register(onRequestHook);
     fastify.register(errorHandler);
 
+
     fastify.register(playWithSomeOne);
     fastify.register(playWithFriend);
+    fastify.register(customization);
     fastify.register(tournament);
     fastify.register(joinMatch);
     fastify.register(match);

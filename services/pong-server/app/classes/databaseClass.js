@@ -17,14 +17,55 @@ export default class DatabaseService {
             )
         `);
 
-        this.insertCustomization = this.db.prepare(`
-            INSERT OR IGNORE INTO matches (
-                id, left_player_id, left_player_points,
-                right_player_id, right_player_points, winner_id
+        this.insertPongCustomizations = this.db.prepare(`
+            INSERT INTO pong_customizations (
+                id,
+                ball_color,
+                left_paddle_color,
+                right_paddle_color,
+                table_edges_color
             ) VALUES (
-                @id, @left_player_id, @left_points,
-                @right_player_id, @right_points, @winner_id
+                @id,
+                @ball_color,
+                @left_paddle_color,
+                @right_paddle_color,
+                @table_edges_color
             )
+            ON CONFLICT(id) DO UPDATE SET
+                ball_color          = COALESCE(excluded.ball_color, pong_customizations.ball_color),
+                left_paddle_color   = COALESCE(excluded.left_paddle_color, pong_customizations.left_paddle_color),
+                right_paddle_color  = COALESCE(excluded.right_paddle_color, pong_customizations.right_paddle_color),
+                table_edges_color   = COALESCE(excluded.table_edges_color, pong_customizations.table_edges_color)
+        `);
+
+        this.insertChessCustomizations = this.db.prepare(`
+            INSERT INTO chess_customizations (
+                id,
+                chess_peice
+            ) VALUES (
+                @id,
+                @chess_peice
+            )
+            ON CONFLICT(id) DO UPDATE SET
+                chess_peice = COALESCE(excluded.chess_peice, chess_customizations.chess_peice)
+        `);
+
+
+        this.fetchPongCustomizations = this.db.prepare(`
+            SELECT
+                c.ball_color,
+                c.left_paddle_color,
+                c.right_paddle_color,
+                c_table_edges_color
+            FROM pong_customizations c
+            where id = ?    
+        `);
+
+        this.fetchChessCustomization = this.db.prepare(`
+            SELECT
+                c.chess_peice
+            FROM chess_customizations c
+            where id = ?    
         `);
 
         this.fetchMatchesByUser = this.db.prepare(`
@@ -41,14 +82,11 @@ export default class DatabaseService {
         `);
     }
 
-    addUser({ id, username, avatar }) {
-        this.insertUser.run({ id, username, avatar });
-    }
-
     addMatch({ id, leftPlayer, rightPlayer, winner }) {
 
-        this.addUser(leftPlayer);
-        this.addUser(rightPlayer);
+        this.insertUser(leftPlayer);
+
+        this.insertUser(rightPlayer);
 
         this.insertMatch.run({
             id,

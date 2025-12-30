@@ -207,7 +207,7 @@ export default class GenericRoom extends EventEmitter {
                     this.cancelMatch();
                     return ;
                 }
-                this.stopMatch();
+                this.cancelMatch();
             }
         }, 60000);
     }
