@@ -6,6 +6,7 @@ import { boardTile } from '../utils/boardTiles';
 import { useChessStore } from '../store/useChessStore';
 import { getBoardCoordinates, getCurrentPiece, handleValidMove, validateTurn } from '@/events/dropEvent';
 import { draggableEvent } from '@/events';
+import { Piece, getPieceAssetKey } from '../utils';
 
 export default function Board({
     pieces,
@@ -53,11 +54,15 @@ export default function Board({
         const handleSyncBoard = (event: CustomEvent<BoardUpdateData>) => {
             const { board, currentTurn, turns, prevMove } =
                 event.detail as BoardUpdateData & { prevMove?: Position };
-            setPieces(board);
+            const boardWithLocalImages = board.map((p) => ({
+                ...p,
+                image: Piece(getPieceAssetKey(p.team, p.type)),
+            }));
+
+            setPieces(boardWithLocalImages);
 
             let normalizedPrev: { from: Position; to: Position } | null = null;
             if (prevMove) {
-                // already has from/to
                 if ((prevMove as any).from && (prevMove as any).to) {
                     normalizedPrev = prevMove as {
                         from: Position;

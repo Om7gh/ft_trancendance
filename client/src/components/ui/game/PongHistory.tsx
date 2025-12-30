@@ -22,10 +22,10 @@ interface PongHistoryProps {
 function ResultBadge({ win }: { win: boolean }) {
   return (
     <span
-      className={`px-3 py-1 text-xs font-medium tracking-wide border shadow-xl ${
+      className={`px-3 py-1 text-xs font-medium tracking-wide shadow-xl ${
         win
           ? 'bg-violet-500/15 text-violet-300 border-violet-500/30'
-          : 'bg-pink-500/15 text-pink-300 border-pink-500/30'
+          : ' text-pink-300'
       }`}
     >
       {win ? 'VICTORY' : 'DEFEAT'}

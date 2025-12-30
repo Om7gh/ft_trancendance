@@ -78,30 +78,30 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
           )}
         </div>
       </div>
-      <div className="bg-slate-900/10 shadow-lg shadow-slate-900  text-violet-100 p-5 flex flex-col gap-5 w-[25vmax]">
+      <div className="bg-slate-900/10 shadow-lg shadow-slate-900  text-violet-100 p-5 flex flex-col gap-5  w-full md:w-[25vmax]">
         <div className="flex gap-5 items-center justify-between w-full">
           <p className="text-sm md:text-lg tracking-wider">Username</p>
-          <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-lg md:text-xl">
+          <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xs md:text-xl">
             {userData?.username}
           </p>
         </div>
         <div className="flex gap-5 items-center justify-between w-full ">
           <p className="text-sm md:text-lg tracking-wider">Email</p>
-          <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-lg md:text-xltruncate" title={userData?.email}>
-            {userData?.email}
+          <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xs md:text-lg" title={userData?.email}>
+            {userData?.email.split("@")[0] + "..."}
           </p>
         </div>
         {!isOwnProfile && (
         <div className="flex gap-5 items-center justify-between w-full">
           <p className="text-sm md:text-lg tracking-wider">Status</p>
-          <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-lg md:text-xl">
+          <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xs md:text-xl">
             {getOnlineStatus()}
           </p>
         </div>
         )}
         <div className="flex gap-5 items-center justify-between w-full">
-          <p className="text-sm md:text-lg tracking-wider">Last login</p>
-          <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-lg md:text-xl">
+          <p className="text-xs md:text-lg tracking-wider">Last login</p>
+          <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xs md:text-xl">
             {getTimeSinceLastLogin()}
           </p>
         </div>

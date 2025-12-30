@@ -3,8 +3,10 @@ import { useOnlineChess } from '../hooks/useOnlineChess';
 import Referee from '@/components/Referee';
 import MiniChat from '@/components/MiniChat';
 import { GlobalContext } from '@/App';
+import { useGetChessPiece } from '@/services/user/useGetChessPiece';
 
 function Chess() {
+  useGetChessPiece();
   const {
     roomId,
     myTeam,

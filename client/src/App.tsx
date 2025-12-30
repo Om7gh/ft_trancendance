@@ -17,6 +17,7 @@ export interface User {
   last_login: number;
   last_logout: number;
   username: string;
+  provider: string
 }
 
 interface GlobalContextType {

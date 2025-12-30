@@ -42,7 +42,7 @@ export function initDatabase(dbPath = './pong.db') {
 
         CREATE TABLE IF NOT EXISTS chess_customizations (
             id TEXT PRIMARY KEY,
-            chess_peice TEXT DEFAULT 'alpha',
+            chess_piece TEXT DEFAULT 'alpha',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
 

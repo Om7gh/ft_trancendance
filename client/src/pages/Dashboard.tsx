@@ -18,7 +18,6 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col">
-      {/* Header */}
       <header className="px-6 py-4 shadow-sm bg-slate-950/30 z-20">
         <DashboardHeader 
           isMobile={isMobile} 
@@ -53,6 +52,7 @@ export default function Dashboard() {
 
         <main className="flex-1 py-6 px-3 overflow-auto">
           <Outlet />
+         
         </main>
       </div>
     </div>

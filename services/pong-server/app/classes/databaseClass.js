@@ -41,13 +41,13 @@ export default class DatabaseService {
         this.insertChessCustomizations = this.db.prepare(`
             INSERT INTO chess_customizations (
                 id,
-                chess_peice
+                chess_piece
             ) VALUES (
                 @id,
-                @chess_peice
+                @chess_piece
             )
             ON CONFLICT(id) DO UPDATE SET
-                chess_peice = COALESCE(excluded.chess_peice, chess_customizations.chess_peice)
+                chess_piece = COALESCE(excluded.chess_piece, chess_customizations.chess_piece)
         `);
 
 
@@ -61,9 +61,9 @@ export default class DatabaseService {
             where id = ?    
         `);
 
-        this.fetchChessCustomization = this.db.prepare(`
+        this.fetchChessCustomizations = this.db.prepare(`
             SELECT
-                c.chess_peice
+                c.chess_piece
             FROM chess_customizations c
             where id = ?    
         `);

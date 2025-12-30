@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Pieces, Position } from '../types';
 import { initBoard } from '../utils/initBoard';
 import { useCheckmate } from '../hooks/useCheckmate';
 import { usePromotion } from '../hooks/usePromotion';
 import GameUI from './GameUi';
+import { useChessStore } from '../store/useChessStore';
+import { getPieceAssetKey, Piece } from '../utils';
 
 export default function Referee({
     myTeam,
@@ -39,6 +41,16 @@ export default function Referee({
     declineRematch: () => void;
 }) {
     const [pieces, setPieces] = useState<Pieces[]>(initBoard());
+    const pieceSetName = useChessStore((state) => state.pieceSetName);
+
+    useEffect(() => {
+        setPieces((prev) =>
+            prev.map((p) => ({
+                ...p,
+                image: Piece(getPieceAssetKey(p.team, p.type), pieceSetName),
+            }))
+        );
+    }, [pieceSetName]);
     const checkMate = useCheckmate(pieces);
     const { promotionPending, setPromotionPending, handlePromotion } =
         usePromotion(setPieces, syncBoard);

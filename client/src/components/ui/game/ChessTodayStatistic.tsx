@@ -1,32 +1,7 @@
 import { GlobalContext } from "@/App"
 import useGetChessHistory from "@/services/chess/useChessHistory"
+import type { ChessHistoryResponse, ChessMatch } from "@/types/gameTypes"
 import { useContext } from "react"
-
-interface ChessMatch {
-  blackPlayerId: string
-  endedAt: number
-  id: number
-  opponent: string
-  moves: number
-  reason: string
-  result: string
-  roomId: string
-  startedAt: number
-  whitePlayerId: string
-  winnerTeam: string
-}
-
-interface ChessHistoryResponse {
-  success: boolean
-  stats: {
-    totalGames: number
-    wins: number
-    losses: number
-    draws: number
-    winRate: string
-  }
-  history: ChessMatch[]
-}
 
 function toDateFromMixedTimestamp(timestamp: number | null | undefined) {
   if (!timestamp) return null
