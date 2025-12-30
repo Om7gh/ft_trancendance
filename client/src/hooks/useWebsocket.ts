@@ -6,11 +6,11 @@ function useWebsocket(uri: string){
 	useEffect(() => {
 		socket.current = new WebSocket(`ws://localhost:8080${uri}`);
 
-		socket.current.onclose = (event) => {
+		socket.current.onclose = () => {
 			console.log("socket connection closed")
 		}
 		
-		socket.current.onerror = (event) => {
+		socket.current.onerror = () => {
 			console.log("socket connection have an error");
 		}
 		return (() => {

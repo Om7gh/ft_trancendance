@@ -10,19 +10,9 @@ import { AiOutlineDiscord } from 'react-icons/ai';
 
 function CheckMail({ email }: { email: string | undefined }) {
   const navigate = useNavigate();
-
   const handleOpenMail = () => {
     if (email) {
-      const mailProvider = email.split('@')[1];
-      let mailUrl = '';
-
-      if (mailProvider.includes('gmail')) mailUrl = 'https://mail.google.com';
-      else if (mailProvider.includes('outlook'))
-        mailUrl = 'https://outlook.live.com';
-      else if (mailProvider.includes('yahoo'))
-        mailUrl = 'https://mail.yahoo.com';
-      else mailUrl = `https://mail.${mailProvider}`;
-
+      const mailUrl = 'https://mail.google.com';
       window.open(mailUrl, '_blank');
     }
   };
@@ -38,7 +28,7 @@ function CheckMail({ email }: { email: string | undefined }) {
 
       <button
         onClick={handleOpenMail}
-        className=" mt-6 px-8 py-3 bg-gradient-to-r from-violet-500 to-neon text-white cursor-pointer  font-semibold hover:shadow-lg transition-all duration-300"
+        className=" mt-6 px-8 py-3 bg-linear-to-r from-violet-500 to-neon text-white cursor-pointer  font-semibold hover:shadow-lg transition-all duration-300"
       >
         Open Email Client
       </button>
@@ -79,15 +69,16 @@ export default function SignUp() {
     const userData = {
       first_name: formData.get('first_name') as string,
       last_name: formData.get('last_name') as string,
-      email,
+      email: formData.get('email') as string,
       password,
     };
-
+    console.log(userData)
     signupMutation.mutate(userData);
+    setEmail("")
   };
 
   return (
-    <div className="w-[600px] bg-gradient-to-b from-slate-900/50 to-violet-800/20 py-12 px-4 sm:px-6 lg:px-8 font-main flex items-center justify-center rounded-3xl relative overflow-hidden">
+    <div className="w-150 bg-linear-to-b from-slate-900/50 to-violet-800/20 py-12 px-4 sm:px-6 lg:px-8 font-main flex items-center justify-center rounded-3xl relative overflow-hidden">
       {registerSuccess && (
         <Modal onClose={() => setRegisterSuccess()}>
           <CheckMail email={email} />
@@ -99,7 +90,7 @@ export default function SignUp() {
 
         <div className="flex flex-col items-center">
           <img src={Logo} alt="logo" className="w-52 h-52" />
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-neon">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-neon">
             Join Us Now!
           </h2>
           <p className="mt-2 text-center text-sm text-slate-400">
@@ -217,7 +208,7 @@ export default function SignUp() {
           </div>
 
           <div className="relative group">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-violet-400 to-neon  blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
+            <div className="absolute -inset-0.5 bg-linear-to-r from-violet-400 to-neon  blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
             <button
               type="submit"
               disabled={isSubmitting}
