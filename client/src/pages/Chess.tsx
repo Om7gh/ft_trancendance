@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useOnlineChess } from '../hooks/useOnlineChess';
 import Referee from '@/components/Referee';
 import MiniChat from '@/components/MiniChat';
+import { GlobalContext } from '@/App';
 
 function Chess() {
   const {
@@ -21,11 +22,8 @@ function Chess() {
     declineRematch,
   } = useOnlineChess();
   const [findingMatch, setFindingMatch] = useState(false);
+  const {user} = useContext(GlobalContext)
 
-
-  console.log(opponentName)
-
-  console.log(roomId, isConnected);
   return (
     <div className="flex justify-center items-center h-full">
       <div className="">
@@ -71,13 +69,12 @@ function Chess() {
         )}
 
         {roomId && (
-          <div className="flex items-center gap-6 flex-col">
+          <div className="flex items-center gap-6 flex-col  md:flex-row lg:flex-row ">
             <div className="flex flex-col gap-5 items-start">
-              <div className="text-left">
-                <h3 className="text-2xl font-bold text-violet-200">
-                  Opponent ID:{' '}
-                  <span className="text-yellow-400">
-                    {opponentConnected ? (opponentName ?? 'Opponent') : 'Waiting...'}
+              <div className="text-left flex justify-between text-slate-100">
+                <h3 className=" text-lg  md:text-2xl lg:text-2xl font-bold text-slate-100">
+                  <span className="text-violet-400">
+                    {opponentConnected ? (user?.username === opponentName ? user?.username : opponentName) : 'Waiting...'}
                   </span>
                 </h3>
               </div>
@@ -95,13 +92,13 @@ function Chess() {
                 acceptRematch={acceptRematch}
                 declineRematch={declineRematch}
               />
-              <div className="text-left bg-slate-900 px-5 py-5  flex justify-between w-full text-slate-100">
-                <h3 className="text-2xl font-bold text-slate-100">
-                  <span className="text-neon">{opponentName ?? 'Opponent'}</span>
+              <div className="text-left flex justify-between w-full text-slate-100">
+                <h3 className=" text-lg  md:text-2xl lg:text-2xl font-bold text-slate-100">
+                  <span className="text-neon">{user?.username}</span>
                 </h3>
               </div>
             </div>
-            <div className="flex flex-col gap-6 w-full justify-center">
+            <div className="flex flex-col gap-6 w-72 md:w-auto lg:w-auto justify-center">
               <MiniChat />
             </div>
           </div>

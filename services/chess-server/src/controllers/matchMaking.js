@@ -14,6 +14,7 @@ function handleMatchmaking(playerId, connection) {
 
       if (room) {
         const roomPlayer = room.players.find((p) => p.playerId === playerId);
+        const opponent = room.players.find((p) => p.playerId !== playerId);
         if (roomPlayer) {
           roomPlayer.connection = connection;
         }
@@ -26,6 +27,7 @@ function handleMatchmaking(playerId, connection) {
           currentTurn: room.currentTurn,
           turns: room.turns,
           opponentConnected: room.players.length === 2,
+          opponentName: opponent?.playerId,
         });
 
         return;
@@ -100,6 +102,7 @@ function createMatch(player1, player2) {
     type: 'gameStart',
     yourTeam: 'WHITE',
     opponentConnected: true,
+    opponentName: player2.playerId,
     opponnet: player2.playerId,
     roomId,
   });
@@ -108,6 +111,7 @@ function createMatch(player1, player2) {
     type: 'gameStart',
     yourTeam: 'BLACK',
     opponentConnected: true,
+    opponentName: player1.playerId,
     opponnet: player1.playerId,
     roomId,
   });

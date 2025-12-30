@@ -20,7 +20,7 @@ export default function MiniChat(): JSX.Element {
   };
 
   return (
-    <div className="w-[40vmax] h-64 md:h-96 flex flex-col bg-slate-900/80  border border-slate-700 shadow-sm">
+    <div className=" h-44 md:h-96 flex flex-col bg-slate-900/80  border border-slate-700 shadow-sm">
       <div className="px-4 py-2 border-b border-slate-700 flex items-center justify-between">
         <h4 className="text-sm font-semibold text-slate-100">Chat</h4>
         <span className="text-xs text-slate-400">Private</span>
@@ -40,7 +40,7 @@ export default function MiniChat(): JSX.Element {
             }`}
           >
             <div
-              className={`max-w-[70%] px-3 py-2  wrap-break-word text-sm ${
+              className={` px-3 py-2  wrap-break-word text-sm ${
                 msg.mine
                   ? 'bg-neon text-white rounded-br-sm'
                   : 'bg-slate-800 text-slate-100 rounded-bl-sm'
@@ -65,7 +65,7 @@ export default function MiniChat(): JSX.Element {
         className="px-3 py-2 border-t border-slate-700 flex gap-2 items-center"
       >
         <input
-          className="flex-1 px-3 py-2  bg-slate-800 text-slate-100 placeholder:text-slate-400 border border-slate-700 focus:outline-none focus:ring-1 focus:ring-neon/80"
+          className="flex-1 px-3 py-2  bg-slate-800 text-slate-100 placeholder:text-slate-400 border border-slate-700 focus:outline-none focus:ring-1 focus:ring-neon/80 w-full"
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
