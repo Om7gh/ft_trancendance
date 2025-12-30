@@ -1,10 +1,10 @@
 const acceptSchema = {
   querystring: {
     type: 'object',
-    required: ['rid'],
+    required: ['sid'],
     additionalProperties: false,
     properties: {
-      rid: { type: 'string', minLength: 10 },
+      sid: { type: 'string', minLength: 10 },
     }
   }
 };

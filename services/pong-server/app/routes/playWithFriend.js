@@ -20,21 +20,22 @@ function addToInvitationList(invitation) {
     if (invitation) {
         const senderId = invitation.senderId;
         let invitations = this.invitationList.get(senderId);
-
+        
         if (!invitations) {
             invitations = [];
             this.invitationList.set(senderId, invitations);
         }
 
+        this.log.info(`add invitation with id: ${invitation.id}`);
+
         if (!invitations.find((inv) => inv.id === invitation.id)) {
             invitations.push(invitation);
-            this.log.info(`add invitation with id: ${invitation.id}`);
             invitation.on("done", () => {
                 this.log.info(`delete invitation with id: ${invitation.id}`);
                 this.invitaionList.set(
                     senderId, invitations.filter((inv) => inv.id !== invitation.id)
                 );
-            })
+            });
         }
     }
 }
@@ -49,12 +50,10 @@ async function acceptHandler(request, reply) {
         throw error
     }
 
-    const uid = request.query.uid;
+    const sid = request.query.sid;
 
-    const invitations = this.invitationList.get(uid);
-
-    if (!invitations || !checkIsInvited(invitations, user.id)) {
-        const error = new Error("Either you are not invited, or invitation is gone");
+    if (!checkIsInvited(sid, user.id)) {
+        const error = new Error("Either you are not invited, or invitation is gone!!");
         error.statusCode = 400;
         throw error
     }
@@ -65,7 +64,7 @@ async function acceptHandler(request, reply) {
 
     room.addMember(user.id);
 
-    room.addMember(uid);
+    room.addMember(sid);
 
     await room.inviteMembers();
 
@@ -89,10 +88,8 @@ async function inviteHandler(request, reply) {
         error.statusCode = 400;
         throw error;
     }
-
-    let invitations = this.invitaionList.get(user.id)
     
-    if (invitations && checkIsInvited(invitations, fid)) {
+    if (this.checkIsInvited(user.id, fid)) {
         const error = new Error("You already invite him!!");
         error.statusCode = 400;
         throw error;
@@ -100,13 +97,9 @@ async function inviteHandler(request, reply) {
 
     const invitation = new Invitation(user.id, fid);
 
-    invitations.push(invitation);
+    this.addToInvitationList(invitation);
 
     invitation.waitForInvitee();
-    
-    invitation.on("done", () => {
-        invitations = invitations.filter((i) => i.id !== invitation.id);
-    });
 
     await this.axios.post("http://notification:9005/send",
         {data: [{
