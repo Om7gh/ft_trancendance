@@ -1,7 +1,7 @@
 import { alreadyInMatch } from "./pongGame.js";
 import GenericRoom from "../classes/genericRoom.js";
-import inviteQuerySchema from "../schemas/inviteQuerySchema.js";
-import acceptQuerySchema from "../schemas/acceptQuerySchema.js";
+import inviteSchema from "../schemas/inviteSchema.js";
+import acceptSchema from "../schemas/acceptSchema.js";
 
 
 async function acceptHandler(request, reply) {
@@ -18,7 +18,7 @@ async function acceptHandler(request, reply) {
 
     const room = this.roomList.get(rid);
 
-    if (!room || !room.isMemeber(user.id) || !room.isWaiting()) {
+    if (!room || !room.isMember(user.id) || !room.isWaiting()) {
         const error = new Error("Either you are not invited, or invitation is gone");
         error.statusCode = 400;
         throw error
@@ -84,14 +84,14 @@ export default async function playWithFriend(fastify, options) {
     fastify.route({
         url     : '/pongGame/remote/inviteFriend',
         method  : 'GET',
-        schema  : inviteQuerySchema,
+        schema  : inviteSchema,
         handler : inviteHandler,
     })
 
     fastify.route({
         url     : '/pongGame/remote/acceptInvitation',
         method  : 'GET',
-        schema  : acceptQuerySchema,
+        schema  : acceptSchema,
         handler : acceptHandler,
     })
 }

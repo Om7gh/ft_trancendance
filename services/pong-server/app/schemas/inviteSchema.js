@@ -1,4 +1,4 @@
-const inviteQuerySchema = {
+const inviteSchema = {
   querystring: {
     type: 'object',
     required: ['fid'],
@@ -9,4 +9,4 @@ const inviteQuerySchema = {
   }
 };
 
-export default inviteQuerySchema;
+export default inviteSchema;

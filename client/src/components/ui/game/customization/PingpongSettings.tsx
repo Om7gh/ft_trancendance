@@ -6,18 +6,19 @@ function PingpongSettings() {
     e.preventDefault()
     const formdData = new FormData(e.currentTarget);
     const data = {
-      leftPaddle: formdData.get("leftPaddle") as string,
-      rightPaddle: formdData.get("rightPaddle") as string,
-      ball: formdData.get("ball"),
-      table: formdData.get("table")
+      ball_color          : formdData.get("ball"),
+      left_paddle_color   : formdData.get("leftPaddle") as string,
+      right_paddle_color  : formdData.get("rightPaddle") as string,
+      table_edges_color   : formdData.get("table")
     }
-
     console.log(data)
   }
+
   return <div className="container mx-auto max-w-4xl px-4 py-8">
     <div className="w-full max-w-2xl mx-auto bg-slate-950/30 text-center px-6 py-4  mb-8">
       <h2 className="bg-gradient-to-l from-violet-500 to-neon bg-clip-text text-transparent text-2xl font-semibold">Pong Customization</h2>
     </div>
+
     <form className="flex flex-col gap-6 max-w-2xl mx-auto" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4 bg-slate-950/20 shadow-lg shadow-slate-950 p-6 ">
         <h2 className="text-center text-xl font-semibold text-violet-200 mb-2">Style Paddles</h2>
@@ -45,10 +46,11 @@ function PingpongSettings() {
       <button
           type="submit"
           className="w-52 mx-auto bg-gradient-to-r from-violet-600 to-violet-800 hover:from-violet-700 hover:to-violet-950 text-white font-semibold text-xl px-6 py-3  shadow-xl transition-all duration-300 hover:scale-105"
-        >
-          Save
-        </button>
+      >
+        Save
+      </button>
     </form>
+
   </div>;
 }
 

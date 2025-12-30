@@ -1,6 +1,6 @@
 import { alreadyInMatch } from "./pongGame.js";
 import { waitForOpponent } from "./playWithSomeOne.js";
-import joinMatchQuerySchema from "../schemas/joinMatchQuerySchema.js";
+import joinMatchSchema from "../schemas/joinMatchSchema.js";
 
 async function joinMatchHandler(request, reply) {
     const user  = request.user;
@@ -48,7 +48,7 @@ export default async function joinMatch(fastify, options) {
     fastify.route({
         url     : '/pongGame/remote/joinMatch',
         method  : 'GET',
-        schema  : joinMatchQuerySchema,
+        schema  : joinMatchSchema,
         handler : joinMatchHandler,
     })
 }
