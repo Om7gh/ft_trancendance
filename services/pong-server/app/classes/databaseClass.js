@@ -56,7 +56,7 @@ export default class DatabaseService {
                 c.ball_color,
                 c.left_paddle_color,
                 c.right_paddle_color,
-                c_table_edges_color
+                c.table_edges_color
             FROM pong_customizations c
             where id = ?    
         `);

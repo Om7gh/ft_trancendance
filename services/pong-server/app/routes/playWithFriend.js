@@ -1,7 +1,7 @@
 import { alreadyInMatch } from "./pongGame.js";
 import GenericRoom from "../classes/genericRoom.js";
 import inviteSchema from "../schemas/inviteSchema.js";
-import acceptSchema from "../schemas/acceptQuerySchema.js";
+import acceptSchema from "../schemas/acceptSchema.js";
 
 
 async function acceptHandler(request, reply) {
