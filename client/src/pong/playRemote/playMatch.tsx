@@ -27,16 +27,18 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
       <div
         className="relative flex flex-col m-auto my-10">
         <div 
-          className='absolute border top-0 w-full h-1/3'
+          className='absolute border top-0 w-full h-1/3 z-10'
           onTouchStart={(e) => {
-            e.preventDefault();
             e.stopPropagation();
+            onTouchEndHandler("s");
             onTouchStartHandler("w");
           }}
           onTouchEnd={(e) => {
-            e.preventDefault();
             e.stopPropagation();
             onTouchEndHandler("w");
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault()
           }}
         ></div>
         <canvas
@@ -46,16 +48,18 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
           Your browser does not support HTML canvas API!!
         </canvas>
         <div
-          className='border absolute bottom-0 w-full h-1/3'
+          className='border absolute bottom-0 w-full h-1/3 z-10'
           onTouchStart={(e) => {
-            e.preventDefault();
             e.stopPropagation();
+            onTouchEndHandler("w");
             onTouchStartHandler("s");
           }}
           onTouchEnd={(e) => {
-            e.preventDefault();
             e.stopPropagation();
             onTouchEndHandler("s");
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault()
           }}
         ></div>
         {(matchState === 'paused') && <CounterDown />}

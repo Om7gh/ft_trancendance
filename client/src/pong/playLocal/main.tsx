@@ -33,30 +33,38 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
     <div className="relative flex flex-col m-auto my-10">
       <div 
         className='absolute top-0 w-1/3 h-1/3'
-        onTouchStart={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
+          onTouchEndHandler("s");
           onTouchStartHandler("w");
-        
         }}
-        onTouchEnd={(e) => {
+        onPointerUp={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("w");
         }}
+        onContextMenu={(e) => {
+          e.preventDefault()
+        }}
       ></div>
       <div
         className='absolute top-0 right-0 w-1/3 h-1/3'
-        onTouchStart={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          onTouchStartHandler("arrowup");
+          onTouchEndHandler("arrowdown");
+          onTouchStartHandler
+          ("arrowup");
         
         }}
-        onTouchEnd={(e) => {
+        onPointerUp={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("arrowup");
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault()
         }}
       ></div>
       <canvas
@@ -67,31 +75,39 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
       </canvas>
       <div
         className='absolute bottom-0 w-1/3 h-1/3'
-        onTouchStart={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          onTouchStartHandler("s");
-        
+          onTouchEndHandler("w");
+          onTouchStartHandler
+          ("s");
         }}
-        onTouchEnd={(e) => {
+        onPointerUp={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("s");
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault()
         }}
       >
       </div>
       <div
       className='absolute bottom-0 right-0 w-1/3 h-1/3'
-        onTouchStart={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          onTouchStartHandler("arrowdown");
-        
+          onTouchEndHandler("arrowup");
+          onTouchStartHandler
+          ("arrowdown");
         }}
-        onTouchEnd={(e) => {
+        onPointerUp={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("arrowdown");
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault()
         }}
       ></div>
     </div>
