@@ -38,7 +38,7 @@ type ScoreBarPropsType = {
 export default function LocalScoreBar({ score }: ScoreBarPropsType) {
     if (score) {
         return (
-            <div className="flex justify-evenly items-center w-full ">
+            <div className="flex justify-evenly items-center w-full bg-slate-950/20 p-3 rounded-xl shadow-xl">
                 <div className="">
                     <LeftPlayer>{score.leftPlayer.name}</LeftPlayer>
                 </div>

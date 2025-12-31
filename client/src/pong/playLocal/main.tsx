@@ -69,7 +69,7 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
       ></div>
       <canvas
         width="700" height="400" ref={canvasRef}
-        className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900 w-72 h-72 md:w-full md:h-full"
+        className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900 w-full h-full"
         >
         Your browser does not support HTML canvas API!!
       </canvas>
@@ -132,7 +132,7 @@ export function PlayLocal() {
       />
       {matchState === 'done' && <LocalWinner score={score} />}
       <button
-          className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-1/2"
+          className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-full md:w-1/2"
           onClick={() => {
             navigate('/dashboard/games/pingpong');
           }}
