@@ -15,6 +15,7 @@ function PingpongSettings({close} : {close: () => void}) {
       table_edges_color   : formdData.get("table") as string
     }
     mutatePong.mutate(data)
+    close()
   }
 
   return <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -47,7 +48,6 @@ function PingpongSettings({close} : {close: () => void}) {
         </div>
       </div>
       <button
-      onClick={close}
           type="submit"
           className="w-52 mx-auto bg-linear-to-r from-violet-600 to-violet-800 hover:from-violet-700 hover:to-violet-950 text-white font-semibold text-xl px-6 py-3  shadow-xl transition-all duration-300 hover:scale-105"
       >

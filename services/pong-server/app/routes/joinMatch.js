@@ -17,7 +17,7 @@ async function joinMatchHandler(request, reply) {
 
     if (room && (room.id !== rid) && !room.isDone()) {
         const error = new Error("You are already in other match!!");
-        error.statusCode = 404;
+        error.statusCode = 409;
         throw error;
     }
 

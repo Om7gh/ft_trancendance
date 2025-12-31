@@ -15,7 +15,7 @@ export async function waitForOpponent(room) {
                 room.cancelMatch();
                 clearInterval(intervalId);
                 const error = new Error("Waiting for opponent too long!!");
-                error.statusCode = 418;
+                error.statusCode = 409;
                 reject(error);
             }
             counter++;
