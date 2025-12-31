@@ -369,11 +369,7 @@ export default abstract class AuthController {
                 }
             }
             if (!avatar) {
-                avatar = await saveAvatar(
-                    user.uid,
-                    `${user.first_name.at(0)}${user.last_name.at(0)}`,
-                    `${user.username}`
-                );
+                avatar = await saveAvatar(user.uid, user.username);
             }
 
             this.usersRepository.update(user.id, {

@@ -7,10 +7,7 @@ import { compare, hash } from '../auth/security/cipher-util.js';
 import { Password } from '../models/password.js';
 import { User } from '../models/user.js';
 import { resetPasswordOptions } from '../utils/mail-options.js';
-import zxcvbn = require('zxcvbn');
-
 export class PasswordController {
-    static readonly ERR_WEAK_PASSWORD: string = 'Weak Password';
     static readonly ERR_SIMILAR_PASSWORD: string =
         'The password is similar to the old one';
     static readonly ERR_INCORRECT_PASSWORD: string =
@@ -98,11 +95,6 @@ export class PasswordController {
                     PasswordController.ERR_SIMILAR_PASSWORD
                 );
             }
-        }
-
-        const reviewer = zxcvbn(new_password);
-        if (reviewer.score < 3) {
-            return reply.badRequest(PasswordController.ERR_WEAK_PASSWORD);
         }
 
         fastify.usersRepository.update(user.id, {

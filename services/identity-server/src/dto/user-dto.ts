@@ -1,5 +1,4 @@
 import { User } from '../models/user.js';
-import { dicordAvatar } from '../utils/avatar-utils.js';
 
 export default function asUser(
   provider: string,
@@ -13,14 +12,12 @@ export default function asUser(
     discord: () => ({
       first_name: data.global_name,
       email: data.email,
-      avatar: dicordAvatar({ id: data.id, avatar: data.avatar }),
       email_verified: data.verified,
     }),
     google: () => ({
       first_name: data.given_name,
       last_name: data.family_name,
       email: data.email,
-      avatar: data.picture,
       email_verified: data.email_verified,
     }),
   };
