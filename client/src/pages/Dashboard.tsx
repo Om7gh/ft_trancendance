@@ -50,7 +50,7 @@ export default function Dashboard() {
           </aside>
         )}
 
-        <main className="flex-1 py-6 px-3 overflow-auto">
+        <main className="flex-1 py-6 px-3 overflow-auto h-full">
           <Outlet />
          
         </main>

@@ -36,7 +36,7 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
     if (!userData?.last_login) return 'Unknown';
     
     const now = Date.now();
-    const lastLogin = userData.last_login * 1000; // Convert seconds to milliseconds
+    const lastLogin = userData.last_login * 1000;
     const diffMs = now - lastLogin;
     const diffSeconds = Math.floor(diffMs / 1000);
     const diffMinutes = Math.floor(diffSeconds / 60);
@@ -54,7 +54,7 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
   };
 
   return (
-    <div className="h-96 bg-slate-950/30 shadow-lg shadow-slate-900 mb-5 p-3 flex flex-col md:flex-row justify-around items-center">
+    <div className="h-96 bg-slate-950/30 shadow-lg shadow-slate-900 mb-5 p-3 flex flex-col md:flex-row justify-around items-center rounded-xl">
       <div className="flex  items-center h-full gap-8  px-5 py-2">
         <img
           src={userData?.avatar}
@@ -65,9 +65,9 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
           <p className="text-violet-200 text-lg md:text-3xl mb-2">
             {userData?.first_name} {userData?.last_name}
           </p>
-          <p className="text-violet-200/50 mb-5 text-xs md:text-lg">
-            "{userData?.bio || 'No bio available'}"
-          </p>
+          <div className="text-violet-500 mb-5 text-xs md:text-lg">
+            <p>{userData?.bio}</p>
+          </div>
           {!isOwnProfile && (
             <button 
               className="text-sm md:text-lg text-violet-200 bg-slate-950/50 px-4 py-2 shadow shadow-slate-900 hover:bg-slate-950 transition duration-200 cursor-pointer" 

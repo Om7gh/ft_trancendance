@@ -1,35 +1,34 @@
-import type { User } from "@/App";
 import { useMobile } from "@/hooks/useMobile";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
 
-function PongChart({user}: {user: User | null}) {
-  const data = [
-      { name: 'Wins', value: 10, color: '#00E5FF' },
-      { name: 'Losses', value: 12, color: '#8A2BE2' },
+function PongChart({gameState}) {
+    const data = [
+      { name: 'Wins', value: gameState?.wins, color: '#00E5FF' },
+      { name: 'Losses', value: gameState?.loses, color: '#8A2BE2' },
     ];
-
+  
     const isMobile = useMobile()
-
     return (
-      <div className="flex items-center gap-8 p-4 bg-slate-800/30  border border-slate-700">
-       {
+      <div className="flex w-full justify-center items-center gap-8 p-4 bg-slate-800/30  border border-slate-700">
+        {
           !isMobile &&
           <div className="space-y-4 min-w-30">
         {data.map((item) => (
-          <div key={item.name} className="flex items-center gap-3">
+          <div key={item?.name} className="flex items-center gap-3">
             <span
               className="h-3 w-3 rounded-full block"
               style={{ backgroundColor: item.color }}
             />
             <span className="text-slate-300 capitalize">
-              {item.name}:{' '}
-              <span className="font-bold text-white">{item.value}</span>
+              {item?.name}:{' '}
+              <span className="font-bold text-white">{item?.value}</span>
             </span>
           </div>
         ))}
       </div>
       }
-      <ResponsiveContainer width="100%" height={200}>
+
+      <ResponsiveContainer width={"100%"} height={200}>
         <PieChart>
           <Pie
             data={data}
@@ -57,8 +56,7 @@ function PongChart({user}: {user: User | null}) {
             />
         </PieChart>
       </ResponsiveContainer>
-    </div>
-  );
+    </div>)
 }
 
 export default PongChart

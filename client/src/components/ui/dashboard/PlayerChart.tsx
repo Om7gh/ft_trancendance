@@ -1,12 +1,9 @@
-import { GlobalContext } from '@/App';
-import { useContext } from 'react';
 import ChessChart from '../game/ChessChart';
 import PongChart from '../game/PongChart';
 
-export default function PlayerChart({type}: {type: string}) {
-  const {user} = useContext(GlobalContext)
+export default function PlayerChart({type, data}: {type: string}) {
   if (type === "chess")
-   return <ChessChart user={user} />
+   return <ChessChart gameState={data} />
   else if (type === "pingpong")
-    return <PongChart user={user} />
+    return <PongChart gameState={data}  />
 }
