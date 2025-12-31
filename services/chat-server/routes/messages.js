@@ -31,6 +31,32 @@ function messagesPlugin(instance) {
 		try {
 			clientReq.log.debug(`incoming msg: ${incomingMsg}`);
 			let parsedMsg = JSON.parse(incomingMsg);
+
+			async function sendToNotification(msg) {
+				try {
+					const sender = {
+						id: clientReq.user.id,
+						username: clientReq.user.username,
+						avatar: clientReq.user.avatar,
+					};
+
+					const receiver = {
+						id: parsedMsg.target.id,
+					};
+					await axios.post('http://notification:9005/send', {
+						data: [{
+							id: randomUUID(),
+							type: 'new-message',
+							expireTime: 0,
+							sender,
+							receiver,
+						}
+					]});
+				}
+				catch (error) {
+					clientSocket.send("Error Happen while sending notification");
+				}
+			}
 			
 			function notifyOrSend(msg, conv) {
 				if (connectedUsers.has(parsedMsg.target.id)){
@@ -46,10 +72,6 @@ function messagesPlugin(instance) {
 				}
 			}
 			
-			function sendToNotification(msg) {
-				instance.log.info(`${msg} will be send to notification service`);
-			}
-
 			function handleNewConversation(){
 				let conversation = instance.conversationManager.addConversation(parsedMsg.sender, parsedMsg.target);
 				let targetIsConnected = connectedUsers.has(parsedMsg.target.id);
