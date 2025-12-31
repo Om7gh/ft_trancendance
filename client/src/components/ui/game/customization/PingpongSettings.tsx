@@ -1,7 +1,7 @@
 import { usePutPong } from "@/services/user/usePutPong";
 import { type FormEvent } from "react";
 
-function PingpongSettings() {
+function PingpongSettings({close} : {close: () => void}) {
 
   const mutatePong = usePutPong()
 
@@ -19,7 +19,7 @@ function PingpongSettings() {
 
   return <div className="container mx-auto max-w-4xl px-4 py-8">
     <div className="w-full max-w-2xl mx-auto bg-slate-950/30 text-center px-6 py-4  mb-8">
-      <h2 className="bg-gradient-to-l from-violet-500 to-neon bg-clip-text text-transparent text-2xl font-semibold">Pong Customization</h2>
+      <h2 className="bg-linear-to-l from-violet-500 to-neon bg-clip-text text-transparent text-2xl font-semibold">Pong Customization</h2>
     </div>
 
     <form className="flex flex-col gap-6 max-w-2xl mx-auto" onSubmit={handleSubmit}>
@@ -47,8 +47,9 @@ function PingpongSettings() {
         </div>
       </div>
       <button
+      onClick={close}
           type="submit"
-          className="w-52 mx-auto bg-gradient-to-r from-violet-600 to-violet-800 hover:from-violet-700 hover:to-violet-950 text-white font-semibold text-xl px-6 py-3  shadow-xl transition-all duration-300 hover:scale-105"
+          className="w-52 mx-auto bg-linear-to-r from-violet-600 to-violet-800 hover:from-violet-700 hover:to-violet-950 text-white font-semibold text-xl px-6 py-3  shadow-xl transition-all duration-300 hover:scale-105"
       >
         Save
       </button>

@@ -9,7 +9,7 @@ function PingpongCustomization() {
     <>
       {openModal && (
         <Modal onClose={() => setOpenModal(false)}>
-          <PingpongSettings />
+          <PingpongSettings close={() => setOpenModal(false)} />
         </Modal>
       )}
       <div
