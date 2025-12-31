@@ -26,7 +26,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
   const navigate = useNavigate()
   const currentDate = Date.now() / 1000;
   const diff = data.expireTime - currentDate;
-  if (data.type === "joinMatch" && diff > 0) {
+  if (data.type === "joinMatch") {
     const url = `/dashboard/games/pingpong/remote/joinMatch?rid=${data.sender.id}`;
     const redirectToMatch = () => {
       const diff = data.expireTime - currentDate;
@@ -39,7 +39,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
       }
       navigate(url)
     }
-      return <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950/30 py-1 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all mx-8" onClick={close}>
+      return <div className={`flex items-center justify-between gap-4 text-violet-200 ${diff < 0 ? "grayscale" : "bg-slate-950/30"}  py-1 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all mx-8`} onClick={close}>
         <div className="flex items-center gap-3 w-full">
           <button onClick={redirectToMatch} className="px-6 py-3 flex justify-between items-center w-full" >
             <div className="flex  items-center gap-5">
@@ -49,10 +49,10 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
                 <span className="text-xs text-violet-300">{data.sender.id}</span>
               </div>
             </div>
-            <p  className=" relative w-10 h-10 bg-neon/50 flex items-center justify-center before:content-['→'] before:absolute before:inset-0 before:flex before:items-center before:justify-center before:text-3xl before:text-white before:bg-violet-900 before:translate-x-1 before:translate-y-1 before:z-10
-  "></p>
+            <p  className=" relative w-10 h-10 bg-neon/50 flex items-center justify-center before:content-['→'] before:absolute before:inset-0 before:flex before:items-center before:justify-center before:text-3xl before:text-white before:bg-violet-900 before:translate-x-1 before:translate-y-1 before:z-10"></p>
           </button>
         </div>
+        {diff < 0 && <p>Expired !</p>}
         </div>
   }
   if (data.type === "friend-request") {
@@ -103,7 +103,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
       refetch()
     }
     return (
-      <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950 px-4 py-3 my-2 rounded-lg border border-blue-500/30 hover:border-blue-500/60 transition-all">
+      <div className={`flex items-center justify-between gap-4 text-violet-200 ${diff < 0 ? "grayscale" : "bg-slate-950/30"}  py-1 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all mx-8`}>
         <div className="flex items-center gap-3">
           <img 
             src={data.sender.avatar} 
@@ -122,6 +122,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
           <button className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-md text-sm font-medium transition-colors">
             Decline
           </button>
+          {diff <= 0 && <p className="text-xs mx-3 text-violet-500">expired</p>}
         </div>
       </div>
     );

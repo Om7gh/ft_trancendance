@@ -3,11 +3,11 @@ import { PiPingPongBold } from 'react-icons/pi';
 
 interface PongMatch {
   id: string;
-  player1: string;
-  player2: string;
+  leftPlayer: User;
+  rightPlayer: User;
   winner: string;
   score: string;
-  startedAt: number;
+  createdAt: number;
 }
 
 interface PongHistoryProps {
@@ -34,6 +34,8 @@ function ResultBadge({ win }: { win: boolean }) {
 }
 
 function PongHistory({userData, matchData}: PongHistoryProps) {
+
+  console.log(matchData)
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -43,7 +45,7 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
 
   return (
     <div className="relative border border-violet-500/30 bg-slate-950/30 p-6 shadow-xl shadow-slate-800 h-96 overflow-auto">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(168,85,247,.15),_transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,.15),transparent_60%)]" />
 
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
@@ -70,8 +72,8 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
           <div className="space-y-3">
             {matchData.matches?.map((game) => {
               const isWinning = game.winner === userData?.username || game.winner === String(userData?.id);
-              const opponent = game.player1 === userData?.username || game.player1 === String(userData?.id) ? game.player2 : game.player1;
-              
+              const opponent = game.leftPlayer.id === userData?.id ? game.rightPlayer.username : game.leftPlayer.username;
+
               return (
                 <div
                   key={game.id}
@@ -104,7 +106,7 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
                     </div>
 
                     <div className="flex flex-col items-end gap-1">
-                      <span className="text-xs text-slate-400">{formatDate(game.startedAt)}</span>
+                      <span className="text-xs text-slate-400">{formatDate(game.createdAt)}</span>
                       <ResultBadge win={isWinning} />
                     </div>
                   </div>

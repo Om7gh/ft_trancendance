@@ -12,7 +12,9 @@ function Notification() {
   const [error, setError] = useState("");
   const [counter, setCounter] = useState<number>(0);
   const lastSeenTotalRef = useRef<number>(0);
-  const hasInitializedBaselineRef = useRef(false);
+  const seenRef = useRef(false);
+
+  
   useEffect(() => {
     let isMounted = true;
     async function fetchNotification() {
@@ -22,9 +24,9 @@ function Notification() {
           const newData: NotificationType[] = Array.isArray(response.data)
             ? response.data
             : [];
-          if (!hasInitializedBaselineRef.current) {
+          if (!seenRef.current) {
             lastSeenTotalRef.current = newData.length;
-            hasInitializedBaselineRef.current = true;
+            seenRef.current = true;
             setCounter(0);
           } else {
             const unread = Math.max(0, newData.length - lastSeenTotalRef.current);
@@ -56,7 +58,7 @@ function Notification() {
       const next = !prev;
       if (next) {
         lastSeenTotalRef.current = data.length;
-        hasInitializedBaselineRef.current = true;
+        seenRef.current = true;
         setCounter(0);
       }
       return next;
