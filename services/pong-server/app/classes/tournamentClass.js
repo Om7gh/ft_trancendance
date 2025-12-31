@@ -30,7 +30,7 @@ export default class Tournament extends EventEmitter {
     addMember(user) {
         if (this.state === "waiting" && !this.isMember(user.id)) {
             this.members.push(user);
-            if (this.members.length === 4) {
+            if (this.members.length === 2) {
                 this.startTournament();
             }
         }
@@ -74,7 +74,7 @@ export default class Tournament extends EventEmitter {
 
     startTournament() {
         if (this.state === "waiting") {
-            if (this.members.length === 4) {
+            if (this.members.length === 2) {
                 this.state = "going";
                 this.createNewRound(this.extractMembersIds());
                 this.currentRound.startRound();
