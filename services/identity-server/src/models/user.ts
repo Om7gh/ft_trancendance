@@ -14,9 +14,10 @@ export interface User {
   last_logout: number | null
   email_verified: 0 | 1
   provider: string
-  token_id: string
+  token_id: string | null
   token_updated_at: number
-  mfa_enabled: boolean
+  mfa_enabled: 0 | 1
+  mfa_secret: string | null
 }
 
 export interface TwoFactor {
