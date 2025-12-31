@@ -1,10 +1,10 @@
-import type { ScoreType } from "../types/playMatch";
+import type { CustomizationType, ScoreType } from "../types/playMatch";
 import type { Paddle, Ball} from '../types/match.ts';
 
 function drawBall(
   ball: Ball,
   context: CanvasRenderingContext2D | null,
-  color = 'orange'
+  color: string,
 ) {
   if (ball && context) {
     context.beginPath();
@@ -17,10 +17,11 @@ function drawBall(
 function drawPaddle(
   paddle: Paddle,
   context: CanvasRenderingContext2D,
+  color: string,
 ) {
   if (paddle && context) {
     context.beginPath();
-    context.strokeStyle = paddle.color;
+    context.strokeStyle = color;
     context.lineWidth = paddle.width;
     context.moveTo(paddle.x, paddle.y);
     context.lineTo(paddle.x, paddle.y + paddle.height);
@@ -29,12 +30,28 @@ function drawPaddle(
   }
 }
 
+function drawTableEdges(
+  context: CanvasRenderingContext2D,
+  color: string,
+) {
+
+  context.strokeStyle = color;
+  context.lineWidth = 4;
+  context.strokeRect(0, 0, 700, 400);
+
+  context.beginPath();
+  context.moveTo(350, 0);
+  context.lineTo(350, 400);
+  context.stroke();
+}
+
 export default function messageHandler(
   event: MessageEvent,
   context: CanvasRenderingContext2D,
   setScore: (value: ScoreType) => void,
   setMatchState: (value: string) => void,
-  setError: (value: string) => void
+  setError: (value: string) => void,
+  customization: CustomizationType | null,
 ) {
   let message = JSON.parse(event.data);
 
@@ -48,9 +65,10 @@ export default function messageHandler(
       });
     } else if (message.data.event === 'updateView') {
       context.clearRect(0, 0, 700, 400);
-      drawBall(message.data.ball, context, 'orange');
-      drawPaddle(message.data.leftPaddle, context);
-      drawPaddle(message.data.rightPaddle, context);
+      drawTableEdges(context, customization?.table_edges_color ?? "white");
+      drawBall(message.data.ball, context, customization?.ball_color ?? "orange");
+      drawPaddle(message.data.leftPaddle, context, customization?.left_paddle_color ?? "green");
+      drawPaddle(message.data.rightPaddle, context, customization?.right_paddle_color ?? "red");
     }
   } else {
     if (message.reason) {

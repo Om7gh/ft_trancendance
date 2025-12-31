@@ -23,10 +23,11 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
   return (
     <div className="relative">
       <RemoteScoreBar score={score} match={match} />
-      <div className="flex flex-col m-auto my-10">
+      <div
+        className="flex flex-col m-auto my-10">
         <canvas
           width="700" height="400" ref={canvasRef}
-          className="border w-full aspec-[7/4] m-auto bg-slate-950/60"
+          className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900 w-72 h-72 md:w-full md:h-full"
         >
           Your browser does not support HTML canvas API!!
         </canvas>

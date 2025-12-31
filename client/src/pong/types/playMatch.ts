@@ -16,3 +16,10 @@ export type MatchPropsType = {
   setMatchState: (value: string) => void,
   setError: (value: string) => void,
 }
+
+export type CustomizationType = {
+  ball_color: string;
+  left_paddle_color: string;
+  right_paddle_color: string;
+  table_edges_color: string;
+}

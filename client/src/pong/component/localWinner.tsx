@@ -19,12 +19,12 @@ export default function LocalWinner({ score }: WinnerPropsType) {
   }, []);
 
   return (
-    <div className="border rounded absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 tflex flex-col m-auto">
+    <div className="border rounded border-white absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 tflex flex-col m-auto">
       <img
         className="w-1/4 m-auto my-4"
         src="https://avatar.iran.liara.run/public"
       />
-      <h1 className="text-[1em] m-auto text-center  my-4">
+      <h1 className="text-[1em] m-auto text-center text-white  my-4">
         Winner is: {(winner && winner.name) || 'No Winner!!'}
       </h1>
     </div>

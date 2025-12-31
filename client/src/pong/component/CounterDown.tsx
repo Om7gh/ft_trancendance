@@ -15,8 +15,8 @@ export default function CounterDown() {
 
   return (
     <div className="border rounded absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      <h1 className="p-4 text-center">Waiting for opponent back to match</h1>
-      <p className="p-4 text-center">{counter}</p>
+      <h1 className="p-4 text-center text-white">Waiting for opponent back to match</h1>
+      <p className="p-4 text-center text-white">{counter}</p>
     </div>
   );
 }

@@ -2,9 +2,9 @@ import pongCustomizationSchema from "../schemas/pongCustomizationSchema.js";
 import chessCustomizationSchema from "../schemas/chessCustomizationSchema.js";
 
 async function pongCustomizationUpdateHandler(request, reply) {
-    const user          = request.user;
-    const data          = request.body.data;
-    const state         = this.validateUser(user);
+    const user  = request.user;
+    const data  = request.body.data;
+    const state = this.validateUser(user);
 
     if (!state) {
         const error = new Error("Invalid user passed to handler!!")
@@ -12,19 +12,22 @@ async function pongCustomizationUpdateHandler(request, reply) {
         throw error;
     }
 
-    console.log("!!!!!!!!!!!!!", {id: user.id, data}, "!!!!!!!!!");
+    console.log(data);
 
-    this.db.insertPongCustomizations.run({id: user.id, ball_color: data.ball_color,
-    left_paddle_color: data.left_paddle_color,
-    right_paddle_color: data.right_paddle_color,
-    table_edges_color: data.table_edges_color});
+    this.db.insertPongCustomizations.run({
+        id: user.id,
+        ball_color: data.ball_color,
+        left_paddle_color: data.left_paddle_color,
+        right_paddle_color: data.right_paddle_color,
+        table_edges_color: data.table_edges_color
+    });
 
     return reply.send("updated successfully");
 }
 
 async function pongCustomizationFetchHandler(request, reply) {
-    const user          = request.user;
-    const state         = this.validateUser(user);
+    const user  = request.user;
+    const state = this.validateUser(user);
 
     if (!state) {
         const error = new Error("Invalid user passed to handler!!")
@@ -34,15 +37,13 @@ async function pongCustomizationFetchHandler(request, reply) {
     
     const customization = this.db.fetchPongCustomizations.get(user.id);
 
-    console.log("@@@@@@@@@@", customization, "@@@@@@@@@@@");
-
     return reply.send(customization);
 }
 
 async function chessCustomizationUpdateHandler(request, reply) {
-    const user          = request.user;
-    const data          = request.body;
-    const state         = this.validateUser(user);
+    const user  = request.user;
+    const data  = request.body;
+    const state = this.validateUser(user);
 
     if (!state) {
         const error = new Error("Invalid user passed to handler!!")
@@ -50,17 +51,17 @@ async function chessCustomizationUpdateHandler(request, reply) {
         throw error;
     }
 
-    console.log("!!!!!!!!!!!!!", request.body, "!!!!!!!!!");
-
-    this.db.insertChessCustomizations.run({ id: user.id, chess_piece: data.chess_piece });
+    this.db.insertChessCustomizations.run({
+        id: user.id,
+        chess_piece: data.chess_piece
+    });
     
     return reply.send("updated successfully");
 }
 
 async function chessCustomizationFetchHandler(request, reply) {
-    const user          = request.user;
-    const state         = this.validateUser(user);
-    console.log(user)
+    const user  = request.user;
+    const state = this.validateUser(user);
 
     if (!state) {
         const error = new Error("Invalid user passed to handler!!")
@@ -69,8 +70,6 @@ async function chessCustomizationFetchHandler(request, reply) {
     }
     
     const customization = this.db.fetchChessCustomizations.get(user.id);
-
-    console.log("@@@@@@@@@@", customization, "@@@@@@@@@@@");
 
     return reply.send(customization?.chess_piece ?? 'fantasy');
 }

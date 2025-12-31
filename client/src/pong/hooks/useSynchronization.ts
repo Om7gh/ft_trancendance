@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useContext } from "react";
 
 import type { RefObject } from "react";
 import type { ScoreType } from "../types/playMatch";
@@ -6,6 +6,7 @@ import type { ScoreType } from "../types/playMatch";
 import { Events } from "../playLocal/classes";
 import messageHandler from "../utils/messageHandler";
 import { createRenderingContext } from "../utils/utils";
+import { CustomizationContext } from '../PongMain.tsx';
 
 const events = new Events();
 
@@ -56,31 +57,33 @@ export default function useSynchronization(
   setMatchState: (value: string) => void,
   setError: (RxValue: string) => void 
 ) {
-    const context = useRef<CanvasRenderingContext2D | null>(null);
+  const customization = useContext(CustomizationContext);
+  const context = useRef<CanvasRenderingContext2D | null>(null);
 
-    useEffect(() => {
-        let intervalId = null;
-        context.current = createRenderingContext(canvas.current);
-        
-        connection.onmessage = (event) => {
-            messageHandler(
-                event,
-                context.current!,
-                setScore,
-                setMatchState,
-                setError
-            );
-        };
-        
-        document.addEventListener('keyup', handleKeyUp);
-        document.addEventListener('keydown', handleKeyDown);
-        intervalId = setInterval(() => sendEvents(connection, matchState), 30);
-        
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown);
-            document.removeEventListener('keyup', handleKeyUp);
-            connection.onmessage = null;
-            clearInterval(intervalId);
-        };
-    })
+  useEffect(() => {
+      let intervalId = null;
+      context.current = createRenderingContext(canvas.current);
+      
+      connection.onmessage = (event) => {
+          messageHandler(
+            event,
+            context.current!,
+            setScore,
+            setMatchState,
+            setError,
+            customization,
+          );
+      };
+      
+      document.addEventListener('keyup', handleKeyUp);
+      document.addEventListener('keydown', handleKeyDown);
+      intervalId = setInterval(() => sendEvents(connection, matchState), 30);
+      
+      return () => {
+          document.removeEventListener('keydown', handleKeyDown);
+          document.removeEventListener('keyup', handleKeyUp);
+          connection.onmessage = null;
+          clearInterval(intervalId);
+      };
+  })
 }

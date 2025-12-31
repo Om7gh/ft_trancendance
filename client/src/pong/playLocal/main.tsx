@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router';
-import { useState, useRef} from 'react';
+import { useState, useRef } from 'react';
 
 import useLocalMatch from '../hooks/useLocalMatch.ts';
 import LocalWinner from '../component/localWinner.tsx';
 import LocalScoreBar from '../component/localScoreBare.tsx';
 import MessageDisplayer from '../component/MessageDisplayer.tsx';
+
+import { onTouchStartHandler, onTouchEndHandler } from '../hooks/useLocalMatch.ts';
 
 export type PlayerType = {
   name          : string;
@@ -28,13 +30,62 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
   useLocalMatch(canvasRef, setError, setMatchState, setScore);
   
   return (
-    <div className="flex flex-col perspective-distant">
+    <div className="relative flex flex-col m-auto my-10">
+      <div 
+        className='absolute top-0 w-1/3 h-1/3'
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          onTouchStartHandler("w");
+        
+        }}
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+          onTouchEndHandler("w");
+        }}
+      ></div>
+      <div
+        className='absolute top-0 right-0 w-1/3 h-1/3'
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          onTouchStartHandler("arrowup");
+        
+        }}
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+          onTouchEndHandler("arrowup");
+        }}
+      ></div>
       <canvas
         width="700" height="400" ref={canvasRef}
-        className="bg-slate-950/40 my-5 rotate-x-45 shadow-xl shadow-slate-900 w-72 h-72 md:w-full md:h-full"
-      >
+        className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900 w-72 h-72 md:w-full md:h-full"
+        >
         Your browser does not support HTML canvas API!!
       </canvas>
+      <div
+        className='absolute bottom-0 w-1/3 h-1/3'
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          onTouchStartHandler("s");
+        
+        }}
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+          onTouchEndHandler("s");
+        }}
+      >
+      </div>
+      <div
+      className='absolute bottom-0 right-0 w-1/3 h-1/3'
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          onTouchStartHandler("arrowdown");
+        
+        }}
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+          onTouchEndHandler("arrowdown");
+        }}
+      ></div>
     </div>
   );
 }

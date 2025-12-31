@@ -1,11 +1,14 @@
 import type { ScoreType } from "./main";
+import type { CustomizationType } from "../types/playMatch";
 
 class Table {
     context             : CanvasRenderingContext2D;
     width               : number;
     height              : number;
+    edgesColor          : string;
 
-    constructor(context: CanvasRenderingContext2D, width: number, height: number){
+    constructor(context: CanvasRenderingContext2D, width: number, height: number, edgesColor: string){
+        this.edgesColor = edgesColor;
         this.context    = context;
         this.width      = width;
         this.height     = height;
@@ -19,9 +22,19 @@ class Table {
 
     drawNewFrame(ball: Ball, left_paddle: Paddle, right_paddle: Paddle) {
         this.clearContext();
+        this.context.strokeStyle = this.edgesColor;
+        this.context.lineWidth = 4;
+        this.context.strokeRect(0, 0, 700, 400);
+
+        this.context.beginPath();
+        this.context.moveTo(350, 0);
+        this.context.lineTo(350, 400);
+        this.context.stroke();
+
         left_paddle.draw(this);
         right_paddle.draw(this);
         ball.draw(this);
+
     }
 }
 
@@ -227,14 +240,14 @@ export default class Match {
     setMatchState  : ((value: string) => void) | null;
 
 
-    constructor(context: CanvasRenderingContext2D) {
+    constructor(context: CanvasRenderingContext2D, customization: CustomizationType | null) {
         this.state          = "waiting";
         this.animationId    = null;
         this.events         = new Events();
-        this.table          = new Table(context, 700, 400);
-        this.ball           = new Ball(350, 200, "orange");
-        this.leftPaddle     = new Paddle(20, 180, "red");
-        this.rightPaddle    = new Paddle(680, 180, "green");
+        this.ball           = new Ball(350, 200, customization?.ball_color ?? "orange");
+        this.leftPaddle     = new Paddle(20, 180, customization?.left_paddle_color ?? "red");
+        this.rightPaddle    = new Paddle(680, 180, customization?.right_paddle_color ?? "green");
+        this.table          = new Table(context, 700, 400, customization?.table_edges_color ?? "white");
         this.score          = {
             leftPlayer: {name: "leftPlayer", points: 0},
             rightPlayer: {name: "rightPlayer", points: 0},
@@ -320,11 +333,23 @@ export default class Match {
         }
     }
 
+    onTouchStart(key: string) {
+        if (key === 'w' || key === 's' || key === 'arrowup' || key === 'arrowdown') {
+            this.events.setKey(key, true);
+        }
+    }
+
     handleKeyDown(event: KeyboardEvent) {
         const key = event.key.toLowerCase();
         if (key === 'w' || key === 's' || key === 'arrowup' || key === 'arrowdown') {
             this.events.setKey(key, true);
             event.preventDefault();
+        }
+    }
+
+    onTouchEnd(key: string) {
+        if (key === 'w' || key === 's' || key === 'arrowup' || key === 'arrowdown') {
+            this.events.setKey(key, false);
         }
     }
 
