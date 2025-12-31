@@ -70,10 +70,10 @@ function messagesPlugin(instance) {
 					instance.conversationManager.incrementUserUnreadCount(parsedMsg.sender.id);
 					sendToNotification(msg);
 				}
-				instance.conversationManager.updateLastMessage(conv.id, message.content);
+				instance.conversationManager.updateLastMessage(conv.id, msg.content);
 				instance.conversationManager.updateTime(conv.id);
 			}
-			
+
 			function handleNewConversation(){
 				let conversation = instance.conversationManager.addConversation(parsedMsg.sender, parsedMsg.target);
 				let targetIsConnected = connectedUsers.has(parsedMsg.target.id);

@@ -9,9 +9,9 @@ function initDb(dbInstance){
 		secondUserID TEXT NOT NULL,
 		firstUserJson TEXT NOT NULL,
 		secondUserJson TEXT NOT NULL,
+		lastMessage TEXT,
 		firstUserUnreadCount INTEGER NOT NULL DEFAULT 0,
 		secondUserUnreadCount INTEGER NOT NULL DEFAULT 0,
-		lastMessage TEXT NOT NULL DEFAULT '',
 		lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);`);
 
