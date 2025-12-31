@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import type { MatchPropsType } from '../types/playMatch.ts';
 import type { ScoreType, PlayMatchPropsType } from '../types/playMatch.ts';
+import { onTouchEndHandler, onTouchStartHandler } from '../hooks/useSynchronization.ts';
 
 import useWebSocket from '../hooks/useWebSocket.ts';
 import CounterDown from '../component/CounterDown.tsx';
@@ -25,12 +26,61 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
       <RemoteScoreBar score={score} match={match} />
       <div
         className="flex flex-col m-auto my-10">
+        <div 
+          className='absolute top-0 w-1/3 h-1/3'
+          onTouchStart={(e) => {
+            e.stopPropagation();
+            onTouchStartHandler("w");
+          
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+            onTouchEndHandler("w");
+          }}
+        ></div>
+        <div
+          className='absolute top-0 right-0 w-1/3 h-1/3'
+          onTouchStart={(e) => {
+            e.stopPropagation();
+            onTouchStartHandler("arrowup");
+          
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+            onTouchEndHandler("arrowup");
+          }}
+        ></div>
         <canvas
           width="700" height="400" ref={canvasRef}
           className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900 w-72 h-72 md:w-full md:h-full"
         >
           Your browser does not support HTML canvas API!!
         </canvas>
+        <div
+          className='absolute bottom-0 w-1/3 h-1/3'
+          onTouchStart={(e) => {
+            e.stopPropagation();
+            onTouchStartHandler("s");
+          
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+            onTouchEndHandler("s");
+          }}
+        >
+        </div>
+        <div
+        className='absolute bottom-0 right-0 w-1/3 h-1/3'
+          onTouchStart={(e) => {
+            e.stopPropagation();
+            onTouchStartHandler("arrowdown");
+          
+          }}
+          onTouchEnd={(e) => {
+            e.stopPropagation();
+            onTouchEndHandler("arrowdown");
+          }}
+        ></div>
         {(matchState === 'paused') && <CounterDown />}
         {(matchState === 'done') && <RemoteWinner score={score} match={match} />}
       </div>

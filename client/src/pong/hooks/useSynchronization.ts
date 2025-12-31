@@ -30,6 +30,22 @@ function handleKeyUp(event: KeyboardEvent) {
   }
 }
 
+export function onTouchStartHandler(key: string) {
+  if (key === 'w' || key === 's' || key === 'arrowup' || key === 'arrowdown') {
+    if (events) {
+      events[key] = true;
+    }
+  }
+}
+
+export function onTouchEndHandler(key: string) {
+  if (key === 'w' || key === 's' || key === 'arrowup' || key === 'arrowdown') {
+    if (events) {
+      events[key] = false;
+    }
+  }
+}
+
 function sendEvents(ws: WebSocket, matchState: string) {
   if (events && matchState === 'going') {
     if (events['w'] || events['arrowup']) {
