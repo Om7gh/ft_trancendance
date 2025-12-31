@@ -50,7 +50,7 @@ export default abstract class TokenController {
                     return reply.badRequest();
                 }
                 this.usersRepository.update(user.id, {
-                    token_id: '',
+                    token_id: null,
                 });
                 console.log(`Token revoked for user ${payload.sub}`);
             } catch (err) {

@@ -15,7 +15,7 @@ export default function DashboardHeader({
   isSidebarOpen = false 
 }: DashboardHeaderProps): JSX.Element {
   return (
-    <header className="flex justify-end mr-0 md:mr-4 lg:mr-4 gap-5 items-center">
+    <header className="flex justify-between mr-0 md:mr-4 lg:mr-4 gap-5 items-center">
       {isMobile && toggleSidebar && (
         <button
           onClick={toggleSidebar}

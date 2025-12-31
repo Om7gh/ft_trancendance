@@ -27,6 +27,7 @@ export default abstract class AuthController {
         fastify.usersRepository.update(user.id, {
             last_login: now,
             token_id: jti,
+            token_updated_at: now,
         });
         return [accessToken, refreshToken];
     }
@@ -159,8 +160,7 @@ export default abstract class AuthController {
                     next: '/auth/complete-registration',
                 });
         }
-        const userMfa = this.mfaRepository.findByUserId(user.id);
-        if (userMfa && userMfa.enabled) {
+        if (user.mfa_enabled) {
             reply.sendNonceToken(await this.generateNonceToken(user.uid, '5m'));
             return reply.send({ success: true, next: '/auth/verify-2fa' });
         }
@@ -184,7 +184,7 @@ export default abstract class AuthController {
                     magicLinkOptions(user.email, url)
                 );
                 return reply.badRequest(
-                    'You already logged in on another device, we sent you an email to revoke old sessions before you make new logging'
+                    'You already logged in on another device, check your email!'
                 );
             } catch (err: any) {
                 return reply.badRequest(err.message);
@@ -235,7 +235,7 @@ export default abstract class AuthController {
             reply.sendNonceToken(await this.generateNonceToken(user.uid, '5m'));
             return reply.redirect('/auth/complete-registration');
         } catch (err: any) {
-            return reply.forbidden('invalid-token');
+            return reply.forbidden('invalid-token ' + err.message);
         }
     }
 
@@ -372,7 +372,7 @@ export default abstract class AuthController {
                 avatar = await saveAvatar(
                     user.uid,
                     `${user.first_name.at(0)}${user.last_name.at(0)}`,
-                    `${user.username}.svg`
+                    `${user.username}`
                 );
             }
 
@@ -401,13 +401,6 @@ export default abstract class AuthController {
         reply: FastifyReply
     ) {
         let userInfo = asUserInfo(request.user);
-        const userMfa = this.mfaRepository.findById(request.user.id);
-        if (userMfa) {
-            userInfo = {
-                ...userInfo,
-                mfa_enabled: userMfa.enabled ? true : false,
-            };
-        }
         return reply.send(userInfo);
     }
 }

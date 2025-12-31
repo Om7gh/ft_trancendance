@@ -50,7 +50,7 @@ export const TwoFASchema = Type.Object({
     code: Type.String({
         minLength: 6,
         maxLength: 6,
-        pattern: '/^[0-9]+$/',
+        pattern: '^[0-9]+$',
     }),
 });
 

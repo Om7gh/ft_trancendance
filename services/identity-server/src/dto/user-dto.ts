@@ -1,14 +1,5 @@
 import { User } from '../models/user.js';
-
-function dicordAvatar(payload: { id: string; avatar: string | null }) {
-  if (!payload.avatar) {
-    const defaultIndex = parseInt(payload.id) % 5;
-    return `https://cdn.discordapp.com/embed/avatars/${defaultIndex}.png`;
-  }
-  const isGif = payload.avatar.startsWith('a_');
-  const ext = isGif ? 'gif' : 'png';
-  return `https://cdn.discordapp.com/avatars/${payload.id}/${payload.avatar}.${ext}?size=512`;
-}
+import { dicordAvatar } from '../utils/avatar-utils.js';
 
 export default function asUser(
   provider: string,
@@ -50,6 +41,6 @@ export function asUserInfo(user: User) {
     last_logout: user.last_logout,
     username: user.username,
     provider: user.provider,
-    mfa_enabled: user.mfa_enabled
+    mfa_enabled: user.mfa_enabled,
   };
 }

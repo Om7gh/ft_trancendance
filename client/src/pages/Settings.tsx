@@ -23,7 +23,7 @@ function Settings() {
 
         <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 bg-linear-to-b from-slate-950/20 to-violet-950/20">
           <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center px-6">
-            <GrUpdate className="w-24 h-24 text-violet-500" />
+            <GrUpdate className="w-12 h-12 md:w-24 md:h-24 text-violet-500" />
             <div className="text-base bg-linear-to-l from-violet-500 to-neon text-transparent bg-clip-text text-center max-w-[80%] md:text-2xl tracking-wider">
               <p>Update to a new and attractive avatar</p>
             </div>
@@ -42,7 +42,7 @@ function Settings() {
           </div>
 
           <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center px-6">
-            <SiAwssecretsmanager className="w-24 h-24 text-violet-500" />
+            <SiAwssecretsmanager className="w-12 h-12 md:w-24 md:h-24 text-violet-500" />
             <p className="text-base bg-linear-to-l from-violet-500 to-neon text-transparent bg-clip-text text-center max-w-[80%] md:text-2xl tracking-wider">
               Protect Yourself With updating your password
             </p>
@@ -54,7 +54,7 @@ function Settings() {
 
         <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 bg-linear-to-b from-slate-950/20 to-violet-950/20">
           <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center px-6">
-            <Si2Fas className="w-24 h-24 text-violet-500" />
+            <Si2Fas className="w-12 h-12 md:w-24 md:h-24 text-violet-500" />
             <p className="text-base bg-linear-to-l from-violet-500 to-neon text-transparent bg-clip-text text-center max-w-[80%] md:text-2xl tracking-wider">
               enable 2fa for extra security layer
             </p>

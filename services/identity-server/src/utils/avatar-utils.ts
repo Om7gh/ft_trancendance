@@ -1,6 +1,7 @@
 import { MultipartFile } from '@fastify/multipart';
 import fs from 'fs';
 import path from 'path';
+import sharp from 'sharp';
 import { pipeline } from 'stream/promises';
 import UIAvatarSvg from 'ui-avatar-svg';
 
@@ -28,11 +29,11 @@ function isDarkColor(hex: string): boolean {
     return brightness < 128;
 }
 
-function generateAvatar(
+async function generateAvatar(
     initials: string,
     filePath: string,
     size = 128
-): string {
+): Promise<string> {
     const bgColor = getRandomColor();
     const textColor = isDarkColor(bgColor) ? '#FFFFFF' : '#000000';
 
@@ -43,8 +44,8 @@ function generateAvatar(
         .textColor(textColor)
         .fontWeight('bold')
         .generate();
-
-    fs.writeFileSync(filePath, svg);
+    const pngBuffer = await sharp(Buffer.from(svg)).png().toBuffer();
+    fs.writeFileSync(filePath, pngBuffer);
     return filePath;
 }
 
@@ -70,12 +71,17 @@ export async function saveUploadedAvatar(
 ): Promise<string> {
     const userDir = path.join(avatarsDir, uid);
     await fs.promises.mkdir(userDir, { recursive: true });
-
-    const ext = path.extname(file.filename) || '.png';
-    const fileName = `${username + ext}`;
-    const filePath = path.join(userDir, fileName);
-
+    const filePath = path.join(userDir, username);
     await pipeline(file.file, fs.createWriteStream(filePath));
+    return `/avatars/${uid}/${username}`;
+}
 
-    return `/avatars/${uid}/${fileName}`;
+export function dicordAvatar(payload: { id: string; avatar: string | null }) {
+  if (!payload.avatar) {
+    const defaultIndex = parseInt(payload.id) % 5;
+    return `https://cdn.discordapp.com/embed/avatars/${defaultIndex}.png`;
+  }
+  const isGif = payload.avatar.startsWith('a_');
+  const ext = isGif ? 'gif' : 'png';
+  return `https://cdn.discordapp.com/avatars/${payload.id}/${payload.avatar}.${ext}?size=512`;
 }

@@ -11,8 +11,7 @@ export default abstract class MFAController {
         request: FastifyRequest,
         reply: FastifyReply
     ) {
-        // const { sub } = await request.verifyAccessToken();
-        const user = request.user; //this.usersRepository.findByUID(sub!);
+        const user = request.user;
         if (!user) {
             return reply.badRequest('user not found');
         }
@@ -21,28 +20,16 @@ export default abstract class MFAController {
         const qrcode = await QRCode.toDataURL(uri);
         const html = `<img src=${qrcode} />`;
 
-        const mfa = this.mfaRepository.findByUserId(user.id);
-        if (mfa?.enabled) {
+        if (user.mfa_enabled) {
             return reply.forbidden('2fa already enabled');
         }
 
-        // Ensure the stored secret matches the QR code we just generated.
-        // If the record exists but is disabled, rotate the secret.
-        if (!mfa) {
-            this.mfaRepository.create({
-                user_id: user.id,
-                secret: encrypt(secret),
-                enabled: 0,
-            });
-        } else {
-            this.mfaRepository.update(user.id, {
-                secret: encrypt(secret),
-                enabled: 0,
-            });
-        }
-
-        // Settings UI expects JSON; keep html for any older consumer.
-        return reply.send({ success: true, qrcode, uri, html });
+        this.usersRepository.update(user.id, {
+            mfa_enabled: 0,
+            mfa_secret: encrypt(secret),
+        });
+        
+        return reply.send(html);
     }
 
     static async verify(
@@ -53,19 +40,21 @@ export default abstract class MFAController {
         const { code } = request.body as TwoFABody;
         try {
             const user = request.user;
-            const user2FA = this.mfaRepository.findByUserId(user.id);
-            if (!user2FA) {
-                return reply.unauthorized('your not allowed to do this');
+            if (!user) {
+                return reply.badRequest('user not found');
             }
-            if (user2FA.enabled) {
-                return reply.forbidden('2fa already enabled');
+            if (!user.mfa_secret) {
+                return reply.badRequest('your not allowed to do this');
             }
-            const secret = decrypt(user2FA.secret);
+            if (user.mfa_enabled) {
+                return reply.badRequest('2fa already enabled');
+            }
+            const secret = decrypt(user.mfa_secret);
             const isValid = authenticator.verify({ token: code, secret });
             if (!isValid) {
                 return reply.badRequest('invalid code');
             }
-            this.mfaRepository.update(user.id, { enabled: 1 });
+            this.usersRepository.update(user.id, { mfa_enabled: 1 });
             return reply.send({ success: true, message: '2fa enabled' });
         } catch (err: any) {
             return reply.send(err);
@@ -80,26 +69,24 @@ export default abstract class MFAController {
         const { code } = request.body as TwoFABody;
         try {
             const user = request.user;
-            const user2fa = this.mfaRepository.findByUserId(user.id);
-            if (!user2fa) {
-                return reply.badRequest('you dont have permission for this');
+            if (!user) {
+                return reply.badRequest('no user found with this uid');
             }
-            const secret = decrypt(user2fa.secret);
+            const secret = decrypt(user.mfa_secret!);
             const isValid = authenticator.verify({ token: code, secret });
             if (!isValid) {
                 return reply.badRequest('invalid code');
             }
-            if (!user2fa.enabled) {
+            if (!user.mfa_enabled) {
                 return reply.forbidden('2fa already disabled');
             }
-            this.mfaRepository.delete(user.id);
-            return reply.send({
-                success: true,
-                message: '2fa disabled',
-                next: null,
+            this.usersRepository.update(user.id, {
+                mfa_enabled: 0,
+                mfa_secret: null,
             });
+            return reply.send({ success: true, message: '2fa disabled' });
         } catch (err: any) {
-            return reply.unauthorized('unauthorized');
+            return reply.badRequest();
         }
     }
 
@@ -114,18 +101,13 @@ export default abstract class MFAController {
             if (!user) {
                 return reply.badRequest('login first');
             }
-            const userMfa = this.mfaRepository.findByUserId(user.id);
-            if (!userMfa) {
-                return reply.badRequest('2fa not enabled for this user');
+            if (!user.mfa_secret) {
+                return reply.badRequest('2fa not enabled yet');
             }
-            const secret = decrypt(userMfa.secret);
-            const currentCode = authenticator.generate(secret);
-            const isValid = authenticator.verify({
-                token: currentCode,
-                secret,
-            });
-            if (!isValid || currentCode != code) {
-                return reply.unauthorized('invalid code');
+            const secret = decrypt(user.mfa_secret);
+            const isValid = authenticator.verify({ token: code, secret });
+            if (!isValid) {
+                return reply.badRequest('invalid code');
             }
 
             const jti = randomUUID();
@@ -135,6 +117,7 @@ export default abstract class MFAController {
             this.usersRepository.update(user.id, {
                 last_login: now,
                 token_id: jti,
+                token_updated_at: now
             });
             reply
                 .sendAccessToken(accessToken)
@@ -146,7 +129,7 @@ export default abstract class MFAController {
                 next: '/dashboard',
             });
         } catch (err: any) {
-            return reply.unauthorized('unauthorized');
+            return reply.badRequest();
         }
     }
 }

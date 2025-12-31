@@ -9,8 +9,7 @@ type PendingUser = {
     id: number;
     uid: string;
     username: string;
-    secret: string;
-    pending: boolean;
+    mfa_secret: string;
 };
 
 declare module 'fastify' {
@@ -50,22 +49,16 @@ async function trackPendingUser(
         const { sub } = await request.verifyNonceToken();
         const user = this.usersRepository.findByUID(sub!);
         if (!user) {
-            throw new Error('no user on the database');
+            return reply.badRequest('no user found with this uid');
         }
-        let pendingUser: PendingUser = {
+        request.pendingUser = {
             id: user.id,
             uid: user.uid,
             username: user.username,
-            secret: '',
-            pending: true,
+            mfa_secret: user.mfa_secret || '',
         };
-        const userMfa = this.mfaRepository.findByUserId(user.id);
-        if (userMfa) {
-            pendingUser.secret = userMfa.secret;
-        }
-        request.pendingUser = pendingUser;
     } catch (err: any) {
-        return reply.status(401).send({ error: err.message || 'Unauthorized' });
+        return reply.unauthorized(err.message || 'Unauthorized');
     }
 }
 
@@ -75,14 +68,14 @@ async function authenticate(
     reply: FastifyReply
 ): Promise<void> {
     try {
-        const payload = await request.verifyAccessToken();
-        const user = this.usersRepository.findByUID(payload.sub!);
+        const { sub } = await request.verifyAccessToken();
+        const user = this.usersRepository.findByUID(sub!);
         if (!user) {
-            throw new Error('no user on the database');
+            return reply.badRequest('no user found with this uid');
         }
         request.user = user;
     } catch (err: any) {
-        return reply.status(401).send({ error: err.message || 'Unauthorized' });
+        return reply.unauthorized(err.message || 'Unauthorized');
     }
 }
 
@@ -146,7 +139,7 @@ function sendRefreshToken(
         httpOnly: true,
         sameSite: 'lax',
         path: '/api/auth/refresh',
-        maxAge: 60 * 60 * 24 * 7 * 4 + 2, //30d
+        maxAge: 60 * 60 * 24 * 7 * 4 + 2,
     });
 }
 

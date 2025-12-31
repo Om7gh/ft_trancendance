@@ -18,6 +18,8 @@ export class UserRepository {
         'provider',
         'token_id',
         'token_updated_at',
+        'mfa_secret',
+        'mfa_enabled',
     ]);
 
     private validateColumns(keys: string[]): void {
@@ -155,28 +157,28 @@ export class UserRepository {
         return stmt.all(likeQuery, likeQuery, likeQuery, limit) as User[];
     }
 
-    updateTokenWithCooldown(
-        userId: number,
-        newTokenId: string,
-        lastLogin: number,
-        cooldownSeconds = 3600
-    ): boolean {
-        const stmt = this.db.prepare(`
-        UPDATE users
-        SET
-            token_id = ?,
-            last_login = ?
-        WHERE id = ?
-          AND (
-            token_updated_at IS NULL
-            OR token_updated_at <= strftime('%s','now') - ?
-          )
-    `);
+    // updateTokenWithCooldown(
+    //     userId: number,
+    //     newTokenId: string,
+    //     lastLogin: number,
+    //     cooldownSeconds = 3600
+    // ): boolean {
+    //     const stmt = this.db.prepare(`
+    //     UPDATE users
+    //     SET
+    //         token_id = ?,
+    //         last_login = ?
+    //     WHERE id = ?
+    //       AND (
+    //         token_updated_at IS NULL
+    //         OR token_updated_at <= strftime('%s','now') - ?
+    //       )
+    // `);
 
-        const result = stmt.run(newTokenId, lastLogin, userId, cooldownSeconds);
+    //     const result = stmt.run(newTokenId, lastLogin, userId, cooldownSeconds);
 
-        return result.changes === 1;
-    }
+    //     return result.changes === 1;
+    // }
 
     touchLoginRateLimit(userId: number, cooldownSeconds = 3600): boolean {
         const stmt = this.db.prepare(`

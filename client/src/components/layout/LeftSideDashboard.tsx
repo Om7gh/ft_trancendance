@@ -1,6 +1,6 @@
 import { Logo } from '@/assets';
 import { FaUserFriends, FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import { HiOutlineCog, HiOutlineHome } from 'react-icons/hi';
+import { HiOutlineCog } from 'react-icons/hi';
 import { HiMiniChatBubbleLeft } from 'react-icons/hi2';
 import { PiPingPongFill } from 'react-icons/pi';
 import { GrPowerShutdown } from 'react-icons/gr';
@@ -8,6 +8,8 @@ import { NavLink } from 'react-router-dom';
 import DropDown from '../ui/utils/DropDown';
 import { useState, type MouseEvent, type ReactNode } from 'react';
 import { useLogout } from '@/services/auth/useLogout';
+import { FaRegChartBar } from "react-icons/fa";
+
 
 export default function LeftSideDashboard({ 
   isMobile, 
@@ -22,8 +24,6 @@ export default function LeftSideDashboard({
     icon: ReactNode;
     children?: any;
   }[] = [
-    { name: 'Home', path: 'home', icon: <HiOutlineHome /> },
-    { name: 'Settings', path: 'settings', icon: <HiOutlineCog /> },
     {
       name: 'Games',
       path: 'games',
@@ -40,6 +40,8 @@ export default function LeftSideDashboard({
     },
     { name: 'Chat', path: 'chat', icon: <HiMiniChatBubbleLeft /> },
     { name: 'Friends', path: 'friends', icon: <FaUserFriends /> },
+    { name: 'Stats', path: 'home', icon: <FaRegChartBar /> },
+    { name: 'Settings', path: 'settings', icon: <HiOutlineCog /> },
   ];
 
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
@@ -79,7 +81,7 @@ export default function LeftSideDashboard({
                       `px-4 py-3 transition-all duration-200 flex items-center gap-4 justify-between
                       ${
                         isActive
-                          ? 'bg-gradient-to-l from-neon to-violet-500 text-white shadow-lg border-l-5 border-l-slate-100'
+                          ? 'bg-linear-to-l from-neon to-violet-500 text-white shadow-lg border-l-5 border-l-slate-100'
                           : 'text-slate-300 hover:bg-slate-800/50 hover:text-white border-l-5 border-l-violet-500 bg-slate-400/10'
                       }`
                     }
@@ -128,7 +130,7 @@ export default function LeftSideDashboard({
       >
         <GrPowerShutdown className="text-xl text-violet-500" />
         {!isMobile && (
-          <span className="bg-gradient-to-r from-neon to-violet-500 bg-clip-text text-transparent font-medium">
+          <span className="bg-linear-to-r from-neon to-violet-500 bg-clip-text text-transparent font-medium">
             Nice to meet you
           </span>
         )}
