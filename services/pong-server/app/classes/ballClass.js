@@ -5,7 +5,7 @@ export default class Ball {
         this.y              = y;
         this.direction      = 1;
         this.speed          = 5;
-        this.radius         = 15;
+        this.radius         = 10;
         this.angle          = 5;
         this.lastHit        = "";
         this.color          = "orange";

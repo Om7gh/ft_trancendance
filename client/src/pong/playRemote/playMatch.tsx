@@ -22,32 +22,21 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
   )
 
   return (
-    <div className="relative">
+    <div>
       <RemoteScoreBar score={score} match={match} />
       <div
-        className="flex flex-col m-auto my-10">
+        className="relative flex flex-col m-auto my-10">
         <div 
-          className='absolute top-0 w-1/3 h-1/3'
+          className='absolute border top-0 w-full h-1/3'
           onTouchStart={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             onTouchStartHandler("w");
-          
           }}
           onTouchEnd={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             onTouchEndHandler("w");
-          }}
-        ></div>
-        <div
-          className='absolute top-0 right-0 w-1/3 h-1/3'
-          onTouchStart={(e) => {
-            e.stopPropagation();
-            onTouchStartHandler("arrowup");
-          
-          }}
-          onTouchEnd={(e) => {
-            e.stopPropagation();
-            onTouchEndHandler("arrowup");
           }}
         ></div>
         <canvas
@@ -57,28 +46,16 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
           Your browser does not support HTML canvas API!!
         </canvas>
         <div
-          className='absolute bottom-0 w-1/3 h-1/3'
+          className='border absolute bottom-0 w-full h-1/3'
           onTouchStart={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             onTouchStartHandler("s");
-          
           }}
           onTouchEnd={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             onTouchEndHandler("s");
-          }}
-        >
-        </div>
-        <div
-        className='absolute bottom-0 right-0 w-1/3 h-1/3'
-          onTouchStart={(e) => {
-            e.stopPropagation();
-            onTouchStartHandler("arrowdown");
-          
-          }}
-          onTouchEnd={(e) => {
-            e.stopPropagation();
-            onTouchEndHandler("arrowdown");
           }}
         ></div>
         {(matchState === 'paused') && <CounterDown />}

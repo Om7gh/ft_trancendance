@@ -34,11 +34,13 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
       <div 
         className='absolute top-0 w-1/3 h-1/3'
         onTouchStart={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           onTouchStartHandler("w");
         
         }}
         onTouchEnd={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("w");
         }}
@@ -46,11 +48,13 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
       <div
         className='absolute top-0 right-0 w-1/3 h-1/3'
         onTouchStart={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           onTouchStartHandler("arrowup");
         
         }}
         onTouchEnd={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("arrowup");
         }}
@@ -64,11 +68,13 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
       <div
         className='absolute bottom-0 w-1/3 h-1/3'
         onTouchStart={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           onTouchStartHandler("s");
         
         }}
         onTouchEnd={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("s");
         }}
@@ -77,11 +83,13 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
       <div
       className='absolute bottom-0 right-0 w-1/3 h-1/3'
         onTouchStart={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           onTouchStartHandler("arrowdown");
         
         }}
         onTouchEnd={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("arrowdown");
         }}

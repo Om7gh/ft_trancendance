@@ -106,7 +106,7 @@ class Ball {
         this.y           = y;
         this.angle       = 0;
         this.speed       = 5;
-        this.radius      = 15;
+        this.radius      = 10;
         this.lastHit     = "";
         this.direction   = 1;
         this.color       = color;
