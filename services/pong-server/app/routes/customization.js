@@ -3,7 +3,7 @@ import chessCustomizationSchema from "../schemas/chessCustomizationSchema.js";
 
 async function pongCustomizationUpdateHandler(request, reply) {
     const user          = request.user;
-    const data          = request.body;
+    const data          = request.body.data;
     const state         = this.validateUser(user);
 
     if (!state) {
@@ -12,9 +12,12 @@ async function pongCustomizationUpdateHandler(request, reply) {
         throw error;
     }
 
-    console.log("!!!!!!!!!!!!!", request.body, "!!!!!!!!!");
+    console.log("!!!!!!!!!!!!!", {id: user.id, data}, "!!!!!!!!!");
 
-    this.db.insertPongCustomizations(data);
+    this.db.insertPongCustomizations.run({id: user.id, ball_color: data.ball_color,
+    left_paddle_color: data.left_paddle_color,
+    right_paddle_color: data.right_paddle_color,
+    table_edges_color: data.table_edges_color});
 
     return reply.send("updated successfully");
 }

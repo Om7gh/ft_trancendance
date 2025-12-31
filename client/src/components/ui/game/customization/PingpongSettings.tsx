@@ -1,17 +1,20 @@
-import type { FormEvent } from "react";
+import { usePutPong } from "@/services/user/usePutPong";
+import { type FormEvent } from "react";
 
 function PingpongSettings() {
+
+  const mutatePong = usePutPong()
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formdData = new FormData(e.currentTarget);
     const data = {
-      ball_color          : formdData.get("ball"),
+      ball_color          : formdData.get("ball") as string,
       left_paddle_color   : formdData.get("leftPaddle") as string,
       right_paddle_color  : formdData.get("rightPaddle") as string,
-      table_edges_color   : formdData.get("table")
+      table_edges_color   : formdData.get("table") as string
     }
-    console.log(data)
+    mutatePong.mutate(data)
   }
 
   return <div className="container mx-auto max-w-4xl px-4 py-8">

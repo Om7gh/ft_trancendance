@@ -1,9 +1,45 @@
 import { Outlet } from 'react-router-dom';
+import api from '@/services/clientHttpService';
+import { useState, useEffect, createContext } from 'react';
+
+export type CustomizationType = {
+  ball_color: string;
+  left_paddle_color: string;
+  right_paddle_color: string;
+  table_edges_color: string;
+}
+
+export const CustomizationContext = createContext<CustomizationType | null>(null);
+
+function useFetchCustomization(setCustomization: (value: CustomizationType) => void) {
+  useEffect(() => {
+    (async function fetchData() {
+      try {
+        const response = await api.get("/pongGame/remote/pongCustomization/fetch");
+        console.log("pong_customization:", response.data);
+        setCustomization(response.data);
+      } catch (err) {
+        console.log("Fail to fetch customization.");
+      }
+    })();
+  }, [])
+}
 
 function PongMain() {
+  const [customization, setCustomization] = useState<CustomizationType>({
+    ball_color: "orange",
+    left_paddle_color: "green",
+    right_paddle_color: "red",
+    table_edges_color: "white",
+  });
+
+  useFetchCustomization(setCustomization);
+
   return (
     <div className="h-full grid place-items-center">
-      <Outlet />
+      <CustomizationContext value={customization} >
+        <Outlet />
+      </CustomizationContext>
     </div>
   );
 }

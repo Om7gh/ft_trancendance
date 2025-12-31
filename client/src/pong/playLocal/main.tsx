@@ -30,9 +30,7 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
   return (
     <div className="flex flex-col perspective-distant">
       <canvas
-        width="700"
-        height="400"
-        ref={canvasRef}
+        width="700" height="400" ref={canvasRef}
         className="bg-slate-950/40 my-5 rotate-x-45 shadow-xl shadow-slate-900 w-72 h-72 md:w-full md:h-full"
       >
         Your browser does not support HTML canvas API!!
