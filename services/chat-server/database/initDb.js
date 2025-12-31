@@ -11,6 +11,7 @@ function initDb(dbInstance){
 		secondUserJson TEXT NOT NULL,
 		firstUserUnreadCount INTEGER NOT NULL DEFAULT 0,
 		secondUserUnreadCount INTEGER NOT NULL DEFAULT 0,
+		lastMessage TEXT NOT NULL DEFAULT '',
 		lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);`);
 

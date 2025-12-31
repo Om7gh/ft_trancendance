@@ -20,7 +20,9 @@ function conversationPlugin(instance){
 				id: conv.id,
 				friend: user,
 				unread_msg: unreadMsgs,
-				presence: instance.connectedUsers.has(user.id) ? "online" : "offline"
+				presence: instance.connectedUsers.has(user.id) ? "online" : "offline",
+				lastMsg: conv.lastMessage,
+				lastUpdate: conv.lastUpdate
 			});
 		});
 		return (conversations);

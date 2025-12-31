@@ -70,6 +70,8 @@ function messagesPlugin(instance) {
 					instance.conversationManager.incrementUserUnreadCount(parsedMsg.sender.id);
 					sendToNotification(msg);
 				}
+				instance.conversationManager.updateLastMessage(conv.id, message.content);
+				instance.conversationManager.updateTime(conv.id);
 			}
 			
 			function handleNewConversation(){
