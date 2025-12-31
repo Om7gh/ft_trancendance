@@ -8,6 +8,7 @@ import { FaTableTennisPaddleBall } from 'react-icons/fa6';
 import TodayGames from '../ui/dashboard/TodayGames';
 import useGetChessHistory from '@/services/chess/useChessHistory';
 import { GlobalContext } from '@/App';
+import useGetPongStat from '@/services/user/useGetPongStats';
 
 type GameType = 'pingpong' | 'chess';
 
@@ -15,11 +16,10 @@ export default function HomeDashboard() {
   const [activeGame, setActiveGame] = useState<GameType>('pingpong');
   const {user} = useContext(GlobalContext)
   const {data: chess, isPending, isError} = useGetChessHistory(user?.username!)
+  const {data: pong, isPending: pongPeding} = useGetPongStat()
+
   return (
     <div className="h-full p-5 space-y-6 overflow-auto">
-      <div>
-        <TodayGames />
-      </div>
       <div className="flex justify-center gap-4 mb-8">
         <button
           onClick={() => setActiveGame('pingpong')}
@@ -51,13 +51,13 @@ export default function HomeDashboard() {
         icon={<FaTableTennisPaddleBall />}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PlayerChart type="pingpong" />
+          <PlayerChart type="pingpong" data={pong} />
           <PlayerStatistics type="pingpong" />
         </div>
 
        <div className="grid grid-cols-1 gap-6">
           {
-            isPending ? <p>Loading...</p> : isError ? <p></p> : <MyGamesHistory type="pong" userData={user} matchData={chess} />
+            isPending ? <p>Loading...</p> : isError ? <p></p> : <MyGamesHistory type="pong" userData={user} matchData={pong} />
           }
         </div>
       </DashboardWrapper>
@@ -68,7 +68,7 @@ export default function HomeDashboard() {
         icon={<GiChessQueen />}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PlayerChart type="chess" />
+          <PlayerChart type="chess" data={chess} />
           <PlayerStatistics type="chess" />
         </div>
 

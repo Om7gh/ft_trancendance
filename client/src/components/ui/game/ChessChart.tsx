@@ -1,22 +1,14 @@
-import type { User } from '@/App';
 import { useMobile } from '@/hooks/useMobile';
-import useGetChessHistory from '@/services/chess/useChessHistory';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
-function ChessChart({user} : {user: User | null}) {
-    const {data: gameState, isError, error, isPending} = useGetChessHistory(user?.username!)
-    if (isPending)
-      return <p className='text-center text-violet-500'>Loading...</p>
-    if (isError)
-      return <p>{error.message}</p>
+function ChessChart({gameState}) {
     const {stats} = gameState;
-    
     const data = [
       { name: 'Wins', value: stats.wins, color: '#00E5FF' },
       { name: 'Losses', value: stats.losses, color: '#8A2BE2' },
       { name: 'Draws', value: stats.draws, color: 'yellow' },
     ];
-    
+  
     const isMobile = useMobile()
     return (
       <div className="flex w-full justify-center items-center gap-8 p-4 bg-slate-800/30  border border-slate-700">

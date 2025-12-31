@@ -37,7 +37,7 @@ function Profile() {
   }
   const { user, chess, pong } = data;
   return (
-    <div className='p-5 md:p-2'>
+    <div className='p-5 md:p-2 max-w-400 m-auto'>
       <ProfileHeader userData={user} isOwnProfile={currentUser?.id === user.id} />
         <GamesStatistics chessStats={chess.stats} pongStats={pong} />
       <div className="my-10 grid grid-cols-1 md:grid-cols-2 gap-5">
