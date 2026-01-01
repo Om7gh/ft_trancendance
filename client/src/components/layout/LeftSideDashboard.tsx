@@ -9,6 +9,7 @@ import DropDown from '../ui/utils/DropDown';
 import { useState, type MouseEvent, type ReactNode } from 'react';
 import { useLogout } from '@/services/auth/useLogout';
 import { FaRegChartBar } from "react-icons/fa";
+import { FaChessBoard } from "react-icons/fa6";
 
 
 export default function LeftSideDashboard({ 
@@ -25,17 +26,12 @@ export default function LeftSideDashboard({
     children?: any;
   }[] = [
     {
-      name: 'Games',
+      name: 'start',
       path: 'games',
       icon: <PiPingPongFill />,
       children: [
         { name: 'PingPong', path: 'games/pingpong', icon: <PiPingPongFill /> },
-        { name: 'Chess', path: 'games/chess', icon: <PiPingPongFill /> },
-        {
-          name: 'Customization',
-          path: 'games/customization',
-          icon: <PiPingPongFill />,
-        },
+        { name: 'Chess', path: 'games/chess', icon: <FaChessBoard /> },
       ],
     },
     { name: 'Chat', path: 'chat', icon: <HiMiniChatBubbleLeft /> },

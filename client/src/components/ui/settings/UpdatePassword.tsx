@@ -6,7 +6,6 @@ function UpdatePassword() {
     const mutate = useUpdatePassword();
     const [passwordsMatch, setPasswordsMatch] = useState(true);
 
-
     const handleSubmit = (e: FormEvent<any>) => {
       e.preventDefault;
       const formdata = new FormData(e.currentTarget);
