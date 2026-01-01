@@ -1,3 +1,23 @@
+COMPOSE = docker compose --parallel 4 -p agents-923
+
+SSLKEY   := $(HOME)/data/ssl-key.pem
+SSLCERT  := $(HOME)/data/ssl-cert.pem
+SSLCONF  := ./nginx/conf/ossl.conf
+
+all: gen-cert up
+
+gen-cert:
+	@mkdir -p $(dir $(SSLKEY))
+	@if [ ! -f "$(SSLKEY)" ]; then \
+		openssl genpkey -algorithm RSA -out "$(SSLKEY)"; \
+	fi
+	@if [ ! -f "$(SSLCERT)" ]; then \
+		openssl req -x509 -noenc \
+			-key "$(SSLKEY)" \
+			-config "$(SSLCONF)" \
+			-new -out "$(SSLCERT)"; \
+	fi
+
 
 up :
 	mkdir -p ~/data/avatars
