@@ -3,7 +3,6 @@ import { routes } from '@routers';
 import { useState, type JSX, type Dispatch, type SetStateAction} from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ToastContainer } from 'react-toastify';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createContext } from 'react';
 
 const queryClient = new QueryClient();
@@ -39,8 +38,7 @@ const App = (): JSX.Element => {
       <GlobalContext.Provider value={{ user, setUser }}>
         <div className="Child bg-midnight/80 ">
           <QueryClientProvider client={queryClient}>
-            <ReactQueryDevtools initialIsOpen={false} />
-            <ToastContainer />
+            <ToastContainer position='bottom-right' />
             <RouterProvider router={routes} />
           </QueryClientProvider>
         </div>

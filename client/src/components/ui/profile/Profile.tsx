@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState, type JSX } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { useLogout } from '@/services/auth/useLogout';
 import { GlobalContext } from '@/App';
 
@@ -28,12 +27,10 @@ export default function Profile(): JSX.Element {
     setActive(!active);
   };
 
-  console.log(user?.avatar)
-
   return (
     <div className="relative">
       <div
-        className="h-14 w-auto rounded-full flex items-center px-2 bg-linear-to-l from-violet-500 to-neon  hover:bg-slate-900/30 cursor-pointer hover:from-violet-500/30 hover:to-violet-800/30 transition-all duration-300 p-0.5 z-50 ring-4 ring-offset-2 ring-offset-violet-500"
+        className="h-10 md:h-14 w-auto rounded-full flex items-center  px-2 bg-linear-to-l from-violet-500 to-neon  hover:bg-slate-900/30 cursor-pointer hover:from-violet-500/30 hover:to-violet-800/30 transition-all duration-300  z-50 ring-4 ring-offset-2 ring-offset-violet-500"
         onClick={toggleMenu}
       >
         <div className="relative">
@@ -41,7 +38,7 @@ export default function Profile(): JSX.Element {
           <img
             src={user?.avatar}
             alt="avatar"
-            className="h-10 w-10 rounded-full object-cover border-2 border-white"
+            className="h-8 w-8 md:w-10 md:h-10 rounded-full object-cover border-2 border-white"
             />
             <span className='text-xs text-violet-200'>{user?.username}</span>
             </div>

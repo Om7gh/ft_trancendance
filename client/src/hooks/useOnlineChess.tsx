@@ -112,8 +112,7 @@ export function useOnlineChess() {
     chessSocket.on('opponentDisconnected', () => {
       setState((prev) => ({ ...prev, opponentConnected: false }));
       toast.error('Opponent disconnected', {
-        position: 'top-center',
-        autoClose: 5000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -124,8 +123,7 @@ export function useOnlineChess() {
 
     chessSocket.on('disconnected', () => {
       toast.warn('You have been disconnected. Attempting to reconnect...', {
-        position: 'top-center',
-        autoClose: 5000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
