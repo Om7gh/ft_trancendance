@@ -66,7 +66,9 @@ function ChatBody({senderUser, targetUser, messages}: ChatBodyProps){
 	});
 
 	return (
-		<div ref={scrollableElement} id="chatBody" className="h-full mb-1 bg-slate-800/40 p-4 scrollbar flex overflow-auto flex-col">
+		<div ref={scrollableElement}
+			id="chatBody"
+			className="h-full mb-1 bg-slate-800/40 p-4 scrollbar flex overflow-auto flex-col">
 			{messages?.map((message) => <MsgBubbleResolverProps sender={senderUser}  target={targetUser} message={message}/>)}
 		</div>
 	);
