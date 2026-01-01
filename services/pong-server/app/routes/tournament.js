@@ -26,6 +26,12 @@ async function joinTournamentHandler(request, reply) {
         return;
     }
 
+    if (50 < this.roomList.size) {
+        const error = new Error("Service actually unavailable!!")
+        error.statusCode = 503;
+        throw error;
+    }
+
     if (!this.currentTournament || (this.currentTournament.state !== "waiting")) {
         let tournament = new Tournament();
 

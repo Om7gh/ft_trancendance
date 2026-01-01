@@ -15,7 +15,6 @@ async function pongStatisticsHandler(request, reply) {
 
     const statistics = new Statistics(matches, user.id);
 
-    this.log.info(statistics);
     reply.send(statistics);
 }
 

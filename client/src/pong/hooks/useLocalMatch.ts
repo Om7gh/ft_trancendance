@@ -36,7 +36,7 @@ export default function useLocalMatch(
         match.instance?.stopMatch()
       });
     } catch (error: any) {
-      setError("An error in useLocalMatch, see console!!");
+      setError(error?.message ?? "An error in useLocalMatch, see console!!");
     }
   }, []);
 }

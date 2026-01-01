@@ -60,6 +60,12 @@ async function acceptHandler(request, reply) {
         invitation.accepted();
     }
 
+    if (50 < this.roomList.size) {
+        const error = new Error("Service actually unavailable!!")
+        error.statusCode = 503;
+        throw error;
+    }
+
     const room = new GenericRoom();
     this.addToRoomList(room);
     room.addMember(user.id);
