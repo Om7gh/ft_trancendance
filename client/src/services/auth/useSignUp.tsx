@@ -9,7 +9,7 @@ function useSignUp() {
   const mutation = useMutation({
     mutationKey: ['signUp'],
     mutationFn: AuthService.register,
-    onSuccess: (payload) => {
+    onSuccess: (payload: any) => {
       toast.success(`Good start ${payload.username}`);
       setRegisterSuccess();
     },

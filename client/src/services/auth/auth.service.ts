@@ -87,7 +87,7 @@ export default abstract class AuthService {
         return data;
     }
 
-    static async completeProfile(profileData: ProfileData) {
+    static async completeProfile(profileData: Pick<ProfileData, 'avatar' | 'bio'>) {
         const formData = new FormData();
         formData.append('avatar', profileData.avatar);
         formData.append('bio', profileData.bio);

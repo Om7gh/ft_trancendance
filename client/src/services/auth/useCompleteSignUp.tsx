@@ -12,7 +12,7 @@ function useCompleteRegistration() {
       toast.success('Registration completed successfully');
       navigate('/dashboard');
     },
-    onError: (err) => {
+    onError: (err: any) => {
       toast.error(err.message);
     },
   });

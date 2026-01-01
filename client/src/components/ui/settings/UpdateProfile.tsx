@@ -12,7 +12,7 @@ function UpdateProfile() {
     const [firstName, setFirstName] = useState(() => user?.first_name || '');
     const [lastName, setLastName] = useState(() => user?.last_name || '');
     const [error, setError] = useState<string>('');
-    const mutateUpdate = useUpdateProfile()
+    const mutateUpdate = useUpdateProfile(setError)
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const selected = e.target.files?.[0];

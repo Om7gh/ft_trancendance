@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useContext } from "react";
 import { GlobalContext } from "@/App";
 
-export function useUpdateProfile() {
+export function useUpdateProfile(onErrorCallback?: (error: string) => void) {
     const {setUser}= useContext(GlobalContext)
     return useMutation({
         mutationKey: ["update-avatar-bio"],
@@ -21,7 +21,10 @@ export function useUpdateProfile() {
             toast.success("Profile updated successfully")
         },
         onError: (err: any) => {
-            toast.error(err.message || "error")
+            const errorMessage = err?.response?.data?.message || err?.message || 'Failed to update password';
+            if (onErrorCallback) {
+                onErrorCallback(errorMessage);
+            }
         }
     })
 }
