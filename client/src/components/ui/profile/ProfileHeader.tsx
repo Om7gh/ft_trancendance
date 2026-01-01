@@ -176,7 +176,7 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
                 </>
               ) : (
                 <button
-                  className="text-sm md:text-lg text-violet-200 bg-slate-950/50 px-4 py-2 shadow shadow-slate-900 hover:bg-slate-950 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="text-sm md:text-lg rounded-xl text-violet-200 bg-slate-950/50 px-4 py-2 shadow shadow-slate-900 hover:bg-slate-950 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                   onClick={handleSendRequest}
                   disabled={activeAction !== null}
                 >
