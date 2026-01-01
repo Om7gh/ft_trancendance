@@ -7,7 +7,8 @@ async function pongCustomizationUpdateHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
+        const error = new Error("Invalid user passed to handler!!");
+        error.type = "pongError";
         error.statusCode = 400;
         throw error;
     }
@@ -28,7 +29,8 @@ async function pongCustomizationFetchHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
+        const error = new Error("Invalid user passed to handler!!");
+        error.type = "pongError";
         error.statusCode = 400;
         throw error;
     }
@@ -44,7 +46,8 @@ async function chessCustomizationUpdateHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
+        const error = new Error("Invalid user passed to handler!!");
+        error.type = "pongError";
         error.statusCode = 400;
         throw error;
     }
@@ -62,7 +65,8 @@ async function chessCustomizationFetchHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
+        const error = new Error("Invalid user passed to handler!!");
+        error.type = "pongError";
         error.statusCode = 400;
         throw error;
     }

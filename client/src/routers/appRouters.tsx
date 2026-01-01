@@ -28,7 +28,6 @@ import StartMenu from '@/pong/component/StartMenu.tsx';
 import { PongRemote, RemoteOptions } from '@/pong/playRemote/main.tsx';
 import PlayWithSomeOne from '@/pong/playRemote/playWithSomeOne.tsx';
 import PlayTournament from '@/components/ui/game/PlayTournament';
-import PlayWithFriend from '@/pong/playRemote/playWithFriend';
 import JoinMatch from '@/pong/playRemote/joinMatch';
 import SettingsPortal from '@/components/ui/settings/SettingsPortal';
 import AccountSettings from '@/components/ui/settings/AccountSettings';
@@ -86,7 +85,6 @@ const router = createBrowserRouter([
                 element: <PongRemote />,
                 children: [
                   { path: 'someone', element: <PlayWithSomeOne /> },
-                  { path: 'invitefriend', element: <PlayWithFriend /> },
                   { path: 'joinMatch', element: <JoinMatch /> },
                   { index: true, element: <RemoteOptions /> },
                 ],

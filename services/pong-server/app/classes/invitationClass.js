@@ -26,6 +26,7 @@ export default class Invitation extends EventEmitter {
                 clearInterval(intervalId);
                 this.emit("done");
             }
+            counter++;
         }, 1000);
     }
 

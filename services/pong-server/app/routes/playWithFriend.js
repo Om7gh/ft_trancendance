@@ -44,6 +44,7 @@ async function acceptHandler(request, reply) {
 
     if (!state) {
         const error = new Error("Invalid user passed to handler!!")
+        error.type = "pongError";
         error.statusCode = 400;
         throw error
     }
@@ -54,6 +55,7 @@ async function acceptHandler(request, reply) {
 
     if (!invitation) {
         const error = new Error("Either you are not invited, or invitation is gone!!");
+        error.type = "pongError";
         error.statusCode = 404;
         throw error
     } else {
@@ -76,6 +78,7 @@ async function inviteHandler(request, reply) {
 
     if (!state) {
         const error = new Error("Invalid user passed to handler!!")
+        error.type = "pongError";
         error.statusCode = 400;
         throw error;
     }
@@ -84,12 +87,14 @@ async function inviteHandler(request, reply) {
   
     if (user.id === fid) {
         const error = new Error("You try to invite your self!!");
+        error.type = "pongError";
         error.statusCode = 422;
         throw error;
     }
     
     if (this.checkIsInvited(user.id, fid)) {
         const error = new Error("You already invite him!!");
+        error.type = "pongError";
         error.statusCode = 404;
         throw error;
     }

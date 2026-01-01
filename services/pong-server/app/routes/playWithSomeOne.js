@@ -15,6 +15,7 @@ export async function waitForOpponent(room) {
                 room.cancelMatch();
                 clearInterval(intervalId);
                 const error = new Error("Waiting for opponent too long!!");
+                error.type = "pongError";
                 error.statusCode = 409;
                 reject(error);
             }
@@ -29,7 +30,8 @@ async function playWithSomeOneHandler(request, reply) {
     let   currentRoom   = this.currentRoom;
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
+        const error = new Error("Invalid user passed to handler!!");
+        error.type = "pongError";
         error.statusCode = 400;
         throw error;
     }
