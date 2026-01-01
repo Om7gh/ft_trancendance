@@ -67,7 +67,7 @@ export class UserController {
             return reply.send(users);
         } catch (err: any) {
             console.error(err);
-            return reply.notFound('no user found');
+            return reply.notFound(UserController.ERR_USER_NOT_FOUND);
         }
     }
 
@@ -85,7 +85,7 @@ export class UserController {
             const { username } = request.params as UsernameBody;
             const user = this.usersRepository.findByUsername(username);
             if (!user) {
-                return reply.notFound('--- user not found ---');
+                return reply.notFound(UserController.ERR_USER_NOT_FOUND);
             }
             const fullUser = {
                 user: asUserInfo(user),
