@@ -62,6 +62,11 @@ export default abstract class AuthService {
         return data;
     }
 
+    static async updatePassword(data: { current_password: string; new_password: string }) {
+        const { data: response } = await api.patch("/api/profile/password", data);
+        return response;
+    }
+
     static async updateProfile(profileData: ProfileData) {
         const formData = new FormData();
         if ('avatar' in profileData) {
