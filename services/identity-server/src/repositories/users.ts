@@ -134,7 +134,7 @@ export class UserRepository {
         if (result.changes === 0) {
             throw new Error('User not found');
         }
-        return this.findById(id);
+        return this.findById(id) as User;
     }
 
     searchUsers(query: string, limit = 50): User[] {
