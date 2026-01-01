@@ -10,8 +10,7 @@ class MessageManager{
             `INSERT INTO messages (convID, senderID, content)
             VALUES (@convID, @senderID, @msg)
             RETURNING *;`
-        )
-        .get({
+        ).get({
             convID: convId,
             senderID: senderId,
             msg: content 
@@ -22,8 +21,8 @@ class MessageManager{
 
     getUserHistoryMsgs(convId){
         const historyMessages = this.#dbInstance.prepare(
-            `SELECT * FROM messages WHERE convID = ?;`)
-            .all(convId);
+            `SELECT * FROM messages WHERE convID = ?;`
+        ).all(convId);
 
         return (historyMessages);
     }

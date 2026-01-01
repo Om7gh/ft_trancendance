@@ -11,7 +11,9 @@ function conversationPlugin(instance){
 				firstUser: JSON.parse(conv.firstUserJson),
 				secondUser: JSON.parse(conv.secondUserJson),
 				firstUserUnreadCount: conv.firstUserUnreadCount,
-				secondUserUnreadCount: conv.secondUserUnreadCount
+				secondUserUnreadCount: conv.secondUserUnreadCount,
+				lastMessage: conv.lastMessage,
+				lastUpdate: conv.lastUpdate
 			}
 			const unreadMsgs = (conv.firstUser.id === userId) ? conv.firstUserUnreadCount : conv.secondUserUnreadCount;
 			let user = (conv.firstUser.id === userId) ? conv.secondUser : conv.firstUser;
@@ -20,7 +22,9 @@ function conversationPlugin(instance){
 				id: conv.id,
 				friend: user,
 				unread_msg: unreadMsgs,
-				presence: instance.connectedUsers.has(user.id) ? "online" : "offline"
+				presence: instance.connectedUsers.has(user.id) ? "online" : "offline",
+				lastMsg: conv.lastMessage,
+				lastUpdate: conv.lastUpdate
 			});
 		});
 		return (conversations);

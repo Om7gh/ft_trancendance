@@ -1,7 +1,7 @@
 import ChatBody from "./ChatBody.tsx";
 import ChatInput from "./ChatInput.tsx";
 import ChatHeader from "./ChatHeader.tsx";
-import StatusResolver from "../contacts/JsxByStatus.tsx";
+import StatusResolver from "@/utils/JsxByStatus.tsx";
 import useAxios from "@/hooks/useAxios.ts";
 import {useContext, useState} from "react";
 import { GlobalContext } from "@/App.tsx";
@@ -12,15 +12,15 @@ import type {User} from "@/types/User.ts"
 import type {User as GloblaUser} from "@/App.tsx"
 import type {ServerRequest} from "@/types/serverRequest.ts"
 
-import ConversationImg from "@assets/placeholders/conversation-placeholder.png";
+import ConversationImg from "@assets/placeholders/conversation.png";
 import useWsResponse from "@/hooks/useWsResponse.ts";
 import inviteRedirection from "@/services/chat/inviteToMatch.ts" 
 
 interface ConversationPanelProps{
 	targetUserCard: Card | null;
 	UsersTab: string;
-	isMobile: boolean;
 	connection: React.RefObject<WebSocket | null>;
+	updateSenderCard: React.Dispatch<React.SetStateAction<any>>
 	onBlockToggle: (action: "block" | "unblock") => void;
 	changeUserView: (view: string) => void;
 }
@@ -41,14 +41,15 @@ function constructReq(
 function ConversationPanel({
 	UsersTab,
 	targetUserCard,
-	isMobile,
 	connection,
 	onBlockToggle,
+	updateSenderCard,
 	changeUserView
 }: ConversationPanelProps){
 	const userInfo  = useContext(GlobalContext);
 	const [showActions, setShowActions] = useState(false);
-	const [messages, setMessages, messageStatus] = useAxios( (targetUserCard && targetUserCard.id)
+	const [messages, setMessages, messageStatus] = useAxios(
+		(targetUserCard && targetUserCard.id)
 			? `/messages/${targetUserCard.id}` 
 			: null);
 	const setRequest = useWsRequest(connection.current);
@@ -87,6 +88,13 @@ function ConversationPanel({
 					content: inputText
 				}
 			])
+			updateSenderCard((prev: Card[]) => {
+				return (prev.map(card => {
+					if (card.friend.id === targetUserCard?.friend.id)
+						return ({...card, lastMsg: inputText});
+					return (card);
+				}));
+			});
 			setRequest(constructReq(currentUser, targetUserCard?.friend as User, inputText));
 			setTimeout(() => changeUserView("Chats"), 300);
 		}
@@ -118,7 +126,7 @@ function ConversationPanel({
 	if (targetUserCard?.friend === undefined)
 		return (
 			<div id="ConversationPanel" className="h-full flex-2 ml-4 pl-2 flex flex-col items-center justify-center">
-				<img src={ConversationImg} className="w-[68%]" alt="decorator image for unselected conversation"/>
+				<img src={ConversationImg} className="w-[50%]" alt="decorator image for unselected conversation"/>
 				<p className="text-gray-200 font-bold">Conversation missing. Target a conversation</p>
 			</div>
 		)
@@ -126,7 +134,6 @@ function ConversationPanel({
 		<div key={targetUserCard.friend.id} id="ConversationPanel" className="h-full flex-2 p-2 ml-4 flex flex-col">
 			<ChatHeader
 				contact={targetUserCard.friend}
-				isMobile={isMobile}
 				UsersTab={UsersTab}
 				showActions={showActions}
 				presence={targetUserCard.presence}

@@ -15,7 +15,9 @@ function contactPlugin(instance){
 					connectionState: getBlockState(clientId, user.id, instance.blockManager)
 				},
 				unread_msg: 0,
-				presence: instance.connectedUsers.has(id) ? "online" : "offline"
+				presence: instance.connectedUsers.has(id) ? "online" : "offline",
+				lastMsg: "",
+				lastUpdate: ""
 			})
 		} 
 	);

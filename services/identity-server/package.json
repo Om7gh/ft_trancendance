@@ -28,6 +28,9 @@
   },
   "homepage": "https://github.com/aaitelka/transcendence#readme",
   "dependencies": {
+    "@dicebear/collection": "^9.2.4",
+    "@dicebear/converter": "^9.2.4",
+    "@dicebear/core": "^9.2.4",
     "@fastify/autoload": "^6.0.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/env": "^5.0.3",
@@ -49,9 +52,7 @@
     "otplib": "^12.0.1",
     "qrcode": "^1.5.4",
     "qs": "^6.14.0",
-    "sharp": "^0.34.5",
-    "ui-avatar-svg": "^1.0.0",
-    "zxcvbn": "^4.4.2"
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",

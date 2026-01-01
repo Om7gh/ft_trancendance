@@ -3,6 +3,8 @@ import { TfiMenu, TfiClose } from "react-icons/tfi";
 import { VscChevronLeft } from "react-icons/vsc";
 
 import type {User} from "@/types/User";
+import { useContext } from "react";
+import { ViewportContext } from "@/pages/Chat";
 
 type OnAction = (action: string) => void;
 interface ActionButtonProps{
@@ -23,7 +25,6 @@ interface ContactinfoProps{
 }
 
 interface UserActionsProps{
-	isMobile: boolean;
 	showActions: boolean;
 	onAction: OnAction;
 	onTap: () => void;
@@ -33,7 +34,6 @@ interface UserActionsProps{
 interface ChatHeaderProps{
 	contact: User;
 	showActions: boolean;
-	isMobile: boolean;
 	UsersTab: string;
 	presence: string;
 	onAction: OnAction;
@@ -49,7 +49,7 @@ function Contactinfo({name, userPresence}: ContactinfoProps){
 
 	return (
 		<div className="ml-6 flex-1">
-			<h1 className="text-2xl font-bold"> {name} </h1>
+			<h1 className="text-[clamp(16px,5cqw,25px)] font-bold"> {name} </h1>
 			<p className="text-sm capitalize  mt-2 relative">
 				{userPresence}
 				<span className="w-full h-full absolute ml-2 top-1 bg-no-repeat"
@@ -84,11 +84,12 @@ function UserBlock({wrapperStyle, onBlock}: BlockButtonProps){
 	);
 }
 
-function UserActions({isMobile, showActions, onTap, onAction}: UserActionsProps){
-	if (isMobile)
+function UserActions({showActions, onTap, onAction}: UserActionsProps){
+	const viewportInfo = useContext(ViewportContext);
+	if (viewportInfo?.isMobile || (viewportInfo?.viewportWidth! <= 1080))
 	{
 		return (
-			<div className="basis-[15%] h-full">
+			<div className="h-full shrink-0">
 				{
 					showActions ? <TfiClose onClick={onTap} className="h-full ml-auto mr-2 w-[30%] text-violet-500"/> :
 					<TfiMenu onClick={onTap} className="h-full ml-auto mr-2 w-[30%] text-violet-500"/>
@@ -113,7 +114,7 @@ function UserActions({isMobile, showActions, onTap, onAction}: UserActionsProps)
 
 function BackButton({onBack, lastView}: {onBack: OnAction; lastView: string}){
 	return (
-		<div className="absolute rounded-3xl top-25 left-14" onClick={(e) => {
+		<div className="absolute rounded-3xl top-0 left-12" onClick={(e) => {
 			e.stopPropagation()
 			onBack("back")
 			}}>
@@ -124,17 +125,17 @@ function BackButton({onBack, lastView}: {onBack: OnAction; lastView: string}){
 	);
 }
 
-function ChatHeader({contact, UsersTab, isMobile, onTap, onAction, showActions, presence}: ChatHeaderProps){
+function ChatHeader({contact, UsersTab, onTap, onAction, showActions, presence}: ChatHeaderProps){
 
+	const viewportInfo = useContext(ViewportContext);
 	return (
-		<div id="ChatHeader" className="min-h-25 mb-3 p-2 flex flex-wrap items-center gap-2 text-white">
-			{isMobile && <BackButton lastView={UsersTab} onBack={onAction}/>}
+		<div id="ChatHeader" className="min-h-25 mb-3 p-2 flex query-container items-center gap-2 text-gray-300">
+			{viewportInfo?.isMobile && <BackButton lastView={UsersTab} onBack={onAction}/>}
 			<Avatar imgUrl={contact.photo_url} name={contact.name} type="contact"/>
 			<Contactinfo name={contact.name} userPresence={presence}/>
 			{
 				(contact.connectionState === "active") && <UserActions
 					onTap={onTap}
-					isMobile={isMobile}
 					onAction={onAction}
 					showActions={showActions}/>
 			}

@@ -5,13 +5,21 @@ import useWebsocket from "../hooks/useWebsocket.ts";
 import useEventListener from "../hooks/useEventListener.ts";
 import UsersPanel from "../components/ui/chat/contacts/UsersPanel.tsx";
 import ConversationPanel from "../components/ui/chat/conversation/ConversationPanel.tsx";
-import {useState, useRef} from "react";
+import {useState, useRef, createContext} from "react";
 import useWsRequest from "@/hooks/useWsRequest.ts"
 import useWsResponse from "@/hooks/useWsResponse.ts"
 import visibleCardsResolver from "@/utils/cardsResolver.ts"
 
 import type {ServerRequest} from "@/types/serverRequest.ts";
+
+interface context{
+	isMobile: boolean;
+	viewportWidth: number;
+}
+
 import type {Card} from "../types/UserCard.ts";
+
+export const ViewportContext = createContext<context | null>(null);
 
 function Chat(){
 	
@@ -27,7 +35,7 @@ function Chat(){
 	const setRequest = useWsRequest(socket.current);
 
 	const selectedCardRef = useRef<Card>(selectedCard);
-	const isMobile = screenWidth <= 500;
+	const isMobile = screenWidth <= 930;
 	const showContact = (!isMobile || mobileView ===  "contacts"); 
 	const showConversation = (!isMobile || mobileView === "conversation");
 
@@ -120,7 +128,11 @@ function Chat(){
 				if (msg.senderID !== selectedCardRef.current?.friend?.id){
 					setChatCards((prev: Card[]) => prev.map((card: Card) => {
 						if (card.friend.id === msg.senderID){
-							return ({...card, unread_msg: card.unread_msg + 1});
+							return ({
+								...card,
+								unread_msg: card.unread_msg + 1,
+								lastMsg: msg.content
+							});
 						}
 						return (card);
 					}));
@@ -194,19 +206,20 @@ function Chat(){
 		}
 	}
 
-	const style = "p-5 h-full w-full text-[clamp(12px,0.8vw,25px)] " + (!isMobile ? "flex" : "");
+	const style = "p-5 h-full w-full text-[clamp(12px,0.8vw,25px)] relative " + (!isMobile ? "flex" : "");
 
 	return (
 		<div id="Chat" className={style}>
+			<ViewportContext value={{isMobile: isMobile, viewportWidth: screenWidth}}>
 			{
 				showContact && <UsersPanel
-					selectedCard={selectedCard}
-					onCardSelect={handleUserCardSelection}
-					visibleCards={visibleCards}
-					setSearchQuery={setSearchQuery}
-					updateTabName={setSelectedTab}
-					selectedTab={selectedTab}
-					getCardStatus={getFetchStatusByTab}
+				selectedCard={selectedCard}
+				onCardSelect={handleUserCardSelection}
+				visibleCards={visibleCards}
+				setSearchQuery={setSearchQuery}
+				updateTabName={setSelectedTab}
+				selectedTab={selectedTab}
+				getCardStatus={getFetchStatusByTab}
 				/>
 			}
 			{
@@ -214,17 +227,18 @@ function Chat(){
 					{!isMobile && <div className="w-0.5 h-full self-center ml-10 rounded-b-4xl bg-violet-500"></div>}
 					{
 						showConversation && <ConversationPanel
-							key={selectedCard?.friend?.id}
-							UsersTab={selectedTab}
-							targetUserCard={selectedCard}
-							isMobile={isMobile}
-							connection={socket}
-							onBlockToggle={handleBlockToggle}
-							changeUserView={changeUserView}
+						key={selectedCard?.friend?.id}
+						UsersTab={selectedTab}
+						targetUserCard={selectedCard}
+						connection={socket}
+						updateSenderCard={setChatCards}
+						onBlockToggle={handleBlockToggle}
+						changeUserView={changeUserView}
 						/>
 					}
 				</>
 			}
+			</ViewportContext>
 		</div>
 	);
 }

@@ -11,8 +11,7 @@ class ConversationManager{
 			WHERE (firstUserID = @firstID AND secondUserID = @secondID)
 			OR
 			(firstUserID = @secondID AND secondUserID = @firstID);`
-		)
-		.get({
+		).get({
 			firstID: user1ID,
 			secondID: user2ID
 		});
@@ -24,8 +23,7 @@ class ConversationManager{
 		const conversations = this.#dbInstance.prepare(
 			`SELECT * FROM conversations WHERE firstUserID = @user
 			OR secondUserID = @user;`
-		)
-		.all({user: userID});
+		).all({user: userID});
 		return (conversations);
 	}
 
@@ -34,8 +32,7 @@ class ConversationManager{
 			`INSERT INTO conversations (firstUserID, secondUserID, firstUserJson, secondUserJson)
 			VALUES(@user1ID, @user2ID, @user1Info, @user2Info)
 			RETURNING *;`
-		)
-		.get({
+		).get({
 			user1ID: firstUser.id,
 			user2ID: secodeUser.id,
 			user1Info: JSON.stringify(firstUser),
@@ -47,9 +44,18 @@ class ConversationManager{
 	findConversation(convId){
 		const result = this.#dbInstance.prepare(
 			`SELECT * FROM conversations WHERE id = ? `
-		)
-		.get(convId);
+		).get(convId);
 		return (result);
+	}
+
+	updateLastMessage(convId, message){
+		this.#dbInstance.prepare(
+			`
+			UPDATE conversations
+			SET lastMessage = @msg
+			WHERE id = @conversationID
+			`
+		).run({msg: message, conversationID: convId});
 	}
 
 	resetUserUnreadCount(userID){
@@ -64,8 +70,7 @@ class ConversationManager{
 			ELSE
 				secondUserUnreadCount END
 			WHERE firstUserID = @inputId OR secondUserID = @inputId`
-		)
-		.run({
+		).run({
 			inputId: userID,
 		});
 	}
@@ -82,8 +87,7 @@ class ConversationManager{
 			ELSE
 				secondUserUnreadCount END
 			WHERE firstUserID =  @inputId OR secondUserID = @inputId`
-		)
-		.run({
+		).run({
 			inputId: userID,
 		});
 	}

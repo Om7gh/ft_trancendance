@@ -9,9 +9,9 @@ function initDb(dbInstance){
 		secondUserID TEXT NOT NULL,
 		firstUserJson TEXT NOT NULL,
 		secondUserJson TEXT NOT NULL,
+		lastMessage TEXT,
 		firstUserUnreadCount INTEGER NOT NULL DEFAULT 0,
 		secondUserUnreadCount INTEGER NOT NULL DEFAULT 0,
-		lastUpdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);`);
 
 	dbInstance.exec(`
@@ -26,8 +26,7 @@ function initDb(dbInstance){
 	dbInstance.exec(`
 		CREATE TABLE IF NOT EXISTS users_blocks(
 		blockerID INTEGER NOT NULL,
-		targetID INTEGER NOT NULL,
-		at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		targetID INTEGER NOT NULL
 		);`);
 	
 	
