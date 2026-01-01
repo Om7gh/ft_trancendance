@@ -4,12 +4,8 @@ import statisticsSchema from "../schemas/statisticsSchema.js";
 
 async function statisticsHandler(request, reply) {
     const uid  = request.query.uid;
-
     const matches = this.db.getMatchesByUser(uid);
-
-    const statistics = new Statistics(matches, uid);
-
-    this.log.info(statistics);
+    const statistics = new Statistics(matches, uid)
 
     reply.send(statistics);
 }

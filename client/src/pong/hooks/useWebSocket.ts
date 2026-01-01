@@ -27,7 +27,6 @@ export default function useWebSocket(
             }
           }
         } catch (err) {
-          console.error(err);
           setError("An error during connection establishing, see console!!");
         }
       }, [url]);

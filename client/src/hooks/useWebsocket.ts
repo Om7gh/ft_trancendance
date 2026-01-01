@@ -4,7 +4,7 @@ function useWebsocket(uri: string){
 	let socket = useRef<WebSocket | null>(null);
 
 	useEffect(() => {
-		socket.current = new WebSocket(`ws://localhost:8080${uri}`);
+		socket.current = new WebSocket(`${import.meta.env.VITE_API_URL}${uri}`);
 
 		socket.current.onclose = () => {
 			console.log("socket connection closed")

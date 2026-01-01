@@ -1,13 +1,13 @@
-import onRequestHook from "../hooks/onRequestHook.js";
-import errorHandler from "../plugins/errorHandler.js";
 
 import match from "./match.js";
 import joinMatch from "./joinMatch.js";
 import tournament from "./tournament.js";
 import customization from "./customization.js";
 import playWithFriend from "./playWithFriend.js";
-import playWithSomeOne from "./playWithSomeOne.js";
 import pongStatistics from "./pongStatistics.js";
+import playWithSomeOne from "./playWithSomeOne.js";
+import onRequestHook from "../hooks/onRequestHook.js";
+import errorHandler from "../plugins/errorHandler.js";
 
 export function alreadyInMatch(roomList, userId) {
     for (let [id, room] of roomList) {

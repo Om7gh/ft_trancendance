@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import api from "../clientHttpService";
-import type { CustomizationType } from "@/pong/PongMain";
+import type { CustomizationType } from "@/pong/types/playMatch";
 
 
 async function putPong(payload : CustomizationType) {

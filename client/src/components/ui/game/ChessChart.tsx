@@ -1,7 +1,7 @@
 import { useMobile } from '@/hooks/useMobile';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
-function ChessChart({gameState}) {
+function ChessChart({gameState}: {gameState: any}) {
     const {stats} = gameState;
     const data = [
       { name: 'Wins', value: stats?.wins, color: '#00E5FF' },
