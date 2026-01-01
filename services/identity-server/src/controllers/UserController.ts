@@ -23,31 +23,25 @@ export class UserController {
         const user = request.user;
         
         try {
-            let bio: string | undefined;
-            let avatar: string | undefined;
+            const payload: Record<string, string> = {};
 
             for await (const part of request.parts()) {
                 if (part.type === 'file' && part.fieldname === 'avatar') {
-                    avatar = await saveUploadedAvatar(
+                    payload.avatar = await saveUploadedAvatar(
                         user.uid,
                         user.username,
                         part
                     );
-                } else if (part.type === 'field' && part.fieldname === 'bio') {
-                    bio = String(part.value);
+                } else if (part.type === 'field') {
+                    payload[part.fieldname] = String(part.value);
                 }
             }
 
-            const updateData: Partial<User> = {};
-            if (avatar !== undefined) updateData.avatar = avatar;
-            if (bio !== undefined) updateData.bio = bio;
+            if (Object.keys(payload).length === 0) {
+                return reply.badRequest('No fields to update');
+            }
 
-            fastify.usersRepository.update(user.id, updateData);
-            // const response = {
-            //     success: true,
-            //     message: 'Updated',
-            //     next: null,
-            // };
+            fastify.usersRepository.update(user.id, payload);
             return reply.send(request.user);
         } catch (err) {
             if (err instanceof SqliteError || err instanceof Error) {
