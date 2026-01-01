@@ -1,21 +1,17 @@
+const { catchAsyncError } = require('../utils/catchAsyncError');
 const send = require('../utils/send');
 const { rooms, players, lastOpponents } = require('../utils/state');
 const { removeFromQueue } = require('./matchMaking');
 
-function handleDisconnect(app, playerId, disconnectingConnection) {
+catchAsyncError(function handleDisconnect(app, playerId, disconnectingConnection) {
   const player = players.get(playerId);
   if (!player) return;
 
-  // Only delete the player if the disconnecting connection is the current one
-  // This prevents race conditions when a player reconnects
-  if (player.connection !== disconnectingConnection) {
-    console.log(`Ignoring disconnect from old connection for [${playerId}]`);
+  if (player.connection !== disconnectingConnection)
     return;
-  }
 
   const { roomId } = player;
   players.delete(playerId);
-
   removeFromQueue(playerId);
 
   if (!roomId) return;
@@ -48,7 +44,6 @@ function handleDisconnect(app, playerId, disconnectingConnection) {
           });
         }
 
-        try {
           const winnerTeam =
             whiteIdSnapshot && whiteIdSnapshot === opponent.playerId
               ? 'WHITE'
@@ -78,12 +73,7 @@ function handleDisconnect(app, playerId, disconnectingConnection) {
               endedAt: Math.floor(Date.now() / 1000),
             });
           }
-        } catch (e) {
-          console.error('Failed to record game (disconnect):', e);
-        }
-
         delete rooms[roomId];
-        console.log(`🗑️ Room ${roomId} deleted (opponent did not reconnect)`);
         if (whiteIdSnapshot && blackIdSnapshot) {
           lastOpponents.set(whiteIdSnapshot, blackIdSnapshot);
           lastOpponents.set(blackIdSnapshot, whiteIdSnapshot);
@@ -94,10 +84,7 @@ function handleDisconnect(app, playerId, disconnectingConnection) {
       }
   } else {
     delete rooms[roomId];
-    console.log(`🗑️ Room ${roomId} deleted (empty)`);
   }
-
-  console.log(`❌ Player ${playerId} disconnected from room ${roomId}`);
-}
+})
 
 module.exports = { handleDisconnect };

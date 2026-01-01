@@ -1,7 +1,8 @@
+const { catchAsyncError } = require('../utils/catchAsyncError');
 const send = require('../utils/send');
 const { rooms, players } = require('../utils/state');
 
-function handleChat(playerId, text) {
+catchAsyncError(async function handleChat(playerId, text) {
   const player = players.get(playerId);
   if (!player || !player.roomId) return;
 
@@ -17,6 +18,6 @@ function handleChat(playerId, text) {
       timestamp: Date.now(),
     });
   }
-}
+})
 
 module.exports = { handleChat };

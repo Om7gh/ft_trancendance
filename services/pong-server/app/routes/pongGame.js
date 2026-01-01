@@ -34,7 +34,7 @@ function addToRoomList(room) {
 }
 
 export default async function pongGame(fastify, options) {
-    
+
     fastify.decorate('roomList', new Map());
     fastify.decorate('currentRoom', null);
     fastify.decorate("invitationList", new Map());
@@ -43,7 +43,6 @@ export default async function pongGame(fastify, options) {
 
     fastify.register(onRequestHook);
     fastify.register(errorHandler);
-
 
     fastify.register(playWithSomeOne);
     fastify.register(playWithFriend);

@@ -58,7 +58,7 @@ export interface ChessHistoryResponse {
     draws: number
     winRate: string
   }
-  history: ChessMatch[]
+  matches: ChessMatch[]
 }
 
 export interface OnlineState {

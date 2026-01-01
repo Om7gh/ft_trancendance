@@ -1,16 +1,6 @@
-const getPieceStyle = (db, username) => {
-  return db
-    .prepare(
-      `
-            SELECT pieces FROM players WHERE username = ?
-        `
-    )
-    .get(username);
-};
+const { catchAsyncError } = require("../utils/catchAsyncError");
 
-const getPlayerGameHistory = (db, username) => {
-  console.log('🗄️ getPlayerGameHistory called with username:', username);
-  console.log('🗄️ Database instance exists:', !!db);
+const getPlayerGameHistory = catchAsyncError((db, username) => {
 
   const result = db
     .prepare(
@@ -33,13 +23,10 @@ const getPlayerGameHistory = (db, username) => {
     )
     .all(username, username);
   
-  console.log('🗄️ Query returned:', result.length, 'results');
   return result;
-};
+});
 
-const getGameStats = (db, username) => {
-  console.log('📈 getGameStats called with username:', username);
-  
+const getGameStats = catchAsyncError((db, username) => {
   const result = db
     .prepare(
       `
@@ -61,9 +48,7 @@ const getGameStats = (db, username) => {
       `
     )
     .get(username, username, username, username, username, username);
-  
-  console.log('📈 Stats result:', result);
   return result;
-};
+});
 
-module.exports = { getPieceStyle, getPlayerGameHistory, getGameStats };
+module.exports = { getPlayerGameHistory, getGameStats };

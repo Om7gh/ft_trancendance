@@ -8,7 +8,7 @@ const {
   pendingRematches,
 } = require('../utils/state');
 
-function startRematchBetween(aId, bId, requesterId) {
+catchAsyncError(function startRematchBetween(aId, bId, requesterId) {
   const a = players.get(aId);
   const b = players.get(bId);
   if (!a || !b) return;
@@ -39,13 +39,13 @@ function startRematchBetween(aId, bId, requesterId) {
     opponentName: aId,
     roomId,
   });
-}
+})
 
-function pairKeyOf(aId, bId) {
+catchAsyncError(function pairKeyOf(aId, bId) {
   return [aId, bId].sort().join(':');
-}
+})
 
-function handleRematchRequest(playerId) {
+catchAsyncError(function handleRematchRequest(playerId) {
   const opponentId = lastOpponents.get(playerId);
   if (!opponentId) return;
   const opp = players.get(opponentId);
@@ -67,9 +67,9 @@ function handleRematchRequest(playerId) {
   });
   send(opp.connection, { type: 'rematchOffer' });
   send(me.connection, { type: 'rematchPending' });
-}
+})
 
-function handleRematchAccept(playerId) {
+catchAsyncError(function handleRematchAccept(playerId) {
   const opponentId = lastOpponents.get(playerId);
   if (!opponentId) return;
   const key = pairKeyOf(playerId, opponentId);
@@ -78,16 +78,16 @@ function handleRematchAccept(playerId) {
   }
   pendingRematches.delete(key);
   startRematchBetween(playerId, opponentId, playerId);
-}
+})
 
-function handleRematchDecline(playerId) {
+catchAsyncError(function handleRematchDecline(playerId) {
   const opponentId = lastOpponents.get(playerId);
   if (!opponentId) return;
   const key = pairKeyOf(playerId, opponentId);
   const opp = players.get(opponentId);
   pendingRematches.delete(key);
   if (opp) send(opp.connection, { type: 'rematchDeclined' });
-}
+})
 
 module.exports = {
   handleRematchAccept,

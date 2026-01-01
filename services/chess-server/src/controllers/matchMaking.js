@@ -1,9 +1,11 @@
 const { v4: uuid } = require('uuid');
 const send = require('../utils/send');
 const { players, rooms } = require('../utils/state');
+const { catchAsyncError } = require('../utils/catchAsyncError');
 
 const matchmakingQueue = []; // {playerId, player socket}
-function handleMatchmaking(playerId, connection) {
+
+catchAsyncError(function handleMatchmaking(playerId, connection) {
   const existingPlayer = players.get(playerId);
   if (existingPlayer) {
     existingPlayer.connection = connection;
@@ -70,9 +72,9 @@ function handleMatchmaking(playerId, connection) {
     }
     createMatch(player1, player2);
   }
-}
+})
 
-function createMatch(player1, player2) {
+catchAsyncError(function createMatch(player1, player2) {
   const roomId = uuid();
   rooms[roomId] = {
     players: [
@@ -115,10 +117,9 @@ function createMatch(player1, player2) {
     opponnet: player1.playerId,
     roomId,
   });
-}
+})
 
 function removeFromQueue(playerId) {
-  console.log(playerId)
   const index = matchmakingQueue.findIndex((p) => p.playerId === playerId);
   if (index !== -1) matchmakingQueue.splice(index, 1);
 }

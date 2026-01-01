@@ -1,7 +1,8 @@
+const { catchAsyncError } = require('../utils/catchAsyncError');
 const send = require('../utils/send');
 const { rooms, players } = require('../utils/state');
 
-function syncBoard(playerId, board, currentTurn, turns, prevMove) {
+catchAsyncError(function syncBoard(playerId, board, currentTurn, turns, prevMove) {
   const player = players.get(playerId);
   if (!player || !player.roomId) return;
 
@@ -23,6 +24,6 @@ function syncBoard(playerId, board, currentTurn, turns, prevMove) {
       prevMove,
     });
   }
-}
+})
 
 module.exports = { syncBoard };

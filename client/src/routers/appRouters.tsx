@@ -43,7 +43,9 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'home',
-        element: <HomeDashboard />,
+        element: <ProtectDashboard>
+          <HomeDashboard /> 
+        </ProtectDashboard> ,
       },
       {
         path: 'profile/:username',
@@ -51,19 +53,27 @@ const router = createBrowserRouter([
       },
       {
         path: 'settings',
-        element: <Settings />,
+         element: <ProtectDashboard>
+          <Settings />,
+        </ProtectDashboard> ,
         children: [
           {
             path: 'account',
-            element: <AccountSettings />,
+            element: <ProtectDashboard>
+          <AccountSettings />,
+        </ProtectDashboard> ,
           },
           {
             path: 'game',
-            element: <Customization />,
+            element: <ProtectDashboard>
+          <Customization />,
+        </ProtectDashboard> ,
           },
            {
             path: 'portal',
-            element: <SettingsPortal />,
+            element: <ProtectDashboard>
+          <SettingsPortal />,
+        </ProtectDashboard> ,
           },
           {
             index: true,
@@ -76,36 +86,52 @@ const router = createBrowserRouter([
         children: [
           {
             path: 'pingpong',
-            element: <PongMain />,
+            element: <ProtectDashboard>
+          <PongMain />,
+        </ProtectDashboard> ,
             children: [
-              { index: true, element: <StartMenu /> },
-              { path: 'local', element: <PlayLocal /> },
+              { index: true, element: <ProtectDashboard>
+          <StartMenu />,
+        </ProtectDashboard> , },
+              { path: 'local', element: <ProtectDashboard>
+          <PlayLocal />,
+        </ProtectDashboard> , },
               {
                 path: 'remote',
-                element: <PongRemote />,
+                element: <ProtectDashboard>
+          <PongRemote />,
+        </ProtectDashboard> ,
                 children: [
-                  { path: 'someone', element: <PlayWithSomeOne /> },
-                  { path: 'joinMatch', element: <JoinMatch /> },
-                  { index: true, element: <RemoteOptions /> },
+                  { path: 'someone', element: <ProtectDashboard>
+          <PlayWithSomeOne />,
+        </ProtectDashboard> , },
+                  { path: 'joinMatch', element: <ProtectDashboard>
+          <JoinMatch />,
+        </ProtectDashboard> , },
+                  { index: true, element: <ProtectDashboard>
+          <RemoteOptions />,
+        </ProtectDashboard> ,},
                 ],
               },
             ],
           },
           {
             path: 'tournament',
-            element: <PlayTournament />,
-          },
-          {
-            path: 'customization',
-            element: <Customization />,
+            element: <ProtectDashboard>
+          <PlayTournament />,
+        </ProtectDashboard> ,
           },
           {
             path: 'portal',
-            element: <GamePortal />,
+            element: <ProtectDashboard>
+          <GamePortal />,
+        </ProtectDashboard> ,
           },
           {
             path: 'chess',
-            element: <Chess />,
+             element: <ProtectDashboard>
+          <Chess />,
+        </ProtectDashboard> ,
           },
           {
             index: true,
@@ -115,11 +141,15 @@ const router = createBrowserRouter([
       },
       {
         path: 'chat',
-        element: <Chat />,
+         element: <ProtectDashboard>
+          <Chat />,
+        </ProtectDashboard> ,
       },
       {
         path: 'friends',
-        element: <Friends />,
+         element: <ProtectDashboard>
+          <Friends />,
+        </ProtectDashboard> ,
       },
       {
         index: true,
@@ -141,27 +171,40 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'signup',
-        element: <SignUp />,
+     
+        element:<ProtectAuth>
+                  <SignUp />
+                </ProtectAuth> ,
       },
       {
         path: 'signin',
-        element: <SignIn />,
+        element: <ProtectAuth>
+                  <SignIn />
+                </ProtectAuth> ,
       },
       {
         path: 'complete-registration',
-        element: <CompleteRegistre />,
+        element: <ProtectAuth>
+                  <CompleteRegistre />
+                </ProtectAuth>
       },
       {
         path: 'activation',
-        element: <Activation />,
+        element:  <ProtectAuth>
+                   <Activation />
+                  </ProtectAuth>,
       },
       {
         path: 'verify-2fa',
-        element: <TwoFactorActivation />,
+        element: <ProtectAuth>
+                   <TwoFactorActivation />
+                  </ProtectAuth>,
       },
       {
         path: 'reset-password',
-        element: <ResetPassword />,
+        element: <ProtectAuth>
+                   <ResetPassword />
+                  </ProtectAuth>,
       },
       {
         index: true,

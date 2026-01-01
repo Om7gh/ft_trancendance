@@ -4,7 +4,7 @@ import api from "../clientHttpService";
 async function getPongState() {
     try {
         const response = await api.get(`/pongGame/statistics`)
-        console.log(response.data)
+        console.log("data here ...",response.data)
         return response.data;
     } catch (e) {
         throw e;

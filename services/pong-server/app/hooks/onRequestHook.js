@@ -1,11 +1,10 @@
 import fp from 'fastify-plugin';
 
 export default fp(async function onRequestHook(fastify, options) {
-
     fastify.addHook('onRequest', async function(request, reply) {
         try {
             const cookie = request.headers.cookie;
-            
+
             if (!cookie) 
                 throw new Error("No cookie");
             const response = await this.axios.get("http://identity:4000/auth/userinfo", {
@@ -23,5 +22,4 @@ export default fp(async function onRequestHook(fastify, options) {
             return reply;
         }
     });
-    
 });

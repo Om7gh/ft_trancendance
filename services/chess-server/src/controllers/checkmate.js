@@ -1,7 +1,7 @@
 const send = require('../utils/send');
 const { rooms, players, lastOpponents } = require('../utils/state');
 
-function handleCheckmate(app, playerId, winnerTeam) {
+catchAsyncError(async function handleCheckmate(app, playerId, winnerTeam) {
   const player = players.get(playerId);
   if (!player || !player.roomId) return;
 
@@ -19,7 +19,6 @@ function handleCheckmate(app, playerId, winnerTeam) {
     });
   }
 
-  try {
     const white = room.players.find((p) => p.team === 'WHITE');
     const black = room.players.find((p) => p.team === 'BLACK');
     if (white?.playerId && black?.playerId) {
@@ -48,10 +47,6 @@ function handleCheckmate(app, playerId, winnerTeam) {
         black: black?.playerId,
       });
     }
-  } catch (e) {
-    console.error('Failed to record game (checkmate):', e);
-  }
-
   if (room.players.length === 2) {
     const a = room.players[0].playerId;
     const b = room.players[1].playerId;
@@ -65,7 +60,6 @@ function handleCheckmate(app, playerId, winnerTeam) {
 
   const rid = player.roomId;
   delete rooms[rid];
-  console.log(`Room ${rid} ended cause checkmate (${winner}). Cleaned up.`);
-}
+})
 
 module.exports = { handleCheckmate };
