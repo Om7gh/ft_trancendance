@@ -1,12 +1,10 @@
 import axios from 'axios';
-import { SqliteError } from 'better-sqlite3';
 import {
     type FastifyReply,
     type FastifyRequest,
     FastifyInstance,
 } from 'fastify';
 import { asUserInfo } from '../dto/user-dto.js';
-import { User } from '../models/user.js';
 import { UsernameBody } from '../schemas/auth.js';
 import { saveUploadedAvatar } from '../utils/avatar-utils.js';
 
@@ -23,37 +21,29 @@ export class UserController {
         const user = request.user;
         
         try {
-            let bio: string | undefined;
-            let avatar: string | undefined;
+            const payload: Record<string, string> = {};
 
             for await (const part of request.parts()) {
                 if (part.type === 'file' && part.fieldname === 'avatar') {
-                    avatar = await saveUploadedAvatar(
+                    payload.avatar = await saveUploadedAvatar(
                         user.uid,
                         user.username,
                         part
                     );
-                } else if (part.type === 'field' && part.fieldname === 'bio') {
-                    bio = String(part.value);
+                } else if (part.type === 'field') {
+                    payload[part.fieldname] = String(part.value);
                 }
             }
 
-            const updateData: Partial<User> = {};
-            if (avatar !== undefined) updateData.avatar = avatar;
-            if (bio !== undefined) updateData.bio = bio;
-
-            fastify.usersRepository.update(user.id, updateData);
-            // const response = {
-            //     success: true,
-            //     message: 'Updated',
-            //     next: null,
-            // };
-            return reply.send(request.user);
-        } catch (err) {
-            if (err instanceof SqliteError || err instanceof Error) {
-                return reply.badRequest(err.message);
+            if (Object.keys(payload).length === 0) {
+                return reply.badRequest('No fields to update');
             }
-            return reply.badRequest('An unknown error occurred');
+
+            const updatedUser = fastify.usersRepository.update(user.id, payload);
+            request.user = updatedUser;
+            return reply.send(asUserInfo(request.user));
+        } catch (err: any) {
+            return reply.badRequest(err.message);
         }
     }
 
@@ -77,7 +67,7 @@ export class UserController {
             return reply.send(users);
         } catch (err: any) {
             console.error(err);
-            return reply.notFound('no user found');
+            return reply.notFound(UserController.ERR_USER_NOT_FOUND);
         }
     }
 
@@ -95,7 +85,7 @@ export class UserController {
             const { username } = request.params as UsernameBody;
             const user = this.usersRepository.findByUsername(username);
             if (!user) {
-                return reply.notFound('--- user not found ---');
+                return reply.notFound(UserController.ERR_USER_NOT_FOUND);
             }
             const fullUser = {
                 user: asUserInfo(user),

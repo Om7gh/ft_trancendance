@@ -6,6 +6,8 @@ import ConversationManager from '../classes/ConversationsManager.js';
 import UsersBlocksManager from '../classes/UsersBlockManager.js';
 import MessageManager from "../classes/MessageManager.js"
 import messageSchema from '../schemas/messages.js';
+import axios from "axios"
+import crypto from 'node:crypto';
 import RequestValidator from '../classes/RequestValidator.js';
 
 function messagesPlugin(instance) {
@@ -45,7 +47,7 @@ function messagesPlugin(instance) {
 					};
 					await axios.post('http://notification:9005/send', {
 						data: [{
-							id: randomUUID(),
+							id: crypto.randomUUID(),
 							type: 'new-message',
 							expireTime: 0,
 							sender,

@@ -2,11 +2,19 @@ services:
   nginx:
     container_name: nginx
     build: ./nginx/
-    image: nginx:pingpong
+    image: nginx:agents-923
+    configs:
+      - source: nginx-conf
+        target: /etc/nginx/nginx.conf
+    secrets:
+      - ssl-cert
+      - ssl-key
     ports:
-      - '8080:80'
+      - "8080:443"
+    environment:
+      - ./nginx/.env
     networks:
-      - pingpong
+      - agents-923
     depends_on:
       - chess
       - identity
@@ -15,72 +23,38 @@ services:
     volumes:
       - $HOME/data/avatars:/usr/share/nginx/html/avatars:ro
 
-  # rabbitmq:
-  #   container_name: rabbitmq
-  #   image: rabbitmq:3-management
-  #   ports:
-  #     - '15672:15672'
-  #     - '5672:5672'
-  #   networks:
-  #     - pingpong
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping && rabbitmq-diagnostics -q check_port_connectivity"]
-  #     interval: 5s
-  #     timeout: 5s
-  #     retries: 10
-
-      # test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
-      # interval: 10s
-      # timeout: 5s
-      # retries: 5
-      # start_period: 30s
-
   chess:
     container_name: chess
     build: ./services/chess-server/
-    image: chess:pingpong
-    ports:
-      - '9000:9000'
-    env_file:
-      - ./services/chess-server/.env
+    image: chess:pingpon
     volumes:
       - $HOME/data:/usr/src/app/data
     networks:
-      - pingpong
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
+      - agents-923
 
   identity:
     container_name: identity
     build: ./services/identity-server/
-    image: identity:pingpong
-    ports:
-      - '4000:4000'
+    image: identity:agents-923
     env_file:
       - ./services/identity-server/.env
     volumes:
       - $HOME/data:/var/lib/um
       - $HOME/data/avatars:/var/avatars
     networks:
-      - pingpong
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
+      - agents-923
 
   client:
     container_name: client
     build: ./client/
-    image: client:pingpong
-    ports:
-      - '3000:3000'
+    image: client:agents-923
     volumes:
       - ./client:/app
       - /app/node_modules
     environment:
       - DANGEROUSLY_DISABLE_HOST_CHECK=true
     networks:
-      - pingpong
+      - agents-923
     depends_on:
       - identity
       - chess
@@ -89,49 +63,43 @@ services:
   pong:
     container_name: pong
     build: ./services/pong-server/
-    image: pong:pingpong
-    ports:
-      - '9001:9001'
+    image: pong:agents-923
     networks:
-      - pingpong
+      - agents-923
     volumes:
       - $HOME/data/pong:/var/local
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
 
   notification:
     container_name: notification
     build: ./services/notification-server/
-    image: notification:pingpong
-    ports:
-      - '9005:9005'
+    image: notification:agents-923
     networks:
-      - pingpong
+      - agents-923
     volumes:
       - $HOME/data/notification:/var/local
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
+
   chat:
     container_name: chat
     build: ./services/chat-server/
-    image: chat:pingpong
-    ports:
-      - "9004:9004"
-    # env_file:
-    #   - ./server/chat-server/.env
+    image: chat:agents-923
     networks:
-      - pingpong
+      - agents-923
     volumes:
       - $HOME/data/chat:/var/lib/sqlite/
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
 
 networks:
-  pingpong:
+  agents-923:
     driver: bridge
 
 volumes:
   chess-data:
+
+configs:
+  nginx-conf:
+    file: ./nginx/conf/nginx.conf
+
+secrets:
+  ssl-cert:
+    file: $HOME/data/ssl-cert.pem
+  ssl-key:
+    file: $HOME/data/ssl-key.pem

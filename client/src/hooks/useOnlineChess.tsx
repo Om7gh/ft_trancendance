@@ -5,19 +5,7 @@ import { toast } from 'react-toastify';
 import type { ChatMessageData, Pieces, Position } from '../types';
 import type { BoardUpdateData } from '../types';
 import { GlobalContext } from '@/App';
-
-interface OnlineState {
-  roomId: string | null;
-  myTeam: 'WHITE' | 'BLACK' | null;
-  opponentConnected: boolean;
-  opponentName: string | null;
-  gameOver: { winner: string; message: string } | null;
-  rematch: {
-    incomingOffer: boolean;
-    requested: boolean;
-    declined: boolean;
-  };
-}
+import type { OnlineState } from '@/types/gameTypes';
 
 export function useOnlineChess() {
   const gameOverRef = { current: false } as { current: boolean };
@@ -32,11 +20,9 @@ export function useOnlineChess() {
   });
   useEffect(() => {
     if (!user?.username) return;
-
     const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const wsUrl = `${wsProto}://${window.location.host}/game/chess?playerId=${encodeURIComponent(user.username)}`;
     chessSocket.connect(wsUrl);
-
     chessSocket.on('connected', () => {
       setState((prev) => ({ ...prev }));
     });
@@ -112,8 +98,7 @@ export function useOnlineChess() {
     chessSocket.on('opponentDisconnected', () => {
       setState((prev) => ({ ...prev, opponentConnected: false }));
       toast.error('Opponent disconnected', {
-        position: 'top-center',
-        autoClose: 5000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -124,8 +109,7 @@ export function useOnlineChess() {
 
     chessSocket.on('disconnected', () => {
       toast.warn('You have been disconnected. Attempting to reconnect...', {
-        position: 'top-center',
-        autoClose: 5000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -144,7 +128,7 @@ export function useOnlineChess() {
     });
 
     chessSocket.on('error', (msg: string) => {
-      console.error('Server error:', msg);
+      toast.error(msg)
     });
 
     chessSocket.on(
@@ -188,13 +172,6 @@ export function useOnlineChess() {
         opponentConnected: boolean;
         opponentName?: string | null;
       }) => {
-        console.log('🔄 Resuming game:', {
-          roomId,
-          myTeam,
-          currentTurn,
-          turns,
-        });
-
         setState((prev) => ({
           ...prev,
           roomId,
@@ -208,9 +185,7 @@ export function useOnlineChess() {
             declined: false,
           },
         }));
-
         useChessStore.setState({ currentTurn, turns });
-
         if (board) {
           window.dispatchEvent(
             new CustomEvent('syncBoard', {
@@ -224,13 +199,11 @@ export function useOnlineChess() {
             })
           );
         }
-
         gameOverRef.current = false;
       }
     );
 
     chessSocket.on('enterMatchmaking', () => {
-      console.log('enterMatchmaking event received');
       setState((prev) => {
         const newState = {
           ...prev,

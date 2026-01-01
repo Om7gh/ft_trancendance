@@ -110,7 +110,7 @@ export class UserRepository {
         return this.db.prepare('SELECT * FROM users').all() as User[];
     }
 
-    update(id: number, data: Partial<Omit<User, 'id' | 'created_at'>>): void {
+    update(id: number, data: Partial<Omit<User, 'id' | 'created_at'>>): User {
         const updates: string[] = [];
         const values: any[] = [];
 
@@ -134,6 +134,7 @@ export class UserRepository {
         if (result.changes === 0) {
             throw new Error('User not found');
         }
+        return this.findById(id) as User;
     }
 
     searchUsers(query: string, limit = 50): User[] {

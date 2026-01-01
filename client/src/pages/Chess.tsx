@@ -36,7 +36,7 @@ function Chess() {
         )}
 
         {!roomId && isConnected && (
-          <div className="flex items-center gap-6 h-[40vmax] flex-col-reverse md:flex-row lg:flex-row">
+          <div className="flex items-center gap-6 h-[45vmax] flex-col-reverse md:flex-row lg:flex-row">
             <img src="/chessbg.png" />
             <div className="flex justify-center items-center text-center">
               {!findingMatch && (
@@ -45,14 +45,14 @@ function Chess() {
                     enterMatchmaking();
                     setFindingMatch(true);
                   }}
-                  className="px-6 py-3  text-lg font-semibold bg-neon/60 text-violet-200 hover:border-4 hover:border-neon duration-200 cursor-pointer"
+                  className="md:px-6 md:py-3 px-4 py-2 rounded-lg shadow-xl  text-sm md:text-lg font-semibold bg-neon/60 text-violet-200 hover:border-4 hover:border-neon duration-200 cursor-pointer"
                 >
                   Find Opponent
                 </button>
               )}
               <div>
                 {findingMatch && (
-                  <p className="text-yellow-400 text-lg">Finding a match...</p>
+                  <p className="text-yellow-400 text-md md:text-lg">Finding a match...</p>
                 )}
                 {findingMatch && (
                   <button
@@ -60,7 +60,7 @@ function Chess() {
                       leaveMatchmaking();
                       setFindingMatch(false);
                     }}
-                    className="px-6 py-3  text-lg font-semibold bg-violet-500 text-violet-200 hover:bg-violet-600 transition"
+                    className="md:px-6 md:py-3 px-4 py-2 rounded-lg shadow-xl  text-sm md:text-lg font-semibold bg-neon/60 text-violet-200 hover:border-4 hover:border-neon duration-200 cursor-pointer"
                   >
                     Cancel Matchmaking
                   </button>

@@ -14,7 +14,7 @@ function ChessCustomization() {
         </Modal>
       )}
       <div
-        className="group relative px-8 py-6 overflow-hidden bg-slate-950    backdrop-blur-sm w-80 sm:w-96 md:w-[28rem] cursor-pointer shadow-lg shadow-slate-900"
+        className="group relative px-8 py-6 bg-slate-950    backdrop-blur-sm w-80 sm:w-96 md:w-md cursor-pointer shadow-lg shadow-slate-900"
         onClick={() => setOpenModal(true)}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-neon opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>

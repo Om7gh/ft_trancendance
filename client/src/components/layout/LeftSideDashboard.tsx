@@ -41,7 +41,15 @@ export default function LeftSideDashboard({
     { name: 'Chat', path: 'chat', icon: <HiMiniChatBubbleLeft /> },
     { name: 'Friends', path: 'friends', icon: <FaUserFriends /> },
     { name: 'Stats', path: 'home', icon: <FaRegChartBar /> },
-    { name: 'Settings', path: 'settings', icon: <HiOutlineCog /> },
+    {
+      name: 'Settings',
+      path: 'settings',
+      icon: <HiOutlineCog />,
+      children: [
+        { name: 'Account', path: 'settings/account', icon: <HiOutlineCog /> },
+        { name: 'Game', path: 'settings/game', icon: <HiOutlineCog /> },
+      ],
+    },
   ];
 
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
@@ -77,7 +85,7 @@ export default function LeftSideDashboard({
                   <NavLink
                     to={item.path}
                     onClick={() => isMobile && onNavigate?.()}
-                    className={({ isActive }) =>
+                    className={({ isActive } : {isActive: boolean}) =>
                       `px-4 py-3 transition-all duration-200 flex items-center gap-4 justify-between
                       ${
                         isActive
@@ -86,7 +94,7 @@ export default function LeftSideDashboard({
                       }`
                     }
                   >
-                    {({ isActive }) => (
+                    {({ isActive } : {isActive: boolean}) => (
                       <>
                         <div className="flex items-center gap-4">
                           <span

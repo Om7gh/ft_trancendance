@@ -23,7 +23,11 @@ function FinishRegister() {
             toast.success('Registration completed successfully');
             navigate('/dashboard');
         } catch (e: any) {
-            toast.error('Registration not completed successfully ' + e.message);
+            console.log(e)
+            if (e.status === 413)
+                toast.error("Avatar size is too large")
+            else
+                toast.error(e.message);
         }
     }
 
