@@ -17,7 +17,7 @@ interface context{
 	viewportWidth: number;
 }
 
-import type {Card} from "../types/UserCard.ts";
+import type {Card} from "@/types/UserCard.ts";
 
 export const ViewportContext = createContext<context | null>(null);
 
@@ -28,13 +28,13 @@ function Chat(){
 	const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 	const [serachQuery, setSearchQuery] = useState("");
 	const [mobileView, setMobileView] = useState("contacts");
-	
+
 	const [chatCards, setChatCards, conversationStatus] = useAxios(`/conversations`);
 	const [contactCards, setContactCards, contactStatus] = useAxios(`/contacts`);
 	const socket = useWebsocket(`/messages`);
 	const setRequest = useWsRequest(socket.current);
 
-	const selectedCardRef = useRef<Card>(selectedCard);
+	const selectedCardRef = useRef<Card | null>(selectedCard);
 	const isMobile = screenWidth <= 930;
 	const showContact = (!isMobile || mobileView ===  "contacts"); 
 	const showConversation = (!isMobile || mobileView === "conversation");
@@ -43,13 +43,14 @@ function Chat(){
 	useEventListener(window, "resize", () => setScreenWidth(window.innerWidth));
 	useWsResponse(socket, incomingMsgResolver);
 
+	
 	const visibleCards = visibleCardsResolver(
 		chatCards,
 		contactCards,
 		selectedTab,
 		serachQuery
 	);
-
+	
 	function getFetchStatusByTab(tabName: string){
 		if (tabName === "Chats" || tabName === "Unread")
 			return (conversationStatus);
@@ -78,7 +79,7 @@ function Chat(){
 		if (view === "Chats"){
 			setSelectedTab(view);
 			setContactCards(contactCards.filter((card: Card) => {
-				return (card.friend.id !== selectedCard?.friend.id);
+				return (card.friend.id !== selectedCard?.friend?.id);
 			}));
 			return;
 		}
@@ -88,7 +89,7 @@ function Chat(){
 		if (selectedCard && selectedCard.id > 0){
 			setRequest({
 				action: "leave-conversation",
-				conversationId: selectedCard!.id
+				conversationId: selectedCard.id
 			});
 		}
 	}
@@ -140,15 +141,16 @@ function Chat(){
 				break ;
 			}
 			case "user-presence": {
-				setChatCards((prev: Card[]) => prev.map((card: Card) => {
+				setChatCards((prev: Card[]) => (prev.map((card: Card) => {
 					if (card.friend.id === msg.userId)
 						return ({...card, presence: msg.presence});
 					return (card);
-				}));
+				})));
 
 				setContactCards((prev: Card[]) => prev.map((card: Card) => {
 					if (card.friend.id === msg.userId)
 						return ({...card, presence: msg.presence});
+					return (card);
 				}));
 				if (msg.userId === selectedCardRef.current?.friend?.id){
 					const selectedCardUpdate = {

@@ -113,7 +113,6 @@ function ConversationPanel({
 				break ;
 			}
 			case "invite": {
-				console.log("user is invited ...");
 				inviteRedirection(targetUserCard?.friend?.id as string);
 			}
 		}
@@ -131,9 +130,9 @@ function ConversationPanel({
 			</div>
 		)
 	return (
-		<div key={targetUserCard.friend.id} id="ConversationPanel" className="h-full flex-2 p-2 ml-4 flex flex-col">
+		<div key={targetUserCard?.friend?.id} id="ConversationPanel" className="h-full flex-2 p-2 ml-4 flex flex-col">
 			<ChatHeader
-				contact={targetUserCard.friend}
+				contact={targetUserCard?.friend}
 				UsersTab={UsersTab}
 				showActions={showActions}
 				presence={targetUserCard.presence}
