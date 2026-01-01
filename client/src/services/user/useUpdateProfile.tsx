@@ -4,19 +4,23 @@ import { toast } from "react-toastify";
 import { useContext } from "react";
 import { GlobalContext } from "@/App";
 
-export function useUpdateBioAndAvatar() {
+export function useUpdateProfile() {
     const {setUser}= useContext(GlobalContext)
     return useMutation({
         mutationKey: ["update-avatar-bio"],
         mutationFn: AuthService.updateProfile,
-        onSuccess: (payload) => {
-            console.log("avatar here ...", payload)
-        // @ts-expect-error
-        setUser(prev => ({...prev, avatar: payload.avatar,
-            bio: payload.bio, }));
-        toast.success("Avatar or bio updated successfully")
+        onSuccess: (response: any) => {
+            // @ts-expect-error
+            setUser(prev => ({
+                ...prev,
+                avatar: response.avatar,
+                bio: response.bio,
+                first_name: response.first_name,
+                last_name: response.last_name
+            }));
+            toast.success("Profile updated successfully")
         },
-        onError: (err) => {
+        onError: (err: any) => {
             toast.error(err.message || "error")
         }
     })

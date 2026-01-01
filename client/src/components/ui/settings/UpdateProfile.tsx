@@ -1,30 +1,84 @@
 import { GlobalContext } from '@/App';
-import { useUpdateBioAndAvatar } from '@/services/user/useUpdateAvatarAndBio';
+import { useUpdateProfile } from '@/services/user/useUpdateProfile';
+import { toast } from "react-toastify";
 import type { ProfileData } from '@/types/auth.types';
 import React, { useContext, useState } from 'react';
 
-function UpdateAvatarBio() {
+function UpdateProfile() {
     const [file, setFile] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const { user } = useContext(GlobalContext);
     const [bio, setBio] = useState(() => user?.bio || '');
-    const mutateUpdate = useUpdateBioAndAvatar()
+    const [firstName, setFirstName] = useState(() => user?.first_name || '');
+    const [lastName, setLastName] = useState(() => user?.last_name || '');
+    const [error, setError] = useState<string>('');
+    const mutateUpdate = useUpdateProfile()
 
     function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
         const selected = e.target.files?.[0];
         if (selected) {
+
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(selected.type)) {
+                setError('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+                e.target.value = '';
+                return;
+            }
+
+            const maxSize = 1 * 1024 * 1024;
+            if (selected.size > maxSize) {
+                setError('File size must be less than 1 MB');
+                e.target.value = '';
+                return;
+            }
+
+            setError('');
             setFile(selected);
             setPreview(URL.createObjectURL(selected));
         }
     }
 
+    function validateName(name: string, fieldName: string): boolean {
+        if (name.trim().length === 0) {
+            setError(`${fieldName} is required`);
+            return false;
+        }
+
+        return true;
+    }
+
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        const updatedData = {
-            avatar: file,
-            bio
-        } as ProfileData
-        mutateUpdate.mutate(updatedData)
+        setError('');
+
+        if (!validateName(firstName, 'First name')
+            || !validateName(lastName, 'Last name')) {
+            return;
+        }
+
+        const updatedData: Partial<ProfileData> = {};
+
+        if (file !== null) {
+            updatedData.avatar = file;
+        }
+        if (bio !== (user?.bio || '')) {
+            updatedData.bio = bio;
+        }
+        if (firstName !== (user?.first_name || '')) {
+            updatedData.first_name = firstName;
+        }
+        if (lastName !== (user?.last_name || '')) {
+            updatedData.last_name = lastName;
+        }
+
+        if (Object.keys(updatedData).length === 0) {
+            toast.info("No changes to make");
+            return;
+        }
+
+        mutateUpdate.mutate(updatedData as ProfileData)
+
+
     }
 
     return (
@@ -73,14 +127,37 @@ function UpdateAvatarBio() {
                     </label>
                 </div>
 
+                <div className="flex flex-col md:flex-row gap-4">
+                    <input
+                        type="text"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        placeholder="First Name"
+                        className="w-full p-3 rounded-lg bg-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    />
+
+                    <input
+                        type="text"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        placeholder="Last Name"
+                        className="w-full p-3 rounded-lg bg-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                    />
+                </div>
+
                 <textarea
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Write a short bio…"
                     className="w-full h-32 p-3 rounded-lg bg-slate-700 text-slate-100 focus:outline-none"
-                    minLength={10}
                     maxLength={50}
                 />
+
+                {error && (
+                    <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/50 text-red-400 text-sm">
+                        {error}
+                    </div>
+                )}
 
                 <button
                     type="submit"
@@ -93,4 +170,4 @@ function UpdateAvatarBio() {
     );
 }
 
-export default UpdateAvatarBio;
+export default UpdateProfile;

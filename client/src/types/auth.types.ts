@@ -26,6 +26,8 @@ export type Username = {
 export type ProfileData = {
     avatar: File;
     bio: string;
+    first_name: string;
+    last_name: string;
 };
 
 export type Email = {

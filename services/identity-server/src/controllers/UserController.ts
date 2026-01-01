@@ -10,6 +10,7 @@ import { saveUploadedAvatar } from '../utils/avatar-utils.js';
 
 export class UserController {
     static readonly ERR_USER_NOT_FOUND: string = 'User not found';
+    static readonly ERR_EMPTY_FIELD: string = ' must not be empty';
 
     static async get(request: FastifyRequest, reply: FastifyReply) {
         const user = request.user;
@@ -31,6 +32,12 @@ export class UserController {
                         part
                     );
                 } else if (part.type === 'field') {
+                    if (part.fieldname == "first_name" || part.fieldname == "last_name") {
+                        if (payload[part.fieldname].length == 0) {
+                            return reply.badRequest(payload[part.fieldname] + UserController.ERR_EMPTY_FIELD);
+                        }
+
+                    }
                     payload[part.fieldname] = String(part.value);
                 }
             }
