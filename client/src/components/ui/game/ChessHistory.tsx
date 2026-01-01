@@ -49,7 +49,7 @@ function ChessHistory({userData, matchData}: ChessHistoryProps) {
           </div>
         ) : (
         <div className="space-y-3">
-          {matchData?.history.map((game : ChessMatch) => {
+          {matchData?.history?.map((game : ChessMatch) => {
             const isWinning = game?.result === 'WIN';
             const playerName = userData?.username || '';
             

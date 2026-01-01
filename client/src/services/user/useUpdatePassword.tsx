@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 
 async function updatePassword() {
     try {
-        await api.patch("/profile/password")
+        await api.patch("/api/profile/password")
     } catch(e) {
         throw e
     }
