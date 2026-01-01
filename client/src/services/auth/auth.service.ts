@@ -81,9 +81,7 @@ export default abstract class AuthService {
         if ('last_name' in profileData) {
             formData.append('last_name', profileData.last_name);
         }
-        const { data } = await api.patch('/api/profile/', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const { data } = await api.patch('/api/profile/', formData);
         return data;
     }
 
