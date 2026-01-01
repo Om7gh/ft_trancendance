@@ -1,7 +1,7 @@
 import { useMobile } from "@/hooks/useMobile";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
 
-function PongChart({gameState}) {
+function PongChart({gameState}: {gameState: any}) {
     const data = [
       { name: 'Wins', value: gameState?.wins, color: '#00E5FF' },
       { name: 'Losses', value: gameState?.loses, color: '#8A2BE2' },

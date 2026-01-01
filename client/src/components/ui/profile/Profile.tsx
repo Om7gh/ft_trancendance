@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState, type JSX } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { useLogout } from '@/services/auth/useLogout';
 import { GlobalContext } from '@/App';
 
