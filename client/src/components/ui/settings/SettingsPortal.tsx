@@ -1,18 +1,19 @@
 import { Link } from 'react-router-dom';
 
-function GamePortal() {
+function SettingsPortal() {
   return (
     <div className='w-full h-full'>
       <div className=" grid grid-cols-1 md:grid-cols-2 h-full text-center gap-5 place-items-center p-2">
-        <Link to={'/dashboard/games/pingpong'}
+        <Link
+          to={'../account'}
           className="group flex-1 w-full lg:h-full 
         bg-slate-950/30 relative rounded-lg overflow-hidden 
         hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] 
         duration-300 cursor-pointer h-96"
         >
-          <img
-            src="/pingpong_portal.jpeg"
-            alt="Pingpong"
+           <img
+            src="/assets/settings/account.svg"
+            alt="Account settings"
             className="absolute inset-0 w-full h-full object-cover 
           opacity-40 group-hover:opacity-60 group-hover:scale-110 
           grayscale group-hover:grayscale-0
@@ -30,20 +31,21 @@ function GamePortal() {
             <p
               className='text-xl md:text-4xl text-neon'
             >
-              Play Pong
+              Account
             </p>
           </div>
         </Link>
 
-        <Link to={'/dashboard/games/chess'}
+        <Link
+          to={'../game'}
           className="group flex-1 w-full h-96 lg:h-full 
         bg-slate-950/30 relative rounded-lg overflow-hidden 
         hover:scale-[1.02] hover:shadow-[0_0_25px_rgba(139,92,246,0.5)] 
         duration-300 cursor-pointer"
         >
           <img
-            src="/chess_portal.jpeg"
-            alt="Chess"
+            src="/costumization.png"
+            alt="Game settings"
             className="absolute inset-0 w-full h-full object-cover 
           opacity-40 group-hover:opacity-60 group-hover:scale-110 
                      grayscale group-hover:grayscale-0
@@ -61,7 +63,7 @@ function GamePortal() {
           <p
               className='text-xl md:text-4xl text-neon'
             >
-              Play Chess
+              Game
             </p>
           </div>
         </Link>
@@ -70,4 +72,4 @@ function GamePortal() {
   );
 }
 
-export default GamePortal;
+export default SettingsPortal;

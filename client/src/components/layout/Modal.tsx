@@ -39,7 +39,7 @@ function Modal({
       <div
         role="dialog"
         aria-modal="true"
-        className={`absolute lg:mx-auto md:mx-auto w-full max-w-2xl max-h-[80vh] min-h-[10vh] overflow-auto  bg-slate-900 shadow-md shadow-slate-950 transition-all sm:mx-16
+        className={`absolute lg:mx-auto md:mx-auto w-full max-w-2xl max-h-[80vh] min-h-[10vh] overflow-auto  bg-slate-900 shadow-md shadow-slate-950 p-5 md:p-10 transition-all sm:mx-16
           ${type === 'notification' ? 'top-1/5' : null}`}
       >
         <button
@@ -50,7 +50,6 @@ function Modal({
         >
           <MdClose />
         </button>
-
         <div className=''>{children}</div>
       </div>
     </div>,

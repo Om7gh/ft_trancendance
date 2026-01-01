@@ -14,7 +14,7 @@ function CompleteRegistre() {
       <h2 className="bg-linear-45 from-violet-500 to-neon w-fit bg-clip-text  text-transparent text-4xl text-center">
         Complete Registration
       </h2>
-      <div className="w-[600px] bg-gradient-to-b from-slate-800/20 to-violet-800/30 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center rounded-3xl">
+      <div className="w-[600px] bg-linear-to-b from-slate-800/20 to-violet-800/30 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center rounded-3xl">
         <div className="absolute -left-6 top-1/2 transform -translate-y-1/2 w-4 h-24 bg-violet-400 rounded-r-lg" />
         <div className="absolute -right-6 top-1/2 transform -translate-y-1/2 w-4 h-24 bg-neon rounded-l-lg" />
         <div className="bg-slate-950/30 p-4 w-full text-violet-200 flex flex-col gap-5 rounded-3xl">

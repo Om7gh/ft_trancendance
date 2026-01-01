@@ -14,7 +14,7 @@ export default function RemoteWinner({ score, match }: WinnerPropsType) {
     if (score && match) {
         if (score.leftPlayer < score.rightPlayer)
             winner = match.rightPlayer;
-        else (score.leftPlayer > score.rightPlayer)
+        else if (score.leftPlayer > score.rightPlayer)
             winner = match.leftPlayer
     }
 

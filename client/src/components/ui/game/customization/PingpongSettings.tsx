@@ -1,9 +1,15 @@
+import { type FormEvent, useState } from "react";
 import { usePutPong } from "@/services/user/usePutPong";
-import { type FormEvent } from "react";
+import { type CustomizationType } from "@/pong/types/playMatch";
+import { useFetchCustomization } from "@/pong/hooks/useFetchCustomization";
 
 function PingpongSettings({close} : {close: () => void}) {
+  
+  const mutatePong = usePutPong();
 
-  const mutatePong = usePutPong()
+  const [prevCustomizations, setPrevCustomizations] = useState<CustomizationType | null>(null);
+
+  useFetchCustomization(setPrevCustomizations);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -15,6 +21,7 @@ function PingpongSettings({close} : {close: () => void}) {
       table_edges_color   : formdData.get("table") as string
     }
     mutatePong.mutate(data)
+    close()
   }
 
   return <div className="container mx-auto max-w-4xl px-4 py-8">
@@ -27,11 +34,11 @@ function PingpongSettings({close} : {close: () => void}) {
         <h2 className="text-center text-xl font-semibold text-violet-200 mb-2">Style Paddles</h2>
         <div className="grid grid-cols-2 gap-4 items-center">
           <label className="text-violet-200 text-lg">Left Paddle</label>
-          <input type="color" id="leftPaddle" name="leftPaddle" defaultValue="#ff0ff0" className="w-full h-12 cursor-pointer rounded" />
+          <input type="color" id="leftPaddle" name="leftPaddle" defaultValue={prevCustomizations?.left_paddle_color} className="w-full h-12 cursor-pointer rounded" />
         </div>
         <div className="grid grid-cols-2 gap-4 items-center">
           <label className="text-violet-200 text-lg">Right Paddle</label>
-          <input type="color" id="rightPaddle" name="rightPaddle" defaultValue="#0f550f" className="w-full h-12 cursor-pointer rounded" />
+          <input type="color" id="rightPaddle" name="rightPaddle" defaultValue={prevCustomizations?.right_paddle_color} className="w-full h-12 cursor-pointer rounded" />
         </div>
       </div>
 
@@ -39,15 +46,14 @@ function PingpongSettings({close} : {close: () => void}) {
         <h2 className="text-center text-xl font-semibold text-violet-200 mb-2">Style Ball and Table</h2>
         <div className="grid grid-cols-2 gap-4 items-center">
           <label className="text-violet-200 text-lg">Ball</label>
-          <input type="color" id="ball" name="ball" defaultValue="#ffffff" className="w-full h-12 cursor-pointer rounded" />
+          <input type="color" id="ball" name="ball" defaultValue={prevCustomizations?.ball_color} className="w-full h-12 cursor-pointer rounded" />
         </div>
         <div className="grid grid-cols-2 gap-4 items-center">
           <label className="text-violet-200 text-lg">Table</label>
-          <input type="color" id="table" name="table" defaultValue="#ff00ff" className="w-full h-12 cursor-pointer rounded" />
+          <input type="color" id="table" name="table" defaultValue={prevCustomizations?.table_edges_color} className="w-full h-12 cursor-pointer rounded" />
         </div>
       </div>
       <button
-      onClick={close}
           type="submit"
           className="w-52 mx-auto bg-linear-to-r from-violet-600 to-violet-800 hover:from-violet-700 hover:to-violet-950 text-white font-semibold text-xl px-6 py-3  shadow-xl transition-all duration-300 hover:scale-105"
       >

@@ -1,16 +1,5 @@
-FROM debian:12
+FROM alpine:3.21
 
-RUN apt-get update && apt-get install -y nginx openssl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache nginx
 
-# RUN mkdir -p /etc/ssl/certificate/ /etc/ssl/key/ /etc/nginx/
-
-# RUN openssl req -x509 -days 365 -nodes -newkey rsa:4096 \
-#     -out /etc/ssl/certificate/certificate.pem \
-#     -keyout /etc/ssl/key/certificate.key \
-#     -subj "/C=MO/ST=SALE/L=SALE/O=1337/OU=1337KH/CN=localhost"
-
-COPY ./nginx.conf /etc/nginx/nginx.conf
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx"]

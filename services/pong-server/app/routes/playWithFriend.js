@@ -54,7 +54,7 @@ async function acceptHandler(request, reply) {
 
     if (!invitation) {
         const error = new Error("Either you are not invited, or invitation is gone!!");
-        error.statusCode = 400;
+        error.statusCode = 404;
         throw error
     } else {
         invitation.accepted();
@@ -84,13 +84,13 @@ async function inviteHandler(request, reply) {
   
     if (user.id === fid) {
         const error = new Error("You try to invite your self!!");
-        error.statusCode = 400;
+        error.statusCode = 422;
         throw error;
     }
     
     if (this.checkIsInvited(user.id, fid)) {
         const error = new Error("You already invite him!!");
-        error.statusCode = 400;
+        error.statusCode = 404;
         throw error;
     }
 

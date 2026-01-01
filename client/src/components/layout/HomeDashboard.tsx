@@ -5,7 +5,6 @@ import PlayerStatistics from '../ui/dashboard/PlayerStatictics';
 import DashboardWrapper from './DashboardWrapper';
 import { GiChessQueen } from 'react-icons/gi';
 import { FaTableTennisPaddleBall } from 'react-icons/fa6';
-import TodayGames from '../ui/dashboard/TodayGames';
 import useGetChessHistory from '@/services/chess/useChessHistory';
 import { GlobalContext } from '@/App';
 import useGetPongStat from '@/services/user/useGetPongStats';
@@ -16,7 +15,7 @@ export default function HomeDashboard() {
   const [activeGame, setActiveGame] = useState<GameType>('pingpong');
   const {user} = useContext(GlobalContext)
   const {data: chess, isPending, isError} = useGetChessHistory(user?.username!)
-  const {data: pong, isPending: pongPeding} = useGetPongStat()
+  const {data: pong} = useGetPongStat()
 
   return (
     <div className="h-full p-5 space-y-6 overflow-auto">

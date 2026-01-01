@@ -9,6 +9,7 @@ import DropDown from '../ui/utils/DropDown';
 import { useState, type MouseEvent, type ReactNode } from 'react';
 import { useLogout } from '@/services/auth/useLogout';
 import { FaRegChartBar } from "react-icons/fa";
+import { FaChessBoard } from "react-icons/fa6";
 
 
 export default function LeftSideDashboard({ 
@@ -25,23 +26,26 @@ export default function LeftSideDashboard({
     children?: any;
   }[] = [
     {
-      name: 'Games',
+      name: 'start',
       path: 'games',
       icon: <PiPingPongFill />,
       children: [
         { name: 'PingPong', path: 'games/pingpong', icon: <PiPingPongFill /> },
-        { name: 'Chess', path: 'games/chess', icon: <PiPingPongFill /> },
-        {
-          name: 'Customization',
-          path: 'games/customization',
-          icon: <PiPingPongFill />,
-        },
+        { name: 'Chess', path: 'games/chess', icon: <FaChessBoard /> },
       ],
     },
     { name: 'Chat', path: 'chat', icon: <HiMiniChatBubbleLeft /> },
     { name: 'Friends', path: 'friends', icon: <FaUserFriends /> },
     { name: 'Stats', path: 'home', icon: <FaRegChartBar /> },
-    { name: 'Settings', path: 'settings', icon: <HiOutlineCog /> },
+    {
+      name: 'Settings',
+      path: 'settings',
+      icon: <HiOutlineCog />,
+      children: [
+        { name: 'Account', path: 'settings/account', icon: <HiOutlineCog /> },
+        { name: 'Game', path: 'settings/game', icon: <HiOutlineCog /> },
+      ],
+    },
   ];
 
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
@@ -77,7 +81,7 @@ export default function LeftSideDashboard({
                   <NavLink
                     to={item.path}
                     onClick={() => isMobile && onNavigate?.()}
-                    className={({ isActive }) =>
+                    className={({ isActive } : {isActive: boolean}) =>
                       `px-4 py-3 transition-all duration-200 flex items-center gap-4 justify-between
                       ${
                         isActive
@@ -86,7 +90,7 @@ export default function LeftSideDashboard({
                       }`
                     }
                   >
-                    {({ isActive }) => (
+                    {({ isActive } : {isActive: boolean}) => (
                       <>
                         <div className="flex items-center gap-4">
                           <span

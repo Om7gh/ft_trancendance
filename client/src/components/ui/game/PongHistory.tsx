@@ -70,13 +70,13 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {matchData.matches?.map((game) => {
-              const isWinning = game.winner === userData?.username || game.winner === String(userData?.id);
-              const opponent = game.leftPlayer.id === userData?.id ? game.rightPlayer.username : game.leftPlayer.username;
+            {matchData?.matches?.map((game) => {
+              const isWinning = game?.winner === userData?.username || game?.winner === String(userData?.id);
+              const opponent = game.leftPlayer.id === userData?.id ? game?.rightPlayer.username : game?.leftPlayer.username;
 
               return (
                 <div
-                  key={game.id}
+                  key={game?.id}
                   className={`border p-4 transition-all hover:scale-[1.01] hover:shadow-xl ${
                     isWinning
                       ? 'border-violet-500/30 bg-violet-500/10'
@@ -100,13 +100,13 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
 
                     <div className="text-center">
                       <span className="text-lg font-bold text-slate-100">
-                        {game.score}
+                        {game?.score}
                       </span>
                       <p className="text-xs text-slate-400 mt-1">Final Score</p>
                     </div>
 
                     <div className="flex flex-col items-end gap-1">
-                      <span className="text-xs text-slate-400">{formatDate(game.createdAt)}</span>
+                      <span className="text-xs text-slate-400">{formatDate(game?.createdAt)}</span>
                       <ResultBadge win={isWinning} />
                     </div>
                   </div>

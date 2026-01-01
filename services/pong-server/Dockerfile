@@ -1,15 +1,9 @@
-FROM node:24
-
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
+FROM node:24-bullseye
 
 WORKDIR /usr/src/app
 
-COPY app ./
+COPY . ./
 
-RUN npm install
+RUN npm ci
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
