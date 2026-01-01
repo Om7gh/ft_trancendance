@@ -202,7 +202,6 @@ function Enable2fa() {
           </div>
         )}
 
-        {/* Disable Flow */}
         {showDisable && (
           <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50
                         animate-in fade-in slide-in-from-top-4 duration-300">

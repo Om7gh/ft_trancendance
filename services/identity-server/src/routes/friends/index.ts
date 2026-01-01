@@ -19,11 +19,10 @@ const plugin = async (fastify: FastifyInstance) => {
 
   // Approve routes
   fastify.put   ('/requests/:uid/approve', {...opts, schema: {...uidParamsSchema}}, FriendshipController.approve);
-  // fastify.patch ('/requests/approve', opts, FriendshipController.approveAll);
 
   // Reject routes
   fastify.delete('/requests/:uid/reject', {...opts, schema: {...uidParamsSchema}}, FriendshipController.reject);
-  // fastify.delete('/requests/reject', opts, FriendshipController.rejectAll);
+  fastify.delete('/requests/:uid/cancel', {...opts, schema: {...uidParamsSchema}}, FriendshipController.cancelRequest);
 
 }
 
