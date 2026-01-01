@@ -97,8 +97,8 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
         </button>
       </div>
     );
-  } if (data.type === "inviteToMatch"  && diff > 0) {
-    const {refetch} = useAcceptMatch(data.sender.id);
+  } if (data?.type === "inviteToMatch"  && diff > 0) {
+    const {refetch} = useAcceptMatch(data?.sender.id);
     const handleClick = () => {
       refetch()
     }
@@ -126,15 +126,15 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
         </div>
       </div>
     );
-  } if (data.type === "new-message") {
+  } if (data?.type === "new-message") {
     const url = `/dashboard/chat`
     const navigate = useNavigate()
     return (
       <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950/30 px-3 py-2 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all mx-8">
         <div className="flex items-center gap-3">
           <img 
-            src={data.sender.avatar} 
-            alt={data.sender.username}  
+            src={data?.sender.avatar} 
+            alt={data?.sender.username}  
             className="w-12 h-12 border-2 border-violet-500 rounded-full object-cover" 
           />
           <div className="flex flex-col">

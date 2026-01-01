@@ -100,7 +100,7 @@ function Chess() {
                 </h3>
               </div>
             </div>
-            <div className="flex flex-col gap-6 w-72 md:w-auto lg:w-auto justify-center">
+            <div className="flex flex-col gap-6 max-w-72 md:w-auto lg:w-auto justify-center overflow-auto">
               <MiniChat />
             </div>
           </div>
