@@ -1,3 +1,5 @@
+import type { User } from "./User";
+
 export interface TournamentPlayer {
   avatar: string;
   username: string;
@@ -69,5 +71,34 @@ export interface OnlineState {
     incomingOffer: boolean;
     requested: boolean;
     declined: boolean;
+  };
+}
+
+
+export interface ChessMatch {
+  blackPlayerId: string,
+      endedAt: number,
+      id: number,
+      opponent: string,
+      moves: number,
+      reason: string,
+      result: string,
+      roomId: string,
+      startedAt: number,
+      whitePlayerId: string,
+      winnerTeam: string
+}
+
+export interface ChessHistoryProps {
+  userData: User | null;
+  matchData: {
+    stats: {
+      totalGames: number;
+      wins: number;
+      losses: number;
+      draws: number;
+      winRate: string;
+    },
+    history: ChessMatch[]
   };
 }

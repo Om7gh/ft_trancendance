@@ -1,33 +1,5 @@
-import type { User } from '@/App';
+import type { ChessHistoryProps, ChessMatch } from '@/types/gameTypes';
 import { FaChess } from 'react-icons/fa';
-
-interface ChessMatch {
-  blackPlayerId: string,
-      endedAt: number,
-      id: number,
-      opponent: string,
-      moves: number,
-      reason: string,
-      result: string,
-      roomId: string,
-      startedAt: number,
-      whitePlayerId: string,
-      winnerTeam: string
-}
-
-interface ChessHistoryProps {
-  userData: User | null;
-  matchData: {
-    stats: {
-      totalGames: number;
-      wins: number;
-      losses: number;
-      draws: number;
-      winRate: string;
-    },
-    history: ChessMatch[]
-  };
-}
 
 function ResultBadge({ win }: { win: boolean }) {
   return (
@@ -50,8 +22,6 @@ function ChessHistory({userData, matchData}: ChessHistoryProps) {
     return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
-  console.log(matchData)
-
   return (
     <div className="relative  border border-violet-500/30 bg-slate-950/30 p-6  shadow-xl shadow-slate-800 h-96 overflow-auto rounded-xl">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,.30),transparent_60%)]" />
@@ -67,25 +37,25 @@ function ChessHistory({userData, matchData}: ChessHistoryProps) {
                 Chess History
               </h3>
               <p className="text-xs text-slate-400">
-                {matchData?.stats.totalGames} games
+                {matchData?.stats?.totalGames} games
               </p>
             </div>
           </div>
         </div>
 
-        {matchData.history.length === 0 ? (
+        {matchData?.history?.length === 0 ? (
           <div className="text-center py-8 text-slate-400">
             No chess games played yet
           </div>
         ) : (
         <div className="space-y-3">
-          {matchData.history.map((game : ChessMatch) => {
-            const isWinning = game.result === 'WIN';
+          {matchData?.history.map((game : ChessMatch) => {
+            const isWinning = game?.result === 'WIN';
             const playerName = userData?.username || '';
             
             return (
               <div
-                key={game.id}
+                key={game?.id}
                 className={` border p-4 transition-all hover:scale-[1.01] hover:shadow-xl ${
                   isWinning
                     ? 'border-violet-500/30 bg-violet-500/10'
@@ -103,19 +73,19 @@ function ChessHistory({userData, matchData}: ChessHistoryProps) {
                     />
                     <div>
                       <p className="font-medium text-slate-100">{playerName}</p>
-                      <p className="text-xs text-slate-400">vs {game.opponent}</p>
+                      <p className="text-xs text-slate-400">vs {game?.opponent}</p>
                     </div>
                   </div>
 
                   <div className="text-center">
                     <span className="text-lg font-bold text-slate-100">
-                      {game.moves} moves
+                      {game?.moves} moves
                     </span>
-                    <p className="text-xs text-slate-400 mt-1">{game.reason}</p>
+                    <p className="text-xs text-slate-400 mt-1">{game?.reason}</p>
                   </div>
 
                   <div className="flex flex-col items-end gap-1">
-                    <span className="text-xs text-slate-400">{formatDate(game.startedAt)}</span>
+                    <span className="text-xs text-slate-400">{formatDate(game?.startedAt)}</span>
                     <ResultBadge win={isWinning} />
                   </div>
                 </div>
