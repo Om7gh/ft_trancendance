@@ -11,7 +11,7 @@ function initDb(dbInstance){
 		secondUserJson TEXT NOT NULL,
 		lastMessage TEXT,
 		firstUserUnreadCount INTEGER NOT NULL DEFAULT 0,
-		secondUserUnreadCount INTEGER NOT NULL DEFAULT 0,
+		secondUserUnreadCount INTEGER NOT NULL DEFAULT 0
 		);`);
 
 	dbInstance.exec(`
