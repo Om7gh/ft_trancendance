@@ -81,13 +81,11 @@ export default abstract class AuthService {
         if ('last_name' in profileData) {
             formData.append('last_name', profileData.last_name);
         }
-        const { data } = await api.patch('/api/profile/', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const { data } = await api.patch('/api/profile/', formData);
         return data;
     }
 
-    static async completeProfile(profileData: ProfileData) {
+    static async completeProfile(profileData: Pick<ProfileData, 'avatar' | 'bio'>) {
         const formData = new FormData();
         formData.append('avatar', profileData.avatar);
         formData.append('bio', profileData.bio);

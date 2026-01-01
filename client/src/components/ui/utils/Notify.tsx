@@ -78,7 +78,8 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
         </div>
       </div>
     );
-  } if (data.type === "friend-accept") {
+  }
+  if (data.type === "friend-accept") {
     return (
       <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950 px-4 py-3 my-2 rounded-lg border border-teal-500/30 hover:border-teal-500/60 transition-all">
         <div className="flex items-center gap-3">
@@ -97,7 +98,8 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
         </button>
       </div>
     );
-  } if (data?.type === "inviteToMatch"  && diff > 0) {
+  }
+  if (data?.type === "inviteToMatch"  && diff > 0) {
     const {refetch} = useAcceptMatch(data?.sender.id);
     const handleClick = () => {
       refetch()
@@ -117,7 +119,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
         </div>
         <div className="flex gap-2">
           <button className="px-4 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-md text-sm font-medium transition-colors" onClick={handleClick}>
-            Join
+            Accept
           </button>
           <button className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-md text-sm font-medium transition-colors">
             Decline
@@ -126,7 +128,8 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
         </div>
       </div>
     );
-  } if (data?.type === "new-message") {
+  }
+  if (data?.type === "new-message") {
     const url = `/dashboard/chat`
     const navigate = useNavigate()
     return (

@@ -361,6 +361,11 @@ export default abstract class AuthController {
                 }
 
                 if (part.type === 'field' && part.fieldname === 'bio') {
+                    if (String(part.value).length > 50) {
+                        return reply.badRequest(
+                            `${String(part.value)} is not valid`
+                        );
+                    }
                     bio = String(part.value);
                 }
             }

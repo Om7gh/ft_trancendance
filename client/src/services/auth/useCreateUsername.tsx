@@ -9,7 +9,7 @@ function useCreateUsername() {
     onSuccess: () => {
       toast.success('username created successfully');
     },
-    onError: (err) => {
+    onError: (err: any) => {
       toast.error(err.message);
     },
   });
