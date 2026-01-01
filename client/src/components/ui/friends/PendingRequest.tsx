@@ -1,6 +1,6 @@
 import { useGetReceivedRequests, useApproveFriendRequest, useRejectFriendRequest } from "@/services/friends";
 import type { Friend } from "@/types/friendTypes";
-import { FaUserCheck, FaUserTimes } from "react-icons/fa";
+import { FaUserCheck, FaUserTimes, FaUserClock } from "react-icons/fa";
 import { BiLoaderAlt } from "react-icons/bi";
 import { useState } from "react";
 
@@ -10,7 +10,6 @@ function PendingRequest() {
   const reject = useRejectFriendRequest();
   const [processingUid, setProcessingUid] = useState<string | null>(null);
 
-  console.log("request here ",requests)
 
   const handleApprove = async (uid: string) => {
     setProcessingUid(uid);
@@ -44,8 +43,10 @@ function PendingRequest() {
 
   if (!requests || requests.length === 0) {
     return (
-      <div className="text-center py-12 text-slate-400">
-        No pending friend requests.
+      <div className="text-center py-12">
+        <FaUserClock className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+        <p className="text-slate-400 text-lg mb-2">No pending requests</p>
+        <p className="text-slate-500 text-sm">You don't have any friend requests at the moment</p>
       </div>
     );
   }

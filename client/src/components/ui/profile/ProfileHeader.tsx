@@ -1,4 +1,4 @@
-import { useGetFriends, useGetReceivedRequests, useGetSentRequests, useApproveFriendRequest, useRejectFriendRequest, useSendFriendRequest } from '@/services/friends';
+import { useGetFriends, useGetReceivedRequests, useGetSentRequests, useApproveFriendRequest, useRejectFriendRequest, useSendFriendRequest, useUnfriend } from '@/services/friends';
 import { BiLoaderAlt } from 'react-icons/bi';
 import { useState } from 'react';
 import type { Friend } from '@/types/friendTypes';
@@ -24,13 +24,14 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
   const sendFriendRequest = useSendFriendRequest();
   const approveFriendRequest = useApproveFriendRequest();
   const rejectFriendRequest = useRejectFriendRequest();
+  const unfriend = useUnfriend();
 
   const { data: receivedRequests } = useGetReceivedRequests();
   const { data: sentRequests } = useGetSentRequests();
   const { data: friends } = useGetFriends();
 
   const [activeAction, setActiveAction] = useState<
-    null | 'send' | 'approve' | 'reject' | 'cancel'
+    null | 'send' | 'approve' | 'reject' | 'cancel' | 'unfriend'
   >(null);
 
   const uid = userData?.id;
@@ -70,6 +71,16 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
     rejectFriendRequest.mutate(uid, {
       onSettled: () => setActiveAction(null),
     });
+  };
+
+  const handleUnfriend = () => {
+    if (!uid) return;
+    if (confirm(`Remove ${userData.username} from your friends?`)) {
+      setActiveAction('unfriend');
+      unfriend.mutate(uid, {
+        onSettled: () => setActiveAction(null),
+      });
+    }
   };
 
   const getOnlineStatus = () => {
@@ -118,10 +129,17 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
             <div className="flex flex-wrap gap-2">
               {isFriend ? (
                 <button
-                  className="text-sm md:text-lg text-violet-200 bg-slate-950/30 px-4 py-2 shadow shadow-slate-900 cursor-not-allowed opacity-70 rounded-xl"
-                  disabled
+                  className="text-sm md:text-lg text-rose-200 bg-rose-600/50 px-4 py-2 shadow shadow-slate-900 hover:bg-rose-700/50 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed rounded-xl"
+                  onClick={handleUnfriend}
+                  disabled={activeAction !== null}
                 >
-                  Friends
+                  {activeAction === 'unfriend' ? (
+                    <span className="inline-flex items-center gap-2">
+                      <BiLoaderAlt className="animate-spin" /> Removing
+                    </span>
+                  ) : (
+                    'Unfriend'
+                  )}
                 </button>
               ) : hasReceivedRequestFromUser ? (
                 <>
@@ -153,27 +171,25 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
                   </button>
                 </>
               ) : hasSentRequestToUser ? (
-                <>
-                  <button
-                    className="text-sm md:text-lg text-violet-200 bg-slate-950/30 px-4 py-2 shadow shadow-slate-900 cursor-not-allowed opacity-70 rounded-xl"
-                    disabled
-                  >
-                    Request Sent
-                  </button>
-                  <button
-                    className="text-sm md:text-lg text-violet-200 bg-pink-950/50 px-4 py-2 shadow shadow-pink-900 hover:bg-pink-950 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                    onClick={handleCancelSentRequest}
-                    disabled={activeAction !== null}
-                  >
-                    {activeAction === 'cancel' ? (
-                      <span className="inline-flex items-center gap-2">
-                        <BiLoaderAlt className="animate-spin" /> Canceling
+                <button
+                  className="text-sm md:text-lg text-violet-200 bg-amber-600/50 px-4 py-2 shadow shadow-slate-900 hover:bg-amber-700/50 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed rounded-xl"
+                  onClick={handleCancelSentRequest}
+                  disabled={activeAction !== null}
+                >
+                  {activeAction === 'cancel' ? (
+                    <span className="inline-flex items-center gap-2">
+                      <BiLoaderAlt className="animate-spin" /> Canceling
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-2">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                       </span>
-                    ) : (
-                      'Cancel'
-                    )}
-                  </button>
-                </>
+                      Cancel Request
+                    </span>
+                  )}
+                </button>
               ) : (
                 <button
                   className="text-sm md:text-lg rounded-xl text-violet-200 bg-slate-950/50 px-4 py-2 shadow shadow-slate-900 hover:bg-slate-950 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
@@ -198,12 +214,6 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
           <p className="text-sm md:text-lg tracking-wider">Username</p>
           <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xs md:text-xl">
             {userData?.username}
-          </p>
-        </div>
-        <div className="flex gap-5 items-center justify-between w-full ">
-          <p className="text-sm md:text-lg tracking-wider">Email</p>
-          <p className="bg-linear-180 from-violet-500 to-neon bg-clip-text text-transparent text-xs md:text-lg" title={userData?.email}>
-            {userData?.email.split("@")[0] + "..."}
           </p>
         </div>
         {!isOwnProfile && (

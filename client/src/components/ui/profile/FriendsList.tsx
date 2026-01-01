@@ -1,6 +1,6 @@
 import { useUnfriend } from "@/services/friends";
 import type { Friend } from "@/types/friendTypes";
-import { FaUserMinus } from "react-icons/fa";
+import { FaUserMinus, FaUserFriends } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 interface FriendsListProps {
@@ -10,7 +10,9 @@ interface FriendsListProps {
 function FriendsList({ friendsList }: FriendsListProps) {
   const unfriend = useUnfriend();
 
-  const handleUnfriend = (uid: string, username: string) => {
+  const handleUnfriend = (e: React.MouseEvent, uid: string, username: string) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (confirm(`Remove ${username} from your friends?`)) {
       unfriend.mutate(uid);
     }
@@ -39,8 +41,10 @@ function FriendsList({ friendsList }: FriendsListProps) {
 
   if (!friendsList || friendsList.length === 0) {
     return (
-      <div className="text-center py-12 text-slate-400">
-        No friends yet
+      <div className="text-center py-12">
+        <FaUserFriends className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+        <p className="text-slate-400 text-lg mb-2">No friends yet</p>
+        <p className="text-slate-500 text-sm">Start connecting with other users</p>
       </div>
     );
   }
@@ -71,7 +75,7 @@ function FriendsList({ friendsList }: FriendsListProps) {
             )}
           </div>
           <button
-            onClick={() => handleUnfriend(friend.id, friend.username)}
+            onClick={(e) => handleUnfriend(e, friend.id, friend.username)}
             disabled={unfriend.isPending}
             className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors disabled:opacity-50"
             title="Unfriend"
