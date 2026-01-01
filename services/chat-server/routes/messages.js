@@ -71,7 +71,6 @@ function messagesPlugin(instance) {
 					sendToNotification(msg);
 				}
 				instance.conversationManager.updateLastMessage(conv.id, msg.content);
-				instance.conversationManager.updateTime(conv.id);
 			}
 
 			function handleNewConversation(){

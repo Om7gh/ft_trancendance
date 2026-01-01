@@ -4,6 +4,10 @@ html {
   scroll-behavior: smooth;
 }
 
+.query-container{
+  container-type: inline-size;
+}
+
 .App {
   background-image: url('./assets/bg.png');
   background-repeat: repeat;

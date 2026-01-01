@@ -1,17 +1,7 @@
+import Avatar from "./Avatar.tsx";
 import type {Card} from "@/types/UserCard.ts"
-import { useNavigate } from "react-router-dom";
 
 type OnSelect = (selectedCard: Card) => void;
-
-interface AvatarProps{
-  imgUrl: string;
-  name: string;
-  type: "CardItem"
-      | "contact"
-      | "sender"
-      | "receiver";
-}
-
 interface CardItemProps{
   card: Card;
   isSelected: boolean;
@@ -24,31 +14,13 @@ interface CardsListProps {
   onSelect: OnSelect;
 }
 
-
-function Avatar({imgUrl, name, type}: AvatarProps){
-  const navigate = useNavigate()
-
-  const avatarStyle = {
-    "CardItem": "rounded-[50%]",
-    contact: "rounded-[50%] max-w-30 max-h-20",
-    sender: "rounded-[50%] border-2 border-neon h-[40px] self-end",
-    receiver: "rounded-[50%] border-2 border-violet-500 h-[40px] self-end"
-  }
-  
-  return (
-    <div className={"overflow-clip aspect-square " + avatarStyle[type]}
-      onClick={(e) => {
-        e.stopPropagation();
-        navigate(`/dashboard/profile/${name}`);
-      }}>
-      <img src={imgUrl}
-        alt={name + "'s profile"}
-        className="h-full w-full object-cover"/>
-    </div>
-  );
+interface UserInfoProps{
+  name: string;
+  unread_msg: number;
+  lastMsg: string;
 }
 
-function UserInfo({name, unread_msg}: {name: string, unread_msg: number}){
+function UserInfo({name, unread_msg, lastMsg}: UserInfoProps){
   return (
     <div className="flex-1 self-center relative text-white ">
       <h1 className="font-bold relative text-md">{name}
@@ -56,11 +28,11 @@ function UserInfo({name, unread_msg}: {name: string, unread_msg: number}){
         {
           unread_msg > 0 &&
           <div className="min-w-4 absolute text-center top-0 left-[94%] ml-auto text-[0.6em]
-                overflow-clip rounded-[30px] bg-neon">
+                overflow-clip rounded-[30px] bg-violet-600">
             {unread_msg}
           </div >
         }
-      <p className="mt-1.25 font-normal">Placeholder</p>
+      <p className="mt-1.25 font-normal text-gray-300 text-[10px]">{lastMsg !== "" ? lastMsg : "Empty"}</p>
     </div>
   );
 }
@@ -81,6 +53,7 @@ function CardItem({card, isSelected, onSelect}: CardItemProps){
       />
       <UserInfo name={friend.name}
         unread_msg={card.unread_msg}
+        lastMsg={card.lastMsg}
       />
     </li>
   );

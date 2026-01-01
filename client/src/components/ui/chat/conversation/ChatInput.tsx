@@ -38,7 +38,7 @@ function UnblockButton(){
 
 function ChatInput({onSend, connectionState}: ChatInputProp){
 	return (
-		<form id="chatInputForm" onSubmit={(e) => {onSend(e)}} className="min-h-25 flex justify-center items-center gap-2">
+		<form id="chatInputForm" onSubmit={(e) => {onSend(e)}} className="min-h-25 flex justify-center flex-wrap items-center gap-2">
 			{connectionState === "blocking_them" && <UnblockButton/>}
 			{
 				connectionState !== "blocking_them" && <>

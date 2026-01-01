@@ -18,19 +18,8 @@ function useAxios(uri: string | null): [any, React.Dispatch<any>, string]{
 				setFetchStatus("error");
 			}
 		}
-
-		function test(){
-			fetchData();
-		}
-
-		if (!uri){
-			setFetchStatus("fulfilled");
-		}
-		else
-			setTimeout(test, 500);
-
-		return () => {
-		}
+		
+		(!uri) ? setFetchStatus("fulfilled") : fetchData();
 
 	}, [uri]);
 

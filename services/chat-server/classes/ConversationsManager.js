@@ -58,14 +58,6 @@ class ConversationManager{
 		).run({msg: message, conversationID: convId});
 	}
 
-	updateTime(convId){
-		this.#dbInstance.prepare(
-			`UPDATE conversations SET 
-			lastUpdate = CURRENT_TIMESTAMP
-			WHERE id = @conversationID;`
-		).run({conversationID: convId});
-	}
-
 	resetUserUnreadCount(userID){
 		this.#dbInstance.prepare(
 			`UPDATE conversations SET
