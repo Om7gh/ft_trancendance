@@ -31,19 +31,37 @@ export class UserController {
                         user.username,
                         part
                     );
-                } else if (part.type === 'field') {
-                    const len = String(part.value).length;
-                    if (part.fieldname === 'bio' && len > 50) {
-                        return reply.badRequest(
-                            String(part.value) + UserController.ERR_INVALID_FIELD
-                        );
-                    } else if (len < 2 || len > 10) {
-                        return reply.badRequest(
-                            String(part.value) + UserController.ERR_INVALID_FIELD
-                        );
-                    }
-                    payload[part.fieldname] = String(part.value);
+                    continue;
                 }
+
+                if (part.type !== 'field') continue;
+
+                const value = String(part.value);
+
+                const fieldRules: Record<
+                    string,
+                    { min?: number; max?: number }
+                > = {
+                    bio: { max: 50 },
+                    first_name: { min: 2, max: 10 },
+                    last_name: { min: 2, max: 10 },
+                };
+
+                const rules = fieldRules[part.fieldname];
+                if (!rules) continue;
+
+                const len = value.length;
+
+                if (
+                    (rules.min !== undefined && len < rules.min) ||
+                    (rules.max !== undefined && len > rules.max)
+                ) {
+                    return reply.badRequest(
+                        value + UserController.ERR_INVALID_FIELD
+                    );
+                }
+
+                payload[part.fieldname] = value;
             }
 
             if (Object.keys(payload)?.length === 0) {
