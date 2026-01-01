@@ -2,6 +2,8 @@ import { useMobile } from '@/hooks/useMobile';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
 function ChessChart({gameState}: {gameState: any}) {
+  if (!gameState)
+    return <p className='text-red text-center text-lg md:text-xl'>Error</p>
     const {stats} = gameState;
     const data = [
       { name: 'Wins', value: stats?.wins, color: '#00E5FF' },
