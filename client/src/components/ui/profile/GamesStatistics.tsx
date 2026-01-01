@@ -90,11 +90,11 @@ function StatHUD({
 }
 
 export default function GamesStatistics({ chessStats, pongStats }: GamesStatisticsProps) {
-  const pong = { win: pongStats.wins, lose: pongStats.loses };
-  const chess = { win: chessStats.wins, lose: chessStats.losses, draw: chessStats.draws };
+  const pong = { win: pongStats?.wins, lose: pongStats?.loses };
+  const chess = { win: chessStats?.wins, lose: chessStats?.losses, draw: chessStats?.draws };
   
-  const totalWin = pong.win + chess.win;
-  const totalLose = pong.lose + chess.lose;
+  const totalWin = pong?.win + chess?.win || 0;
+  const totalLose = pong?.lose + chess?.lose || 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -103,7 +103,7 @@ export default function GamesStatistics({ chessStats, pongStats }: GamesStatisti
       <StatHUD
         title="Total score"
         icon={MdAutoAwesome}
-        stats={{ win: totalWin, lose: totalLose, draw: chess.draw }}
+        stats={{ win: totalWin, lose: totalLose, draw: chess?.draw }}
       />
     </div>
   );

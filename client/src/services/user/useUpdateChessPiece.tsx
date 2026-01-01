@@ -9,7 +9,7 @@ export function useUpdateChessPiece() {
   return useMutation({
     mutationKey: ['update-chess-piece'],
     mutationFn: AuthService.updateChessPiece,
-    onSuccess: (_res, variables) => {
+    onSuccess: (_res: any, variables: any) => {
       setPieceSetName(variables.chess_piece);
       toast.success('Chess piece set updated');
     },
