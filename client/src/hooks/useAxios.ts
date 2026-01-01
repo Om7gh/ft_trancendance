@@ -14,7 +14,6 @@ function useAxios(uri: string | null): [any, React.Dispatch<any>, string]{
 				setFetchStatus("fulfilled");
 			}
 			catch (err){
-				console.log("failed to load:", err);
 				setFetchStatus("error");
 			}
 		}

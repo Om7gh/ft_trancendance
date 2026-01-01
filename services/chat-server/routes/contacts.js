@@ -16,8 +16,7 @@ function contactPlugin(instance){
 				},
 				unread_msg: 0,
 				presence: instance.connectedUsers.has(id) ? "online" : "offline",
-				lastMsg: "",
-				lastUpdate: ""
+				lastMsg: ""
 			})
 		} 
 	);

@@ -6,9 +6,18 @@ import ConversationManager from '../classes/ConversationsManager.js';
 import UsersBlocksManager from '../classes/UsersBlockManager.js';
 import MessageManager from "../classes/MessageManager.js"
 import messageSchema from '../schemas/messages.js';
-import axios from "axios"
+import axios from "axios";
 import crypto from 'node:crypto';
 import RequestValidator from '../classes/RequestValidator.js';
+
+function sendError(socket, errorMsg){
+	if (socket.readyState === Websocket.OPEN){
+		socket.send(JSON.stringify({
+			type: "error",
+			message: errorMsg
+		}));
+	}
+}
 
 function messagesPlugin(instance) {
 
@@ -19,7 +28,7 @@ function messagesPlugin(instance) {
 	instance.decorate('conversationManager', new ConversationManager(instance.betterSqlite3));
 	instance.decorate('messageManager', new MessageManager(instance.betterSqlite3));
 	instance.decorate('blockManager', new UsersBlocksManager(instance.betterSqlite3));
-	
+
 	const reqValidator = new RequestValidator();
 	const getOptions = {
 		schema: {
@@ -56,7 +65,7 @@ function messagesPlugin(instance) {
 					]});
 				}
 				catch (error) {
-					clientSocket.send("Error Happen while sending notification");
+					sendError(clientSocket, "Error Happen while sending notification");
 				}
 			}
 			
@@ -66,7 +75,6 @@ function messagesPlugin(instance) {
 						instance.conversationManager.incrementUserUnreadCount(parsedMsg.sender.id);
 					}
 					connectedUsers.get(parsedMsg.target.id).send(JSON.stringify({type: "message", ...msg}));
-					clientReq.log.debug(`server send via websocket: ${JSON.stringify({type: "message", ...msg})}`);
 				}
 				else {
 					instance.conversationManager.incrementUserUnreadCount(parsedMsg.sender.id);
@@ -113,7 +121,6 @@ function messagesPlugin(instance) {
 					const result = await areFriends(clientReq.headers.cookie, parsedMsg.target.id);
 					if (!result)
 						throw Error("You can only message your contacts.");
-
 					if (instance.blockManager.hasBlockedBy(parsedMsg.target.id, parsedMsg.sender.id))
 						throw Error("You can't send messages to this user");
 					let conversation = instance.conversationManager.hasConversation(parsedMsg.sender.id, parsedMsg.target.id);
@@ -122,10 +129,7 @@ function messagesPlugin(instance) {
 					notifyOrSend(message, conversation);
 				}
 				catch(e){
-					clientSocket.send(JSON.stringify({
-						type: "error",
-						message: e.message
-					}));
+					sendError(clientSocket, e.message);
 				}
 			}
 
@@ -134,7 +138,7 @@ function messagesPlugin(instance) {
 				if (activeUserConv.has(actionByUserId) && activeUserConv.get(actionByUserId) === parsedMsg.conversationId)
 					return ;
 				if (!userInConversation(actionByUserId, parsedMsg.conversationId, instance.conversationManager)){
-					clientSocket.send(`You don't belong to conversation ${parsedMsg.conversationId}`);
+					sendError(clientSocket, `You don't belong to conversation ${parsedMsg.conversationId}`);
 					return ;
 				}
 				instance.conversationManager.resetUserUnreadCount(actionByUserId);
@@ -144,7 +148,7 @@ function messagesPlugin(instance) {
 			function handleLeaveConversation() {
 				let actionByuserId = clientReq.user.id;
 				if (!activeUserConv.has(actionByuserId) || activeUserConv.get(actionByuserId) !== parsedMsg.conversationId){
-					clientSocket.send("Can't leave this conversation");
+					sendError(clientSocket, "Can't leave this conversation");
 					return ;
 				}
 				activeUserConv.delete(actionByuserId);
@@ -182,10 +186,7 @@ function messagesPlugin(instance) {
 					}
 				}
 				catch(e) {
-					clientSocket.send(JSON.stringify({
-						type: "error",
-						message: e.message
-					}));
+					sendError(clientSocket, e.message);
 				}
 			}
 
@@ -208,10 +209,7 @@ function messagesPlugin(instance) {
 					instance.blockManager.removeBlock(clientReq.user.id, parsedMsg.targetId);
 				}
 				catch(e) {
-					clientSocket.send(JSON.stringify({
-						type: "error",
-						message: e.message
-					}));
+					sendError(clientSocket, e.message);
 				}
 			}
 
@@ -246,6 +244,7 @@ function messagesPlugin(instance) {
 			}
 		}
 		catch(e){
+			
 			clientSocket.send(e.message);
 		}
 	}
@@ -275,7 +274,7 @@ function messagesPlugin(instance) {
 	}
 
 	function handleConnectionError(error, req){
-		req.log.error(`websocket error hinstanceen ${error}`);
+		req.log.error(`websocket error: ${error}`);
 	}
  
 	instance.get("/messages", {websocket: true}, (socket, req) => {

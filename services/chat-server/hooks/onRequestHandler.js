@@ -1,7 +1,7 @@
 import fp from 'fastify-plugin';
 import axios from 'axios';
 
-function onRequestHook(instance, opt){
+function onRequestHook(instance){
 	async function onRequestHandler(req, reply){
 		try {
 			const cookie = req.headers.cookie;
@@ -25,7 +25,6 @@ function onRequestHook(instance, opt){
 			return (reply);
 		}
 	}
-	
 	instance.addHook("onRequest", onRequestHandler);
 }
 
