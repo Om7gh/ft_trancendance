@@ -16,6 +16,27 @@ function FriendsList({ friendsList }: FriendsListProps) {
     }
   };
 
+    const getFriendshipTime = (friend: any) => {
+        if (!friend?.friends_since) return 'unknown period';
+        alert(friend.friends_since);
+        const now = Date.now();
+        const lastLogin = friend.friends_since * 1000;
+        const diffMs = now - lastLogin;
+        const diffSeconds = Math.floor(diffMs / 1000);
+        const diffMinutes = Math.floor(diffSeconds / 60);
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+        const diffMonths = Math.floor(diffDays / 30);
+        const diffYears = Math.floor(diffDays / 365);
+
+        if (diffSeconds < 60) return 'Just now';
+        if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} ago`;
+        if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        if (diffDays < 30) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        if (diffMonths < 12) return `${diffMonths} month${diffMonths !== 1 ? 's' : ''} ago`;
+        return `${diffYears} year${diffYears !== 1 ? 's' : ''} ago`;
+    };
+
   if (!friendsList || friendsList.length === 0) {
     return (
       <div className="text-center py-12 text-slate-400">
@@ -45,7 +66,7 @@ function FriendsList({ friendsList }: FriendsListProps) {
             </div>
             {friend.friends_since && (
               <div className="text-xs text-slate-500">
-                Friends since {new Date(friend.friends_since * 1000).toLocaleDateString()}
+                Friends since {getFriendshipTime(friend)}
               </div>
             )}
           </div>
