@@ -10,7 +10,7 @@ import { saveUploadedAvatar } from '../utils/avatar-utils.js';
 
 export class UserController {
     static readonly ERR_USER_NOT_FOUND: string = 'User not found';
-    static readonly ERR_EMPTY_FIELD: string = ' must not be empty';
+    static readonly ERR_INVALID_FIELD: string = ' is not valid';
 
     static async get(request: FastifyRequest, reply: FastifyReply) {
         const user = request.user;
@@ -20,7 +20,7 @@ export class UserController {
     static async update(request: FastifyRequest, reply: FastifyReply) {
         const fastify = request.server;
         const user = request.user;
-        
+
         try {
             const payload: Record<string, string> = {};
 
@@ -32,21 +32,28 @@ export class UserController {
                         part
                     );
                 } else if (part.type === 'field') {
-                    if (part.fieldname == "first_name" || part.fieldname == "last_name") {
-                        if (payload[part.fieldname].length == 0) {
-                            return reply.badRequest(payload[part.fieldname] + UserController.ERR_EMPTY_FIELD);
-                        }
-
+                    const len = String(part.value).length;
+                    if (part.fieldname === 'bio' && len > 50) {
+                        return reply.badRequest(
+                            String(part.value) + UserController.ERR_INVALID_FIELD
+                        );
+                    } else if (len < 2 || len > 10) {
+                        return reply.badRequest(
+                            String(part.value) + UserController.ERR_INVALID_FIELD
+                        );
                     }
                     payload[part.fieldname] = String(part.value);
                 }
             }
 
-            if (Object.keys(payload).length === 0) {
+            if (Object.keys(payload)?.length === 0) {
                 return reply.badRequest('No fields to update');
             }
 
-            const updatedUser = fastify.usersRepository.update(user.id, payload);
+            const updatedUser = fastify.usersRepository.update(
+                user.id,
+                payload
+            );
             request.user = updatedUser;
             return reply.send(asUserInfo(request.user));
         } catch (err: any) {
@@ -70,7 +77,7 @@ export class UserController {
             }
 
             const users = this.usersRepository.searchUsers(query, limit);
-            console.log(users)
+            console.log(users);
             return reply.send(users);
         } catch (err: any) {
             console.error(err);
