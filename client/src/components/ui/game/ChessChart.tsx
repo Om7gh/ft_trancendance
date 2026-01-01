@@ -4,9 +4,9 @@ import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 function ChessChart({gameState}: {gameState: any}) {
     const {stats} = gameState;
     const data = [
-      { name: 'Wins', value: stats.wins, color: '#00E5FF' },
-      { name: 'Losses', value: stats.losses, color: '#8A2BE2' },
-      { name: 'Draws', value: stats.draws, color: 'yellow' },
+      { name: 'Wins', value: stats?.wins, color: '#00E5FF' },
+      { name: 'Losses', value: stats?.losses, color: '#8A2BE2' },
+      { name: 'Draws', value: stats?.draws, color: 'yellow' },
     ];
   
     const isMobile = useMobile()
@@ -15,15 +15,15 @@ function ChessChart({gameState}: {gameState: any}) {
         {
           !isMobile &&
           <div className="space-y-4 min-w-30">
-        {data.map((item) => (
-          <div key={item.name} className="flex items-center gap-3">
+        {data?.map((item) => (
+          <div key={item?.name} className="flex items-center gap-3">
             <span
               className="h-3 w-3 rounded-full block"
-              style={{ backgroundColor: item.color }}
+              style={{ backgroundColor: item?.color }}
             />
             <span className="text-slate-300 capitalize">
-              {item.name}:{' '}
-              <span className="font-bold text-white">{item.value}</span>
+              {item?.name}:{' '}
+              <span className="font-bold text-white">{item?.value}</span>
             </span>
           </div>
         ))}
