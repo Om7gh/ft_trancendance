@@ -14,7 +14,16 @@ interface UsersPanelProps{
 	getCardStatus: (tabName: string) => string
 }
 
-function UsersPanel({ selectedCard, onCardSelect, visibleCards, setSearchQuery, selectedTab, updateTabName, getCardStatus}: UsersPanelProps){
+function UsersPanel(
+	{
+		selectedCard,
+		onCardSelect,
+		visibleCards,
+		setSearchQuery,
+		selectedTab,
+		updateTabName,
+		getCardStatus
+	}: UsersPanelProps){
 
 	function handelTabNavigation(e: React.MouseEvent<HTMLButtonElement>, tabName: string){
 		e.stopPropagation();
@@ -31,8 +40,14 @@ function UsersPanel({ selectedCard, onCardSelect, visibleCards, setSearchQuery, 
 			<Header key={selectedTab} onSearch={handleUserSearch}>
 				<FilterTabs selectedTab={selectedTab} onNav={handelTabNavigation}/>
 			</Header>
-			<StatusResolver status={getCardStatus(selectedTab)} content={visibleCards} view={selectedTab} onAction={handelTabNavigation}>
-				<CardsList cards={visibleCards} selectedCard={selectedCard} onSelect={onCardSelect}/>
+			<StatusResolver status={getCardStatus(selectedTab)}
+				content={visibleCards}
+				view={selectedTab}
+				onAction={handelTabNavigation}>
+					<CardsList
+						cards={visibleCards}
+						selectedCard={selectedCard}
+						onSelect={onCardSelect}/>
 			</StatusResolver>
 		</div>
 	);

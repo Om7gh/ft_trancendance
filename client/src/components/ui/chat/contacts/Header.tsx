@@ -29,7 +29,9 @@ function SearchBar({onSearch}: {onSearch: OnSearch}){
 function Header({onSearch, children}: HeaderProps){
   return (
     <div id="Header" className="basis-[10%]">
-      <h1 className="text-gray-300 text-[clamp(12px,1.5vw,25px)] font-bold">Messages</h1>
+      <h1 className="text-gray-300 text-[clamp(12px,1.5vw,25px)] font-bold">
+        Messages
+      </h1>
       <SearchBar onSearch={onSearch}/>
       {children}
     </div>

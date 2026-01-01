@@ -70,12 +70,12 @@ function CardsList({cards, selectedCard, onSelect}: CardsListProps){
 	return  (
 		<ul id="CardsList" className="h-[87%] mt-3 scrollbar overflow-auto">
 			{
-					cards.map(card => <CardItem
-						key={card.friend.id}
-						card={card}
-						isSelected={card.friend.id === selectedCard?.friend?.id}
-						onSelect={onSelect}
-					/>)
+				cards.map(card => <CardItem
+					key={card.friend.id}
+					card={card}
+					isSelected={card.friend.id === selectedCard?.friend?.id}
+					onSelect={onSelect}
+				/>)
 			}
 		</ul>
 	);
