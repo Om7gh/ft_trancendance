@@ -4,6 +4,7 @@ import type {
     PasswordData,
     ProfileData,
     RegisterForm,
+    ResetPassword,
     TwoFACode,
     Username,
 } from '@/types/auth.types';
@@ -12,6 +13,26 @@ import api from '../clientHttpService';
 export default abstract class AuthService {
     static async register(registerForm: RegisterForm) {
         const { data } = await api.post('/api/auth/signup', registerForm);
+        return data;
+    }
+
+    static async setupTwoFa() {
+  const { data } = await api.get("/api/auth/2fa/setup")
+  return data
+}
+
+static async verifyTwoFa(code: string) {
+  const { data } = await api.post("/api/auth/2fa/verify", { code })
+  return data
+}
+
+static async disableTwoFa(code: string) {
+  const { data } = await api.post("/api/auth/2fa/disable", { code })
+  return data
+}
+
+    static async resetPassowrd(payload: ResetPassword) {
+         const { data } = await api.post('/api/auth/reset-password', payload);
         return data;
     }
 
