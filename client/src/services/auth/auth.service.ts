@@ -31,7 +31,7 @@ export default abstract class AuthService {
         };
     }
 
-    static async checUsername(username: Username) {
+    static async checkUsername(username: Username) {
         const { data } = await api.post('/api/auth/check-username', username);
         return data;
     }

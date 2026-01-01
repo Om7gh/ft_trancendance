@@ -18,13 +18,13 @@ type PlayerPropsType = {
 
 function Player({player}: PlayerPropsType) {
     return (
-        <div className="flex items-center gap-3 p-3 bg-linear-to-r from-slate-800/50 to-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 transition-all">
+        <div className="flex items-center gap-3 md:p-3 p-2 bg-linear-to-r from-slate-800/50 to-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 transition-all rounded-xl flex-col">
             <img 
                 src={player?.avatar || '/default-avatar.png'} 
                 alt={player?.username} 
-                className="w-12 h-12 rounded-full border-2 border-slate-500/50 object-cover"
+                className="w-8 h-8 md:w-16 md:h-16 rounded-full border-2 border-slate-500/50 object-cover"
             />
-            <h2 className="text-violet-200 font-semibold text-lg">{player?.username}</h2>
+            <h4 className="text-violet-200 font-semibold text-xs md:text-lg">{player?.username}</h4>
         </div>
     )
 }
@@ -36,7 +36,7 @@ type WaitingListPropsType = {
 function WaitingList({memberList}: WaitingListPropsType) {
     if (memberList) {
         return (
-            <div className="space-y-4 bg-slate-950/20 shadow-xl shadow-slate-800 p-4">
+            <div className="space-y-4 bg-slate-950/20 shadow-xl shadow-slate-800 p-4 rounded-xl">
                 <h2 className="text-xl p-4 font-bold text-violet-200  text-center">
                     Waiting for Players <span className="text-violet-500">({memberList.length}/4)</span> 
                 </h2>
@@ -78,7 +78,7 @@ function Match({match}: MatchPropsType) {
             const isRightWinner = match.winner === match.rightPlayer?.id;
             
             return (
-                <div className="relative p-6 bg-gradient-to-br from-slate-950/20 to-violet-800/50 border border-slate-600/40 shadow-xl">
+                <div className="relative p-6 bg-linear-to-br from-slate-950/20 to-violet-800/50 border border-slate-600/40 shadow-xl">
                     {match.state === "done" && (
                         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-violet-500 text-violet-200 text-xs font-bold px-3 py-1 rounded-full">
                             FINISHED
@@ -90,7 +90,7 @@ function Match({match}: MatchPropsType) {
                         </div>
                     )}
                     
-                    <div className="flex items-center gap-4">
+                    <div className={`flex items-center gap-4 ${match.state === "done" ? "justify-center" : "justify-center"}`}>
                         <div className={`flex-1 ${isLeftWinner ? 'ring-2 ring-yellow-400' : ''}`}>
                             <Player player={match.leftPlayer} />
                             {match.leftPlayer?.points !== undefined && (
@@ -179,9 +179,9 @@ function ListRounds({roundList}: ListRoundsPropsType) {
                 {
                     roundList.map((round, index) => {
                         return (
-                            <div key={round.id} className="relative w-[50vmax]">
+                            <div key={round.id} className={`relative md:w-[50vmax] w-full `}>
                                 <div className="flex items-center gap-3 mb-4 justify-center">
-                                    <h3 className="text-xl font-bold text-violet-200">
+                                    <h3 className="text-md md:text-xl lg:text-xl font-bold text-violet-200">
                                         {getRoundLabel(index, roundList.length)}
                                     </h3>
                                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -195,7 +195,7 @@ function ListRounds({roundList}: ListRoundsPropsType) {
                                 <Round round={round} />
                                 {index < roundList.length - 1 && (
                                     <div className="flex justify-center mt-6">
-                                        <div className="w-0.5 h-8 bg-gradient-to-b from-slate-800/50 to-transparent"></div>
+                                        <div className="w-0.5 h-8 bg-linear-to-b from-slate-800/50 to-transparent"></div>
                                     </div>
                                 )}
                             </div>
@@ -254,12 +254,12 @@ export default function PlayTournament() {
     console.log(data)
     if (!data)
         return (
-            <div className="h-full bg-slate-950/20 p-8">
-                <div className="max-w-6xl mx-auto">
+            <div className="h-full bg-slate-950/20 p-8 w-full">
+                <div className="w-full mx-auto">
                     <MessageDisplayer message="Fetching Tournament..." />
                     <button 
                         onClick={leaveTournament}
-                        className="mt-6 px-6 py-2 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
+                        className="mt-6 px-6 py-2 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg rounded-xl"
                     >
                         Leave Tournament
                     </button>
@@ -269,14 +269,14 @@ export default function PlayTournament() {
     else if (data.state === "success") {
         if (data.tournament.state === "waiting") {
             return (
-                <div className="h-full grid place-items-center">
+                <div className="h-full grid place-items-center w-full">
                     <div className="max-w-8xl mx-auto">
                         <div className="bg-slate-900/20 rounded-2xl p-8 border border-slate-900/20 shadow-xl shadow-slate-900">
                             <WaitingList memberList={data.tournament.members} />
                             <div className="flex flex-col justify-center mt-8">
                                 <button 
                                     onClick={leaveTournament}
-                                    className="px-8 py-3 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
+                                    className="px-8 py-3 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50 rounded-xl"
                                 >
                                     Leave Tournament
                                 </button>
@@ -287,14 +287,14 @@ export default function PlayTournament() {
             )
         } else if ((data.tournament.state === "going") || (data.tournament.state === "done")) {
             return (
-                <div className="h-full p-8 grid place-items-center">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="bg-slate-950/20 p-8 border border-slate-700/50 shadow-2xl">
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-3xl font-bold bg-linear-to-l from-violet-500 to-neon bg-clip-text text-transparent">
-                                    < FaRankingStar className="text-5xl text-neon" />
+                <div className="h-full  w-full md:p-8 grid place-items-center">
+                    <div className=" mx-auto">
+                        <div className="bg-slate-950/20  p-2 md:p-8 border border-slate-700/50 shadow-2xl">
+                            <div className="flex items-center md:justify-between justify-around mb-8 flex-col-reverse md:flex-row">
+                                <h2 className="md:text-3xl font-bold bg-linear-to-l from-violet-500 to-neon bg-clip-text text-transparent">
+                                    < FaRankingStar className="text-2xl md:text-5xl text-neon" />
                                     Tournament Stats</h2>
-                                <span className={`px-4 py-2 text-sm font-bold shadow-xl shadow-slate-900 ${
+                                <span className={`self-end md:self-start md:px-4 md:py-2 px-2 py-1 text-xs md:text-xm font-bold shadow-xl shadow-slate-900 md:flex-col ${
                                     data.tournament.state === 'done' 
                                         ? 'bg-violet-500 text-violet-200' 
                                         : 'bg-violet-500 text-violet-200 animate-pulse'
@@ -303,13 +303,10 @@ export default function PlayTournament() {
                                 </span>
                             </div>
                             <ListRounds roundList={data.tournament.rounds} />
-                            {data.tournament.state === "done" && <div>
-                                
-                                </div>}
-                            <div className="flex justify-center mt-8">
+                            <div className="flex justify-center mt-8 rounded-xl">
                                 <button 
                                     onClick={leaveTournament}
-                                    className="px-8 py-3 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50"
+                                    className="px-8 py-3 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-all shadow-lg hover:shadow-pink-600/50 rounded-xl"
                                 >
                                     Leave Tournament
                                 </button>
@@ -325,7 +322,7 @@ export default function PlayTournament() {
                         <MessageDisplayer message="Tournament Canceled!!" />
                         <button 
                             onClick={leaveTournament}
-                            className="mt-6 px-6 py-2 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg"
+                            className="mt-6 px-6 py-2 bg-pink-600/50 hover:bg-pink-700 text-violet-200 font-semibold transition-colors shadow-lg rounded-xl"
                         >
                             Leave Tournament
                         </button>

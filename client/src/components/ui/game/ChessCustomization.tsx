@@ -10,7 +10,7 @@ function ChessCustomization() {
     <>
       {openModal && (
         <Modal onClose={() => setOpenModal(false)}>
-          <ChessSettings />
+          <ChessSettings close={() => setOpenModal(false)} />
         </Modal>
       )}
       <div

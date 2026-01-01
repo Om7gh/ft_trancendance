@@ -27,47 +27,51 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
       <div
         className="relative flex flex-col m-auto my-10">
         <div 
-          className='absolute border top-0 w-full h-1/3'
+          className='absolute top-0 w-full h-1/3 z-10'
           onTouchStart={(e) => {
-            e.preventDefault();
             e.stopPropagation();
+            onTouchEndHandler("s");
             onTouchStartHandler("w");
           }}
           onTouchEnd={(e) => {
-            e.preventDefault();
             e.stopPropagation();
             onTouchEndHandler("w");
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault()
           }}
         ></div>
         <canvas
           width="700" height="400" ref={canvasRef}
-          className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900 w-72 h-72 md:w-full md:h-full"
+          className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900  w-full h-full"
         >
           Your browser does not support HTML canvas API!!
         </canvas>
         <div
-          className='border absolute bottom-0 w-full h-1/3'
+          className=' absolute bottom-0 w-full h-1/3 z-10'
           onTouchStart={(e) => {
-            e.preventDefault();
             e.stopPropagation();
+            onTouchEndHandler("w");
             onTouchStartHandler("s");
           }}
           onTouchEnd={(e) => {
-            e.preventDefault();
             e.stopPropagation();
             onTouchEndHandler("s");
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault()
           }}
         ></div>
         {(matchState === 'paused') && <CounterDown />}
         {(matchState === 'done') && <RemoteWinner score={score} match={match} />}
       </div>
       <button
-          className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-1/2"
+          className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-full md:w-1/2 lg:w-1/2 rounded-xl"
           onClick={() => {
             if (matchState === 'going') {
                 connection.send(JSON.stringify({type: 'leave',data: true,}));
             }
-            navigate('/dashboard/games/pingpong/remote');
+            navigate(-1);
           }}
       >Leave Match</button>
     </div>

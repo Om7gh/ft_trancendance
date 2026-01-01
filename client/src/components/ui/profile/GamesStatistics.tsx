@@ -23,7 +23,7 @@ function Progress({
       </div>
       <div className="h-4 rounded-full bg-slate-800 overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-violet-500 to-pink-400 shadow-[0_0_10px_rgba(168,85,247,.6)]"
+          className="h-full bg-linear-to-r from-violet-500 to-pink-400 shadow-[0_0_10px_rgba(168,85,247,.6)]"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -45,9 +45,9 @@ function StatHUD({
     <div
       className={`relative  border border-violet-500/40 ${
         title !== 'CHESS' ? 'bg-slate-950/40' : 'bg-violet-950/30'
-      } p-6 shadow-xl overflow-hidden shadow-slate-900/60`}
+      } p-6 shadow-xl overflow-hidden shadow-slate-900/60 rounded-2xl`}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(168,85,247,.15),_transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,.15),transparent_60%)]" />
 
       <div className="relative z-10">
         <div className="flex items-center gap-3 mb-4">
@@ -69,17 +69,17 @@ function StatHUD({
         </div>
 
         <div className="mt-5 grid grid-cols-3 gap-3">
-          <div className=" bg-slate-900/60 border border-slate-800 p-3 text-center">
+          <div className=" bg-slate-900/60 border border-slate-800 p-3 text-center rounded-xl">
             <p className="text-lg text-slate-400">WIN RATE</p>
             <p className="text-xl font-bold text-violet-300">
               {Math.round(((stats.win || 0) / Math.max(total, 1)) * 100)}%
             </p>
           </div>
-          <div className=" bg-slate-900/60 border border-slate-800 p-3 text-center">
+          <div className=" bg-slate-900/60 border border-slate-800 p-3 text-center rounded-xl">
             <p className="text-lg text-slate-400">LOSSES</p>
             <p className="text-xl font-bold text-rose-400">{stats.lose || 0}</p>
           </div>
-          <div className=" bg-slate-900/60 border border-slate-800 p-3 text-center">
+          <div className=" bg-slate-900/60 border border-slate-800 p-3 text-center rounded-xl">
             <p className="text-lg text-slate-400">DRAWS</p>
             <p className="text-xl font-bold text-sky-400">{stats.draw || 0}</p>
           </div>

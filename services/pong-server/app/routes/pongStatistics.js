@@ -1,6 +1,5 @@
 import errorHandler from "../plugins/errorHandler.js";
 import Statistics from "../classes/statisticsClass.js";
-import statisticsSchema from "../schemas/statisticsSchema.js";
 
 async function pongStatisticsHandler(request, reply) {
     const user = request.user;
@@ -12,23 +11,19 @@ async function pongStatisticsHandler(request, reply) {
         throw error;
     }
 
-    const matches = this.db.getMatchesByUser.get(user.id);
+    const matches = this.db.getMatchesByUser(user.id);
 
     const statistics = new Statistics(matches, user.id);
 
     this.log.info(statistics);
-
     reply.send(statistics);
 }
 
 export default async function pongStatistics(fastify) {
 
-    fastify.register(errorHandler);
-
     fastify.route({
-        url     : '/pong/statistics',
+        url     : '/pongGame/statistics',
         method  : 'GET',
-        schema  : statisticsSchema,
         handler : pongStatisticsHandler,
     })
 }

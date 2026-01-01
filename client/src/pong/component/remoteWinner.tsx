@@ -20,11 +20,11 @@ export default function RemoteWinner({ score, match }: WinnerPropsType) {
 
     if (score && match) {
         return (
-            <div className="border rounded border-white w-1/4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 tflex flex-col m-auto">
-                <img className="w-1/4 m-auto my-4" src={winner?.avatar} />
-                <h1 className="text-[1em] m-auto text-center text-white my-4">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-linear-0 from-violet-400 z-555 to-neon flex justify-center items-center p-6 flex-col gap-2 rounded-lg">
+                <img className="w-12 h-12 md:w-24 md:h-24" src={winner?.avatar} />
+                <h2 className="text-center text-xs md:text-lg text-slate-800">
                     Winner is: {(winner && winner.username) || 'No Winner!!'}
-                </h1>
+                </h2>
             </div>
         );
     }

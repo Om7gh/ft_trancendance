@@ -47,7 +47,7 @@ const allPieces = [
   'xkcd',
 ];
 
-function ChessSettings() {
+function ChessSettings({close} : {close: () => void}) {
   useGetChessPiece();
   const { user } = useContext(GlobalContext);
   const pieceSetName = useChessStore((s) => s.pieceSetName);
@@ -105,6 +105,7 @@ function ChessSettings() {
             if (!selected) return;
             if (!user?.id) return;
             updateChessPiece.mutate({ id: user.id, chess_piece: selected });
+            close()
           }}
         >
           Save

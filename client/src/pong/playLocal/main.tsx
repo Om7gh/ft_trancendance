@@ -33,65 +33,81 @@ function Match({setError, setMatchState, setScore }: MatchPropsType) {
     <div className="relative flex flex-col m-auto my-10">
       <div 
         className='absolute top-0 w-1/3 h-1/3'
-        onTouchStart={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
+          onTouchEndHandler("s");
           onTouchStartHandler("w");
-        
         }}
-        onTouchEnd={(e) => {
+        onPointerUp={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("w");
         }}
+        onContextMenu={(e) => {
+          e.preventDefault()
+        }}
       ></div>
       <div
         className='absolute top-0 right-0 w-1/3 h-1/3'
-        onTouchStart={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          onTouchStartHandler("arrowup");
+          onTouchEndHandler("arrowdown");
+          onTouchStartHandler
+          ("arrowup");
         
         }}
-        onTouchEnd={(e) => {
+        onPointerUp={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("arrowup");
         }}
+        onContextMenu={(e) => {
+          e.preventDefault()
+        }}
       ></div>
       <canvas
         width="700" height="400" ref={canvasRef}
-        className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900 w-72 h-72 md:w-full md:h-full"
+        className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900 w-full h-full"
         >
         Your browser does not support HTML canvas API!!
       </canvas>
       <div
         className='absolute bottom-0 w-1/3 h-1/3'
-        onTouchStart={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          onTouchStartHandler("s");
-        
+          onTouchEndHandler("w");
+          onTouchStartHandler
+          ("s");
         }}
-        onTouchEnd={(e) => {
+        onPointerUp={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("s");
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault()
         }}
       >
       </div>
       <div
       className='absolute bottom-0 right-0 w-1/3 h-1/3'
-        onTouchStart={(e) => {
+        onPointerDown={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          onTouchStartHandler("arrowdown");
-        
+          onTouchEndHandler("arrowup");
+          onTouchStartHandler
+          ("arrowdown");
         }}
-        onTouchEnd={(e) => {
+        onPointerUp={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onTouchEndHandler("arrowdown");
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault()
         }}
       ></div>
     </div>
@@ -116,7 +132,7 @@ export function PlayLocal() {
       />
       {matchState === 'done' && <LocalWinner score={score} />}
       <button
-          className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-1/2"
+          className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-full md:w-1/2"
           onClick={() => {
             navigate('/dashboard/games/pingpong');
           }}
