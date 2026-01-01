@@ -25,7 +25,8 @@ function IncomingMsgBubble({user, msgContent}: MsgBubbleProps){
 	return (
 		<div className="justify-start mt-3 flex gap-3">
 			<Avatar imgUrl={user.photo_url} name={user.name} type="receiver"/>
-			<p className="bg-violet-500  text-gray-200 max-w-[50%] p-2 rounded-xl self-start rounded-bl-none break-all whitespace-pre-wrap">
+			<p className="bg-violet-500  text-gray-200 max-w-[50%] p-2 rounded-xl
+				self-start rounded-bl-none wrap-anywhere">
 				{msgContent}
 			</p>
 		</div>
@@ -36,7 +37,8 @@ function OutgoingMsgBubble({user, msgContent}: MsgBubbleProps)
 {
 	return (
 		<div className="justify-end mt-3 flex gap-3">
-			<p className="bg-neon max-w-[50%] p-2 rounded-xl text-gray-200 rounded-br-none self-start break-all whitespace-pre-wrap">
+			<p className="bg-neon max-w-[50%] p-2 rounded-xl text-gray-200
+				rounded-br-none self-start wrap-anywhere">
 				{msgContent}
 			</p>
 			<Avatar imgUrl={user.photo_url} name={user.name} type="sender"/>
@@ -67,9 +69,13 @@ function ChatBody({senderUser, targetUser, messages}: ChatBodyProps){
 
 	return (
 		<div ref={scrollableElement}
-			id="chatBody"
-			className="h-full mb-1 bg-slate-800/40 p-4 scrollbar flex overflow-auto flex-col">
-			{messages?.map((message) => <MsgBubbleResolverProps sender={senderUser}  target={targetUser} message={message}/>)}
+			id="chatBody"className="h-full mb-1 bg-slate-800/40 p-4
+				scrollbar flex overflow-auto flex-col">
+			{messages?.map((message) => <MsgBubbleResolverProps
+				sender={senderUser} 
+				target={targetUser}
+				message={message}/>
+				)}
 		</div>
 	);
 }
