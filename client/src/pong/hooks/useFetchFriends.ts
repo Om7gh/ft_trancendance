@@ -10,8 +10,8 @@ export default function useFetchFriends(setFriends: ((value: []) => void), setEr
                 if (!ignored) {
                     setFriends(response.data);
                 }
-            } catch (err: unknown) {
-                setError("Fail to fetch friends!!");
+            } catch (err: any) {
+                setError(err?.message ?? "Fail to fetch friends!!");
             }
         })();
 

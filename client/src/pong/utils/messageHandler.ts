@@ -55,7 +55,7 @@ export default function messageHandler(
 ) {
   let message = JSON.parse(event.data);
 
-  if (message.state === 'ok') {
+  if (message && (message.state === 'ok')) {
     if (message.data.event === 'matchState') {
       setMatchState(message.data.value);
     } else if (message.data.event === 'updateScore') {
@@ -71,8 +71,6 @@ export default function messageHandler(
       drawPaddle(message.data.rightPaddle, context, customization?.right_paddle_color ?? "red");
     }
   } else {
-    if (message.reason) {
-      setError(message.reason);
-    }
+      setError("Unexpected error diring the match!!");
   }
 }
