@@ -2,9 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 import api from "../clientHttpService";
 import { toast } from "react-toastify";
 
-async function updatePassword() {
+async function updatePassword(data) {
     try {
-        await api.patch("/api/profile/password")
+        await api.patch("/api/profile/password", data)
     } catch(e) {
         throw e
     }
