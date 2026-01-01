@@ -3,7 +3,7 @@ import FriendsService from '../auth/friends.service';
 
 const useGetFriends = () => {
     return useQuery({
-        queryKey: ['getFriend'],
+        queryKey: ['getFriends'],
         queryFn: FriendsService.getFriends,
     });
     // {data, error, isSuccess, isError}

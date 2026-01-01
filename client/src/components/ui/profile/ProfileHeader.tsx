@@ -1,4 +1,7 @@
-import { useSendFriendRequest } from '@/services/friends';
+import { useGetFriends, useGetReceivedRequests, useGetSentRequests, useApproveFriendRequest, useRejectFriendRequest, useSendFriendRequest } from '@/services/friends';
+import { BiLoaderAlt } from 'react-icons/bi';
+import { useState } from 'react';
+import type { Friend } from '@/types/friendTypes';
 
 interface UserData {
   id: string;
@@ -18,12 +21,55 @@ interface ProfileHeaderProps {
 }
 
 function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
-  const mutateFriend = useSendFriendRequest();
+  const sendFriendRequest = useSendFriendRequest();
+  const approveFriendRequest = useApproveFriendRequest();
+  const rejectFriendRequest = useRejectFriendRequest();
 
-  const sendRequest = () => {
-    if (userData?.id) {
-      mutateFriend.mutate(userData.id);
-    }
+  const { data: receivedRequests } = useGetReceivedRequests();
+  const { data: sentRequests } = useGetSentRequests();
+  const { data: friends } = useGetFriends();
+
+  const [activeAction, setActiveAction] = useState<
+    null | 'send' | 'approve' | 'reject' | 'cancel'
+  >(null);
+
+  const uid = userData?.id;
+  const hasReceivedRequestFromUser =
+    !!uid && !!receivedRequests?.some((r: Friend) => r.id === uid);
+  const hasSentRequestToUser =
+    !!uid && !!sentRequests?.some((r: Friend) => r.id === uid);
+  const isFriend = !!uid && !!friends?.some((f: Friend) => f.id === uid);
+
+  const handleSendRequest = () => {
+    if (!uid) return;
+    setActiveAction('send');
+    sendFriendRequest.mutate(uid, {
+      onSettled: () => setActiveAction(null),
+    });
+  };
+
+  const handleApproveRequest = () => {
+    if (!uid) return;
+    setActiveAction('approve');
+    approveFriendRequest.mutate(uid, {
+      onSettled: () => setActiveAction(null),
+    });
+  };
+
+  const handleRejectRequest = () => {
+    if (!uid) return;
+    setActiveAction('reject');
+    rejectFriendRequest.mutate(uid, {
+      onSettled: () => setActiveAction(null),
+    });
+  };
+
+  const handleCancelSentRequest = () => {
+    if (!uid) return;
+    setActiveAction('cancel');
+    rejectFriendRequest.mutate(uid, {
+      onSettled: () => setActiveAction(null),
+    });
   };
 
   const getOnlineStatus = () => {
@@ -69,12 +115,81 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
             <p>{userData?.bio}</p>
           </div>
           {!isOwnProfile && (
-            <button 
-              className="text-sm md:text-lg text-violet-200 bg-slate-950/50 px-4 py-2 shadow shadow-slate-900 hover:bg-slate-950 transition duration-200 cursor-pointer" 
-              onClick={sendRequest}
-            >
-              Add Friend
-            </button>
+            <div className="flex flex-wrap gap-2">
+              {isFriend ? (
+                <button
+                  className="text-sm md:text-lg text-violet-200 bg-slate-950/30 px-4 py-2 shadow shadow-slate-900 cursor-not-allowed opacity-70 rounded-xl"
+                  disabled
+                >
+                  Friends
+                </button>
+              ) : hasReceivedRequestFromUser ? (
+                <>
+                  <button
+                    className="text-sm md:text-lg text-violet-200 bg-teal-500/50 rounded-xl px-4 py-2 shadow shadow-slate-900 hover:bg-teal-950 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={handleApproveRequest}
+                    disabled={activeAction !== null}
+                  >
+                    {activeAction === 'approve' ? (
+                      <span className="inline-flex items-center gap-2 bg-teal-500">
+                        <BiLoaderAlt className="animate-spin" /> Accepting
+                      </span>
+                    ) : (
+                      'Accept'
+                    )}
+                  </button>
+                  <button
+                    className="text-sm md:text-lg text-violet-200 bg-pink-800/50 rounded-xl px-4 py-2 shadow shadow-slate-900 hover:bg-slate-950 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={handleRejectRequest}
+                    disabled={activeAction !== null}
+                  >
+                    {activeAction === 'reject' ? (
+                      <span className="inline-flex items-center gap-2">
+                        <BiLoaderAlt className="animate-spin" /> Rejecting
+                      </span>
+                    ) : (
+                      'Reject'
+                    )}
+                  </button>
+                </>
+              ) : hasSentRequestToUser ? (
+                <>
+                  <button
+                    className="text-sm md:text-lg text-violet-200 bg-slate-950/30 px-4 py-2 shadow shadow-slate-900 cursor-not-allowed opacity-70 rounded-xl"
+                    disabled
+                  >
+                    Request Sent
+                  </button>
+                  <button
+                    className="text-sm md:text-lg text-violet-200 bg-pink-950/50 px-4 py-2 shadow shadow-pink-900 hover:bg-pink-950 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={handleCancelSentRequest}
+                    disabled={activeAction !== null}
+                  >
+                    {activeAction === 'cancel' ? (
+                      <span className="inline-flex items-center gap-2">
+                        <BiLoaderAlt className="animate-spin" /> Canceling
+                      </span>
+                    ) : (
+                      'Cancel'
+                    )}
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="text-sm md:text-lg text-violet-200 bg-slate-950/50 px-4 py-2 shadow shadow-slate-900 hover:bg-slate-950 transition duration-200 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  onClick={handleSendRequest}
+                  disabled={activeAction !== null}
+                >
+                  {activeAction === 'send' ? (
+                    <span className="inline-flex items-center gap-2">
+                      <BiLoaderAlt className="animate-spin" /> Sending
+                    </span>
+                  ) : (
+                    'Add Friend'
+                  )}
+                </button>
+              )}
+            </div>
           )}
         </div>
       </div>
