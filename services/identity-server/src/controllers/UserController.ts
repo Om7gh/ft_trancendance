@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { SqliteError } from 'better-sqlite3';
 import {
     type FastifyReply,
     type FastifyRequest,
