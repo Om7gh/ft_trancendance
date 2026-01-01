@@ -56,7 +56,7 @@ function ConversationPanel({
 	useWsResponse(connection, incomingMsgHandler, targetUserCard?.friend.id);
 
 	const {id, username: name, avatar: photo_url} = userInfo?.user as GloblaUser;
-	const currentUser : User = {id, name, photo_url, connectionState: "active"};
+	const currentUser : User = {id, name, photo_url, connectionState: "active"} as User;
 
 	function incomingMsgHandler(msg: any){
 		if (msg.senderID === targetUserCard?.friend?.id){

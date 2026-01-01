@@ -52,29 +52,11 @@ export default function Profile(): JSX.Element {
           <ul className="divide-y divide-slate-300">
             <li className="hover:bg-slate-700 transition-colors">
               <Link
-                to="home"
-                className="block px-4 py-3 text-sm text-slate-100"
-                onClick={() => setActive(false)}
-              >
-                Home
-              </Link>
-            </li>
-            <li className="hover:bg-slate-700 transition-colors">
-              <Link
                 to={`profile/${user?.username}`}
                 className="block px-4 py-3 text-sm text-slate-100"
                 onClick={() => setActive(false)}
               >
                 My Profile
-              </Link>
-            </li>
-            <li className="hover:bg-slate-700 transition-colors">
-              <Link
-                to="settings"
-                className="block px-4 py-3 text-sm text-slate-100"
-                onClick={() => setActive(false)}
-              >
-                Settings
               </Link>
             </li>
             <li className="hover:bg-slate-700 transition-colors">

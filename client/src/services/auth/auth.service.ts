@@ -4,6 +4,7 @@ import type {
     PasswordData,
     ProfileData,
     RegisterForm,
+    ResetPassword,
     TwoFACode,
     Username,
 } from '@/types/auth.types';
@@ -12,6 +13,26 @@ import api from '../clientHttpService';
 export default abstract class AuthService {
     static async register(registerForm: RegisterForm) {
         const { data } = await api.post('/api/auth/signup', registerForm);
+        return data;
+    }
+
+    static async setupTwoFa() {
+        const { data } = await api.get("/api/auth/2fa/setup")
+        return data
+    }
+
+    static async verifyTwoFa(code: string) {
+        const { data } = await api.post("/api/auth/2fa/verify", { code })
+        return data
+    }
+
+    static async disableTwoFa(code: string) {
+        const { data } = await api.post("/api/auth/2fa/disable", { code })
+        return data
+    }
+
+    static async resetPassowrd(payload: ResetPassword) {
+         const { data } = await api.post('/api/auth/reset-password', payload);
         return data;
     }
 
@@ -41,13 +62,24 @@ export default abstract class AuthService {
         return data;
     }
 
+    static async updatePassword(data: { current_password: string; new_password: string }) {
+        const { data: response } = await api.patch("/api/profile/password", data);
+        return response;
+    }
+
     static async updateProfile(profileData: ProfileData) {
         const formData = new FormData();
-        if (profileData.avatar) {
+        if ('avatar' in profileData) {
             formData.append('avatar', profileData.avatar);
         }
-        if (profileData.bio) {
+        if ('bio' in profileData) {
             formData.append('bio', profileData.bio);
+        }
+        if ('first_name' in profileData) {
+            formData.append('first_name', profileData.first_name);
+        }
+        if ('last_name' in profileData) {
+            formData.append('last_name', profileData.last_name);
         }
         const { data } = await api.patch('/api/profile/', formData, {
             headers: { 'Content-Type': 'multipart/form-data' }

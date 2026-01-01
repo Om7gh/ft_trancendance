@@ -43,4 +43,9 @@ export default abstract class FriendsService {
         const { data } = await api.delete(`/api/friends/requests/${id}/reject`);
         return data;
     }
+
+    static async cancel(id: string) {
+        const { data } = await api.delete(`/api/friends/requests/${id}/cancel`);
+        return data;
+    }
 }

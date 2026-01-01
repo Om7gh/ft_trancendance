@@ -94,7 +94,8 @@ function messagesPlugin(instance) {
 							id: conversation.id,
 							friend: parsedMsg.sender,
 							unread_msg: 0,
-							presence: "online"
+							presence: "online",
+							lastMsg: parsedMsg.content
 						}
 					}));
 				}
@@ -106,7 +107,8 @@ function messagesPlugin(instance) {
 							id: conversation.id,
 							friend: parsedMsg.target,
 							unread_msg: 0,
-							presence: targetIsConnected ? "online" : "offline"
+							presence: targetIsConnected ? "online" : "offline",
+							lastMsg: parsedMsg.content
 						}
 					}));
 				}

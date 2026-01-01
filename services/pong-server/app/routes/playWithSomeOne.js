@@ -48,6 +48,12 @@ async function playWithSomeOneHandler(request, reply) {
         }
     }
 
+    if (50 < this.roomList.size) {
+        const error = new Error("Service actually unavailable!!")
+        error.statusCode = 503;
+        throw error;
+    }
+
     if (!currentRoom || !currentRoom.isWaiting()) {
         currentRoom = new GenericRoom();
         this.addToRoomList(currentRoom);

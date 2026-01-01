@@ -50,7 +50,7 @@ function Chat(){
 		selectedTab,
 		serachQuery
 	);
-	
+
 	function getFetchStatusByTab(tabName: string){
 		if (tabName === "Chats" || tabName === "Unread")
 			return (conversationStatus);

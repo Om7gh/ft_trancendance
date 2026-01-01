@@ -3,51 +3,120 @@ import { useUpdatePassword } from "@/services/user/useUpdatePassword"
 import { InputField } from "../utils/Button"
 import { useState, type FormEvent } from "react";
 function UpdatePassword() {
-    const mutate = useUpdatePassword();
-    const [passwordsMatch, setPasswordsMatch] = useState(true);
+    const [error, setError] = useState('');
+    const mutate = useUpdatePassword(setError);
+
+    const validatePassword = (password: string): boolean => {
+        if (password.length < 8) {
+            setError('Password must be at least 8 characters long');
+            return false;
+        }
+
+        return true;
+    };
 
     const handleSubmit = (e: FormEvent<any>) => {
       e.preventDefault();
+      setError('');
+      
       const formdata = new FormData(e.currentTarget);
+      const form = e.currentTarget;
+      const oldPassword = formdata.get('oldpassword') as string;
       const confirmPassword = formdata.get('confirmNewPassword') as string;
       const password = formdata.get('newpassword') as string;
 
+      if (!oldPassword.trim()) {
+        setError('Current password is required');
+        return;
+      }
+
+      if (!validatePassword(password)) {
+        return;
+      }
+
       if (confirmPassword !== password) {
-        setPasswordsMatch(false)
-        return ;
+        setError("Passwords don't match!");
+        return;
       }
-    setPasswordsMatch(true);
+
       const data = {
-        current_password: formdata.get("oldpassword") as string,
-        new_password: formdata.get("newpassword") as string,
+        current_password: oldPassword,
+        new_password: password,
       }
-      mutate.mutate(data)
+      mutate.mutate(data, {
+        onSuccess: () => {
+          form.reset();
+        }
+      })
     }
 
     return (
-      <div className="flex-1 p-6 ">
-      <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-        <div>
-        <InputField type="password" placeholder="old password" name="oldpassword" id="oldpassword" />
-        </div>
-         <div>
-        <InputField type="password" placeholder="new password" name="newpassword" id="newpassword" />
-        </div> <div>
-        <InputField type="password" placeholder="confirm new password" name="confirmNewPassword" id="confirmNewPassword" />
-        {!passwordsMatch && (
-                <p className="mt-1 text-sm text-red-400">
-                  Passwords don't match!
-                </p>
+      <div className="flex-1 p-6">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+            <h3 className="text-lg font-semibold text-slate-200 mb-1">
+              Update Password
+            </h3>
+            <p className="text-sm text-slate-400 mb-6">
+              Change your account password
+            </p>
+
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="oldpassword" className="block text-sm font-medium text-slate-300 mb-2">
+                  Current Password
+                </label>
+                <InputField 
+                  type="password" 
+                  placeholder="Enter current password" 
+                  name="oldpassword" 
+                  id="oldpassword"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="newpassword" className="block text-sm font-medium text-slate-300 mb-2">
+                  New Password
+                </label>
+                <InputField 
+                  type="password" 
+                  placeholder="Enter new password" 
+                  name="newpassword" 
+                  id="newpassword"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-slate-300 mb-2">
+                  Confirm New Password
+                </label>
+                <InputField 
+                  type="password" 
+                  placeholder="Confirm new password" 
+                  name="confirmNewPassword" 
+                  id="confirmNewPassword"
+                />
+              </div>
+        
+              {error && (
+                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30">
+                  <p className="text-sm text-rose-400">{error}</p>
+                </div>
               )}
+        
+              <button 
+                type="submit" 
+                disabled={mutate.isPending}
+                className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-violet-600 hover:bg-violet-700 
+                         text-white font-medium transition-colors shadow-lg shadow-violet-900/30
+                         disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {mutate.isPending ? "Updating..." : "Update Password"}
+              </button>
+            </form>
+          </div>
         </div>
-          <button
-                    type="submit"
-                    className="mt-4 rounded-lg bg-violet-600 text-slate-100 hover:bg-violet-700 transition px-4 py-2 shadow-xl shadow-slate-900"
-                    >
-                    Update
-                </button>
-      </form>
-    </div>
+      </div>
   )
 }
 

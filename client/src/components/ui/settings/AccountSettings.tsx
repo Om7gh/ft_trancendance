@@ -1,5 +1,5 @@
 import Enable2fa from "@/components/ui/settings/Enable2fa";
-import UpdateAvatarBio from "@/components/ui/settings/UpdateAvatarBio";
+import UpdateProfile from "@/components/ui/settings/UpdateProfile";
 import UpdatePassword from "@/components/ui/settings/UpdatePassword";
 import { IoSettings } from "react-icons/io5";
 import { GrUpdate } from "react-icons/gr";
@@ -21,8 +21,8 @@ function AccountSettings() {
 
       <div className="px-4 w-full max-w-400 mx-auto flex flex-col justify-start h-full gap-10">
 
-        <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 bg-linear-to-b from-slate-950/20 to-slate-950/60 rounded-xl">
-          <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center px-6">
+        <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 bg-slate-950/50 rounded-xl">
+          <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center p-6">
             <GrUpdate className="w-12 h-12 md:w-24 md:h-24 text-violet-500" />
             <div className="text-base bg-linear-to-l from-violet-500 to-neon text-transparent bg-clip-text text-center max-w-[80%] md:text-2xl tracking-wider">
               <p>Update to a new and attractive avatar</p>
@@ -30,18 +30,18 @@ function AccountSettings() {
           </div>
 
           <div className="w-full md:w-1/2">
-            <UpdateAvatarBio />
+            <UpdateProfile />
           </div>
         </div>
 
         {
           user?.provider === "local" &&
-          <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 ">
+          <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 bg-slate-950/50 rounded-xl">
           <div className="w-full md:w-1/2">
             <UpdatePassword />
           </div>
 
-          <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center px-6">
+          <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center p-6">
             <SiAwssecretsmanager className="w-12 h-12 md:w-24 md:h-24 text-violet-500" />
             <p className="text-base bg-linear-to-l from-violet-500 to-neon text-transparent bg-clip-text text-center max-w-[80%] md:text-2xl tracking-wider">
               Protect Yourself With updating your password
@@ -52,8 +52,8 @@ function AccountSettings() {
 
 
 
-        <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 bg-linear-to-t from-slate-950/20 to-slate-950/60 rounded-xl">
-          <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center px-6">
+        <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 bg-slate-950/50 rounded-xl">
+          <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center p-6">
             <Si2Fas className="w-12 h-12 md:w-24 md:h-24 text-violet-500" />
             <p className="text-base bg-linear-to-l from-violet-500 to-neon text-transparent bg-clip-text text-center max-w-[80%] md:text-2xl tracking-wider">
               enable 2fa for extra security layer

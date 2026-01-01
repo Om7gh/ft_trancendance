@@ -257,4 +257,25 @@ export class FriendshipController {
         };
         reply.send(response);
     }
+
+    static async cancelRequest(request: FastifyRequest, reply: FastifyReply) {
+        const app: FastifyInstance = request.server;
+        const user: User = request.user;
+        const { uid } = request.params as Pick<User, 'uid'>;
+
+        const target = app.usersRepository.findByUID(uid);
+        if (!target) {
+            return reply.notFound(UserController.ERR_USER_NOT_FOUND);
+        }
+        const friendships: Friendship[] = app.friendshipRepository.get(-1, user.id, target.id, 0);
+        if (friendships.length == 0) {
+            return reply.notFound(FriendshipController.ERR_RECORD_NOT_FOUND);
+        }
+        app.friendshipRepository.delete(friendships[0].id);
+        const response = {
+            success: true,
+            data: null,
+        };
+        reply.send(response);
+    }
 }

@@ -19,3 +19,13 @@ export interface completeProfile {
   bio: string;
   username: string;
 }
+
+
+export type Setup2FAResponse =
+  | {
+      success: boolean
+      qrcode?: string
+      uri?: string
+      html?: string
+    }
+  | string

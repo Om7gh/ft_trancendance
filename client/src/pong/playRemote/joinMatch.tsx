@@ -15,9 +15,9 @@ export default function JoinMatch() {
     useFetchMatch(`/pongGame/remote/joinMatch?rid=${matchId}`, setMatch, setError);
     
     if (error)
-    return <MessageDisplayer message={error} />;
+        return <MessageDisplayer message={error} />;
     else if (match)
-    return <PlayMatch match={match} />;
+        return <PlayMatch match={match} />;
 
     return <MessageDisplayer message={'Fetching Match...'} />;
 }

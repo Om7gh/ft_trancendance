@@ -10,6 +10,11 @@ export interface RegisterForm extends LoginForm {
     email: string
 }
 
+export interface ResetPassword {
+    newPassword: string,
+    confirmPassword: string
+}
+
 export type TwoFACode = {
     code: string;
 };
@@ -21,6 +26,8 @@ export type Username = {
 export type ProfileData = {
     avatar: File;
     bio: string;
+    first_name: string;
+    last_name: string;
 };
 
 export type Email = {

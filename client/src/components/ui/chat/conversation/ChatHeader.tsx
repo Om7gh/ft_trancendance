@@ -97,8 +97,12 @@ function UserActions({showActions, onTap, onAction}: UserActionsProps){
 				{
 					showActions && 
 					<div className="relative w-full h-[40%]">
-						<UserInvite onInvite={onAction} wrapperStyle="bg-violet-500 border-b-2 border-black p-1 text-center h-full font-bold leading-[2.2] text-sm"/>
-						<UserBlock onBlock={onAction} wrapperStyle="bg-neon text-center p1 h-full font-bold leading-[2.2] text-sm"/>
+						<UserInvite
+							onInvite={onAction}
+							wrapperStyle="bg-violet-500 border-b-2 border-black p-1 text-center h-full font-bold leading-[2.2] text-sm"/>
+						<UserBlock
+							onBlock={onAction}
+							wrapperStyle="bg-neon text-center p1 h-full font-bold leading-[2.2] text-sm"/>
 					</div>
 				}
 			</div>
@@ -106,8 +110,10 @@ function UserActions({showActions, onTap, onAction}: UserActionsProps){
 	}
 	return (
 		<div className="basis-[40%] flex h-full gap-3 items-center text-[70%] text-center leading-5 font-bold justify-center">
-			<UserInvite onInvite={onAction} wrapperStyle="bg-violet-500 flex-1 p-1 rounded-2xl"/>
-			<UserBlock onBlock={onAction} wrapperStyle="bg-neon flex-1 p-1 rounded-2xl"/>
+			<UserInvite
+				onInvite={onAction} wrapperStyle="bg-violet-500 flex-1 p-1 rounded-2xl"/>
+			<UserBlock
+				onBlock={onAction} wrapperStyle="bg-neon flex-1 p-1 rounded-2xl"/>
 		</div>
 	);
 }
