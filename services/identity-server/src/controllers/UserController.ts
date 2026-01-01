@@ -40,13 +40,11 @@ export class UserController {
                 return reply.badRequest('No fields to update');
             }
 
-            const response = fastify.usersRepository.update(user.id, payload);
-            return reply.send(asUserInfo(response));
+            const updatedUser = fastify.usersRepository.update(user.id, payload);
+            request.user = updatedUser;
+            return reply.send(asUserInfo(request.user));
         } catch (err) {
-            if (err instanceof SqliteError || err instanceof Error) {
-                return reply.badRequest(err.message);
-            }
-            return reply.badRequest('An unknown error occurred');
+            return reply.badRequest(err.message);
         }
     }
 
