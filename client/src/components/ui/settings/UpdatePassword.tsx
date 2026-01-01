@@ -7,10 +7,10 @@ function UpdatePassword() {
     const [passwordsMatch, setPasswordsMatch] = useState(true);
 
     const handleSubmit = (e: FormEvent<any>) => {
-      e.preventDefault;
+      e.preventDefault();
       const formdata = new FormData(e.currentTarget);
       const confirmPassword = formdata.get('confirmNewPassword') as string;
-      const password = formdata.get('password') as string;
+      const password = formdata.get('newpassword') as string;
 
       if (confirmPassword !== password) {
         setPasswordsMatch(false)
@@ -19,7 +19,7 @@ function UpdatePassword() {
     setPasswordsMatch(true);
       const data = {
         current_password: formdata.get("oldpassword") as string,
-        new_password: formdata.get("newpassowrd") as string,
+        new_password: formdata.get("newpassword") as string,
       }
       mutate.mutate(data)
     }
