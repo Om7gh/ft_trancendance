@@ -18,7 +18,7 @@ function FriendsList({ friendsList }: FriendsListProps) {
 
     const getFriendshipTime = (friend: any) => {
         if (!friend?.friends_since) return 'unknown period';
-        alert(friend.friends_since);
+
         const now = Date.now();
         const lastLogin = friend.friends_since * 1000;
         const diffMs = now - lastLogin;
