@@ -2,7 +2,6 @@ import fastify from 'fastify';
 import websocket from '@fastify/websocket';
 import cookie from '@fastify/cookie';
 import axios from 'fastify-axios';
-// import corsPlugin from './plugins/corsPlugin.js';
 import dataBase from './plugins/dataBase.js';
 import statistics from './routes/statistics.js';
 import validateUserPlugin from './plugins/validateUser.js';
@@ -18,7 +17,6 @@ app.register(axios);
 app.register(websocket);
 
 app.register(cookie);
-// app.register(corsPlugin);
 app.register(validateUserPlugin);
 app.register(validateRoomPlugin);
 app.register(dataBase, { dbPath: "/var/local/pong.db", });

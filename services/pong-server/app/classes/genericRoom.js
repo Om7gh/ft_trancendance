@@ -194,7 +194,6 @@ export default class GenericRoom extends EventEmitter {
                 this.waitMembersToJoin();
             }
         } catch (error) {
-            console.log(error);
             this.emit("error");
             this.cancelMatch();
         }

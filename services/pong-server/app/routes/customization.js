@@ -12,8 +12,6 @@ async function pongCustomizationUpdateHandler(request, reply) {
         throw error;
     }
 
-    console.log(data);
-
     this.db.insertPongCustomizations.run({
         id: user.id,
         ball_color: data.ball_color,
