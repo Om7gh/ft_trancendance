@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from "react"
+import { useContext, useMemo, useState, type FormEvent } from "react"
 import { InputField } from "../utils/Button"
 import { GlobalContext } from "@/App"
 import { useDisable2fa, useSendEnable2fa, useVerifyEnable2fa } from "@/services/user/useEnable2fa"
@@ -32,11 +32,7 @@ function Enable2fa() {
   const { qrcode, html } = useMemo(() => extractQrFromSetup(setupPayload), [setupPayload])
   const hasQr = Boolean(qrcode || html)
 
-  return (
-    <div className="flex-1 p-6 m-auto">
-      <form
-        className="flex flex-col gap-5"
-        onChange={(e) => {
+  const handleChange = (e: FormEvent<any>) => {
           const target = e.target as unknown as HTMLInputElement | null
           if (!target) return
           if (target.id !== "enable2fa") return
@@ -48,8 +44,9 @@ function Enable2fa() {
             verifyMutation.reset()
             disableMutation.reset()
           }
-        }}
-        onSubmit={(e) => {
+        }
+      
+  const handleSubmit = (e: FormEvent<any>) => {
           e.preventDefault()
           if (isMfaEnabled) {
             if (!code.trim()) return
@@ -76,7 +73,14 @@ function Enable2fa() {
               setupMutation.reset()
             },
           })
-        }}
+        }
+
+  return (
+    <div className="flex-1 p-6 m-auto">
+      <form
+        className="flex flex-col gap-5"
+        onChange={handleChange}
+        onSubmit={handleSubmit}
       >
         <div className="flex items-center justify-between gap-4">
           <div className="text-slate-200">
@@ -86,7 +90,7 @@ function Enable2fa() {
             </span>
           </div>
 
-          {isMfaEnabled && (
+          {!isMfaEnabled && (
             <div className="flex items-center gap-3">
               <InputField
                 type="checkbox"
