@@ -42,7 +42,7 @@ export class UserController {
             const updatedUser = fastify.usersRepository.update(user.id, payload);
             request.user = updatedUser;
             return reply.send(asUserInfo(request.user));
-        } catch (err) {
+        } catch (err: any) {
             return reply.badRequest(err.message);
         }
     }
