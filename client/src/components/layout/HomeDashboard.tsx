@@ -5,7 +5,6 @@ import PlayerStatistics from '../ui/dashboard/PlayerStatictics';
 import DashboardWrapper from './DashboardWrapper';
 import { GiChessQueen } from 'react-icons/gi';
 import { FaTableTennisPaddleBall } from 'react-icons/fa6';
-import TodayGames from '../ui/dashboard/TodayGames';
 import useGetChessHistory from '@/services/chess/useChessHistory';
 import { GlobalContext } from '@/App';
 import useGetPongStat from '@/services/user/useGetPongStats';

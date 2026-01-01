@@ -21,7 +21,6 @@ import {
 import Chess from '@/pages/Chess';
 import Customization from '@/pages/Customization';
 import GamePortal from '@/pages/GamePortal';
-import GameSettings from '@/pages/GameSettings';
 
 import PongMain from '@/pong/PongMain';
 import { PlayLocal } from '@/pong/playLocal/main.tsx';
@@ -31,6 +30,8 @@ import PlayWithSomeOne from '@/pong/playRemote/playWithSomeOne.tsx';
 import PlayTournament from '@/components/ui/game/PlayTournament';
 import PlayWithFriend from '@/pong/playRemote/playWithFriend';
 import JoinMatch from '@/pong/playRemote/joinMatch';
+import SettingsPortal from '@/components/ui/settings/SettingsPortal';
+import AccountSettings from '@/components/ui/settings/AccountSettings';
 
 const router = createBrowserRouter([
   {
@@ -52,6 +53,24 @@ const router = createBrowserRouter([
       {
         path: 'settings',
         element: <Settings />,
+        children: [
+          {
+            path: 'account',
+            element: <AccountSettings />,
+          },
+          {
+            path: 'game',
+            element: <Customization />,
+          },
+           {
+            path: 'portal',
+            element: <SettingsPortal />,
+          },
+          {
+            index: true,
+            element: <Navigate to="portal" replace />
+          },
+        ],
       },
       {
         path: 'games',
@@ -67,8 +86,8 @@ const router = createBrowserRouter([
                 element: <PongRemote />,
                 children: [
                   { path: 'someone', element: <PlayWithSomeOne /> },
-                  {path: "invitefriend", element: <PlayWithFriend />},
-                  {path: "joinMatch", element: <JoinMatch />},
+                  { path: 'invitefriend', element: <PlayWithFriend /> },
+                  { path: 'joinMatch', element: <JoinMatch /> },
                   { index: true, element: <RemoteOptions /> },
                 ],
               },
@@ -85,10 +104,6 @@ const router = createBrowserRouter([
           {
             path: 'portal',
             element: <GamePortal />,
-          },
-          {
-            path: 'settings',
-            element: <GameSettings />,
           },
           {
             path: 'chess',

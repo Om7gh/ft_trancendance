@@ -96,9 +96,6 @@ services:
       - pingpong
     volumes:
       - $HOME/data/pong:/var/local
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
 
   notification:
     container_name: notification

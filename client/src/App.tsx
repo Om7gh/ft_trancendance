@@ -18,6 +18,7 @@ export interface User {
   last_logout: number;
   username: string;
   provider: string
+  mfa_enabled: boolean
 }
 
 interface GlobalContextType {

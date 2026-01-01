@@ -64,8 +64,7 @@ function Enable2fa() {
   const [enabled, setEnabled] = useState(false)
 
   const {user} = useContext(GlobalContext)
-  console.log(user)
-  const isMfaEnabled = Boolean(false)
+  const isMfaEnabled = Boolean(user?.mfa_enabled)
 
   const setupMutation = useSendEnable2fa()
   const verifyMutation = useVerifyEnable2fa()
@@ -126,6 +125,7 @@ function Enable2fa() {
           <div className="text-slate-200">
             <span className="font-medium">2FA status:</span>{" "}
             <span className={isMfaEnabled ? "text-emerald-400" : "text-slate-400"}>
+              {isMfaEnabled ? "enabled" : "disabled"}
             </span>
           </div>
 
