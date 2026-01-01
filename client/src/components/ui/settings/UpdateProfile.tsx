@@ -77,7 +77,7 @@ function UpdateProfile() {
         }
 
         mutateUpdate.mutate(updatedData as ProfileData)
-
+        setFile(null);
 
     }
 
