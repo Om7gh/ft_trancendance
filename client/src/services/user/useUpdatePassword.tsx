@@ -1,24 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
-import api from "../clientHttpService";
+import AuthService from "../auth/auth.service";
 import { toast } from "react-toastify";
 
-async function updatePassword(data) {
-    try {
-        await api.patch("/api/profile/password", data)
-    } catch(e) {
-        throw e
-    }
-}
 
-export function useUpdatePassword() {
+export function useUpdatePassword(onErrorCallback?: (error: string) => void) {
    return useMutation({
        mutationKey: ['update-password'],
-       mutationFn: updatePassword,
+       mutationFn: AuthService.updatePassword,
        onSuccess: () => {
          toast.success('Password updated successfully');
        },
        onError: (err: any) => {
-         toast.error(err?.message ?? 'Failed to update password');
+        console.log(err);
+        const errorMessage = err?.response?.data?.message || err?.message || 'Failed to update password';
+        if (onErrorCallback) {
+          onErrorCallback(errorMessage);
+        }
        },
      });
 }
