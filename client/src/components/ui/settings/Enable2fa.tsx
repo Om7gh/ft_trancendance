@@ -1,50 +1,8 @@
-import { useMutation} from "@tanstack/react-query"
 import { useContext, useMemo, useState } from "react"
 import { InputField } from "../utils/Button"
-import api from "@/services/clientHttpService"
 import { GlobalContext } from "@/App"
-
-async function setupTwoFa() {
-  const { data } = await api.get("/api/auth/2fa/setup")
-  return data
-}
-
-async function verifyTwoFa(code: string) {
-  const { data } = await api.post("/api/auth/2fa/verify", { code })
-  return data
-}
-
-async function disableTwoFa(code: string) {
-  const { data } = await api.post("/api/auth/2fa/disable", { code })
-  return data
-}
-
-function useSendEnable2fa() {
-  return useMutation({
-    mutationFn: setupTwoFa,
-  })
-}
-
-function useVerifyEnable2fa() {
-  return useMutation({
-    mutationFn: verifyTwoFa,
-  })
-}
-
-function useDisable2fa() {
-  return useMutation({
-    mutationFn: disableTwoFa,
-  })
-}
-
-type Setup2FAResponse =
-  | {
-      success: boolean
-      qrcode?: string
-      uri?: string
-      html?: string
-    }
-  | string
+import { useDisable2fa, useSendEnable2fa, useVerifyEnable2fa } from "@/services/user/useEnable2fa"
+import type { Setup2FAResponse } from "@/types/userType"
 
 function extractQrFromSetup(data: Setup2FAResponse | undefined): {
   qrcode?: string
@@ -93,7 +51,6 @@ function Enable2fa() {
         }}
         onSubmit={(e) => {
           e.preventDefault()
-
           if (isMfaEnabled) {
             if (!code.trim()) return
             disableMutation.mutate(code.trim(), {
@@ -129,7 +86,7 @@ function Enable2fa() {
             </span>
           </div>
 
-          {!isMfaEnabled && (
+          {isMfaEnabled && (
             <div className="flex items-center gap-3">
               <InputField
                 type="checkbox"
