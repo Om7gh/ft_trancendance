@@ -6,7 +6,6 @@ import {
     FastifyInstance,
 } from 'fastify';
 import { asUserInfo } from '../dto/user-dto.js';
-import { User } from '../models/user.js';
 import { UsernameBody } from '../schemas/auth.js';
 import { saveUploadedAvatar } from '../utils/avatar-utils.js';
 
@@ -41,8 +40,8 @@ export class UserController {
                 return reply.badRequest('No fields to update');
             }
 
-            fastify.usersRepository.update(user.id, payload);
-            return reply.send(request.user);
+            const response = fastify.usersRepository.update(user.id, payload);
+            return reply.send(asUserInfo(response));
         } catch (err) {
             if (err instanceof SqliteError || err instanceof Error) {
                 return reply.badRequest(err.message);
