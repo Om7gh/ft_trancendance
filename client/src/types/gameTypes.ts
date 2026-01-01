@@ -14,7 +14,6 @@ export interface Tournaments {
   players: TournamentPlayer[];
 }
 
-
 export interface ChessStats {
   totalGames: number;
   wins: number;
@@ -58,4 +57,17 @@ export interface ChessHistoryResponse {
     winRate: string
   }
   history: ChessMatch[]
+}
+
+export interface OnlineState {
+  roomId: string | null;
+  myTeam: 'WHITE' | 'BLACK' | null;
+  opponentConnected: boolean;
+  opponentName: string | null;
+  gameOver: { winner: string; message: string } | null;
+  rematch: {
+    incomingOffer: boolean;
+    requested: boolean;
+    declined: boolean;
+  };
 }

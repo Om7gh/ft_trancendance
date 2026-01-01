@@ -19,7 +19,7 @@ function AccountSettings() {
         </div>
       </div>
 
-      <div className="px-4 w-full max-w-7xl mx-auto flex flex-col justify-start h-full gap-10">
+      <div className="px-4 w-full max-w-400 mx-auto flex flex-col justify-start h-full gap-10">
 
         <div className="w-full flex flex-col md:flex-row items-center gap-6 p-4 bg-linear-to-b from-slate-950/20 to-violet-950/20">
           <div className="w-full md:w-1/2 flex flex-col items-center gap-6 justify-start text-center px-6">
