@@ -58,11 +58,7 @@ export default abstract class AuthController {
         const { provider } = request.params as OAuth2Body;
         const { state, code, error } = request.query as OAuth2CallbackBody;
         if (error) {
-            console.error(`OAuth error from ${provider}: ${error}`);
-            const errorMsg = encodeURIComponent(
-                'authentication failed: ' + (error || 'unknown error')
-            );
-            return reply.redirect(`/signin?error=${errorMsg}`);
+            return reply.redirect('/auth/signin');
         }
         if (!code || !state) {
             return reply.badRequest(error ?? 'missing code or state');
