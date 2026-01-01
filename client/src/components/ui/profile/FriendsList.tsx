@@ -1,6 +1,7 @@
 import { useUnfriend } from "@/services/friends";
 import type { Friend } from "@/types/friendTypes";
 import { FaUserMinus } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 interface FriendsListProps {
   friendsList: Friend[];
@@ -25,9 +26,9 @@ function FriendsList({ friendsList }: FriendsListProps) {
 
   return (
     <div className="space-y-3">
-      {friendsList.map((friend: Friend) => (
-        <div
-          key={friend.id}
+      {friendsList?.map((friend: Friend) => (
+        <Link to={`/dashboard/profile/${friend.username}`}
+          key={friend?.id}
           className="flex items-center gap-4 p-4 bg-slate-900/30 hover:bg-slate-900/50 border border-violet-500/10 rounded-lg transition-all duration-200"
         >
           <img
@@ -56,7 +57,7 @@ function FriendsList({ friendsList }: FriendsListProps) {
           >
             <FaUserMinus className="text-xl" />
           </button>
-        </div>
+        </Link>
       ))}
     </div>
   );

@@ -10,6 +10,9 @@ const useRejectFriendRequest = () => {
             queryClient.invalidateQueries({
                 queryKey: ['getReceivedRequests'],
             });
+            queryClient.invalidateQueries({
+                queryKey: ['getSentRequests'],
+            });
         },
     });
 };

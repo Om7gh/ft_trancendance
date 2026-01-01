@@ -14,8 +14,8 @@ type GameType = 'pingpong' | 'chess';
 export default function HomeDashboard() {
   const [activeGame, setActiveGame] = useState<GameType>('pingpong');
   const {user} = useContext(GlobalContext)
-  const {data: chess, isPending, isError} = useGetChessHistory(user?.username!)
-  const {data: pong} = useGetPongStat()
+  const {data: chess, isPending, isError, error} = useGetChessHistory(user?.username!)
+  const {data: pong, isPending: pongPending, error: pongError, isError: isPongError} = useGetPongStat()
 
   return (
     <div className="h-full p-5 space-y-6 overflow-auto">
@@ -43,37 +43,39 @@ export default function HomeDashboard() {
           Chess Stats
         </button>
       </div>
-
       <DashboardWrapper
         isVisible={activeGame === 'pingpong'}
         title="PingPong Dashboard"
         icon={<FaTableTennisPaddleBall />}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PlayerChart type="pingpong" data={pong} />
-          <PlayerStatistics type="pingpong" />
+          {
+            pongPending ? <p>Loading pong state...</p> : isError ? <p></p> : <PlayerChart type="pingpong" data={pong} />
+          }
+            <PlayerStatistics type="pingpong" />
         </div>
-
        <div className="grid grid-cols-1 gap-6">
           {
-            isPending ? <p>Loading...</p> : isError ? <p></p> : <MyGamesHistory type="pong" userData={user} matchData={pong} />
+            isPending ? <p>Loading...</p> : isPongError ? <p>{pongError}</p> : <MyGamesHistory type="pong" userData={user} matchData={pong} />
           }
         </div>
       </DashboardWrapper>
-
       <DashboardWrapper
         isVisible={activeGame === 'chess'}
         title="Chess Dashboard"
         icon={<GiChessQueen />}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PlayerChart type="chess" data={chess} />
+          {
+            isPending ? <p className='text-slate-500 text-center text-lg md:text-xl'>Loading Chess State...</p> :
+            <PlayerChart type="chess" data={chess} />
+          }
           <PlayerStatistics type="chess" />
         </div>
 
         <div className="grid grid-cols-1 gap-6">
           {
-            isPending ? <p>Loading...</p> : isError ? <p></p> : <MyGamesHistory type="chess" userData={user} matchData={chess} />
+            isPending ? <p className='text-slate-500 text-center text-lg md:text-xl'>Loading Chess History...</p> : isError ? <p className='text-center text--pink-500'>{error}</p> : <MyGamesHistory type="chess" userData={user} matchData={chess} />
           }
         </div>
       </DashboardWrapper>
