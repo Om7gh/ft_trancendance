@@ -15,7 +15,7 @@ export default function HomeDashboard() {
   const [activeGame, setActiveGame] = useState<GameType>('pingpong');
   const {user} = useContext(GlobalContext)
   const {data: chess, isPending, isError} = useGetChessHistory(user?.username!)
-  const {data: pong} = useGetPongStat()
+  const {data: pong, isPending: pongPending} = useGetPongStat()
 
   return (
     <div className="h-full p-5 space-y-6 overflow-auto">
@@ -50,8 +50,10 @@ export default function HomeDashboard() {
         icon={<FaTableTennisPaddleBall />}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PlayerChart type="pingpong" data={pong} />
-          <PlayerStatistics type="pingpong" />
+          {
+            pongPending ? <p>Loading pong state...</p> : <PlayerChart type="pingpong" data={pong} />
+          }
+            <PlayerStatistics type="pingpong" />
         </div>
 
        <div className="grid grid-cols-1 gap-6">
@@ -60,14 +62,16 @@ export default function HomeDashboard() {
           }
         </div>
       </DashboardWrapper>
-
       <DashboardWrapper
         isVisible={activeGame === 'chess'}
         title="Chess Dashboard"
         icon={<GiChessQueen />}
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PlayerChart type="chess" data={chess} />
+          {
+            isPending ? <p>Loading Chess State...</p> :
+            <PlayerChart type="chess" data={chess} />
+          }
           <PlayerStatistics type="chess" />
         </div>
 
