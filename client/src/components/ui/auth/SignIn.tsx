@@ -83,7 +83,7 @@ export default function SignIn() {
 
               {mutate?.error && (
                 <p className="mt-1 text-sm text-red-400">
-                  {mutate.error.response.data.message}
+                  {mutate.error.response?.data?.message}
                 </p>
               )}
             </div>

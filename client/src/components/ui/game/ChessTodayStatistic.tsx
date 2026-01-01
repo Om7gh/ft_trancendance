@@ -19,10 +19,10 @@ function isSameLocalDay(a: Date, b: Date) {
 }
 
 function getMatchOutcome(match: ChessMatch) {
-  if (match.result === "WIN" || match.result === "LOSS" || match.result === "DRAW") return match.result
-  if (!match.winnerTeam || !match.winnerTeam.length) return "DRAW"
+  if (match?.result === "WIN" || match?.result === "LOSS" || match?.result === "DRAW") return match?.result
+  if (!match?.winnerTeam || !match?.winnerTeam?.length) return "DRAW"
   // @ts-expect-error
-  if (match.playerTeam && match.winnerTeam === match.playerTeam) return "WIN"
+  if (match?.playerTeam && match?.winnerTeam === match?.playerTeam) return "WIN"
   return "LOSS"
 }
 
@@ -39,9 +39,9 @@ function ChessTodayStatistic() {
     return isSameLocalDay(matchDate, today)
   })
 
-  const todayWins = todayGames.filter((g) => getMatchOutcome(g) === "WIN").length
-  const todayLosses = todayGames.filter((g) => getMatchOutcome(g) === "LOSS").length
-  const todayDraws = todayGames.filter((g) => getMatchOutcome(g) === "DRAW").length
+  const todayWins = todayGames?.filter((g) => getMatchOutcome(g) === "WIN")?.length
+  const todayLosses = todayGames?.filter((g) => getMatchOutcome(g) === "LOSS")?.length
+  const todayDraws = todayGames?.filter((g) => getMatchOutcome(g) === "DRAW")?.length
 
   const formatTime = (timestamp: number) => {
     const d = toDateFromMixedTimestamp(timestamp)
@@ -63,7 +63,7 @@ function ChessTodayStatistic() {
         <p className="text-slate-200 opacity-40 text-center">
           {(error as any)?.message || "Failed to load chess history"}
         </p>
-      ) : todayGames.length === 0 ? (
+      ) : todayGames?.length === 0 ? (
         <p className="text-slate-200 opacity-40 text-center">No activities for today</p>
       ) : (
         <div className="space-y-4 max-h-72 overflow-auto">
@@ -83,24 +83,24 @@ function ChessTodayStatistic() {
           </div>
 
           <div className="space-y-2 max-h-96">
-            {todayGames.map((game) => {
+            {todayGames?.map((game) => {
               const outcome = getMatchOutcome(game)
               return (
                 <div
-                  key={game.id}
+                  key={game?.id}
                   className="border border-slate-700 bg-slate-900/20 p-3 flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-slate-100 truncate">
-                      vs {game.opponent}
+                      vs {game?.opponent}
                     </p>
                     <p className="text-xs text-slate-400 truncate">
-                      {game.moves} moves{game.reason ? ` • ${game.reason}` : ""}
+                      {game?.moves} moves{game?.reason ? ` • ${game?.reason}` : ""}
                     </p>
                   </div>
 
                   <div className="flex items-end flex-col gap-1 shrink-0">
-                    <span className="text-xs text-slate-400">{formatTime(game.endedAt ?? game.startedAt)}</span>
+                    <span className="text-xs text-slate-400">{formatTime(game?.endedAt ?? game?.startedAt)}</span>
                     <span
                       className={`px-2 py-1 text-xs font-medium border ${
                         outcome === "WIN"
