@@ -100,4 +100,5 @@ function StatusResolver({status, content, view, onAction, children}: StatusResol
 	}
 }
 
+export {Placeholder};
 export default StatusResolver

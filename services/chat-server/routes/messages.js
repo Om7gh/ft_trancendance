@@ -40,10 +40,9 @@ function messagesPlugin(instance) {
 
 	function handleIncomingMessages(incomingMsg, clientSocket, clientReq) {
 		try {
-			clientReq.log.debug(`incoming msg: ${incomingMsg}`);
 			let parsedMsg = JSON.parse(incomingMsg);
 
-			async function sendToNotification(msg) {
+			async function sendToNotification() {
 				try {
 					const sender = {
 						id: clientReq.user.id,
@@ -123,8 +122,13 @@ function messagesPlugin(instance) {
 					const result = await areFriends(clientReq.headers.cookie, parsedMsg.target.id);
 					if (!result)
 						throw Error("You can only message your contacts.");
-					if (instance.blockManager.hasBlockedBy(parsedMsg.target.id, parsedMsg.sender.id))
+					if (
+						instance.blockManager.hasBlockedBy(parsedMsg.sender.id, parsedMsg.target.id)
+						||
+						instance.blockManager.hasBlockedBy(parsedMsg.target.id, parsedMsg.sender.id)
+					){
 						throw Error("You can't send messages to this user");
+					}
 					let conversation = instance.conversationManager.hasConversation(parsedMsg.sender.id, parsedMsg.target.id);
 					conversation === undefined && (conversation = handleNewConversation());
 					let message = instance.messageManager.addMessage(conversation.id, parsedMsg.sender.id, parsedMsg.content);
@@ -274,17 +278,16 @@ function messagesPlugin(instance) {
 		req.log.info('client close its connection');
 		req.log.info(`its code: ${code} and its reason: ${reason}`);
 	}
-
-	function handleConnectionError(error, req){
-		req.log.error(`websocket error: ${error}`);
-	}
  
 	instance.get("/messages", {websocket: true}, (socket, req) => {
+		if (connectedUsers.has(req.user.id)){
+			socket.close();
+			return ;
+		}
         connectedUsers.set(req.user.id, socket);
 		broadcastPresenceChange('online', req);
 		socket.on('message', (msg) => handleIncomingMessages(msg, socket, req));
 		socket.on('close', (code, reason) => handleConnectionClose(code, reason, req));
-		socket.on('error', (err) => handleConnectionError(err, req));
 	})
 
 	instance.get("/messages/:convId", getOptions ,async (req, reply) => {

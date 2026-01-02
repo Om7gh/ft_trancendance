@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import useAxios from "../hooks/useAxios.ts";
-import usePresence from "../hooks/usePresence.ts";
-import useWebsocket from "../hooks/useWebsocket.ts";
-import useEventListener from "../hooks/useEventListener.ts";
-import UsersPanel from "../components/ui/chat/contacts/UsersPanel.tsx";
-import ConversationPanel from "../components/ui/chat/conversation/ConversationPanel.tsx";
+import useAxios from "@/hooks/useAxios.ts";
+import usePresence from "@/hooks/usePresence.ts";
+import useWebsocket from "@/hooks/useWebsocket.ts";
+import useEventListener from "@/hooks/useEventListener.ts";
 import {useState, useRef, createContext} from "react";
 import useWsRequest from "@/hooks/useWsRequest.ts"
 import useWsResponse from "@/hooks/useWsResponse.ts"
 import visibleCardsResolver from "@/utils/cardsResolver.ts"
-
 import type {ServerRequest} from "@/types/serverRequest.ts";
+import UsersPanel from "../components/ui/chat/contacts/UsersPanel.tsx";
+import ConnectionResolver from "@/components/ui/chat/connectionResolver.tsx";
+import ConversationPanel from "../components/ui/chat/conversation/ConversationPanel.tsx";
 
 interface context{
 	isMobile: boolean;
@@ -31,7 +31,7 @@ function Chat(){
 
 	const [chatCards, setChatCards, conversationStatus] = useAxios(`/conversations`);
 	const [contactCards, setContactCards, contactStatus] = useAxios(`/contacts`);
-	const socket = useWebsocket(`/messages`);
+	const [socketState, socket] = useWebsocket(`/messages`);
 	const setRequest = useWsRequest(socket.current);
 
 	const selectedCardRef = useRef<Card | null>(selectedCard);
@@ -211,38 +211,41 @@ function Chat(){
 	const style = "p-5 h-full w-full text-[clamp(12px,0.8vw,25px)] relative " + (!isMobile ? "flex" : "");
 
 	return (
-		<div id="Chat" className={style}>
-			<ViewportContext value={{isMobile: isMobile, viewportWidth: screenWidth}}>
-			{
-				showContact && <UsersPanel
-				selectedCard={selectedCard}
-				onCardSelect={handleUserCardSelection}
-				visibleCards={visibleCards}
-				setSearchQuery={setSearchQuery}
-				updateTabName={setSelectedTab}
-				selectedTab={selectedTab}
-				getCardStatus={getFetchStatusByTab}
-				/>
-			}
-			{
-				<>
-					{!isMobile && <div className="w-0.5 h-full self-center ml-10 rounded-b-4xl bg-violet-500"></div>}
-					{
-						showConversation && <ConversationPanel
-						key={selectedCard?.friend?.id}
-						UsersTab={selectedTab}
-						targetUserCard={selectedCard}
-						connection={socket}
-						updateSenderCard={setChatCards}
-						onBlockToggle={handleBlockToggle}
-						changeUserView={changeUserView}
-						/>
-					}
-				</>
-			}
-			</ViewportContext>
-		</div>
+		<ConnectionResolver state={socketState}>
+			<div id="Chat" className={style}>
+				<ViewportContext value={{isMobile: isMobile, viewportWidth: screenWidth}}>
+				{
+					showContact && <UsersPanel
+					selectedCard={selectedCard}
+					onCardSelect={handleUserCardSelection}
+					visibleCards={visibleCards}
+					setSearchQuery={setSearchQuery}
+					updateTabName={setSelectedTab}
+					selectedTab={selectedTab}
+					getCardStatus={getFetchStatusByTab}
+					/>
+				}
+				{
+					<>
+						{!isMobile && <div className="w-0.5 h-full self-center ml-10 rounded-b-4xl bg-violet-500"></div>}
+						{
+							showConversation && <ConversationPanel
+							key={selectedCard?.friend?.id}
+							UsersTab={selectedTab}
+							targetUserCard={selectedCard}
+							connection={socket}
+							updateSenderCard={setChatCards}
+							onBlockToggle={handleBlockToggle}
+							changeUserView={changeUserView}
+							/>
+						}
+					</>
+				}
+				</ViewportContext>
+			</div>
+
+		</ConnectionResolver>
 	);
 }
 
-export default Chat
+export default Chat;
