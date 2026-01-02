@@ -15,7 +15,6 @@ export default function useFetchMatch(
         (async function fetchMatch() {
             try {
                 const response = await api.get(url);
-                console.log(response.data)
                 if (!ignored) {
                     if (validateMatch(response.data))
                         setMatch(response.data);
@@ -23,7 +22,7 @@ export default function useFetchMatch(
                         setError("Error: fetch invalid match");
                 }
             } catch (err: any) {
-                setError(err?.message || "Fail to fetch match!!");
+                setError(err?.response?.data ?? "Fail to fetch match!!");
             }
         })();
 

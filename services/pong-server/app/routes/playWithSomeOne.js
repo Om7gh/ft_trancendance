@@ -1,4 +1,5 @@
 import { alreadyInMatch } from "./pongGame.js";
+import PongError from "../classes/PongError.js";
 import GenericRoom from "../classes/genericRoom.js";
 
 
@@ -8,18 +9,19 @@ export async function waitForOpponent(room) {
 
     return (new Promise((resolve, reject) => {
         intervalId = setInterval(() => {
-            if (room.isReady()) {
-                clearInterval(intervalId);
-                resolve();
-            } else if (60 < counter) {
-                room.cancelMatch();
-                clearInterval(intervalId);
-                const error = new Error("Waiting for opponent too long!!");
-                error.type = "pongError";
-                error.statusCode = 409;
-                reject(error);
+            try {
+                if (room.isReady()) {
+                    clearInterval(intervalId);
+                    resolve();
+                } else if (30 < counter) {
+                    reject(new PongError(409, "Waiting for opponent too long!!"));
+                    clearInterval(intervalId);
+                    room.cancelMatch();
+                }
+                counter++;
+            } catch(err) {
+                reject(new PongError(400, "Unexpected error!!"));
             }
-            counter++;
         }, 1000);
     }))
 }
@@ -30,10 +32,7 @@ async function playWithSomeOneHandler(request, reply) {
     let   currentRoom   = this.currentRoom;
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!");
-        error.type = "pongError";
-        error.statusCode = 400;
-        throw error;
+        throw new PongError(400, "Invalid User Passed To Handler!!");
     }
 
     let room = alreadyInMatch(this.roomList, user.id);
@@ -49,9 +48,7 @@ async function playWithSomeOneHandler(request, reply) {
     }
 
     if (50 < this.roomList.size) {
-        const error = new Error("Service actually unavailable!!")
-        error.statusCode = 503;
-        throw error;
+        throw new PongError(503, "Service Unavailable!!");
     }
 
     if (!currentRoom || !currentRoom.isWaiting()) {

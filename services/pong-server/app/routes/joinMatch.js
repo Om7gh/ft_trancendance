@@ -8,35 +8,23 @@ async function joinMatchHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!");
-        error.type = "pongError";
-        error.statusCode = 400;
-        throw error;
+        throw new PongError(400, "Invalid User Passed To Handler!!");
     }
 
     let room = alreadyInMatch(this.roomList, user.id);
 
     if (room && (room.id !== rid) && !room.isDone()) {
-        const error = new Error("You are already in other match!!");
-        error.type = "pongError";
-        error.statusCode = 409;
-        throw error;
+        throw new PongError(409, "You are already in other match!!");
     }
 
     room = this.roomList.get(rid);
 
     if (!room || !room.isMember(user.id) || room.isDone()) {
-        const error = new Error("Currently you don't have any match to join!!");
-        error.type = "pongError";
-        error.statusCode = 404;
-        throw error;
+        throw new PongError(404, "Currently you don't have any match to join!!");
     }
 
     if (room.tournament && !room.tournament.isMember(user.id)) {
-        const error = new Error("User is not member of room's tournament!!");
-        error.type = "pongError";
-        error.statusCode = 404;
-        throw error;
+        throw new PongError(404, "User is not member of room's tournament!!");
     }
 
     if (room.isPaused()) {

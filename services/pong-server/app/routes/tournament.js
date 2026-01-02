@@ -1,3 +1,4 @@
+import PongError from "../classes/PongError.js"
 import Tournament from "../classes/tournamentClass.js";
 
 export function alreadyInTournament(tournamentList, userId) {
@@ -14,9 +15,7 @@ async function joinTournamentHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
-        error.statusCode = 400;
-        throw error;
+        throw new PongError(400, "Pass Invalid User To Handler!!");
     }
 
     let tournament  = alreadyInTournament(this.tournamentList, user.id);
@@ -27,9 +26,7 @@ async function joinTournamentHandler(request, reply) {
     }
 
     if (50 < this.roomList.size) {
-        const error = new Error("Service actually unavailable!!")
-        error.statusCode = 503;
-        throw error;
+        throw new PongError(503, "Service Unavailable!!");
     }
 
     if (!this.currentTournament || (this.currentTournament.state !== "waiting")) {
@@ -54,17 +51,13 @@ async function leaveTournamentHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
-        error.statusCode = 400;
-        throw error;
+        throw new PongError(400, "Invalid User Passed To Handler!!");
     }
 
     let tournament  = alreadyInTournament(this.tournamentList, user.id);
     
     if (!tournament) {
-        const error = new Error("Currently you are not belong to any tournament!!");
-        error.statusCode = 404;
-        throw error;
+        throw new PongError(404, "Currently you are not belong to any tournament!!");
     }
 
     tournament.removeMember(user.id);

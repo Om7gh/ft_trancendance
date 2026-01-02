@@ -43,10 +43,7 @@ async function acceptHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
-        error.type = "pongError";
-        error.statusCode = 400;
-        throw error
+        throw new PongError(400, "Invalid User Passed To Handler!!");
     }
 
     const sid = request.query.sid;
@@ -54,18 +51,13 @@ async function acceptHandler(request, reply) {
     const invitation = this.checkIsInvited(sid, user.id);
 
     if (!invitation) {
-        const error = new Error("Either you are not invited, or invitation is gone!!");
-        error.type = "pongError";
-        error.statusCode = 404;
-        throw error
+        throw new PongError(404, "Either you are not invited, or invitation is gone!!");
     } else {
         invitation.accepted();
     }
 
     if (50 < this.roomList.size) {
-        const error = new Error("Service actually unavailable!!")
-        error.statusCode = 503;
-        throw error;
+        throw new PongError(503, "Service Unavailable!!");
     }
 
     const room = new GenericRoom();
@@ -83,26 +75,17 @@ async function inviteHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
-        error.type = "pongError";
-        error.statusCode = 400;
-        throw error;
+        throw new PongError(400, "Invalid User Passed To Handler!!");
     }
 
     const fid = request.query.fid;
   
     if (user.id === fid) {
-        const error = new Error("You try to invite your self!!");
-        error.type = "pongError";
-        error.statusCode = 422;
-        throw error;
+        throw new PongError(422, "You try to invite your self!!");
     }
     
     if (this.checkIsInvited(user.id, fid)) {
-        const error = new Error("You already invite him!!");
-        error.type = "pongError";
-        error.statusCode = 404;
-        throw error;
+        throw new PongError(404, "You try to invite your self!!");
     }
 
     const invitation = new Invitation(user.id, fid);
