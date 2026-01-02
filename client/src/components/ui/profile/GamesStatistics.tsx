@@ -92,6 +92,8 @@ function StatHUD({
 export default function GamesStatistics({ chessStats, pongStats }: GamesStatisticsProps) {
   const pong = { win: pongStats?.wins, lose: pongStats?.loses };
   const chess = { win: chessStats?.wins, lose: chessStats?.losses, draw: chessStats?.draws };
+
+  console.log(chessStats, pongStats)
   
   const totalWin = pong?.win + chess?.win || 0;
   const totalLose = pong?.lose + chess?.lose || 0;
