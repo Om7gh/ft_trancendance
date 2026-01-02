@@ -50,4 +50,4 @@ function contactPlugin(instance){
 	});
 }
 
-export default fp(contactPlugin, {name: 'contactsPlugin'});
+export default fp(contactPlugin);

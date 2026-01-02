@@ -34,4 +34,4 @@ function conversationPlugin(instance){
 	});
 }
 
-export default fp(conversationPlugin, {name: "conversationPlugin"});
+export default fp(conversationPlugin);

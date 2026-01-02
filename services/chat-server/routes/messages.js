@@ -300,4 +300,4 @@ function messagesPlugin(instance) {
 	});
 }
 
-export default fp(messagesPlugin, {name: "messagePlugin"});
+export default fp(messagesPlugin);
