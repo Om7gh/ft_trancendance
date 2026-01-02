@@ -108,23 +108,7 @@ export function useOnlineChess() {
     });
 
     chessSocket.on('disconnected', () => {
-      toast.warn('You have been disconnected. Attempting to reconnect...', {
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-
       setState((prev) => ({ ...prev }));
-
-      setTimeout(() => {
-        if (!user?.username) return;
-        const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const wsUrl = `${wsProto}://${window.location.host}/game/chess?playerId=${encodeURIComponent(user.username)}`;
-        chessSocket.reconnect(wsUrl);
-      }, 1000);
     });
 
     chessSocket.on('error', (msg: string) => {
