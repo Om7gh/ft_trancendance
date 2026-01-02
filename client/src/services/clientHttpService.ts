@@ -65,7 +65,6 @@ api.interceptors.response.use(
             processRequestsQueue(null);
             return await api(originalRequest);
         } catch (refreshError) {
-            console.error('Token refresh failed', refreshError);
             processRequestsQueue(refreshError);
             return Promise.reject(refreshError);
         } finally {

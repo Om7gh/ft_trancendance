@@ -42,7 +42,7 @@ function ResetPassword() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-neon">
             New Move !!
           </h2>
-         
+
         </div>
 
         <form method="post" className="mt-8 space-y-6" onSubmit={handleSumbit}>
@@ -63,7 +63,7 @@ function ResetPassword() {
 
               {mutate?.error && (
                 <p className="mt-1 text-sm text-red-400">
-                  {mutate.error.response?.data?.message}
+                  {mutate.error.response.data.message}
                 </p>
               )}
             </div>
@@ -89,7 +89,7 @@ function ResetPassword() {
             </div>
           </div>
 
-         
+
           <div className="relative group">
             <div className="absolute -inset-0.5 bg-linear-to-r from-violet-400 to-neon  blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
             <button

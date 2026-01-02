@@ -14,8 +14,7 @@ export default defineConfig(({ mode }) => {
   const isAnalyze = mode === "analyze";
 
   return {
-    base: isProd ? "/build/" : "/",
-
+    base: "/",
     build: {
       sourcemap: !isProd,
       cssMinify: true,
