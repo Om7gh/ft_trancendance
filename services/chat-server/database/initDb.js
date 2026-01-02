@@ -1,6 +1,4 @@
 function initDb(dbInstance){
-	console.log("=== initializing Chat database... ===");
-
 	dbInstance.exec(`PRAGMA foreign_keys = ON;`);
 	
 	dbInstance.exec(`CREATE TABLE IF NOT EXISTS conversations (
@@ -28,9 +26,6 @@ function initDb(dbInstance){
 		blockerID INTEGER NOT NULL,
 		targetID INTEGER NOT NULL
 		);`);
-	
-	
-	console.log("--- DONE ---")
 }
 
 export default initDb;

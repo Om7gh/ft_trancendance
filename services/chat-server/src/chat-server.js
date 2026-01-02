@@ -19,39 +19,34 @@ const serverOptions = {
 
 const sqlite3Options = {
 	"class": Database,
-	pathToDb: "/var/lib/sqlite/chat.db"
+	pathToDb: process.env.DB_PATH
 }
 
 async function main() {
 	const app = fastify(serverOptions);
 
-	app.register(fastifyBetterSqlite3, sqlite3Options);
-	
-	app.register(onRequestHook);
-	
-	app.register(websocket);
-	
-	app.register(messages);
+	app
+		.register(fastifyBetterSqlite3, sqlite3Options)
+		.register(onRequestHook)
+		.register(websocket)
+		.register(messages)
+		.register(contacts)
+		.register(conversation);
 
-	app.register(contacts);
-
-	app.register(conversation);
-
-	app.ready()
-	.then(() => {
+	try {
+		await app.ready();
 		initDb(app.betterSqlite3);
-	})
-	.catch((err) => {
-		app.log.info(`error accured: ${err}`);
-	});
-
-	app.listen({port: 9004, host: "0.0.0.0"})
-	.then((address) => {
-		app.log.info(`Chat server is started! Ready to accept connections on ${address}`);
-	})
-	.catch((err) => {
-		app.log.info(`error accured: ${err}`);
-	});
+		const addresss = await app.listen({
+			port: process.env.PORT ?? 9004,
+			host: "0.0.0.0"
+		});
+		app.log.info("Chat server is started.");
+		app.log.info(`Ready to accept connections on ${addresss}`);
+	}
+	catch (error){
+		app.log.error(error);
+		process.exit(1);
+	}
 }
 
 main();

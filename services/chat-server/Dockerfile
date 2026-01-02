@@ -1,11 +1,11 @@
-FROM node:25-bookworm
+FROM node:24-bullseye
 
 WORKDIR /usr/src/app
 
-COPY package.json .
+COPY package*.json .
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
-CMD [ "npm", "run", "dev" ]
+CMD [ "npm", "run", "app" ]
