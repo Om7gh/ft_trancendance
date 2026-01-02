@@ -54,25 +54,25 @@ const router = createBrowserRouter([
       {
         path: 'settings',
          element: <ProtectDashboard>
-          <Settings />,
-        </ProtectDashboard> ,
+          <Settings />
+        </ProtectDashboard>,
         children: [
           {
             path: 'account',
             element: <ProtectDashboard>
-          <AccountSettings />,
+          <AccountSettings />
         </ProtectDashboard> ,
           },
           {
             path: 'game',
             element: <ProtectDashboard>
-          <Customization />,
+          <Customization />
         </ProtectDashboard> ,
           },
            {
             path: 'portal',
             element: <ProtectDashboard>
-          <SettingsPortal />,
+          <SettingsPortal />
         </ProtectDashboard> ,
           },
           {
