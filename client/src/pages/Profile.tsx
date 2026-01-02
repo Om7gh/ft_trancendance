@@ -4,7 +4,7 @@ import GamesStatistics from '@/components/ui/profile/GamesStatistics';
 import ProfileHeader from '@/components/ui/profile/ProfileHeader';
 import useGetProfile from '@/services/user/useGetProfile';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { BiLoaderAlt } from 'react-icons/bi';
 import { FaUserSlash, FaExclamationTriangle } from 'react-icons/fa';
 import { IoArrowBack } from 'react-icons/io5';
@@ -13,7 +13,11 @@ function Profile() {
   const searchParams = useParams();
   const navigate = useNavigate();
   const {user: currentUser} = useContext(GlobalContext)
-  const {data, isPending, isError, error} = useGetProfile(searchParams?.username as string);
+  const {data, isPending, isError, error, refetch} = useGetProfile(searchParams?.username as string);
+
+  useEffect(() => {
+        refetch()
+  }, [searchParams?.username])
 
   if (isPending) {
     return (
@@ -25,7 +29,6 @@ function Profile() {
 
   if (isError) {
     const is404 = error?.status === 404 || error?.response?.status === 404;
-
     return (
       <div className="flex justify-center items-center min-h-[600px] px-4">
         <div className="text-center max-w-md">
