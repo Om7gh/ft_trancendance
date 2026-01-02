@@ -26,7 +26,7 @@ function DropDown({
           <NavLink
             to={child.path}
             onClick={() => isMobile && onNavigate?.()}
-            className={({ isActive }) =>
+            className={({ isActive }: { isActive: boolean }) =>
               `px-3 py-2 transition-all duration-200 flex items-center gap-3
               ${
                 isActive
@@ -35,7 +35,7 @@ function DropDown({
               }`
             }
           >
-            {({ isActive }) => (
+            {({ isActive }: { isActive: boolean }) => (
               <>
                 <span
                   className={`text-xl ${isActive ? 'text-white' : 'text-neon'}`}

@@ -18,7 +18,7 @@ export default function MobileMenu({ mobileMenu }: MenuMobileArr) {
         <li key={item.path}>
           <NavLink
             to={item.path}
-            className={({ isActive }) =>
+            className={({ isActive }: { isActive: boolean }) =>
               `px-4 py-3  transition-all duration-200 font-medium flex items-center gap-4
                 ${
                   isActive
@@ -27,7 +27,7 @@ export default function MobileMenu({ mobileMenu }: MenuMobileArr) {
                 }`
             }
           >
-            {({ isActive }) => (
+            {({ isActive }: { isActive: boolean }) => (
               <>
                 <span
                   className={`text-2xl ${
