@@ -2,7 +2,6 @@ const fastify = require('fastify');
 const env = require('dotenv');
 const chessRoutes = require('./routes/chess.routes');
 const chessDb = require('./database');
-const onRequestHook = require('./plugin/onRequestHook');
 const opt = {
   logger: {
     level: 'debug',
@@ -16,21 +15,23 @@ env.configDotenv();
 const app = fastify(opt);
 app.register(chessDb);
 app.register(require('@fastify/websocket'));
-app.register(onRequestHook) 
 app.register(chessRoutes);
 
 app.setErrorHandler((error, request, reply) => {
-    if (error.isOperational) {
-        reply.status(error.statusCode).send({
-            status: error.status,
-            message: error.message,
-        })
-    } else {
-        reply.status(400).send({
-            status: 'error',
-            message: 'bad Request!',
-        })
-    }
+  request.log.error({ err: error }, 'Unhandled error');
+
+  if (error.isOperational) {
+    return reply.status(error.statusCode).send({
+      status: error.status,
+      message: error.message,
+    });
+  }
+
+  const statusCode = error.statusCode || 500;
+  return reply.status(statusCode).send({
+    status: 'error',
+    message: error.message || 'Internal Server Error',
+  });
 })
 
 const start = async () => {

@@ -1,7 +1,8 @@
 const catchAsyncError = (fn) => {
-  return async function (req, rep) {
+  return async function (...args) {
     try {
-      await fn(req, rep);
+      // preserve `this` and return value for both controllers and repositories
+      return await fn.apply(this, args);
     } catch (e) {
       throw e;
     }

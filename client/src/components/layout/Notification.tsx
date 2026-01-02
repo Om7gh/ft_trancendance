@@ -1,3 +1,4 @@
+import getErrorMessage from '@/utils/getErrorMessage';
 import { memo, useEffect, useRef, useState } from 'react';
 import { IoIosNotificationsOutline } from 'react-icons/io';
 import Modal from './Modal';
@@ -86,7 +87,7 @@ function Notification() {
         </div>
         {loading && <p>Loading...</p>}
         {!loading && error && (
-          <p className="text-pink-500 text-xl text-center">{error}</p>
+          <p className="text-pink-500 text-xl text-center">{getErrorMessage(error)}</p>
         )}
         {!loading && !error &&
           (data.length ? (
