@@ -149,7 +149,6 @@ function UpdateProfile() {
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                     placeholder="First Name"
-                                    required
                                     className="w-full p-3 rounded-lg bg-slate-800 text-slate-100 border border-slate-700
                                              focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent
                                              placeholder:text-slate-500"
@@ -160,7 +159,6 @@ function UpdateProfile() {
                                     value={lastName}
                                     onChange={(e) => setLastName(e.target.value)}
                                     placeholder="Last Name"
-                                    required
                                     className="w-full p-3 rounded-lg bg-slate-800 text-slate-100 border border-slate-700
                                              focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent
                                              placeholder:text-slate-500"
