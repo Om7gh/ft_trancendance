@@ -1,7 +1,7 @@
 const { getPlayerGameHistory, getGameStats } = require('../repositories');
+const { catchAsyncError } = require('../utils/catchAsyncError');
 
-const gameHistory = async function (req, rep) {
-  try {
+const gameHistory = catchAsyncError(async function (req, rep) {
     const { username } = req.query;
     
     if (!username) {
@@ -9,16 +9,10 @@ const gameHistory = async function (req, rep) {
         error: 'Missing username parameter'
       });
     }
-
-    console.log('🔍 Fetching game history for:', username);
-    console.log('🔍 Database instance:', !!req.server.db);
     
     const history = await getPlayerGameHistory(req.server.db, username);
     const stats = await getGameStats(req.server.db, username);
     
-    console.log('📊 History results:', history.length, 'games');
-    console.log('📊 Stats:', stats);
-
     return rep.send({
       success: true,
       stats: {
@@ -44,10 +38,6 @@ const gameHistory = async function (req, rep) {
           : 'LOSS'
       }))
     });
-  } catch (error) {
-    req.server.log.error('Error fetching game history:', error.message);
-   throw error
-  }
-};
+});
 
 module.exports = { gameHistory };

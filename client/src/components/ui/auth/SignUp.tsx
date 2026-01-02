@@ -11,10 +11,8 @@ import { AiOutlineDiscord } from 'react-icons/ai';
 function CheckMail({ email }: { email: string | undefined }) {
   const navigate = useNavigate();
   const handleOpenMail = () => {
-    if (email) {
       const mailUrl = 'https://mail.google.com';
       window.open(mailUrl, '_blank');
-    }
   };
 
   return (

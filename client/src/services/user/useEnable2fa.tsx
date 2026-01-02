@@ -7,6 +7,14 @@ import { toast } from "react-toastify"
 export function useSendEnable2fa() {
   return useMutation({
     mutationFn: AuthService.setupTwoFa,
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || error?.message
+      if (error?.response?.status === 429) {
+        toast.error(message || "Too many requests. Please try again later.")
+      } else {
+        toast.error(message || "Failed to setup 2FA")
+      }
+    },
   })
 }
 

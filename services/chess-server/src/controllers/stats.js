@@ -1,6 +1,7 @@
 const { getGameStats, getPlayerGameHistory } = require("../repositories");
+const { catchAsyncError } = require("../utils/catchAsyncError");
 
-const getStats = async function(req, rep) {
+const getStats = catchAsyncError(async function(req, rep) {
    try {
     const { uid } = req.query;
     
@@ -44,6 +45,6 @@ const getStats = async function(req, rep) {
       error: 'Failed to fetch game history'
     });
   }
-}
+})
 
 module.exports = {getStats}

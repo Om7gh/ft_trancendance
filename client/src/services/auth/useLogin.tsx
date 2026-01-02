@@ -9,7 +9,7 @@ function useLogin() {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: AuthService.login,
-    onSuccess: (payload) => {
+    onSuccess: (payload: any) => {
       toast.success(payload.message);
       navigate(payload.next);
     },

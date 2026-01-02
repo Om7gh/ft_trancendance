@@ -2,8 +2,9 @@ const fp = require('fastify-plugin');
 const Database = require('better-sqlite3');
 const fs = require('fs');
 const path = require('path');
+const { catchAsyncError } = require('../utils/catchAsyncError');
 
-async function chessDb(fastify) {
+const chessDb = catchAsyncError (async function (fastify) {
   const dataDir = path.join(__dirname, '../../data');
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });
@@ -64,6 +65,6 @@ async function chessDb(fastify) {
     } catch {}
     done();
   });
-}
+})
 
 module.exports = fp(chessDb, { name: 'db' });

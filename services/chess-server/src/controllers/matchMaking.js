@@ -1,46 +1,11 @@
 const { v4: uuid } = require('uuid');
 const send = require('../utils/send');
 const { players, rooms } = require('../utils/state');
+const { catchAsyncError } = require('../utils/catchAsyncError');
 
 const matchmakingQueue = []; // {playerId, player socket}
+
 function handleMatchmaking(playerId, connection) {
-  const existingPlayer = players.get(playerId);
-  if (existingPlayer) {
-    existingPlayer.connection = connection;
-
-    if (existingPlayer.roomId) {
-      const roomId = existingPlayer.roomId;
-      const room = rooms[roomId];
-
-      if (room) {
-        const roomPlayer = room.players.find((p) => p.playerId === playerId);
-        const opponent = room.players.find((p) => p.playerId !== playerId);
-        if (roomPlayer) {
-          roomPlayer.connection = connection;
-        }
-        players.set(playerId, existingPlayer);
-        send(connection, {
-          type: 'gameResume',
-          roomId,
-          board: room.board,
-          yourTeam: roomPlayer?.team,
-          currentTurn: room.currentTurn,
-          turns: room.turns,
-          opponentConnected: room.players.length === 2,
-          opponentName: opponent?.playerId,
-        });
-
-        return;
-      }
-      existingPlayer.roomId = null;
-      players.set(playerId, existingPlayer);
-    } else {
-      players.set(playerId, existingPlayer);
-    }
-  } else {
-    players.set(playerId, { connection, roomId: null });
-  }
-
   if (matchmakingQueue.some((p) => p.playerId === playerId)) {
     send(connection, {
       type: 'error',
@@ -48,7 +13,6 @@ function handleMatchmaking(playerId, connection) {
     });
     return;
   }
-
   matchmakingQueue.push({ playerId, connection });
 
   send(connection, {
@@ -72,7 +36,7 @@ function handleMatchmaking(playerId, connection) {
   }
 }
 
-function createMatch(player1, player2) {
+const createMatch = catchAsyncError(function (player1, player2) {
   const roomId = uuid();
   rooms[roomId] = {
     players: [
@@ -115,10 +79,9 @@ function createMatch(player1, player2) {
     opponnet: player1.playerId,
     roomId,
   });
-}
+})
 
 function removeFromQueue(playerId) {
-  console.log(playerId)
   const index = matchmakingQueue.findIndex((p) => p.playerId === playerId);
   if (index !== -1) matchmakingQueue.splice(index, 1);
 }

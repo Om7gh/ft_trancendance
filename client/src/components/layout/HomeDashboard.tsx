@@ -8,6 +8,7 @@ import { FaTableTennisPaddleBall } from 'react-icons/fa6';
 import useGetChessHistory from '@/services/chess/useChessHistory';
 import { GlobalContext } from '@/App';
 import useGetPongStat from '@/services/user/useGetPongStats';
+import getErrorMessage from '@/utils/getErrorMessage';
 
 type GameType = 'pingpong' | 'chess';
 
@@ -16,6 +17,9 @@ export default function HomeDashboard() {
   const {user} = useContext(GlobalContext)
   const {data: chess, isPending, isError, error} = useGetChessHistory(user?.username!)
   const {data: pong, isPending: pongPending, error: pongError, isError: isPongError} = useGetPongStat()
+
+  const pongErrorMessage = getErrorMessage(pongError);
+  const chessErrorMessage = getErrorMessage(error);
 
   return (
     <div className="h-full p-5 space-y-6 overflow-auto">
@@ -56,7 +60,7 @@ export default function HomeDashboard() {
         </div>
        <div className="grid grid-cols-1 gap-6">
           {
-            isPending ? <p>Loading...</p> : isPongError ? <p>{pongError}</p> : <MyGamesHistory type="pong" userData={user} matchData={pong} />
+            pongPending ? <p>Loading...</p> : isPongError ? <p>{pongErrorMessage}</p> : <MyGamesHistory type="pong" userData={user} matchData={pong} />
           }
         </div>
       </DashboardWrapper>
@@ -75,7 +79,7 @@ export default function HomeDashboard() {
 
         <div className="grid grid-cols-1 gap-6">
           {
-            isPending ? <p className='text-slate-500 text-center text-lg md:text-xl'>Loading Chess History...</p> : isError ? <p className='text-center text--pink-500'>{error}</p> : <MyGamesHistory type="chess" userData={user} matchData={chess} />
+            isPending ? <p className='text-slate-500 text-center text-lg md:text-xl'>Loading Chess History...</p> : isError ? <p className='text-center text--pink-500'>{chessErrorMessage}</p> : <MyGamesHistory type="chess" userData={user} matchData={chess} />
           }
         </div>
       </DashboardWrapper>

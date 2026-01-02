@@ -17,6 +17,23 @@ app.register(chessDb);
 app.register(require('@fastify/websocket'));
 app.register(chessRoutes);
 
+app.setErrorHandler((error, request, reply) => {
+  request.log.error({ err: error }, 'Unhandled error');
+
+  if (error.isOperational) {
+    return reply.status(error.statusCode).send({
+      status: error.status,
+      message: error.message,
+    });
+  }
+
+  const statusCode = error.statusCode || 500;
+  return reply.status(statusCode).send({
+    status: 'error',
+    message: error.message || 'Internal Server Error',
+  });
+})
+
 const start = async () => {
   try {
     await app.ready();

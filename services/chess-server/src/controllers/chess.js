@@ -12,18 +12,15 @@ const {
   handleRematchAccept,
   handleRematchDecline,
 } = require('./rematch');
+const { catchAsyncError } = require('../utils/catchAsyncError');
 
-function chessHandler(connection, req) {
+const chessHandler = catchAsyncError(async function (connection, req) {
   const app = req.server;
 
   const clientIP = req.socket.remoteAddress;
   let desiredId = null;
-  try {
     const u = new URL(req.url, 'http://localhost');
     desiredId = u.searchParams.get('playerId'); // username
-  } catch (e) {
-    throw e
-  }
 
   let playerId =
     desiredId && typeof desiredId === 'string' && desiredId.length <= 64
@@ -50,7 +47,6 @@ function chessHandler(connection, req) {
     try {
       msg = JSON.parse(rawMsg);
     } catch {
-      console.error('❌ Invalid JSON:', rawMsg);
       return send(connection, {
         type: 'error',
         message: 'Invalid JSON format',
@@ -59,12 +55,11 @@ function chessHandler(connection, req) {
     handleMessage(app, playerId, msg);
   });
   connection.on('close', () => handleDisconnect(app, playerId, connection));
-}
+})
 
-function handleMessage(app, playerId, msg) {
+const handleMessage = catchAsyncError(async function (app, playerId, msg) {
   const player = players.get(playerId);
   if (!player) {
-    console.error(`❌ Player [${playerId}] not found in players map`);
     return;
   }
 
@@ -100,7 +95,7 @@ function handleMessage(app, playerId, msg) {
           message: 'Unknown message type',
         });
   }
-}
+})
 
 setInterval(() => {
   const now = Date.now();

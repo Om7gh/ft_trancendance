@@ -11,7 +11,6 @@ export function useUpdatePassword(onErrorCallback?: (error: string) => void) {
          toast.success('Password updated successfully');
        },
        onError: (err: any) => {
-        console.log(err);
         const errorMessage = err?.response?.data?.message || err?.message || 'Failed to update password';
         if (onErrorCallback) {
           onErrorCallback(errorMessage);

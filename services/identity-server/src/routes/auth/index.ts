@@ -7,6 +7,7 @@ import {
     RegisterCredentials,
     UsernameSchema,
 } from '../../schemas/auth.js';
+import TokenController from '../../controllers/TokenController.js';
 
 const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     fastify.post(
@@ -61,7 +62,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
         '/complete-profile',
         { onRequest: [fastify.trackPendingUser] },
         AuthController.completeProfile
-    ); //TODO schema
+    );
 
     fastify.get(
         '/userinfo',
@@ -72,6 +73,8 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     fastify.post('/forgot-password', PasswordController.forgotPassword);
 
     fastify.post('/reset-password', PasswordController.resetPassword);
+
+    fastify.get('/verify-token', TokenController.verifyToken)
 };
 
 export default plugin;
