@@ -62,9 +62,10 @@ function Contactinfo({name, userPresence}: ContactinfoProps){
 
 function UserInvite({wrapperStyle, onInvite}: InviteButtonProps){
 	return (
-		<div className={wrapperStyle} onClick={(e) => {
-			e.stopPropagation()
-			onInvite("invite")
+		<div className={wrapperStyle + " hover:bg-violet-800 active:scale-105"}
+			onClick={(e) => {
+				e.stopPropagation()
+				onInvite("invite")
 			}}>
 			<label htmlFor="inviteButton">INVITE</label>
 			<input id="inviteButton" type="button" onClick={(e) => e.stopPropagation()}/>
@@ -74,7 +75,7 @@ function UserInvite({wrapperStyle, onInvite}: InviteButtonProps){
 
 function UserBlock({wrapperStyle, onBlock}: BlockButtonProps){
 	return (
-		<div className={wrapperStyle} onClick={(e) => {
+		<div className={wrapperStyle + " hover:bg-[#2f7077] active:scale-105 "} onClick={(e) => {
 			e.stopPropagation()
 			onBlock("block")
 			}}>

@@ -22,9 +22,10 @@ interface UserInfoProps{
 
 function UserInfo({name, unread_msg, lastMsg}: UserInfoProps){
 
-	let displayedLastMsg = (lastMsg.length === 0) ? "Empty" : lastMsg;
-	if (displayedLastMsg.length > 10)
-		displayedLastMsg= lastMsg.slice(0, 10) + "...";
+	let displayedLastMsg = (lastMsg.length === 0)
+		? "Empty"
+		: lastMsg.slice(0, 10);
+	(lastMsg.length > 10) ? displayedLastMsg += "..." : displayedLastMsg;
 
 	return (
 		<div className="flex-1 self-center relative text-white ">
