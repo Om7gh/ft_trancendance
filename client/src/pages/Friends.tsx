@@ -10,7 +10,7 @@ type FieldType = "friends" | "received" | "sent"
 export default function Friends() {
   const [field, setField] = useState<FieldType>("friends")
 
-  const {data: friends, isError, error, isPending} = useGetFriends()
+  const {data: friends, isError} = useGetFriends()
   const {data: receivedRequests} = useGetReceivedRequests()
   const {data: sentRequests} = useGetSentRequests()
 
@@ -32,7 +32,7 @@ export default function Friends() {
           <FaUserFriends className="w-8 h-8 text-violet-500" />
         </div>
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-500 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-linear-to-r from-violet-500 to-purple-400 bg-clip-text text-transparent">
             Friends
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -84,7 +84,7 @@ export default function Friends() {
         </div>
 
         <div className="p-5">
-          {field === "friends" && <FriendsList friendsList={friends} />}
+          {field === "friends" && <FriendsList friendsList={friends} isError={isError}  />}
           {field === "received" && <PendingRequest />}
           {field === "sent" && <SentRequests />}
         </div>

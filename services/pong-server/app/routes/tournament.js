@@ -86,14 +86,3 @@ export default async function tournament(fastify, options) {
         handler : leaveTournamentHandler,
     })
 }
-
-
-
-
-
-
-
-
-
-
-

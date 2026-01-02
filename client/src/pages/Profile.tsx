@@ -4,7 +4,7 @@ import GamesStatistics from '@/components/ui/profile/GamesStatistics';
 import ProfileHeader from '@/components/ui/profile/ProfileHeader';
 import useGetProfile from '@/services/user/useGetProfile';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { BiLoaderAlt } from 'react-icons/bi';
 import { FaUserSlash, FaExclamationTriangle } from 'react-icons/fa';
 import { IoArrowBack } from 'react-icons/io5';

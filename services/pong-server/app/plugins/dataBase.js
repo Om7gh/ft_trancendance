@@ -45,7 +45,6 @@ export function initDatabase(dbPath = './pong.db') {
             chess_piece TEXT DEFAULT 'alpha',
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
-
     `);
 
     return db;

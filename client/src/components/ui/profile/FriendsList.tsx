@@ -5,9 +5,10 @@ import { Link } from "react-router-dom";
 
 interface FriendsListProps {
   friendsList: Friend[];
+  isError: boolean;
 }
 
-function FriendsList({ friendsList }: FriendsListProps) {
+function FriendsList({ friendsList, isError }: FriendsListProps) {
   const unfriend = useUnfriend();
 
   const handleUnfriend = (e: React.MouseEvent, uid: string, username: string) => {
@@ -17,6 +18,14 @@ function FriendsList({ friendsList }: FriendsListProps) {
       unfriend.mutate(uid);
     }
   };
+
+  if (isError)
+  {
+    return <div className="text-center py-12">
+        <FaUserFriends className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+        <p className="text-pink-400 text-lg md:text-xl mb-2">Failed to fetch friend</p>
+      </div>
+  }
 
     const getFriendshipTime = (friend: any) => {
         if (!friend?.friends_since) return 'unknown period';

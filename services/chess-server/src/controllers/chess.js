@@ -20,28 +20,37 @@ const chessHandler = catchAsyncError(async function (connection, req) {
   const clientIP = req.socket.remoteAddress;
   let desiredId = null;
     const u = new URL(req.url, 'http://localhost');
-    desiredId = u.searchParams.get('playerId'); // username
+    desiredId = u.searchParams.get('playerId');
 
   let playerId =
     desiredId && typeof desiredId === 'string' && desiredId.length <= 64
       ? desiredId
       : uuid();
-
   if (players.has(playerId)) {
     const existingPlayer = players.get(playerId);
     const oldConnection = existingPlayer.connection;
 
+    if (existingPlayer?.roomId && rooms[existingPlayer.roomId]?.players?.length === 2) {
+      endGameByDuplicateTab(app, existingPlayer.roomId, playerId, connection);
+      if (oldConnection && oldConnection.readyState === 1) {
+        try {
+          oldConnection.close();
+        } catch {}
+      }
+      existingPlayer.connection = connection;
+      existingPlayer.roomId = null;
+      console.log(`Duplicate-tab forfeit [${playerId}] from ${clientIP}`);
+    } else {
     if (oldConnection && oldConnection.readyState === 1) {
       oldConnection.close();
     }
-    
     existingPlayer.connection = connection;
     console.log(`Player reconnected [${playerId}] from ${clientIP}`);
+    }
   } else {
     players.set(playerId, { connection, roomId: null, ip: clientIP });
     console.log(`New connection [${playerId}] from ${clientIP}`);
   }
-
   connection.on('message', (rawMsg) => {
     let msg;
     try {
@@ -115,5 +124,58 @@ setInterval(() => {
     }
   }
 }, 600_000);
+
+
+
+function endGameByDuplicateTab(app, roomId, duplicatingPlayerId, reconnectingConnection) {
+  const room = rooms[roomId];
+  if (!room) return;
+
+  const white = room.players.find((p) => p.team === 'WHITE') || null;
+  const black = room.players.find((p) => p.team === 'BLACK') || null;
+  const opponentSnapshot = room.players.find((p) => p.playerId !== duplicatingPlayerId) || null;
+  if (!opponentSnapshot) return;
+
+  const opponentPlayer = players.get(opponentSnapshot.playerId);
+  const opponentConnection = opponentPlayer?.connection || opponentSnapshot.connection;
+
+  send(opponentConnection, {
+    type: 'gameOver',
+    winner: opponentSnapshot.playerId,
+    message: 'Opponent opened a second tab. You win by forfeit.',
+  });
+
+  send(reconnectingConnection, {
+    type: 'gameOver',
+    winner: opponentSnapshot.playerId,
+    message: 'You lost: duplicate tab detected.',
+  });
+
+  const winnerTeam = opponentSnapshot.team === 'WHITE' ? 'WHITE' : 'BLACK';
+  if (white?.playerId && black?.playerId && typeof app.recordGame === 'function') {
+    app.recordGame({
+      roomId,
+      whiteId: white.playerId,
+      blackId: black.playerId,
+      winnerTeam,
+      reason: 'duplicate_tab',
+      moves: room.turns ?? 0,
+      startedAt: room.createdAt ?? null,
+      endedAt: Math.floor(Date.now() / 1000),
+    });
+  }
+
+  if (white?.playerId && black?.playerId) {
+    lastOpponents.set(white.playerId, black.playerId);
+    lastOpponents.set(black.playerId, white.playerId);
+  }
+
+  const a = players.get(duplicatingPlayerId);
+  const b = players.get(opponentSnapshot.playerId);
+  if (a) a.roomId = null;
+  if (b) b.roomId = null;
+
+  delete rooms[roomId];
+}
 
 module.exports = { chessHandler };

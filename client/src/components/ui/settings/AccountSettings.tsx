@@ -10,6 +10,8 @@ import { GlobalContext } from "@/App";
 
 function AccountSettings() {
    const {user} = useContext(GlobalContext)
+
+   console.log(user)
   return (
     <div className="w-full h-full">
       <div className="px-4 pt-2">

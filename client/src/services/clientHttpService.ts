@@ -57,7 +57,7 @@ api.interceptors.response.use(
         isRefreshing = true;
 
         try {
-            const refreshResponse = await api.post('/api/auth/refresh', null, {
+            await api.post('/api/auth/refresh', null, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
