@@ -8,6 +8,7 @@ import errorHandler from "./plugins/errorHandler.js";
 import onRequestHook from "./hooks/onRequestHook.js";
 import validateUserPlugin from './plugins/validateUser.js';
 import validateRoomPlugin from './plugins/validateRoom.js';
+import pongStatistics from './routes/pongStatistics.js';
 
 import pongGame from './routes/pongGame.js';
 
