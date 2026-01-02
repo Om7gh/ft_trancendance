@@ -1,7 +1,5 @@
-const { default: fastifyPlugin } = require("fastify-plugin");
 const axios = require("axios")
-module.exports = fastifyPlugin(async function onRequestHook(fastify, options) {
-    fastify.addHook('onRequest', async function(request, reply) {
+module.exports = async function onRequestHook(request, reply) {
         try {
             const cookie = request.headers.cookie;
 
@@ -21,5 +19,4 @@ module.exports = fastifyPlugin(async function onRequestHook(fastify, options) {
             );
             return reply;
         }
-    });
-});
+    };

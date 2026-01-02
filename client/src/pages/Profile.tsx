@@ -15,6 +15,9 @@ function Profile() {
   const {user: currentUser} = useContext(GlobalContext)
   const {data, isPending, isError, error, refetch} = useGetProfile(searchParams?.username as string);
 
+
+  console.log("here ...",data)
+
   useEffect(() => {
         refetch()
   }, [searchParams?.username])

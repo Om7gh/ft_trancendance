@@ -18,8 +18,6 @@ app.register(require('@fastify/websocket'));
 app.register(chessRoutes);
 
 app.setErrorHandler((error, request, reply) => {
-  request.log.error({ err: error }, 'Unhandled error');
-
   if (error.isOperational) {
     return reply.status(error.statusCode).send({
       status: error.status,
@@ -27,10 +25,9 @@ app.setErrorHandler((error, request, reply) => {
     });
   }
 
-  const statusCode = error.statusCode || 500;
-  return reply.status(statusCode).send({
+  return reply.status(400).send({
     status: 'error',
-    message: error.message || 'Internal Server Error',
+    message: error.message || 'bad request',
   });
 })
 
