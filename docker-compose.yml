@@ -82,6 +82,7 @@ services:
     container_name: chat
     build: ./services/chat-server/
     image: chat:agents-923
+    env_file: services/chat-server/.env
     networks:
       - agents-923
     volumes:
