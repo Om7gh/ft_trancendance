@@ -26,7 +26,7 @@ export class PasswordController {
 
         try {
             const { sub } = await request.verifyNonceToken();
-            const user = fastify.usersRepository.findByEmail(sub!);
+            const user = fastify.usersRepository.findByUID(sub!);
             if (!user) {
                 return reply.badRequest(
                     PasswordController.ERR_ACCOUNT_NOT_FOUND
