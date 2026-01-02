@@ -136,57 +136,7 @@ export function useOnlineChess() {
         });
       }
     );
-
-    chessSocket.on(
-      'gameResume',
-      ({
-        roomId,
-        myTeam,
-        board,
-        currentTurn,
-        turns,
-        opponentConnected,
-        opponentName,
-      }: {
-        roomId: string;
-        myTeam: 'WHITE' | 'BLACK';
-        board: Pieces[];
-        currentTurn: 'WHITE' | 'BLACK';
-        turns: number;
-        opponentConnected: boolean;
-        opponentName?: string | null;
-      }) => {
-        setState((prev) => ({
-          ...prev,
-          roomId,
-          myTeam,
-          opponentConnected,
-          opponentName: opponentName ?? prev.opponentName,
-          gameOver: null,
-          rematch: {
-            incomingOffer: false,
-            requested: false,
-            declined: false,
-          },
-        }));
-        useChessStore.setState({ currentTurn, turns });
-        if (board) {
-          window.dispatchEvent(
-            new CustomEvent('syncBoard', {
-              detail: {
-                board,
-                currentTurn,
-                turns,
-                fromPlayer: 'server',
-                prevMove: null,
-              },
-            })
-          );
-        }
-        gameOverRef.current = false;
-      }
-    );
-
+    
     chessSocket.on('enterMatchmaking', () => {
       setState((prev) => {
         const newState = {
@@ -239,13 +189,11 @@ export function useOnlineChess() {
     return () => {
       chessSocket.off('connected');
       chessSocket.off('roomCreated');
-      chessSocket.off('gameStart');
       chessSocket.off('boardUpdate');
       chessSocket.off('chatMessage');
       chessSocket.off('opponentDisconnected');
       chessSocket.off('disconnected');
       chessSocket.off('gameOver');
-      chessSocket.off('gameResume');
       chessSocket.off('enterMatchmaking');
       chessSocket.off('rematchOffer');
       chessSocket.off('rematchPending');

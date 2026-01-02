@@ -6,7 +6,7 @@ const getBoardCoordinates = (
     boardRef: React.RefObject<HTMLDivElement | null>,
     myTeam: 'WHITE' | 'BLACK' | null
 ): { newX: number; newY: number; tileSize: number } | null => {
-    const rect = boardRef.current?.getBoundingClientRect();
+    const rect = boardRef.current?.getBoundingClientRect(); 
     if (!rect) return null;
 
     let clientX: number, clientY: number;

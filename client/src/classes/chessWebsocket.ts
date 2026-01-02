@@ -94,15 +94,6 @@ class ChessWebSocket {
     }
   }
 
-  reconnect(url: string) {
-    // Close existing connection if any
-    if (this.ws) {
-      this.ws.onclose = null; // Prevent triggering disconnect event
-      this.ws.close();
-    }
-    this.connect(url);
-  }
-
   disconnect() {
     if (!this.ws) return;
     try {
