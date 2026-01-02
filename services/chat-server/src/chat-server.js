@@ -9,12 +9,18 @@ import conversation from "../routes/conversation.js";
 import initDb from '../database/initDb.js';
 
 const serverOptions = {
-	logger: {
-		level: "debug",
-		transport: {
-			target: 'pino-pretty'
-		}
-	}
+		logger: {
+			level: 'info',
+			transport: {
+				target: 'pino-pretty',
+				options: {
+					colorize: true,
+					translateTime: 'HH:MM:ss Z',
+					ignore: 'pid,hostname',
+					singleLine: false,
+				},
+			},
+		},
 }
 
 const sqlite3Options = {

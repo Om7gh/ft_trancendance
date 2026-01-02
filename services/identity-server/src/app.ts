@@ -9,7 +9,7 @@ import {
 import path from 'node:path';
 
 export const options: FastifyServerOptions = {
-  ignoreTrailingSlash: true, //! to be kept in production
+  ignoreTrailingSlash: true,
   logger: {
     level: 'info',
     transport: {
@@ -58,7 +58,7 @@ export default async function um(
               params: request.params,
             },
           },
-          'Unhandled error occurred'
+          'error occurred'
         );
       }
       reply.code(err.statusCode ?? 500);

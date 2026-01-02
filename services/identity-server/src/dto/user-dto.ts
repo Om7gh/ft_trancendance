@@ -31,7 +31,6 @@ export function asUserInfo(user: User) {
     id: user.uid,
     first_name: user.first_name,
     last_name: user.last_name,
-    email: user.email,
     avatar: user.avatar,
     bio: user.bio,
     last_login: user.last_login,

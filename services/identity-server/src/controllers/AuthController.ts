@@ -225,13 +225,13 @@ export default abstract class AuthController {
                 return reply.badRequest('user not found');
             }
             if (user.email_verified) {
-                return reply.conflict('already verified');
+                return reply.redirect('/dashboard');
             }
             this.usersRepository.update(user.id, { email_verified: 1 });
             reply.sendNonceToken(await this.generateNonceToken(user.uid, '5m'));
-            return reply.redirect('/auth/complete-registration');
+            reply.code(302).header('Location', '/auth/complete-registration');//.redirect('/auth/complete-registration');
         } catch (err: any) {
-            return reply.forbidden('invalid-token ' + err.message);
+            return reply.redirect('/auth/signin');
         }
     }
 
@@ -252,7 +252,7 @@ export default abstract class AuthController {
             const [accessToken, refreshToken] =
                 await AuthController.issueTokens(this, user);
             reply.sendAccessToken(accessToken).sendRefreshToken(refreshToken);
-            return reply.send({ success: true, next: '/dashboard' });
+            return reply.redirect('/dashboard');
         } catch (err: any) {
             if (err.message === 'TOKEN_RATE_LIMITED') {
                 return reply.tooManyRequests(
@@ -387,7 +387,6 @@ export default abstract class AuthController {
                 .clearNonceToken()
                 .send({ success: true });
         } catch (err) {
-            request.log.error(err);
             return reply.notFound('complete-profile failed');
         }
     }

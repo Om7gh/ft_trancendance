@@ -10,7 +10,7 @@ declare module 'fastify' {
 
 export default fp(
   async (fastify) => {
-    const db = DatabaseManager.open('/var/lib/um/users.sqlite3', { verbose: console.log })
+    const db = DatabaseManager.open('/var/lib/um/users.sqlite3')
     initializeSchema(db)
 
     fastify.decorate('db', db)

@@ -1,10 +1,14 @@
-COMPOSE = docker compose --parallel 4 -p agents-923
+COMPOSE = docker compose --parallel 4 -p agents
 
 SSLKEY   := $(HOME)/data/ssl-key.pem
 SSLCERT  := $(HOME)/data/ssl-cert.pem
 SSLCONF  := ./nginx/conf/ossl.conf
 
-all: gen-cert up
+all: build-client gen-cert up
+
+build-client:
+	npm ci --prefix ./client
+	npm run build --prefix ./client
 
 gen-cert:
 	@mkdir -p $(dir $(SSLKEY))
@@ -21,34 +25,34 @@ gen-cert:
 
 up :
 	mkdir -p ~/data/avatars
-	docker compose up --build
+	$(COMPOSE) up --build
 
 down:
-	docker compose down -v
+	$(COMPOSE) down -v
 
 clean: down
-	docker system prune -af
+	docker image prune -af
 	rm -f ~/data/users.sqlite3
 	rm -f ~/data/chess.sqlite3
 
 re: clean up
 
 identity:
-	docker compose build identity
-	docker compose run identity
+	$(COMPOSE) build identity
+	$(COMPOSE) run identity
 
 pong:
-	docker compose down;
+	$(COMPOSE) down;
 	docker image rm pong:pingpong;
-	docker compose up;
+	$(COMPOSE) up;
 
 nginx:
-	docker compose down;
+	$(COMPOSE) down;
 	docker image rm nginx:pingpong;
-	docker compose up;
+	$(COMPOSE) up;
 
 notification:
-	docker compose down;
+	$(COMPOSE) down;
 	docker image rm notification:pingpong;
-	docker compose up;
+	$(COMPOSE) up;
 

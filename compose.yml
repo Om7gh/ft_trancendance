@@ -1,0 +1,90 @@
+services:
+  nginx:
+    container_name: nginx
+    build: ./nginx/
+    image: nginx:923
+    configs:
+      - source: nginx-conf
+        target: /etc/nginx/nginx.conf
+    secrets:
+      - ssl-cert
+      - ssl-key
+    ports:
+      - "8080:443"
+    environment:
+      - ./nginx/.env
+    networks:
+      - agents-923
+    depends_on:
+      - chess
+      - identity
+      - pong
+    volumes:
+      - ./client/dist:/usr/share/nginx/html:ro
+      - $HOME/data/avatars:/data/avatars:ro
+
+  chess:
+    container_name: chess
+    build: ./services/chess-server/
+    image: chess:pingpon
+    volumes:
+      - $HOME/data:/usr/src/app/data
+    networks:
+      - agents-923
+
+  identity:
+    container_name: identity
+    build: ./services/identity-server/
+    image: identity:923
+    env_file:
+      - ./services/identity-server/.env
+    volumes:
+      - $HOME/data:/var/lib/um
+      - $HOME/data/avatars:/var/avatars
+    networks:
+      - agents-923
+
+  pong:
+    container_name: pong
+    build: ./services/pong-server/
+    image: pong:923
+    networks:
+      - agents-923
+    volumes:
+      - $HOME/data/pong:/var/local
+
+  notification:
+    container_name: notification
+    build: ./services/notification-server/
+    image: notification:923
+    networks:
+      - agents-923
+    volumes:
+      - $HOME/data/notification:/var/local
+
+  chat:
+    container_name: chat
+    build: ./services/chat-server/
+    image: chat:923
+    env_file: services/chat-server/.env
+    networks:
+      - agents-923
+    volumes:
+      - $HOME/data/chat:/var/lib/sqlite/
+
+networks:
+  agents-923:
+    driver: bridge
+
+volumes:
+  chess-data:
+
+configs:
+  nginx-conf:
+    file: ./nginx/conf/nginx.conf
+
+secrets:
+  ssl-cert:
+    file: $HOME/data/ssl-cert.pem
+  ssl-key:
+    file: $HOME/data/ssl-key.pem

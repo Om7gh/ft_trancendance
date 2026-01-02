@@ -11,7 +11,18 @@ import validateRoomPlugin from './plugins/validateRoom.js';
 import pongGame from './routes/pongGame.js';
 
 const app = fastify({
-  logger: {level: 'debug',transport: {target: 'pino-pretty',},},
+    logger: {
+      level: 'info',
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: true,
+          translateTime: 'HH:MM:ss Z',
+          ignore: 'pid,hostname',
+          singleLine: false,
+        },
+      },
+    },
 });
 
 app.register(axios);
