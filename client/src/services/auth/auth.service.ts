@@ -98,6 +98,11 @@ export default abstract class AuthService {
         return data;
     }
 
+    static async verifyToken(token: string) {
+        const { data } = await api.get(`/api/auth/verify-token?token=${token}`);
+        return data;
+    }
+
     static async getChessPiece() {
         const {data} = await api.get("/pongGame/remote/chessCustomization/fetch");
         return data;

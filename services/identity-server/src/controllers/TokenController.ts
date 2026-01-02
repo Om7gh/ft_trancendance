@@ -35,6 +35,24 @@ export default abstract class TokenController {
         }
     }
 
+    static async verifyToken(
+        this: FastifyInstance,
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+        try {
+            const { sub } = await request.verifyConfirmToken();
+            const user = this.usersRepository.findByEmail(sub!);
+            if (!user) {
+                return reply.badRequest('no user found');
+            }
+            reply.sendNonceToken(await this.generateNonceToken(user.uid, '5m'));
+            return reply.send({ success: true });
+        } catch (err: any) {
+            return reply.unauthorized(err.message);
+        }
+    }
+
     static async revoke(
         this: FastifyInstance,
         request: FastifyRequest,
