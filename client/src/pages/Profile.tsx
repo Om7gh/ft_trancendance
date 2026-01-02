@@ -25,7 +25,7 @@ function Profile() {
 
   if (isError) {
     const is404 = error?.status === 404 || error?.response?.status === 404;
-    
+
     return (
       <div className="flex justify-center items-center min-h-[600px] px-4">
         <div className="text-center max-w-md">
@@ -38,17 +38,17 @@ function Profile() {
               )}
             </div>
           </div>
-          
+
           <h2 className={`text-2xl font-bold mb-3 ${is404 ? 'text-slate-300' : 'text-rose-400'}`}>
             {is404 ? 'Profile Not Found' : 'Error Loading Profile'}
           </h2>
-          
+
           <p className="text-slate-400 mb-6">
-            {is404 
+            {is404
               ? `The user "${searchParams?.username}" doesn't exist or may have been removed.`
               : error?.response?.data?.message || 'An unexpected error occurred while loading the profile.'}
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => navigate(-1)}

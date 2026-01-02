@@ -103,9 +103,16 @@ export class UserController {
         }
     }
 
-    private static async getStatistics(gameService: string, uid: string) {
-        const res = await axios.get(`${gameService}/statistics?uid=${uid}`);
-        return res?.data;
+    private static async getStatistics(
+        gameService: string,
+        uid: string
+    ): Promise<any> {
+        try {
+            const res = await axios.get(`${gameService}/statistics?uid=${uid}`);
+            return res?.data;
+        } catch (err: any) {
+            return [];
+        }
     }
 
     static async user(
@@ -121,16 +128,14 @@ export class UserController {
             }
             const fullUser = {
                 user: asUserInfo(user),
-                chess:
-                    (await UserController.getStatistics(
-                        'http://chess:9000',
-                        user.username
-                    )) || null,
-                pong:
-                    (await UserController.getStatistics(
-                        'http://pong:9001',
-                        user.uid
-                    )) || null,
+                chess: await UserController.getStatistics(
+                    'http://chess:9000',
+                    user.username
+                ),
+                pong: await UserController.getStatistics(
+                    'http://pong:9001',
+                    user.uid
+                ),
                 friends: this.friendshipRepository.getFriendships(user.id),
             };
             return reply.send(fullUser);
