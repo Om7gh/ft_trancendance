@@ -77,29 +77,29 @@ export default function useSynchronization(
   const context = useRef<CanvasRenderingContext2D | null>(null);
 
   useEffect(() => {
-      let intervalId = null;
-      context.current = createRenderingContext(canvas.current);
-      
-      connection.onmessage = (event) => {
-          messageHandler(
-            event,
-            context.current!,
-            setScore,
-            setMatchState,
-            setError,
-            customization,
-          );
-      };
-      
-      document.addEventListener('keyup', handleKeyUp);
-      document.addEventListener('keydown', handleKeyDown);
-      intervalId = setInterval(() => sendEvents(connection, matchState), 30);
-      
-      return () => {
-          document.removeEventListener('keydown', handleKeyDown);
-          document.removeEventListener('keyup', handleKeyUp);
-          connection.onmessage = null;
-          clearInterval(intervalId);
-      };
+    let intervalId = null;
+    context.current = createRenderingContext(canvas.current);
+    
+    connection.onmessage = (event) => {
+      messageHandler(
+        event,
+        context.current!,
+        setScore,
+        setMatchState,
+        setError,
+        customization,
+      );
+    };
+    
+    document.addEventListener('keyup', handleKeyUp);
+    document.addEventListener('keydown', handleKeyDown);
+    intervalId = setInterval(() => sendEvents(connection, matchState), 30);
+    
+    return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.removeEventListener('keyup', handleKeyUp);
+        connection.onmessage = null;
+        clearInterval(intervalId);
+    };
   })
 }

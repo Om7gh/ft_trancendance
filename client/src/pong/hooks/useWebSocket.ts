@@ -12,22 +12,22 @@ function createConnection(url: string, connection: { ws: WebSocket | null }) {
 }
 
 export default function useWebSocket(
-    url: string,
-    connection: {ws: WebSocket | null},
-    setMatchState: (value: string) => void,
-    setError: (value: string) => void,
+  url: string,
+  connection: {ws: WebSocket | null},
+  setMatchState: (value: string) => void,
+  setError: (value: string) => void,
 ) {
-    useEffect(() => {
-      try {
-        createConnection(url, connection);
-        setMatchState("waiting");
-        return () => {
-          if (connection.ws) {
-            connection.ws.close(1000, 'Component unmounted!!');
-          }
+  useEffect(() => {
+    try {
+      createConnection(url, connection);
+      setMatchState("waiting");
+      return () => {
+        if (connection.ws) {
+          connection.ws.close(1000, 'Component unmounted!!');
         }
-      } catch (err: any) {
-        setError(err?.message ?? "An error during connection establishing!!");
       }
-    }, [url]);
+    } catch (err: any) {
+      setError(err?.message ?? "An error during connection establishing!!");
+    }
+  }, [url]);
 }

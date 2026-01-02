@@ -1,4 +1,3 @@
-import errorHandler from "../plugins/errorHandler.js";
 import Statistics from "../classes/statisticsClass.js";
 
 async function pongStatisticsHandler(request, reply) {
@@ -6,9 +5,7 @@ async function pongStatisticsHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
-        error.statusCode = 400;
-        throw error;
+        throw new PongError(400, "Invalid User Passed To Handler!!");
     }
 
     const matches = this.db.getMatchesByUser(user.id);

@@ -22,7 +22,7 @@ export default function useFetchMatch(
                         setError("Error: fetch invalid match");
                 }
             } catch (err: any) {
-                setError(err?.message || "Fail to fetch match!!");
+                setError(err?.response?.data ?? "Fail to fetch match!!");
             }
         })();
 
