@@ -18,7 +18,7 @@ function contactPlugin(instance){
 				presence: instance.connectedUsers.has(id) ? "online" : "offline",
 				lastMsg: ""
 			})
-		} 
+		}
 	);
 	}
 	

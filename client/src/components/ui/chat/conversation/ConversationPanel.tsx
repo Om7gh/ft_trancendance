@@ -22,7 +22,7 @@ interface ConversationPanelProps{
 	connection: React.RefObject<WebSocket | null>;
 	updateSenderCard: React.Dispatch<React.SetStateAction<any>>
 	onBlockToggle: (action: "block" | "unblock") => void;
-	changeUserView: (view: string) => void;
+	changeUserView: (view: "Chats" | "contact-panel") => void;
 }
 
 function constructReq(
@@ -109,7 +109,7 @@ function ConversationPanel({
 				break ;
 			}
 			case "back": {
-				changeUserView("contacts");
+				changeUserView("contact-panel");
 				break ;
 			}
 			case "invite": {

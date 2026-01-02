@@ -27,7 +27,7 @@ function Chat(){
 	const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 	const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 	const [serachQuery, setSearchQuery] = useState("");
-	const [mobileView, setMobileView] = useState("contacts");
+	const [mobileView, setMobileView] = useState<"contact-panel" | "chat-panel">("contact-panel");
 
 	const [chatCards, setChatCards, conversationStatus] = useAxios(`/conversations`);
 	const [contactCards, setContactCards, contactStatus] = useAxios(`/contacts`);
@@ -36,14 +36,13 @@ function Chat(){
 
 	const selectedCardRef = useRef<Card | null>(selectedCard);
 	const isMobile = screenWidth <= 930;
-	const showContact = (!isMobile || mobileView ===  "contacts"); 
-	const showConversation = (!isMobile || mobileView === "conversation");
+	const showContact = (!isMobile || mobileView ===  "contact-panel"); 
+	const showConversation = (!isMobile || mobileView === "chat-panel");
 	
 	usePresence(chatCards, contactCards, socket, socketState);
 	useEventListener(window, "resize", () => setScreenWidth(window.innerWidth));
 	useWsResponse(socket, incomingMsgResolver);
 
-	
 	const visibleCards = visibleCardsResolver(
 		chatCards,
 		contactCards,
@@ -70,12 +69,12 @@ function Chat(){
 				conversationId: userCardSelected.id
 			} as ServerRequest);
 		}
-		setMobileView("conversation");
+		setMobileView("chat-panel");
 		setSelectedCard(userCardSelected);
 		selectedCardRef.current = userCardSelected;
 	}
 
-	function changeUserView(view: string){
+	function changeUserView(view: "Chats" | "contact-panel"){
 		if (view === "Chats"){
 			setSelectedTab(view);
 			setContactCards(contactCards.filter((card: Card) => {
