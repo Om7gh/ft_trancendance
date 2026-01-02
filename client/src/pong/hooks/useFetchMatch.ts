@@ -19,10 +19,10 @@ export default function useFetchMatch(
                     if (validateMatch(response.data))
                         setMatch(response.data);
                     else
-                        setError("Error: fetch invalid match");
+                        setError("Fetch Invalid Match");
                 }
             } catch (err: any) {
-                setError(err?.response?.data ?? "Fail to fetch match!!");
+                setError("Fail To Fetch Match!!");
             }
         })();
 

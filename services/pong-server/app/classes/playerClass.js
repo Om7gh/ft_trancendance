@@ -48,7 +48,10 @@ export default class Player extends EventEmitter {
             socket.on('error', (err) => {
                 this.log.error(err);
             });
+
+            return true;
         }
+        return false;
     }
 
     closeSocket() {

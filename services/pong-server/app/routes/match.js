@@ -21,7 +21,14 @@ function matchHandler(socket, req) {
         return socket.close();
     }
 
-    room.setPlayerSocket(uid, socket);
+    if (!room.setPlayerSocket(uid, socket)) {
+        socket.send(JSON.stringify({
+            state: "!ok",
+            reason: "you are already in match!!",
+        }));
+
+        return socket.close();
+    }
 }
 
 export default async function match(fastify) {

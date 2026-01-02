@@ -23,11 +23,11 @@ export default function useWebSocket(
       setMatchState("waiting");
       return () => {
         if (connection.ws) {
-          connection.ws.close(1000, 'Component unmounted!!');
+          connection.ws.close(1000, 'Component is unmounted!!');
         }
       }
     } catch (err: any) {
-      setError(err?.message ?? "An error during connection establishing!!");
+      setError("Fail To Establish Connection!!");
     }
   }, [url]);
 }

@@ -1,3 +1,4 @@
+import NotificationError from "../../classes/notificationError.js";
 import onRequestHookHandler from "../../hooks/onRequestHook.js";
 
 async function fetchNotificationHandler(request, reply) {
@@ -5,9 +6,7 @@ async function fetchNotificationHandler(request, reply) {
     const state = this.validateUser(user);
 
     if (!state) {
-        const error = new Error("Invalid user passed to handler!!")
-        error.statusCode = 400;
-        throw error;
+        throw new NotificationError(400, "Pass Invalid User to handler!!");
     }
 
     const result = this.db.getNotificationsByUser(user.id);
