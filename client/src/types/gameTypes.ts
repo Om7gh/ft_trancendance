@@ -1,4 +1,4 @@
-import type { MatchType, PlayerType } from "@/pong/types/playWithSomeOne";
+import type { MatchType } from "@/pong/types/playWithSomeOne";
 
 export interface TournamentPlayer {
   avatar: string;

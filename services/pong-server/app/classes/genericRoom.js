@@ -140,10 +140,14 @@ export default class GenericRoom extends EventEmitter {
     }
 
     setPlayerSocket(playerId, socket) {
+        let state = false;
+
         if (this.leftPlayer && (this.leftPlayer.id === playerId)) {
-            this.leftPlayer.setSocket(socket);
+            if (!this.leftPlayer.setSocket(socket))
+                return (false);
         } else if (this.rightPlayer && (this.rightPlayer.id === playerId)) {
-            this.rightPlayer.setSocket(socket);
+            if (!this.rightPlayer.setSocket(socket))
+                return (false);
         }
 
         if (this.isPaused()) {
@@ -151,6 +155,7 @@ export default class GenericRoom extends EventEmitter {
         } else if (this.leftPlayer.socket && this.rightPlayer.socket) {
             this.startMatch();
         }
+        return (true);
     }
 
     startMatch() {

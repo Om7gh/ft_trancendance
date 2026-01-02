@@ -52,7 +52,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
             <p  className=" relative w-10 h-10 bg-neon/50 flex items-center justify-center before:content-['→'] before:absolute before:inset-0 before:flex before:items-center before:justify-center before:text-3xl before:text-white before:bg-violet-900 before:translate-x-1 before:translate-y-1 before:z-10"></p>
           </button>
         </div>
-        {diff < 0 && <p>Expired !</p>}
+        {diff < 0 && <p className="text-xs">Expired !</p>}
         </div>
   }
   if (data.type === "friend-request") {
@@ -103,6 +103,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
     const {refetch} = useAcceptMatch(data?.sender.id);
     const handleClick = () => {
       refetch()
+      close();
     }
     return (
       <div className={`flex items-center justify-between gap-4 text-violet-200 ${diff < 0 ? "grayscale" : "bg-slate-950/30"}  py-1 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all mx-8`}>
@@ -131,7 +132,6 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
   }
   if (data?.type === "new-message") {
     const url = `/dashboard/chat`
-    const navigate = useNavigate()
     return (
       <div className="flex items-center justify-between gap-4 text-violet-200 bg-slate-950/30 px-3 py-2 my-2 rounded-lg border border-violet-500/30 hover:border-violet-500/60 transition-all mx-8">
         <div className="flex items-center gap-3">
@@ -146,7 +146,7 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="px-4 py-1.5 bg-violet-900/50 hover:bg-violet-900 rounded-md text-sm font-medium transition-colors" onClick={() => navigate(url)}>
+          <button className="px-4 py-1.5 bg-violet-900/50 hover:bg-violet-900 rounded-md text-sm font-medium transition-colors" onClick={() => {navigate(url); close()}}>
             See message
           </button>
         </div>

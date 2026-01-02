@@ -20,7 +20,7 @@ function Player({player}: PlayerPropsType) {
     return (
         <div className="flex items-center gap-3 md:p-3 p-2 bg-linear-to-r from-slate-800/50 to-slate-700/50 border border-slate-600/30 hover:border-slate-500/50 transition-all rounded-xl flex-col">
             <img 
-                src={player?.avatar || '/default-avatar.png'} 
+                src={player?.avatar || 'https://i.imgur.com/QwPrNIF.jpeg'} 
                 alt={player?.username} 
                 className="w-8 h-8 md:w-16 md:h-16 rounded-full border-2 border-slate-500/50 object-cover"
             />

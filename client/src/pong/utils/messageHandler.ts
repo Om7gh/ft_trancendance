@@ -71,6 +71,6 @@ export default function messageHandler(
       drawPaddle(message.data.rightPaddle, context, customization?.right_paddle_color ?? "red");
     }
   } else {
-      setError("Unexpected error diring the match!!");
+      setError("Error during the match!!");
   }
 }

@@ -9,7 +9,7 @@ function LeftPlayer({ children }: PlayerPropsType) {
     return (
         <div className="flex flex-col items-center gap-3">
             <img className="w-10 h-10 md:w-16 md:h-16" 
-                src="https://avatar.iran.liara.run/public"
+                src='https://i.imgur.com/QwPrNIF.jpeg'
             />
             <h2 className=''>
                 {children}
@@ -22,7 +22,7 @@ function RightPlayer({ children }: PlayerPropsType) {
     return (
         <div className="flex flex-col items-center gap-3">
             <img className="w-10 h-10 md:w-16 md:h-16" 
-                src="https://avatar.iran.liara.run/public"
+                src='https://i.imgur.com/QwPrNIF.jpeg'
             />
             <h1 className=''>
                 {children}
