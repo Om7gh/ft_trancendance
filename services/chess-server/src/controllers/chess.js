@@ -14,7 +14,7 @@ const {
 } = require('./rematch');
 const { catchAsyncError } = require('../utils/catchAsyncError');
 
-catchAsyncError(async function chessHandler(connection, req) {
+const chessHandler = catchAsyncError(async function (connection, req) {
   const app = req.server;
 
   const clientIP = req.socket.remoteAddress;
@@ -57,7 +57,7 @@ catchAsyncError(async function chessHandler(connection, req) {
   connection.on('close', () => handleDisconnect(app, playerId, connection));
 })
 
-catchAsyncError(async function handleMessage(app, playerId, msg) {
+const handleMessage = catchAsyncError(async function (app, playerId, msg) {
   const player = players.get(playerId);
   if (!player) {
     return;

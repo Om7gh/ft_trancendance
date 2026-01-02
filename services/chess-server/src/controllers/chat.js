@@ -2,7 +2,7 @@ const { catchAsyncError } = require('../utils/catchAsyncError');
 const send = require('../utils/send');
 const { rooms, players } = require('../utils/state');
 
-catchAsyncError(async function handleChat(playerId, text) {
+const handleChat = catchAsyncError(async function(playerId, text) {
   const player = players.get(playerId);
   if (!player || !player.roomId) return;
 

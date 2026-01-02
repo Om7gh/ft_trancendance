@@ -99,6 +99,7 @@ export default abstract class AuthService {
     }
 
     static async verifyToken(token: string) {
+        console.log(token)
         const { data } = await api.get(`/api/auth/verify-token?token=${token}`);
         return data;
     }

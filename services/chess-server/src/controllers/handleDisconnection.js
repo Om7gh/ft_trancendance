@@ -3,7 +3,7 @@ const send = require('../utils/send');
 const { rooms, players, lastOpponents } = require('../utils/state');
 const { removeFromQueue } = require('./matchMaking');
 
-catchAsyncError(function handleDisconnect(app, playerId, disconnectingConnection) {
+const handleDisconnect = catchAsyncError(function (app, playerId, disconnectingConnection) {
   const player = players.get(playerId);
   if (!player) return;
 

@@ -1,4 +1,5 @@
 const { getGameStats, getPlayerGameHistory } = require("../repositories");
+const { catchAsyncError } = require("../utils/catchAsyncError");
 
 const getStats = catchAsyncError(async function(req, rep) {
    try {

@@ -1,19 +1,28 @@
-import { useNavigation } from "react-router-dom";
+import { Navigate, useNavigation, useParams } from "react-router-dom";
 import useResetPassword from "@/services/auth/useResetPassword";
 import { InputField } from "../utils/Button";
 import { Logo } from "@/assets";
+import useVerifyToken from "@/services/auth/useVerifyToken";
 
 function ResetPassword() {
-
   const navigation = useNavigation();
+  const params = useParams();
   const mutate = useResetPassword();
-  const isSubmitting = navigation.state === 'submitting'; // 'idle, submitting'
+  const mutateVerify = useVerifyToken()
+  const isSubmitting = navigation.state === 'submitting';
+
+  if (!params.token)
+    return <Navigate to={"/auth/signin"} replace />
+  mutateVerify.mutate(params.token || "123");
+  if (mutateVerify.isError)
+    return <Navigate to={"/auth/signin"} replace />
+
   const handleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const userData = {
-      email: formData.get('email') as string,
-      password: formData.get('password') as string,
+      newPassword: formData.get("newPassword") as string,
+      confirmPassword: formData.get("confirmPassword") as string,
     };
     mutate.mutate(userData);
   };

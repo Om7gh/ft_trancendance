@@ -7,8 +7,9 @@ const {
   lastOpponents,
   pendingRematches,
 } = require('../utils/state');
+const { catchAsyncError } = require('../utils/catchAsyncError');
 
-catchAsyncError(function startRematchBetween(aId, bId, requesterId) {
+const startRematchBetween = catchAsyncError(function (aId, bId, requesterId) {
   const a = players.get(aId);
   const b = players.get(bId);
   if (!a || !b) return;
@@ -41,11 +42,11 @@ catchAsyncError(function startRematchBetween(aId, bId, requesterId) {
   });
 })
 
-catchAsyncError(function pairKeyOf(aId, bId) {
+function pairKeyOf(aId, bId) {
   return [aId, bId].sort().join(':');
-})
+}
 
-catchAsyncError(function handleRematchRequest(playerId) {
+const handleRematchRequest = catchAsyncError(function (playerId) {
   const opponentId = lastOpponents.get(playerId);
   if (!opponentId) return;
   const opp = players.get(opponentId);
@@ -69,7 +70,7 @@ catchAsyncError(function handleRematchRequest(playerId) {
   send(me.connection, { type: 'rematchPending' });
 })
 
-catchAsyncError(function handleRematchAccept(playerId) {
+const handleRematchAccept = catchAsyncError(function (playerId) {
   const opponentId = lastOpponents.get(playerId);
   if (!opponentId) return;
   const key = pairKeyOf(playerId, opponentId);
@@ -80,7 +81,7 @@ catchAsyncError(function handleRematchAccept(playerId) {
   startRematchBetween(playerId, opponentId, playerId);
 })
 
-catchAsyncError(function handleRematchDecline(playerId) {
+const handleRematchDecline = catchAsyncError(function (playerId) {
   const opponentId = lastOpponents.get(playerId);
   if (!opponentId) return;
   const key = pairKeyOf(playerId, opponentId);

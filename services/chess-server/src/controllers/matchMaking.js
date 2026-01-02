@@ -5,44 +5,7 @@ const { catchAsyncError } = require('../utils/catchAsyncError');
 
 const matchmakingQueue = []; // {playerId, player socket}
 
-catchAsyncError(function handleMatchmaking(playerId, connection) {
-  const existingPlayer = players.get(playerId);
-  if (existingPlayer) {
-    existingPlayer.connection = connection;
-
-    if (existingPlayer.roomId) {
-      const roomId = existingPlayer.roomId;
-      const room = rooms[roomId];
-
-      if (room) {
-        const roomPlayer = room.players.find((p) => p.playerId === playerId);
-        const opponent = room.players.find((p) => p.playerId !== playerId);
-        if (roomPlayer) {
-          roomPlayer.connection = connection;
-        }
-        players.set(playerId, existingPlayer);
-        send(connection, {
-          type: 'gameResume',
-          roomId,
-          board: room.board,
-          yourTeam: roomPlayer?.team,
-          currentTurn: room.currentTurn,
-          turns: room.turns,
-          opponentConnected: room.players.length === 2,
-          opponentName: opponent?.playerId,
-        });
-
-        return;
-      }
-      existingPlayer.roomId = null;
-      players.set(playerId, existingPlayer);
-    } else {
-      players.set(playerId, existingPlayer);
-    }
-  } else {
-    players.set(playerId, { connection, roomId: null });
-  }
-
+function handleMatchmaking(playerId, connection) {
   if (matchmakingQueue.some((p) => p.playerId === playerId)) {
     send(connection, {
       type: 'error',
@@ -50,7 +13,6 @@ catchAsyncError(function handleMatchmaking(playerId, connection) {
     });
     return;
   }
-
   matchmakingQueue.push({ playerId, connection });
 
   send(connection, {
@@ -72,9 +34,9 @@ catchAsyncError(function handleMatchmaking(playerId, connection) {
     }
     createMatch(player1, player2);
   }
-})
+}
 
-catchAsyncError(function createMatch(player1, player2) {
+const createMatch = catchAsyncError(function (player1, player2) {
   const roomId = uuid();
   rooms[roomId] = {
     players: [

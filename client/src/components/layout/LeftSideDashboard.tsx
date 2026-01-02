@@ -9,7 +9,6 @@ import DropDown from '../ui/utils/DropDown';
 import { useState, type MouseEvent, type ReactNode } from 'react';
 import { useLogout } from '@/services/auth/useLogout';
 import { FaRegChartBar } from "react-icons/fa";
-import { FaChessBoard } from "react-icons/fa6";
 
 
 export default function LeftSideDashboard({ 
@@ -29,10 +28,6 @@ export default function LeftSideDashboard({
       name: 'start',
       path: 'games',
       icon: <PiPingPongFill />,
-      children: [
-        { name: 'PingPong', path: 'games/pingpong', icon: <PiPingPongFill /> },
-        { name: 'Chess', path: 'games/chess', icon: <FaChessBoard /> },
-      ],
     },
     { name: 'Chat', path: 'chat', icon: <HiMiniChatBubbleLeft /> },
     { name: 'Friends', path: 'friends', icon: <FaUserFriends /> },
@@ -76,13 +71,13 @@ export default function LeftSideDashboard({
           {menuItems.map((item) => {
             const isOpen = !!openItems[item.path];
             return (
-              <li key={item.path}>
+              <li key={item.path} className='rounded-xl'>
                 <div className="flex flex-col">
                   <NavLink
                     to={item.path}
                     onClick={() => isMobile && onNavigate?.()}
                     className={({ isActive } : {isActive: boolean}) =>
-                      `px-4 py-3 transition-all duration-200 flex items-center gap-4 justify-between
+                      `px-4 py-3 transition-all duration-200 flex items-center gap-4 justify-between rounded-xl
                       ${
                         isActive
                           ? 'bg-linear-to-l from-neon to-violet-500 text-white shadow-lg border-l-5 border-l-slate-100'

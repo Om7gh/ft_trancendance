@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { catchAsyncError } = require('../utils/catchAsyncError');
 
-catchAsyncError (async function chessDb(fastify) {
+const chessDb = catchAsyncError (async function (fastify) {
   const dataDir = path.join(__dirname, '../../data');
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });

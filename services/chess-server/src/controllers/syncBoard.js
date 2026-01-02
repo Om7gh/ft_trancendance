@@ -2,7 +2,7 @@ const { catchAsyncError } = require('../utils/catchAsyncError');
 const send = require('../utils/send');
 const { rooms, players } = require('../utils/state');
 
-catchAsyncError(function syncBoard(playerId, board, currentTurn, turns, prevMove) {
+const syncBoard = catchAsyncError(function (playerId, board, currentTurn, turns, prevMove) {
   const player = players.get(playerId);
   if (!player || !player.roomId) return;
 

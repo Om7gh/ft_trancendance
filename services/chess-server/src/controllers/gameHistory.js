@@ -9,16 +9,10 @@ const gameHistory = catchAsyncError(async function (req, rep) {
         error: 'Missing username parameter'
       });
     }
-
-    console.log('🔍 Fetching game history for:', username);
-    console.log('🔍 Database instance:', !!req.server.db);
     
     const history = await getPlayerGameHistory(req.server.db, username);
     const stats = await getGameStats(req.server.db, username);
     
-    console.log('📊 History results:', history.length, 'games');
-    console.log('📊 Stats:', stats);
-
     return rep.send({
       success: true,
       stats: {

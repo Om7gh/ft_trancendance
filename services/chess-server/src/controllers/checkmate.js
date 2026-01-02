@@ -1,7 +1,8 @@
+const { catchAsyncError } = require('../utils/catchAsyncError');
 const send = require('../utils/send');
 const { rooms, players, lastOpponents } = require('../utils/state');
 
-catchAsyncError(async function handleCheckmate(app, playerId, winnerTeam) {
+const handleCheckmate = catchAsyncError(async function (app, playerId, winnerTeam) {
   const player = players.get(playerId);
   if (!player || !player.roomId) return;
 
@@ -29,7 +30,6 @@ catchAsyncError(async function handleCheckmate(app, playerId, winnerTeam) {
         winner,
         hasRecordGame: typeof app.recordGame === 'function'
       });
-      console.log("---------------> ", white.playerId, black.playerId);
       app.recordGame({
         roomId: player.roomId,
         whiteId: white.playerId,
