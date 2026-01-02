@@ -1,4 +1,4 @@
-import type { User } from "./User";
+import type { MatchType, PlayerType } from "@/pong/types/playWithSomeOne";
 
 export interface TournamentPlayer {
   avatar: string;
@@ -58,7 +58,8 @@ export interface ChessHistoryResponse {
     draws: number
     winRate: string
   }
-  matches: ChessMatch[]
+  matches?: PongMatch[]
+  history?: ChessMatch[]
 }
 
 export interface OnlineState {
@@ -72,6 +73,11 @@ export interface OnlineState {
     requested: boolean;
     declined: boolean;
   };
+}
+
+interface PongMatch extends MatchType {
+  winner: string,
+  createdAt:string,
 }
 
 
@@ -89,16 +95,3 @@ export interface ChessMatch {
       winnerTeam: string
 }
 
-export interface ChessHistoryProps {
-  userData: User | null;
-  matchData: {
-    stats: {
-      totalGames: number;
-      wins: number;
-      losses: number;
-      draws: number;
-      winRate: string;
-    },
-    history: ChessMatch[]
-  };
-}

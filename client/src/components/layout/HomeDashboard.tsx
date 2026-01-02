@@ -26,22 +26,22 @@ export default function HomeDashboard() {
       <div className="flex justify-center gap-4 mb-8">
         <button
           onClick={() => setActiveGame('pingpong')}
-          className={`px-8 py-3  font-semibold transition-all duration-300
+          className={`px-8 py-3  font-semibold transition-all duration-300 rounded-xl
             ${
               activeGame === 'pingpong'
                 ? 'bg-linear-to-r from-violet-500 to-neon text-white shadow-lg shadow-violet-500/50'
-                : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                : 'bg-slate-900/50 text-slate-300 hover:bg-slate-700/50'
             }`}
         >
           PingPong Stats
         </button>
         <button
           onClick={() => setActiveGame('chess')}
-          className={`px-8 py-3  font-semibold transition-all duration-300
+          className={`px-8 py-3  font-semibold transition-all duration-300 rounded-xl
             ${
               activeGame === 'chess'
                 ? 'bg-linear-to-r from-violet-500 to-neon text-white shadow-lg shadow-violet-500/50'
-                : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50'
+                : 'bg-slate-900/50 text-slate-300 hover:bg-slate-700/50'
             }`}
         >
           Chess Stats

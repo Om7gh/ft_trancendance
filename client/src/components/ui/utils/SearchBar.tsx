@@ -84,8 +84,6 @@ export default function SearchBar() {
     handleClose();
   };
 
-  console.log(data)
-
   return (
     <div
       ref={searchRef}

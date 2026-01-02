@@ -9,7 +9,7 @@ function PongChart({gameState}: {gameState: any}) {
   
     const isMobile = useMobile()
     return (
-      <div className="flex w-full justify-center items-center gap-8 p-4 bg-slate-800/30  border border-slate-700">
+      <div className="flex w-full justify-center items-center gap-8 p-4 bg-slate-800/30  border border-slate-700 rounded-2xl">
         {
           !isMobile &&
           <div className="space-y-4 min-w-30">

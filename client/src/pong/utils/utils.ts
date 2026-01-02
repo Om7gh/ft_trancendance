@@ -7,7 +7,6 @@ export function validatePlayer(player: PlayerType) {
 }
 
 export function validateMatch(match: MatchType) {
-  console.log("match here ... ", match);
   if (
     !match ||
     !match.id ||

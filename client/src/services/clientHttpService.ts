@@ -62,7 +62,6 @@ api.interceptors.response.use(
                     'Content-Type': 'application/json',
                 },
             });
-            console.log('Token refreshed successfully', refreshResponse.data);
             processRequestsQueue(null);
             return await api(originalRequest);
         } catch (refreshError) {

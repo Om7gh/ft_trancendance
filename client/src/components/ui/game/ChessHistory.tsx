@@ -1,5 +1,20 @@
-import type { ChessHistoryProps, ChessMatch } from '@/types/gameTypes';
+import type { User } from '@/App';
+import type {  ChessMatch } from '@/types/gameTypes';
 import { FaChess } from 'react-icons/fa';
+
+export interface ChessHistoryProps {
+  userData: User | null;
+  matchData: {
+    stats: {
+      totalGames: number;
+      wins: number;
+      losses: number;
+      draws: number;
+      winRate: string;
+    },
+    history: ChessMatch[]
+  };
+}
 
 function ResultBadge({ win }: { win: boolean }) {
   return (
@@ -23,7 +38,7 @@ function ChessHistory({userData, matchData}: ChessHistoryProps) {
   };
 
   return (
-    <div className="relative  border border-violet-500/30 bg-slate-950/30 p-6  shadow-xl shadow-slate-800 h-96 overflow-auto rounded-xl">
+    <div className="relative  border border-violet-500/30 bg-slate-950/30 p-6  shadow-xl shadow-slate-800 h-96 overflow-auto rounded-2xl">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,.30),transparent_60%)]" />
 
       <div className="relative z-10">

@@ -70,7 +70,6 @@ export default function SignUp() {
       email: formData.get('email') as string,
       password,
     };
-    console.log(userData)
     signupMutation.mutate(userData);
     setEmail("")
   };

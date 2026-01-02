@@ -9,7 +9,6 @@ export function useFetchCustomization(setCustomization: (value: CustomizationTyp
         const response = await api.get("/pongGame/remote/pongCustomization/fetch");
         setCustomization(response.data);
       } catch (err) {
-        console.log("Fail to fetch customization.");
       }
     })();
   }, [])

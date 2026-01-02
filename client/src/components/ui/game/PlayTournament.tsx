@@ -251,7 +251,6 @@ export default function PlayTournament() {
                 });
         }
     }
-    console.log(data)
     if (!data)
         return (
             <div className="h-full bg-slate-950/20 p-8 w-full">

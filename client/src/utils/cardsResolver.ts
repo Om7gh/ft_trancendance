@@ -19,7 +19,6 @@ function visibleCardsResolver(conversationCards: Card[], contactCards: Card[], t
 	if (qurey.length !== 0)
 		cards = cardsFilterByQuery(qurey, cards);
 
-	// console.log("=== Visible cards IN visibleCardsResolver After: ", cards);
 	return (cards);
 }
 

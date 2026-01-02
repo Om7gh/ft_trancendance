@@ -9,7 +9,6 @@ function useVerifyToken() {
   return useMutation({
     mutationFn: AuthService.verifyToken,
     onError: (error: Error) => {
-      console.log(error)
       toast.error(error.message || 'Failed to reset password');
       navigate("/auth/signin")
     },

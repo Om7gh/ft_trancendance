@@ -5,7 +5,6 @@ async function inviteRedirection(userId: string){
 		await api.get(`/pongGame/remote/inviteFriend?fid=${userId}`);
 	}
 	catch (error: any){
-		console.log(error.message);
 	}
 }
 

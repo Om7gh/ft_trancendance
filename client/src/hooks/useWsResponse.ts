@@ -9,7 +9,6 @@ function useWsResponse(socket: React.RefObject<WebSocket | null>, handler: (msg:
 			}
 			catch (error){
 				console.error("failed to parse incoming message: ", error);
-				console.log("THe error content: ", error);
 			}
 		}
 		socket.current?.addEventListener("message", wrapper);

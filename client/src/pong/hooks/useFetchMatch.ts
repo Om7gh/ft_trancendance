@@ -15,7 +15,6 @@ export default function useFetchMatch(
         (async function fetchMatch() {
             try {
                 const response = await api.get(url);
-                console.log(response.data)
                 if (!ignored) {
                     if (validateMatch(response.data))
                         setMatch(response.data);

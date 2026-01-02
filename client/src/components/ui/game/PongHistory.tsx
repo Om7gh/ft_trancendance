@@ -35,7 +35,6 @@ function ResultBadge({ win }: { win: boolean }) {
 
 function PongHistory({userData, matchData}: PongHistoryProps) {
 
-  console.log(matchData)
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -44,7 +43,7 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
   const totalGames = matchData?.wins || 0 + matchData?.loses || 0;
 
   return (
-    <div className="relative border border-violet-500/30 bg-slate-950/30 p-6 shadow-xl shadow-slate-800 h-96 overflow-auto rounded-xl">
+    <div className="relative border border-violet-500/30 bg-slate-950/30 p-6 shadow-xl shadow-slate-800 h-96 overflow-auto rounded-2xl">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(168,85,247,.15),transparent_60%)]" />
 
       <div className="relative z-10">
@@ -84,7 +83,7 @@ function PongHistory({userData, matchData}: PongHistoryProps) {
                   }`}
                 >
                   <div className="grid grid-cols-3 items-center gap-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 rounded-2xl">
                       <div
                         className={`w-3 h-3 shadow-[0_0_10px] ${
                           isWinning

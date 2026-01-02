@@ -12,7 +12,6 @@ const ProtectDashboard = ({ children }: { children: ReactNode }) => {
     const verify = async () => {
       try {
         const data = await AuthService.userInfo()
-        console.log(data)
         setAuthenticated(true);
         setUser(data);
       } catch (err) {

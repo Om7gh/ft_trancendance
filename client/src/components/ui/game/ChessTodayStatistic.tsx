@@ -33,7 +33,7 @@ function ChessTodayStatistic() {
 
   const history = (data as ChessHistoryResponse | undefined)?.history ?? []
 
-  const todayGames = history.filter((match) => {
+  const todayGames = history?.filter((match) => {
     const matchDate = toDateFromMixedTimestamp(match.endedAt) ?? toDateFromMixedTimestamp(match.startedAt)
     if (!matchDate) return false
     return isSameLocalDay(matchDate, today)
@@ -50,7 +50,7 @@ function ChessTodayStatistic() {
   }
   
   return (
-    <div className="p-4 bg-slate-800/30  border border-slate-700">
+    <div className="p-4 bg-slate-800/30  border border-slate-700 rounded-2xl">
       <h3 className="text-lg font-medium text-slate-300 mb-4 max-h-48 overflow-auto">
         Today's Chess <span className="text-neon">Statistics</span>
       </h3>
