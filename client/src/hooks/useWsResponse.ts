@@ -1,6 +1,9 @@
 import { useEffect } from "react";
 
-function useWsResponse(socket: React.RefObject<WebSocket | null>, handler: (msg: any) => void, dep: any = null) {
+function useWsResponse(
+	socket: React.RefObject<WebSocket | null>,
+	handler: (msg: any) => void, dep: any = null
+) {
     useEffect(() => {
         function wrapper(event: MessageEvent) {
 			try{

@@ -39,7 +39,7 @@ function Chat(){
 	const showContact = (!isMobile || mobileView ===  "contacts"); 
 	const showConversation = (!isMobile || mobileView === "conversation");
 
-	usePresence(chatCards, contactCards, socket);
+	usePresence(chatCards, contactCards, socket, socketState);
 	useEventListener(window, "resize", () => setScreenWidth(window.innerWidth));
 	useWsResponse(socket, incomingMsgResolver);
 

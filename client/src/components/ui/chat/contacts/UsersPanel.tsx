@@ -14,8 +14,7 @@ interface UsersPanelProps{
 	getCardStatus: (tabName: string) => string
 }
 
-function UsersPanel(
-	{
+function UsersPanel({
 		selectedCard,
 		onCardSelect,
 		visibleCards,

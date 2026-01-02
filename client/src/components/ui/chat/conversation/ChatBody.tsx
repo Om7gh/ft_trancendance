@@ -46,7 +46,7 @@ function OutgoingMsgBubble({user, msgContent}: MsgBubbleProps)
 	);
 }
 
-function MsgBubbleResolverProps({sender, target, message}: MsgBubbleResolverProps)
+function MsgBubbleResolver({sender, target, message}: MsgBubbleResolverProps)
 {
 	if (message.senderID === sender.id)
 		return (<OutgoingMsgBubble user={sender} msgContent={message.content}/>);
@@ -71,11 +71,13 @@ function ChatBody({senderUser, targetUser, messages}: ChatBodyProps){
 		<div ref={scrollableElement}
 			id="chatBody"className="h-full mb-1 bg-slate-800/40 p-4
 				scrollbar flex overflow-auto flex-col">
-			{messages?.map((message) => <MsgBubbleResolverProps
+			{
+				messages?.map((message) => <MsgBubbleResolver
+				key={message.content}
 				sender={senderUser} 
 				target={targetUser}
-				message={message}/>
-				)}
+				message={message}/>)
+			}
 		</div>
 	);
 }
