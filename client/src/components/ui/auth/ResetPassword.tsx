@@ -1,21 +1,24 @@
-import { Navigate, useNavigation, useParams } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import useResetPassword from "@/services/auth/useResetPassword";
 import { InputField } from "../utils/Button";
 import { Logo } from "@/assets";
 import useVerifyToken from "@/services/auth/useVerifyToken";
+import { useEffect } from "react";
 
 function ResetPassword() {
-  const navigation = useNavigation();
-  const params = useParams();
+  const [searchParams] = useSearchParams();
   const mutate = useResetPassword();
   const mutateVerify = useVerifyToken()
-  const isSubmitting = navigation.state === 'submitting';
+  const token = searchParams.get("token");
 
-  if (!params.token)
+  if (!token)
     return <Navigate to={"/auth/signin"} replace />
-  mutateVerify.mutate(params.token || "123");
-  if (mutateVerify.isError)
-    return <Navigate to={"/auth/signin"} replace />
+
+  useEffect(() => {
+    mutateVerify.mutate(token);
+  }, [token]);
+
+  if (mutateVerify.isError) return <Navigate to={"/auth/signin"} replace />
 
   const handleSumbit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -91,12 +94,12 @@ function ResetPassword() {
             <div className="absolute -inset-0.5 bg-linear-to-r from-violet-400 to-neon  blur opacity-75 group-hover:opacity-100 transition duration-200"></div>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={mutate.isPending}
               className={`rounded-lg relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium  text-white bg-gray-800 ${
-                isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
+                mutate.isPending ? 'opacity-75 cursor-not-allowed' : ''
               }`}
             >
-              {isSubmitting ? (
+              {mutate.isPending ? (
                 <span className="flex items-center">
                   <svg
                     className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
