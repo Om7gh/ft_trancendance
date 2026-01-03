@@ -28,7 +28,7 @@ export async function waitForOpponent(room) {
 
 async function playWithSomeOneHandler(request, reply) {
     const user          = request.user;
-    const state         = this.validateUser(user);
+    const state         = this.valiateUser(user);
     let   currentRoom   = this.currentRoom;
 
     if (!state) {

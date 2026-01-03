@@ -1,11 +1,11 @@
 
-import match from "./match.js";
-import joinMatch from "./joinMatch.js";
-import tournament from "./tournament.js";
-import customization from "./customization.js";
-import playWithFriend from "./playWithFriend.js";
-import pongStatistics from "./pongStatistics.js";
 import playWithSomeOne from "./playWithSomeOne.js";
+import playWithFriend from "./playWithFriend.js";
+import tournament from "./tournament.js";
+import joinMatch from "./joinMatch.js";
+import match from "./match.js";
+import customization from "./customization.js";
+import pongStatistics from "./pongStatistics.js";
 import onRequestHook from "../hooks/onRequestHook.js";
 
 export function alreadyInMatch(roomList, userId) {
@@ -42,11 +42,11 @@ export default async function pongGame(fastify, options) {
 
     fastify.register(onRequestHook);
     
-    fastify.register(playWithSomeOne);
     fastify.register(playWithFriend);
-    fastify.register(pongStatistics);
-    fastify.register(customization);
-    fastify.register(tournament);
     fastify.register(joinMatch);
+    fastify.register(tournament);
+    fastify.register(customization);
     fastify.register(match);
+    fastify.register(pongStatistics);
+    fastify.register(playWithSomeOne);
 }
