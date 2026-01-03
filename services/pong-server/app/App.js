@@ -4,6 +4,7 @@ import cookie from '@fastify/cookie';
 import websocket from '@fastify/websocket';
 import dataBase from './plugins/dataBase.js';
 import statistics from './routes/statistics.js';
+import health from './routes/health.js';
 import errorHandler from "./plugins/errorHandler.js";
 import validateUserPlugin from './plugins/validateUser.js';
 import validateRoomPlugin from './plugins/validateRoom.js';
@@ -36,6 +37,7 @@ app.register(dataBase, { dbPath: "/var/local/pong.db", });
 
 app.register(pongGame);
 app.register(statistics);
+app.register(health);
 
 const start = async () => {
   try {

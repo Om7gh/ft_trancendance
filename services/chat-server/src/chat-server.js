@@ -6,19 +6,14 @@ import onRequestHook from "../hooks/onRequestHandler.js"
 import contacts from "../routes/contacts.js";
 import messages from "../routes/messages.js";
 import conversation from "../routes/conversation.js";
+import health from "../routes/health.js";
 import initDb from '../database/initDb.js';
 
 const serverOptions = {
 		logger: {
 			level: 'info',
 			transport: {
-				target: 'pino-pretty',
-				options: {
-					colorize: true,
-					translateTime: 'HH:MM:ss Z',
-					ignore: 'pid,hostname',
-					singleLine: false,
-				},
+				target: 'pino-pretty'
 			},
 		},
 }
@@ -39,6 +34,7 @@ async function main() {
 	});
 
 	app
+        .register(health)
 		.register(fastifyBetterSqlite3, sqlite3Options)
 		.register(onRequestHook)
 		.register(websocket)

@@ -11,14 +11,19 @@ services:
       - ssl-key
     ports:
       - "8080:443"
-    environment:
-      - ./nginx/.env
     networks:
       - agents-923
     depends_on:
-      - chess
-      - identity
-      - pong
+      chess:
+        condition: service_healthy
+      identity:
+        condition: service_healthy
+      pong:
+        condition: service_healthy
+      chat:
+        condition: service_healthy
+      notification:
+        condition: service_healthy
     volumes:
       - ./client/dist:/usr/share/nginx/html:ro
       - $HOME/data/avatars:/data/avatars:ro
@@ -31,6 +36,12 @@ services:
       - $HOME/data:/usr/src/app/data
     networks:
       - agents-923
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   identity:
     container_name: identity
@@ -43,6 +54,12 @@ services:
       - $HOME/data/avatars:/var/avatars
     networks:
       - agents-923
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   pong:
     container_name: pong
@@ -52,6 +69,12 @@ services:
       - agents-923
     volumes:
       - $HOME/data/pong:/var/local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   notification:
     container_name: notification
@@ -61,6 +84,12 @@ services:
       - agents-923
     volumes:
       - $HOME/data/notification:/var/local
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   chat:
     container_name: chat
@@ -71,6 +100,12 @@ services:
       - agents-923
     volumes:
       - $HOME/data/chat:/var/lib/sqlite/
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
 networks:
   agents-923:
