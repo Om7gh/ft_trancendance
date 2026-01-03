@@ -7,6 +7,7 @@ import {
 import { asUserInfo } from '../dto/user-dto.js';
 import { UsernameBody } from '../schemas/auth.js';
 import { saveUploadedAvatar } from '../utils/avatar-utils.js';
+import { fileTypeFromStream } from 'file-type';
 
 export class UserController {
     static readonly ERR_USER_NOT_FOUND: string = 'User not found';
@@ -26,6 +27,10 @@ export class UserController {
 
             for await (const part of request.parts()) {
                 if (part.type === 'file' && part.fieldname === 'avatar') {
+                    const type = await fileTypeFromStream(part.file);
+                    if (!type || !type.mime.startsWith("image/")) {
+                      throw new Error("Invalid image content");
+                    }
                     payload.avatar = await saveUploadedAvatar(
                         user.uid,
                         user.username,
