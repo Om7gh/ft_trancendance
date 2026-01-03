@@ -109,7 +109,6 @@ export class UserController {
             const res = await axios.get(`${gameService}/statistics?uid=${uid}`);
             return res?.data;
         } catch (err: any) {
-            console.log(err)
             return [];
         }
     }
