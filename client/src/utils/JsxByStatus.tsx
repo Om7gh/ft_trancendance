@@ -27,10 +27,12 @@ interface EmptyProps{
 function Placeholder({imgUrl, primaryMsg, secondaryMsg, children}: EmptyProps){
 	return (
 		<div className="h-[87%] flex flex-col justify-center items-center text-gray-300 text-[clamp(8px,1vw,20px)]">
-			<img
-				src={imgUrl}
-				alt="illustration image for empty data or error in case of error"
-				className="h-[clamp(10px,50%,200px)] w-[clamp(50px,80%,400px)]"/>
+			{
+				imgUrl && <img
+					src={imgUrl}
+					alt="illustration image for empty data or error in case of error"
+					className="h-[clamp(10px,50%,200px)] w-[clamp(50px,80%,400px)]"/>
+			}
 			<p className="font-bold">{primaryMsg}</p>
 			<p className="text-gray-400">{secondaryMsg}</p>
 			{children}

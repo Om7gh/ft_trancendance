@@ -25,16 +25,17 @@ const serverOptions = {
 
 const sqlite3Options = {
 	"class": Database,
-	pathToDb: process.env.DB_PATH
+	pathToDb: process.env.DB_PATH ?? "/var/lib/sqlite/chat.db"
 }
 
 async function main() {
 	const app = fastify(serverOptions);
 
 	app.setErrorHandler((_error, _req, reply) => {
-		reply
-			.status(503)
-			.send({message: "Service is temporarily unavailable"});
+		_error.errorCode = 503;
+		_error.messages = "Service is temporarily unavailable";
+		reply.status(_error.errorCode)
+			.send({message: _error.message});
 	});
 
 	app
