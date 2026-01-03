@@ -1,8 +1,8 @@
+import health from "./private/health.js";
 import sendNotification from "./private/sendNotifications.js";
 import fetchNotification from "./public/fetchNotifications.js";
-import health from "./public/health.js";
 
-async function notification(fastify, opt) {
+async function notification(fastify) {
 
     fastify.decorate('notifications', new Map());
 
