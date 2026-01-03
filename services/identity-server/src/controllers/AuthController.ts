@@ -1,6 +1,5 @@
 import { randomUUID } from "crypto";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { fileTypeFromStream } from "file-type";
 import { Pkce } from "../auth/index.js";
 import { PkceParams } from "../auth/remote/types/pkce.js";
 import { compare, hash } from "../auth/security/cipher-util.js";
@@ -13,7 +12,7 @@ import {
   RegisterBody,
   UsernameBody,
 } from "../schemas/auth.js";
-import saveAvatar, { saveUploadedAvatar } from "../utils/avatar-utils.js";
+import saveAvatar, { saveUploadedAvatar, validateImageFile } from "../utils/avatar-utils.js";
 import { confirmMailOptions, magicLinkOptions } from "../utils/mail-options.js";
 
 export default abstract class AuthController {
@@ -350,18 +349,12 @@ export default abstract class AuthController {
       }
       for await (const part of request.parts()) {
         if (part.type === "file" && part.fieldname === "avatar") {
-          const type = await fileTypeFromStream(part.file);
-          if (!type || !type.mime.startsWith("image/")) {
-            throw new Error("Invalid image content");
-          }
-          avatar = await saveUploadedAvatar(user.uid, user.username, part);
-        }
-
-        if (part.type === "field" && part.fieldname === "bio") {
-          if (String(part.value).length > 50) {
-            return reply.badRequest(`${String(part.value)} is not valid`);
-          }
-          bio = String(part.value);
+          const validatedStream = await validateImageFile(part);
+          avatar = await saveUploadedAvatar(user.uid, user.username, {
+            ...part,
+            file: validatedStream,
+          });
+          continue;
         }
       }
       if (!avatar) {

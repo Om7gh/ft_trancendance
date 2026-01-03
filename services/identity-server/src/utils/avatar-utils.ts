@@ -2,8 +2,10 @@ import { botttsNeutral } from '@dicebear/collection';
 import { toPng } from '@dicebear/converter';
 import { createAvatar } from '@dicebear/core';
 import { MultipartFile } from '@fastify/multipart';
+import { fileTypeFromBuffer } from 'file-type';
 import fs from 'fs';
 import path from 'path';
+import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
 const avatarsDir = '/var/avatars';
@@ -40,4 +42,21 @@ export async function saveUploadedAvatar(
     const filePath = path.join(userDir, username);
     await pipeline(file.file, fs.createWriteStream(filePath));
     return `/avatars/${uid}/${username}`;
+}
+
+export async function validateImageFile(part: MultipartFile) {
+  const chunks: Buffer[] = [];
+  for await (const chunk of part.file) chunks.push(chunk);
+  const buffer = Buffer.concat(chunks);
+
+  const type = await fileTypeFromBuffer(buffer);
+  if (!type?.mime.startsWith("image/")) {
+    throw new Error("Invalid image content");
+  }
+
+  const readableStream = Readable.from(buffer) as any;
+  readableStream.truncated = false;
+  readableStream.bytesRead = buffer.length;
+
+  return readableStream;
 }
