@@ -1,19 +1,24 @@
-FROM node:22
+FROM node:24-bullseye AS builder
 
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-WORKDIR /usr/src/app
+COPY package*.json ./
+COPY tsconfig.json ./
+
+RUN npm ci
+
+COPY src ./src
+
+RUN npm run build
+
+FROM node:24-bullseye AS final
+
+WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --omit=dev
 
-COPY . .
+COPY --from=builder /app/dist ./dist
 
-EXPOSE 4000
-
-CMD ["npm", "run", "dev"]
+CMD ["npx", "fastify", "start", "--address", "0.0.0.0", "--port", "4000", "--options", "dist/app.js"]

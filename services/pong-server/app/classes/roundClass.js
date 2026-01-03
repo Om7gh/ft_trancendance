@@ -1,0 +1,106 @@
+import { v4 as uuid} from 'uuid'
+import { EventEmitter } from 'events';
+import GenericRoom from './genericRoom.js';
+
+
+export default class Round extends EventEmitter {
+
+    constructor(tournament = null) {
+        super();
+
+        this.id             = uuid();
+        this.tournament     = tournament;
+        this.state          = "waiting";
+        this.members        = null;
+        this.rooms          = [];
+        this.counter        = 0;
+    }
+
+    getState() {
+        return (this.state);
+    }
+
+    setMembers(members) {
+        if (this.state === "waiting") {
+            this.members = members;
+        }
+    }
+
+    createNewRoom() {
+        const room = new GenericRoom(this.tournament);
+
+        this.rooms.push(room);
+
+        room.on("done", () => {
+            this.counter += 1;
+            if (this.counter === this.rooms.length) {
+                this.state = "done";
+                this.emit("done");
+            }
+        })
+
+        room.on("error", () => {
+            this.state = "canceled";
+            this.emit("error");
+        })
+
+        this.emit("newRoom", room);
+
+        return room;
+    }
+
+    prepareRound() {
+        let room = null;
+
+        if ((this.state === "waiting") && this.members) {
+            for (let i = 0; i < this.members.length; i++) {
+                if ((i % 2) === 0) {
+                    room = this.createNewRoom();
+                }
+                room.addMember(this.members[i]);
+            }
+            this.state = "ready";
+        }
+    }
+
+    startRound() {
+        this.prepareRound();
+
+        if (this.state === "ready") {
+            this.state = "going";
+            for (let room of this.rooms) {
+                room.inviteMembers();
+            }
+        } else {
+            console.log("Round not ready yet!!");
+        }
+    }
+
+    getWinners() {
+        const winners = [];
+        if (this.state === "done") {
+            for (let room of this.rooms) {
+                if (room.getState() === "done") {
+                    winners.push(room.getWinnerId());
+                }
+            }
+            return (winners);
+        }
+        return (null);
+    }
+
+    toJSON() {
+        const matches = [];
+
+        for (let room of this.rooms) {
+            matches.push(room.toJSON());
+        }
+
+        return ({
+            id      : this.id,
+            state   : this.state,
+            matches : matches,
+        })
+    }
+
+}

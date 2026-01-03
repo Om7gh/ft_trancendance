@@ -1,17 +1,17 @@
 export interface signInData {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface signUpData {
-  username: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
 }
 
 export interface activationUSerData {
-  email: string;
-  verificationCode: number;
+  code: string;
 }
 
 export interface completeProfile {
@@ -19,3 +19,13 @@ export interface completeProfile {
   bio: string;
   username: string;
 }
+
+
+export type Setup2FAResponse =
+  | {
+      success: boolean
+      qrcode?: string
+      uri?: string
+      html?: string
+    }
+  | string

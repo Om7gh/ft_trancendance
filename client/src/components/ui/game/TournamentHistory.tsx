@@ -5,11 +5,8 @@ function TournamentHistory() {
   return (
     <Link
       to={'/dashboard/games/pingpong'}
-      className="group relative px-8 py-6 overflow-hidden bg-slate-900/50       backdrop-blur-sm w-80 sm:w-96 md:w-[28rem]
-                 [clip-path:polygon(8%_0,100%_0,92%_100%,0_100%)]
-                 before:[clip-path:polygon(8%_0,100%_0,92%_100%,0_100%)]
-                 hover:before:shadow-[0_0_20px_rgba(139,92,246,0.6)]
-                 before:transition-all before:duration-300 md:hover:translate-x-24 duration-300 border-5 border-neon"
+      className="group relative px-8 py-6 overflow-hidden bg-slate-900/50       backdrop-blur-sm w-80 sm:w-96 md:w-[20vmax]
+                 duration-300 border-5 border-violet-500"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-neon opacity-20 group-hover:opacity-40 transition-opacity duration-300"></div>
 

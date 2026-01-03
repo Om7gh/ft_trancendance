@@ -1,5 +1,9 @@
-import React, { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { getPiece } from '@/utils';
+import { GlobalContext } from '@/App';
+import { useChessStore } from '@/store/useChessStore';
+import { useGetChessPiece } from '@/services/user/useGetChessPiece';
+import { useUpdateChessPiece } from '@/services/user/useUpdateChessPiece';
 
 const allPieces = [
   'alpha',
@@ -43,8 +47,16 @@ const allPieces = [
   'xkcd',
 ];
 
-function ChessSettings() {
+function ChessSettings({close} : {close: () => void}) {
+  useGetChessPiece();
+  const { user } = useContext(GlobalContext);
+  const pieceSetName = useChessStore((s) => s.pieceSetName);
+  const updateChessPiece = useUpdateChessPiece();
   const [selected, setSelected] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!selected && pieceSetName) setSelected(pieceSetName);
+  }, [pieceSetName, selected]);
 
   const pieces = allPieces.map((name) => ({
     name,
@@ -59,7 +71,7 @@ function ChessSettings() {
             key={piece.name}
             type="button"
             onClick={() => setSelected(piece.name)}
-            className={`flex flex-col items-center justify-center text-center rounded-lg p-3 transition-all duration-200
+            className={`flex flex-col items-center justify-center text-center  p-3 transition-all duration-200
               ${
                 selected === piece.name
                   ? 'ring-2 ring-offset-2 ring-violet-500/60 bg-slate-800/60'
@@ -83,7 +95,7 @@ function ChessSettings() {
         <button
           type="button"
           disabled={!selected}
-          className={`w-52 block m-auto text-xl rounded-xl p-3 shadow-xl transition-all duration-200
+          className={`w-52 block m-auto text-xl  p-3 shadow-xl transition-all duration-200
             ${
               selected
                 ? 'bg-gradient-to-r from-violet-600 to-neon text-white'
@@ -91,8 +103,9 @@ function ChessSettings() {
             }`}
           onClick={() => {
             if (!selected) return;
-            // TODO: persist selection (call API / update state)
-            console.log('save selected piece:', selected);
+            if (!user?.id) return;
+            updateChessPiece.mutate({ id: user.id, chess_piece: selected });
+            close()
           }}
         >
           Save

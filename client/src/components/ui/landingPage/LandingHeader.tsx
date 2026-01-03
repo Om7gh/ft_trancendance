@@ -20,7 +20,7 @@ export default function LandingHeader(): JSX.Element {
           <div className="flex md:hidden">
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-violet-400 hover:bg-gray-800 focus:outline-none transition-colors"
+              className="inline-flex items-center justify-center p-2  text-gray-300 hover:text-violet-400 hover:bg-gray-800 focus:outline-none transition-colors"
               aria-controls="mobile-menu"
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

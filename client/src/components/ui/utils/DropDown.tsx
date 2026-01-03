@@ -8,7 +8,15 @@ interface Item {
   children?: Item[] | null;
 }
 
-function DropDown({ item, isMobile }: { item: Item; isMobile: boolean }) {
+function DropDown({ 
+  item, 
+  isMobile,
+  onNavigate
+}: { 
+  item: Item; 
+  isMobile: boolean;
+  onNavigate?: () => void;
+}) {
   if (!item.children || item.children.length === 0) return null;
 
   return (
@@ -17,7 +25,8 @@ function DropDown({ item, isMobile }: { item: Item; isMobile: boolean }) {
         <li key={child.path}>
           <NavLink
             to={child.path}
-            className={({ isActive }) =>
+            onClick={() => isMobile && onNavigate?.()}
+            className={({ isActive }: { isActive: boolean }) =>
               `px-3 py-2 transition-all duration-200 flex items-center gap-3
               ${
                 isActive
@@ -26,7 +35,7 @@ function DropDown({ item, isMobile }: { item: Item; isMobile: boolean }) {
               }`
             }
           >
-            {({ isActive }) => (
+            {({ isActive }: { isActive: boolean }) => (
               <>
                 <span
                   className={`text-xl ${isActive ? 'text-white' : 'text-neon'}`}

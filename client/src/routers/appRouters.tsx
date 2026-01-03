@@ -1,10 +1,13 @@
 import { HomeDashboard } from '@/components/layout';
-import { Activation, FinishRegister, SignIn, SignUp } from '@/components/ui';
+import { Activation, SignIn, SignUp } from '@/components/ui';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+
+import ProtectAuth from './ProtectAuth';
+import ProtectDashboard from './ProtectDashboard';
 import ResetPassword from '@/components/ui/auth/ResetPassword';
 import TwoFactorActivation from '@/components/ui/auth/TwoFactorActivation';
-import PlayTournament from '@/components/ui/game/PlayTournament';
+import CompleteRegistre from '@/components/ui/auth/CompleteRegistre';
 import ErrorPage from '@/components/ui/utils/ErrorPage';
-import { PlayLocal } from '@/playLocal/main';
 import {
   Auth,
   Chat,
@@ -14,71 +17,122 @@ import {
   Profile,
   Settings,
 } from '@/pages';
+
 import Chess from '@/pages/Chess';
 import Customization from '@/pages/Customization';
 import GamePortal from '@/pages/GamePortal';
-import GameSettings from '@/pages/GameSettings';
-import PingPong from '@/pages/PingPong';
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import PongMain from '@/pages/PongMain';
-import { PongRemote, RemoteOptions } from '@/playRemote/main';
-import { PlayWithSomeOne } from '@/playRemote/playWithSomeOne';
+
+import PongMain from '@/pong/PongMain';
+import { PlayLocal } from '@/pong/playLocal/main.tsx';
+import StartMenu from '@/pong/component/StartMenu.tsx';
+import { PongRemote, RemoteOptions } from '@/pong/playRemote/main.tsx';
+import PlayWithSomeOne from '@/pong/playRemote/playWithSomeOne.tsx';
+import PlayTournament from '@/components/ui/game/PlayTournament';
+import JoinMatch from '@/pong/playRemote/joinMatch';
+import SettingsPortal from '@/components/ui/settings/SettingsPortal';
+import AccountSettings from '@/components/ui/settings/AccountSettings';
+import ConfirmVerification from '@/components/ui/auth/ConfirmVerification';
 
 const router = createBrowserRouter([
   {
     path: '/dashboard',
-    element: <Dashboard />,
+    element: (
+      <ProtectDashboard>
+        <Dashboard />
+      </ProtectDashboard>
+    ),
     children: [
       {
         path: 'home',
-        element: <HomeDashboard />,
+        element: <ProtectDashboard>
+          <HomeDashboard />
+        </ProtectDashboard> ,
       },
       {
-        path: 'profile',
+        path: 'profile/:username',
         element: <Profile />,
       },
       {
         path: 'settings',
-        element: <Settings />,
+         element: <ProtectDashboard>
+          <Settings />
+        </ProtectDashboard>,
+        children: [
+          {
+            path: 'account',
+            element: <ProtectDashboard>
+          <AccountSettings />
+        </ProtectDashboard> ,
+          },
+          {
+            path: 'game',
+            element: <ProtectDashboard>
+          <Customization />
+        </ProtectDashboard> ,
+          },
+           {
+            path: 'portal',
+            element: <ProtectDashboard>
+          <SettingsPortal />
+        </ProtectDashboard> ,
+          },
+          {
+            index: true,
+            element: <Navigate to="portal" replace />
+          },
+        ],
       },
       {
         path: 'games',
         children: [
           {
             path: 'pingpong',
-            element: <PongMain />,
+            element: <ProtectDashboard>
+          <PongMain />,
+        </ProtectDashboard> ,
             children: [
-              { path: 'local', element: <PlayLocal /> },
-              { index: true, element: <PingPong /> },
+              { index: true, element: <ProtectDashboard>
+          <StartMenu />,
+        </ProtectDashboard> , },
+              { path: 'local', element: <ProtectDashboard>
+          <PlayLocal />,
+        </ProtectDashboard> , },
               {
                 path: 'remote',
-                element: <PongRemote />,
+                element: <ProtectDashboard>
+          <PongRemote />,
+        </ProtectDashboard> ,
                 children: [
-                  { path: 'someone', element: <PlayWithSomeOne /> },
-                  { index: true, element: <RemoteOptions /> },
+                  { path: 'someone', element: <ProtectDashboard>
+          <PlayWithSomeOne />,
+        </ProtectDashboard> , },
+                  { path: 'joinMatch', element: <ProtectDashboard>
+          <JoinMatch />,
+        </ProtectDashboard> , },
+                  { index: true, element: <ProtectDashboard>
+          <RemoteOptions />,
+        </ProtectDashboard> ,},
                 ],
               },
             ],
           },
           {
             path: 'tournament',
-            element: <PlayTournament />,
-          },
-          {
-            path: 'customization',
-            element: <Customization />,
+            element: <ProtectDashboard>
+          <PlayTournament />,
+        </ProtectDashboard> ,
           },
           {
             path: 'portal',
-            element: <GamePortal />,
-          },
-          {
-            path: 'settings',
-            element: <GameSettings />,
+            element: <ProtectDashboard>
+          <GamePortal />,
+        </ProtectDashboard> ,
           },
           {
             path: 'chess',
-            element: <Chess />,
+             element: <ProtectDashboard>
+          <Chess />,
+        </ProtectDashboard> ,
           },
           {
             index: true,
@@ -88,15 +142,19 @@ const router = createBrowserRouter([
       },
       {
         path: 'chat',
-        element: <Chat />,
+         element: <ProtectDashboard>
+          <Chat />,
+        </ProtectDashboard> ,
       },
       {
         path: 'friends',
-        element: <Friends />,
+         element: <ProtectDashboard>
+          <Friends />,
+        </ProtectDashboard> ,
       },
       {
         index: true,
-        element: <Navigate to="home" replace />,
+        element: <Navigate to="games" replace />,
       },
     ],
   },
@@ -106,31 +164,54 @@ const router = createBrowserRouter([
   },
   {
     path: '/auth',
-    element: <Auth />,
+    element: (
+      <ProtectAuth>
+        <Auth />
+      </ProtectAuth>
+    ),
     children: [
       {
         path: 'signup',
-        element: <SignUp />,
+
+        element:<ProtectAuth>
+                  <SignUp />
+                </ProtectAuth> ,
       },
       {
         path: 'signin',
-        element: <SignIn />,
+        element: <ProtectAuth>
+                  <SignIn />
+                </ProtectAuth> ,
+      },
+       {
+        path: 'confirm-email',
+        element: <ProtectAuth>
+                  <ConfirmVerification />
+                </ProtectAuth> ,
       },
       {
-        path: 'avatar',
-        element: <FinishRegister />,
+        path: 'complete-registration',
+        element: <ProtectAuth>
+                  <CompleteRegistre />
+                </ProtectAuth>
       },
       {
         path: 'activation',
-        element: <Activation />,
+        element:  <ProtectAuth>
+                   <Activation />
+                  </ProtectAuth>,
       },
       {
-        path: '2-factor-activation',
-        element: <TwoFactorActivation />,
+        path: 'verify-2fa',
+        element: <ProtectAuth>
+                   <TwoFactorActivation />
+                  </ProtectAuth>,
       },
       {
         path: 'reset-password',
-        element: <ResetPassword />,
+        element: <ProtectAuth>
+                   <ResetPassword />
+                  </ProtectAuth>,
       },
       {
         index: true,

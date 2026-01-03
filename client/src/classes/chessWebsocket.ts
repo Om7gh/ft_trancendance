@@ -1,216 +1,262 @@
 import type { Pieces, Position } from '../types';
 
 type WebSocketMessage = {
-    type:
-        | 'matchmaking'
-        | 'leaveMatchmaking'
-        | 'syncBoard'
-        | 'chat'
-        | 'reconnect'
-        | 'checkmate'
-        | 'rematchRequest'
-        | 'rematchAccept'
-        | 'rematchDecline';
-    // prevMove carries both origin and destination so clients can highlight both squares
-    prevMove?: { from: Position; to: Position } | null;
-    roomId?: string;
-    board?: any[];
-    currentTurn?: 'WHITE' | 'BLACK';
-    turns?: number;
-    text?: string;
-    winner?: 'WHITE' | 'BLACK' | 'DRAW';
+  type:
+    | 'matchmaking'
+    | 'leaveMatchmaking'
+    | 'syncBoard'
+    | 'chat'
+    | 'reconnect'
+    | 'checkmate'
+    | 'rematchRequest'
+    | 'rematchAccept'
+    | 'rematchDecline'
+    | 'gameResume';
+  // prevMove carries both origin and destination so clients can highlight both squares
+  prevMove?: { from: Position; to: Position } | null;
+  roomId?: string;
+  board?: Pieces[];
+  currentTurn?: 'WHITE' | 'BLACK';
+  turns?: number;
+  text?: string;
+  winner?: 'WHITE' | 'BLACK' | 'DRAW';
+  opponentConnected?: boolean;
 };
 
 class ChessWebSocket {
-    private ws: WebSocket | null = null;
-    private roomId: string | null = null;
-    private myTeam: 'WHITE' | 'BLACK' | null = null;
-    private messageHandlers: Map<string, Function[]> = new Map();
+  private ws: WebSocket | null = null;
+  private roomId: string | null = null;
+  private myTeam: 'WHITE' | 'BLACK' | null = null;
+  private messageHandlers: Map<string, Function[]> = new Map();
+  opponentName: string | null = null;
 
-    connect(url: string) {
-        this.ws = new WebSocket(url);
+  private readOpponentName(message: any): string | null {
+    const name =
+      message?.opponentName ??
+      message?.opponent ??
+      message?.opponnet ??
+      message?.opponentId;
+    return typeof name === 'string' && name.length ? name : null;
+  }
 
-        this.ws.onopen = () => {
-            console.log('Connected to chess server');
-            this.emit('connected');
-        };
-
-        this.ws.onmessage = (event) => {
-            try {
-                const message = JSON.parse(event.data);
-                this.handleMessage(message);
-            } catch (error) {
-                console.error('Message format is not correct:', error);
-            }
-        };
-
-        this.ws.onclose = () => {
-            console.log('Disconnected from socket');
-            this.emit('disconnected');
-        };
-
-        this.ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
-            this.emit('error', error);
-        };
+  connect(url: string) {
+    // Avoid parallel connections (can cause multiple players in matchmaking)
+    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+      try {
+        this.ws.onclose = null;
+        this.ws.close();
+      } catch {}
     }
 
-    matchmaking() {
-        this.send({ type: 'matchmaking' });
-    }
+    this.ws = new WebSocket(url);
 
-    syncBoard(
-        board: Pieces[],
-        currentTurn: 'WHITE' | 'BLACK',
-        turns: number,
-        prevMove: { from: Position; to: Position } | null
-    ) {
-        if (this.roomId) {
-            this.send({
-                type: 'syncBoard',
-                board,
-                currentTurn,
-                turns,
-                prevMove,
-            });
+    this.ws.onopen = () => {
+      this.emit('connected');
+    };
+
+    this.ws.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        this.handleMessage(message);
+      } catch (error) {
+        console.error('Message format is not correct:', error);
+      }
+    };
+
+    this.ws.onclose = () => {
+      this.emit('disconnected');
+    };
+
+    this.ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      this.emit('error', error);
+    };
+  }
+
+  matchmaking() {
+    this.send({ type: 'matchmaking' });
+  }
+
+  syncBoard(
+    board: Pieces[],
+    currentTurn: 'WHITE' | 'BLACK',
+    turns: number,
+    prevMove: { from: Position; to: Position } | null
+  ) {
+    if (this.roomId) {
+      this.send({
+        type: 'syncBoard',
+        board,
+        currentTurn,
+        turns,
+        prevMove,
+      });
+    }
+  }
+
+  disconnect() {
+    if (!this.ws) return;
+    try {
+      this.ws.onclose = null;
+      this.ws.onopen = null;
+      this.ws.onmessage = null;
+      this.ws.onerror = null;
+      this.ws.close();
+    } catch {}
+    this.ws = null;
+  }
+
+  sendChat(text: string) {
+    this.send({ type: 'chat', text });
+  }
+
+  announceCheckmate(winner: 'WHITE' | 'BLACK' | 'DRAW') {
+    this.send({ type: 'checkmate', winner });
+  }
+
+  on(event: string, handler: Function) {
+    if (!this.messageHandlers.has(event)) {
+      this.messageHandlers.set(event, []);
+    }
+    this.messageHandlers.get(event)!.push(handler);
+  }
+
+  off(event: string, handler?: Function) {
+    const handlers = this.messageHandlers.get(event);
+    if (handlers) {
+      if (handler) {
+        const index = handlers.indexOf(handler);
+        if (index > -1) {
+          handlers.splice(index, 1);
         }
+      } else {
+        this.messageHandlers.set(event, []);
+      }
     }
+  }
 
-    reconnect(url: string) {
-        if (!this.roomId) return;
-        this.connect(url);
-        this.send({ type: 'reconnect', roomId: this.roomId });
+  private emit(event: string, data?: any) {
+    const handlers = this.messageHandlers.get(event);
+    if (handlers) {
+      handlers.forEach((handler) => handler(data));
     }
+  }
 
-    sendChat(text: string) {
-        this.send({ type: 'chat', text });
+  private handleMessage(message: any) {
+    switch (message.type) {
+      case 'roomCreated':
+        this.roomId = message.roomId;
+        this.myTeam = message.yourTeam;
+        this.emit('roomCreated', {
+          roomId: message.roomId,
+          myTeam: message.yourTeam,
+        });
+        break;
+      case 'gameStart':
+        this.myTeam = message.yourTeam;
+        this.roomId = message.roomId;
+        this.opponentName = this.readOpponentName(message);
+        this.emit('gameStart', {
+          myTeam: message.yourTeam,
+          opponentConnected: true,
+          roomId: message.roomId,
+          opponentName: this.opponentName,
+        });
+        break;
+
+      case 'syncBoard':
+        this.emit('boardUpdate', {
+          board: message.board,
+          currentTurn: message.currentTurn,
+          turns: message.turns,
+          fromPlayer: message.fromPlayer,
+          prevMove: message.prevMove,
+        });
+        break;
+      case 'chatMessage':
+        this.emit('chatMessage', {
+          from: message.from,
+          text: message.text,
+          timestamp: message.timestamp,
+        });
+        break;
+      case 'opponentDisconnected':
+        this.emit('opponentDisconnected');
+        break;
+      case 'gameOver':
+        this.emit('gameOver', {
+          winner: message.winner,
+          message: message.message,
+        });
+        break;
+      case 'gameResume':
+        this.roomId = message.roomId;
+        this.myTeam = message.yourTeam;
+        this.opponentName = this.readOpponentName(message) ?? this.opponentName;
+        this.emit('gameResume', {
+          roomId: message.roomId,
+          myTeam: message.yourTeam,
+          board: message.board,
+          currentTurn: message.currentTurn,
+          turns: message.turns,
+          opponentConnected: message.opponentConnected,
+          opponentName: this.opponentName,
+        });
+        break;
+      case 'rematchOffer':
+        this.emit('rematchOffer');
+        break;
+      case 'rematchPending':
+        this.emit('rematchPending');
+        break;
+      case 'rematchDeclined':
+        this.emit('rematchDeclined');
+        break;
+      case 'error':
+        this.emit('error', message.message);
+        break;
     }
+  }
 
-    announceCheckmate(winner: 'WHITE' | 'BLACK' | 'DRAW') {
-        this.send({ type: 'checkmate', winner });
+  private send(data: WebSocketMessage) {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(data));
     }
+  }
 
-    on(event: string, handler: Function) {
-        if (!this.messageHandlers.has(event)) {
-            this.messageHandlers.set(event, []);
-        }
-        this.messageHandlers.get(event)!.push(handler);
-    }
+  getRoomId(): string | null {
+    return this.roomId;
+  }
 
-    off(event: string, handler?: Function) {
-        const handlers = this.messageHandlers.get(event);
-        if (handlers) {
-            if (handler) {
-                const index = handlers.indexOf(handler);
-                if (index > -1) {
-                    handlers.splice(index, 1);
-                }
-            } else {
-                this.messageHandlers.set(event, []);
-            }
-        }
-    }
+  getMyTeam(): 'WHITE' | 'BLACK' | null {
+    return this.myTeam;
+  }
 
-    private emit(event: string, data?: any) {
-        const handlers = this.messageHandlers.get(event);
-        if (handlers) {
-            handlers.forEach((handler) => handler(data));
-        }
-    }
+  isConnected(): boolean {
+    return this.ws?.readyState === WebSocket.OPEN;
+  }
 
-    private handleMessage(message: any) {
-        switch (message.type) {
-            case 'roomCreated':
-                this.roomId = message.roomId;
-                this.myTeam = message.yourTeam;
-                this.emit('roomCreated', {
-                    roomId: message.roomId,
-                    myTeam: message.yourTeam,
-                });
-                break;
-            case 'gameStart':
-                this.myTeam = message.yourTeam;
-                this.roomId = message.roomId;
-                this.emit('gameStart', {
-                    myTeam: message.yourTeam,
-                    opponentConnected: true,
-                    roomId: message.roomId,
-                });
-                break;
+  leaveMatchmaking() {
+    this.send({ type: 'leaveMatchmaking' });
+  }
 
-            case 'syncBoard':
-                this.emit('boardUpdate', {
-                    board: message.board,
-                    currentTurn: message.currentTurn,
-                    turns: message.turns,
-                    fromPlayer: message.fromPlayer,
-                    prevMove: message.prevMove,
-                });
-                break;
-            case 'chatMessage':
-                this.emit('chatMessage', {
-                    from: message.from,
-                    text: message.text,
-                    timestamp: message.timestamp,
-                });
-                break;
-            case 'opponentDisconnected':
-                this.emit('opponentDisconnected');
-                break;
-            case 'gameOver':
-                this.emit('gameOver', {
-                    winner: message.winner,
-                    message: message.message,
-                });
-                break;
-            case 'rematchOffer':
-                this.emit('rematchOffer');
-                break;
-            case 'rematchPending':
-                this.emit('rematchPending');
-                break;
-            case 'rematchDeclined':
-                this.emit('rematchDeclined');
-                break;
-            case 'error':
-                this.emit('error', message.message);
-                break;
-        }
-    }
+  requestRematch() {
+    this.send({ type: 'rematchRequest' });
+  }
 
-    private send(data: WebSocketMessage) {
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-            this.ws.send(JSON.stringify(data));
-        }
-    }
+  acceptRematch() {
+    this.send({ type: 'rematchAccept' });
+  }
 
-    getRoomId(): string | null {
-        return this.roomId;
-    }
+  declineRematch() {
+    this.send({ type: 'rematchDecline' });
+  }
 
-    getMyTeam(): 'WHITE' | 'BLACK' | null {
-        return this.myTeam;
-    }
-
-    isConnected(): boolean {
-        return this.ws?.readyState === WebSocket.OPEN;
-    }
-
-    leaveMatchmaking() {
-        this.send({ type: 'leaveMatchmaking' });
-    }
-
-    requestRematch() {
-        this.send({ type: 'rematchRequest' });
-    }
-
-    acceptRematch() {
-        this.send({ type: 'rematchAccept' });
-    }
-
-    declineRematch() {
-        this.send({ type: 'rematchDecline' });
-    }
+  clearRoom() {
+    this.roomId = null;
+    this.myTeam = null;
+    this.opponentName = null;
+  }
 }
 
 export const chessSocket = new ChessWebSocket();

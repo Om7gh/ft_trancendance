@@ -1,0 +1,31 @@
+function initDb(dbInstance){
+	dbInstance.exec(`PRAGMA foreign_keys = ON;`);
+	
+	dbInstance.exec(`CREATE TABLE IF NOT EXISTS conversations (
+		id INTEGER PRIMARY KEY,
+		firstUserID TEXT NOT NULL,
+		secondUserID TEXT NOT NULL,
+		firstUserJson TEXT NOT NULL,
+		secondUserJson TEXT NOT NULL,
+		lastMessage TEXT,
+		firstUserUnreadCount INTEGER NOT NULL DEFAULT 0,
+		secondUserUnreadCount INTEGER NOT NULL DEFAULT 0
+		);`);
+
+	dbInstance.exec(`
+		CREATE TABLE IF NOT EXISTS messages(
+		id INTEGER PRIMARY KEY,
+		convID INTEGER NOT NULL,
+		senderID INTEGER NOT NULL,
+		content TEXT NOT NULL,
+		FOREIGN KEY (convID) REFERENCES conversations (id)
+		);`);
+
+	dbInstance.exec(`
+		CREATE TABLE IF NOT EXISTS users_blocks(
+		blockerID INTEGER NOT NULL,
+		targetID INTEGER NOT NULL
+		);`);
+}
+
+export default initDb;

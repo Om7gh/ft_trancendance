@@ -1,112 +1,82 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { visualizer } from "rollup-plugin-visualizer";
-import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
-import tailwindcss from "@tailwindcss/vite";
-import alias from "@rollup/plugin-alias";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRootDir = resolve(__dirname);
 
-export default defineConfig(({ mode }) => ({
-  base: mode === "production" ? "/build/" : "/",
+export default defineConfig(({ mode }) => {
+  const isProd = mode === "production";
+  const isAnalyze = mode === "analyze";
 
-  build: {
-    sourcemap: mode !== "production",
-    cssMinify: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          react: ["react", "react-dom", "react-router-dom"],
-          vendor: ["lodash", "axios"],
+  return {
+    base: "/",
+    build: {
+      sourcemap: !isProd,
+      cssMinify: true,
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ["react", "react-dom", "react-router-dom"],
+            vendor: ["lodash", "axios"],
+          },
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
-  },
 
-  esbuild: {
-    pure: mode === "production" ? ["console.log", "debugger"] : [],
-  },
+   esbuild: {
+  pure: mode === "production" ? ["console.log"] : [],
+},
 
-  plugins: [
-    tailwindcss(),
-    alias({
-      entries: [
-        {
-          find: "@",
-          replacement: resolve(projectRootDir, "./src"),
-        },
-        {
-          find: "@pages",
-          replacement: resolve(projectRootDir, "./src/pages"),
-        },
-        {
-          find: "@utils",
-          replacement: resolve(projectRootDir, "./src/utils"),
-        },
-        {
-          find: "@layouts",
-          replacement: resolve(projectRootDir, "./src/components/layout"),
-        },
-        {
-          find: "@ui",
-          replacement: resolve(projectRootDir, "./src/components/ui"),
-        },
-        {
-          find: "@routers",
-          replacement: resolve(projectRootDir, "./src/routers/"),
-        },
-        {
-          find: "@assets",
-          replacement: resolve(projectRootDir, "./src/assets"),
-        },
-      ],
-    }),
-
-    react({
-      babel: {
-        plugins: [
-          [
-            "babel-plugin-styled-components",
-            { displayName: true, fileName: false },
-          ],
-        ],
+    resolve: {
+      alias: {
+        "@": resolve(projectRootDir, "src"),
+        "@pages": resolve(projectRootDir, "src/pages"),
+        "@utils": resolve(projectRootDir, "src/utils"),
+        "@layouts": resolve(projectRootDir, "src/components/layout"),
+        "@ui": resolve(projectRootDir, "src/components/ui"),
+        "@routers": resolve(projectRootDir, "src/routers"),
+        "@assets": resolve(projectRootDir, "src/assets"),
       },
-    }),
+    },
 
-    mode === "analyze" &&
-      visualizer({
-        open: true,
-        filename: "bundle-analysis.html",
-        gzipSize: true,
-        brotliSize: true,
+    plugins: [
+      tailwindcss(),
+      react({
+        babel: {
+          plugins: [
+            ["babel-plugin-styled-components", { displayName: true, fileName: false }],
+          ],
+        },
       }),
 
-    VitePWA({
-      registerType: "autoUpdate",
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+      isAnalyze &&
+        visualizer({
+          open: true,
+          filename: "bundle-analysis.html",
+          gzipSize: true,
+          brotliSize: true,
+        }),
+    ].filter(Boolean),
+
+    server: {
+      port: 3000,
+      host: true,          // listen on all interfaces
+      cors: true,          // allow all origins
+      strictPort: true,
+      allowedHosts: true,
+      hmr: {
+        overlay: false,
+        clientPort: 3000,
       },
-    }),
-  ].filter(Boolean),
-
-  server: {
-    port: 3000,
-    host: '0.0.0.0',
-    open: false,
-    cors: true,
-    strictPort: true,
-    allowedHosts: ['nginx', 'localhost', '.localhost'],
-    hmr: {
-      overlay: false,
-      clientPort: 3000,
     },
-  },
 
-  preview: {
-    port: 3000,
-  },
-}));
+    preview: {
+      port: 3000,
+    },
+  };
+});

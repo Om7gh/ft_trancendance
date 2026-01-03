@@ -4,6 +4,10 @@ html {
   scroll-behavior: smooth;
 }
 
+.query-container{
+  container-type: inline-size;
+}
+
 .App {
   background-image: url('./assets/bg.png');
   background-repeat: repeat;
@@ -11,7 +15,7 @@ html {
   font-family: 'Bungee', sans-serif;
   font-weight: 400;
   font-style: normal;
-  user-select: none;
+  /* user-select: none; */
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -22,10 +26,18 @@ html {
   min-height: 100vh;
 }
 
+.scrollbar {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: gray rgb(0 0 0 / 0%);
+  scrollbar-gutter: stable;
+}
+
 ::-webkit-scrollbar {
   height: 6px;
   width: 5px;
 }
+
 ::-webkit-scrollbar-track {
   background: rgba(30, 41, 59, 0.5);
   border-radius: 3px;
@@ -68,9 +80,14 @@ ul::-webkit-scrollbar-thumb:hover {
   animation: fadeIn 0.3s ease-in-out;
 }
 
+@theme{
+  --color-main-violet: #8a2be2;
+  --color-main-blue: #00d3eb;
+}
+
 @theme {
-  --color-midnight: rgba(46, 46, 53, 0.85);
-  --color-neon: #22e5ff;
+  --color-midnight: #17181d;
+  --color-neon: rgba(34, 211, 238, 0.8);
   --font-second: 'Audiowide', sans-serif;
   --font-main: 'Bungee', sans-serif;
 }
@@ -80,7 +97,7 @@ ul::-webkit-scrollbar-thumb:hover {
     @apply text-slate-100 hover:text-violet-500 transition duration-150;
   }
   .active {
-    @apply text-violet-500  px-4 py-2 rounded-lg;
+    @apply text-violet-500  px-4 py-2;
   }
 }
 .polygon {
@@ -142,7 +159,7 @@ ul::-webkit-scrollbar-thumb:hover {
   grid-template-columns: repeat(8, 5vmax);
   grid-template-rows: repeat(8, 5vmax);
   position: relative;
-  user-select: none;
+  /* user-select: none; */
 }
 
 .possibleMove {

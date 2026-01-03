@@ -1,13 +1,17 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useOnlineChess } from '../hooks/useOnlineChess';
 import Referee from '@/components/Referee';
 import MiniChat from '@/components/MiniChat';
+import { GlobalContext } from '@/App';
+import { useGetChessPiece } from '@/services/user/useGetChessPiece';
 
 function Chess() {
+  useGetChessPiece();
   const {
     roomId,
     myTeam,
     opponentConnected,
+    opponentName,
     enterMatchmaking,
     leaveMatchmaking,
     syncBoard,
@@ -20,19 +24,7 @@ function Chess() {
     declineRematch,
   } = useOnlineChess();
   const [findingMatch, setFindingMatch] = useState(false);
-  const isVideoPlayed = localStorage.getItem('video');
-
-  console.log(isVideoPlayed);
-
-  // if (!isVideoPlayed) {
-  //   return (
-  //     <div className="w-full h-full">
-  //       <video className="w-full h-full" autoPlay controls>
-  //         <source src="/chess.mp4" type="video/webm" />
-  //       </video>
-  //     </div>
-  //   );
-  // }
+  const {user} = useContext(GlobalContext)
 
   return (
     <div className="flex justify-center items-center h-full">
@@ -44,23 +36,23 @@ function Chess() {
         )}
 
         {!roomId && isConnected && (
-          <div className="flex items-center gap-6 h-[40vmax]">
+          <div className="flex items-center gap-6 h-[45vmax] flex-col-reverse md:flex-row lg:flex-row">
             <img src="/chessbg.png" />
-            <div className="bg-slate-950/50 h-full p-6 w-72 flex justify-center items-center">
+            <div className="flex justify-center items-center text-center">
               {!findingMatch && (
                 <button
                   onClick={() => {
                     enterMatchmaking();
                     setFindingMatch(true);
                   }}
-                  className="px-6 py-3 rounded-lg text-lg font-semibold bg-neon/50 text-white hover:border-4 hover:border-neon duration-200 cursor-pointer"
+                  className="md:px-6 md:py-3 px-4 py-2 rounded-lg shadow-xl  text-sm md:text-lg font-semibold bg-neon/60 text-violet-200 hover:border-4 hover:border-neon duration-200 cursor-pointer"
                 >
                   Find Opponent
                 </button>
               )}
               <div>
                 {findingMatch && (
-                  <p className="text-yellow-400 text-lg">Finding a match...</p>
+                  <p className="text-yellow-400 text-md md:text-lg">Finding a match...</p>
                 )}
                 {findingMatch && (
                   <button
@@ -68,7 +60,7 @@ function Chess() {
                       leaveMatchmaking();
                       setFindingMatch(false);
                     }}
-                    className="px-6 py-3 rounded-lg text-lg font-semibold bg-violet-500 text-white hover:bg-violet-600 transition"
+                    className="md:px-6 md:py-3 px-4 py-2 rounded-lg shadow-xl  text-sm md:text-lg font-semibold bg-neon/60 text-violet-200 hover:border-4 hover:border-neon duration-200 cursor-pointer"
                   >
                     Cancel Matchmaking
                   </button>
@@ -79,13 +71,12 @@ function Chess() {
         )}
 
         {roomId && (
-          <div className="flex items-center gap-6">
-            <div className="flex  flex-col gap-5 items-start">
-              <div className="text-left">
-                <h3 className="text-2xl font-bold text-white">
-                  Opponent ID:{' '}
-                  <span className="text-yellow-400">
-                    {opponentConnected ? 'Opponent' : 'Waiting...'}
+          <div className="flex items-center gap-6 flex-col  md:flex-row lg:flex-row ">
+            <div className="flex flex-col gap-5 items-start">
+              <div className="text-left flex justify-between text-slate-100">
+                <h3 className=" text-lg  md:text-2xl lg:text-2xl font-bold text-slate-100">
+                  <span className="text-violet-400">
+                    {opponentConnected ? (user?.username === opponentName ? user?.username : opponentName) : 'Waiting...'}
                   </span>
                 </h3>
               </div>
@@ -103,13 +94,13 @@ function Chess() {
                 acceptRematch={acceptRematch}
                 declineRematch={declineRematch}
               />
-              <div className="text-left bg-slate-900 px-5 py-5 rounded-xl flex justify-between w-full text-slate-100">
-                <h3 className="text-2xl font-bold text-slate-100">
-                  Your ID: <span className="text-neon">{roomId}</span>
+              <div className="text-left flex justify-between w-full text-slate-100">
+                <h3 className=" text-lg  md:text-2xl lg:text-2xl font-bold text-slate-100">
+                  <span className="text-neon">{user?.username}</span>
                 </h3>
               </div>
             </div>
-            <div className="flex flex-col gap-6 w-full justify-center">
+            <div className="flex flex-col gap-6 max-w-72 md:w-auto lg:w-auto justify-center overflow-auto">
               <MiniChat />
             </div>
           </div>
