@@ -121,7 +121,7 @@ export default abstract class AuthController {
             return reply.code(400).send({ message: 'user not created' });
         }
         const token = await this.generateNonceToken(user.uid, '1h');
-        const url = `${this.config.HOST}:${this.config.PORT}/api/auth/confirm?token=${token}`;
+        const url = `${this.config.HOST}:${this.config.PORT}/auth/confirm-email?token=${token}`;
         await this.transporter.sendMail(confirmMailOptions(user.email, url));
         return reply.code(201).send({ message: 'user created' });
     }
@@ -222,14 +222,14 @@ export default abstract class AuthController {
             }
             const user = this.usersRepository.findByUID(sub);
             if (!user) {
-                return reply.badRequest('user not found');
+            return reply.redirect('/auth/signup');
             }
             if (user.email_verified) {
                 return reply.redirect('/dashboard');
             }
             this.usersRepository.update(user.id, { email_verified: 1 });
             reply.sendNonceToken(await this.generateNonceToken(user.uid, '5m'));
-            reply.code(302).header('Location', '/auth/complete-registration');//.redirect('/auth/complete-registration');
+            reply.redirect('/auth/complete-registration');
         } catch (err: any) {
             return reply.redirect('/auth/signin');
         }
