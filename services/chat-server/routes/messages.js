@@ -9,6 +9,7 @@ import messageSchema from '../schemas/messages.js';
 import axios from "axios";
 import crypto from 'node:crypto';
 import RequestValidator from '../classes/RequestValidator.js';
+import onRequestHandler from '../hooks/onRequestHandler.js';
 
 function sendError(socket, errorMsg){
 	if (socket.readyState === Websocket.OPEN){
@@ -31,6 +32,7 @@ function messagesPlugin(instance) {
 
 	const reqValidator = new RequestValidator();
 	const getOptions = {
+		onRequest: onRequestHandler,
 		schema: {
 			params: messageSchema
 		}
@@ -279,7 +281,7 @@ function messagesPlugin(instance) {
 		req.log.info(`its code: ${code} and its reason: ${reason}`);
 	}
  
-	instance.get("/messages", {websocket: true}, (socket, req) => {
+	instance.get("/messages", {websocket: true, onRequest: onRequestHandler}, (socket, req) => {
 		if (connectedUsers.has(req.user.id)){
 			socket.close();
 			return ;

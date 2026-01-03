@@ -1,5 +1,6 @@
 import fp from 'fastify-plugin';
 import getBlockState from '../utils/getBlockState.js';
+import onRequestHandler from '../hooks/onRequestHandler.js';
 
 function conversationPlugin(instance){
 
@@ -28,7 +29,7 @@ function conversationPlugin(instance){
 		return (conversations);
 	}
 	
-	instance.get("/conversations", async (req, reply) => {
+	instance.get("/conversations", {onRequest: onRequestHandler}, async (req, reply) => {
 		let constructedReply = constructReply(req.user.id);
 		return (JSON.stringify(constructedReply));
 	});

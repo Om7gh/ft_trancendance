@@ -15,7 +15,7 @@ const serverOptions = {
 			transport: {
 				target: 'pino-pretty'
 			},
-		},
+		}
 }
 
 const sqlite3Options = {

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import fp from 'fastify-plugin';
 import getBlockState from '../utils/getBlockState.js';
+import onRequestHandler from '../hooks/onRequestHandler.js';
 
 function contactPlugin(instance){
 	function responseNormelizer(response, clientId){
@@ -32,7 +33,7 @@ function contactPlugin(instance){
 		return (response.data);
 	}
 
-	instance.get("/contacts", async (req, reply) => {
+	instance.get("/contacts", {onRequest: onRequestHandler}, async (req, reply) => {
 
 		try {
 			var contacts = await getContacts(req);
