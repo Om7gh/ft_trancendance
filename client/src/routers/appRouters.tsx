@@ -31,6 +31,7 @@ import PlayTournament from '@/components/ui/game/PlayTournament';
 import JoinMatch from '@/pong/playRemote/joinMatch';
 import SettingsPortal from '@/components/ui/settings/SettingsPortal';
 import AccountSettings from '@/components/ui/settings/AccountSettings';
+import ConfirmVerification from '@/components/ui/auth/ConfirmVerification';
 
 const router = createBrowserRouter([
   {
@@ -44,7 +45,7 @@ const router = createBrowserRouter([
       {
         path: 'home',
         element: <ProtectDashboard>
-          <HomeDashboard /> 
+          <HomeDashboard />
         </ProtectDashboard> ,
       },
       {
@@ -171,7 +172,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'signup',
-     
+
         element:<ProtectAuth>
                   <SignUp />
                 </ProtectAuth> ,
@@ -180,6 +181,12 @@ const router = createBrowserRouter([
         path: 'signin',
         element: <ProtectAuth>
                   <SignIn />
+                </ProtectAuth> ,
+      },
+       {
+        path: 'confirm-email',
+        element: <ProtectAuth>
+                  <ConfirmVerification />
                 </ProtectAuth> ,
       },
       {

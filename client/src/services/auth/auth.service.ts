@@ -17,27 +17,32 @@ export default abstract class AuthService {
     }
 
     static async setupTwoFa() {
-        const { data } = await api.get("/api/auth/2fa/setup")
-        return data
+        const { data } = await api.get('/api/auth/2fa/setup');
+        return data;
     }
 
     static async verifyTwoFa(code: string) {
-        const { data } = await api.post("/api/auth/2fa/verify", { code })
-        return data
+        const { data } = await api.post('/api/auth/2fa/verify', { code });
+        return data;
     }
 
     static async disableTwoFa(code: string) {
-        const { data } = await api.post("/api/auth/2fa/disable", { code })
-        return data
+        const { data } = await api.post('/api/auth/2fa/disable', { code });
+        return data;
     }
 
     static async resetPassowrd(payload: ResetPassword) {
-         const { data } = await api.post('/api/auth/reset-password', payload);
+        const { data } = await api.post('/api/auth/reset-password', payload);
         return data;
     }
 
     static async login(loginForm: LoginForm) {
         const { data } = await api.post('/api/auth/login', loginForm);
+        return data;
+    }
+
+    static async confirmEmail(token: string) {
+        const { data } = await api.get(`/api/auth/confirm?token=${token}`);
         return data;
     }
 
@@ -62,8 +67,14 @@ export default abstract class AuthService {
         return data;
     }
 
-    static async updatePassword(data: { current_password: string; new_password: string }) {
-        const { data: response } = await api.patch("/api/profile/password", data);
+    static async updatePassword(data: {
+        current_password: string;
+        new_password: string;
+    }) {
+        const { data: response } = await api.patch(
+            '/api/profile/password',
+            data
+        );
         return response;
     }
 
@@ -85,7 +96,9 @@ export default abstract class AuthService {
         return data;
     }
 
-    static async completeProfile(profileData: Pick<ProfileData, 'avatar' | 'bio'>) {
+    static async completeProfile(
+        profileData: Pick<ProfileData, 'avatar' | 'bio'>
+    ) {
         const formData = new FormData();
         formData.append('avatar', profileData.avatar);
         formData.append('bio', profileData.bio);
@@ -99,18 +112,26 @@ export default abstract class AuthService {
     }
 
     static async verifyToken(token: string) {
-        console.log(token)
+        console.log(token);
         const { data } = await api.get(`/api/auth/verify-token?token=${token}`);
         return data;
     }
 
     static async getChessPiece() {
-        const {data} = await api.get("/pongGame/remote/chessCustomization/fetch");
+        const { data } = await api.get(
+            '/pongGame/remote/chessCustomization/fetch'
+        );
         return data;
     }
 
-    static async updateChessPiece(payload: { id: string; chess_piece: string }) {
-        const { data } = await api.put('/pongGame/remote/chessCustomization/update', payload);
+    static async updateChessPiece(payload: {
+        id: string;
+        chess_piece: string;
+    }) {
+        const { data } = await api.put(
+            '/pongGame/remote/chessCustomization/update',
+            payload
+        );
         return data;
     }
 
