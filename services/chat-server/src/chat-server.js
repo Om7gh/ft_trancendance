@@ -36,7 +36,6 @@ async function main() {
 	app
         .register(health)
 		.register(fastifyBetterSqlite3, sqlite3Options)
-		.register(onRequestHook)
 		.register(websocket)
 		.register(messages)
 		.register(contacts)
