@@ -73,7 +73,7 @@ function ChatBody({senderUser, targetUser, messages}: ChatBodyProps){
 				scrollbar flex overflow-auto flex-col">
 			{
 				messages?.map((message) => <MsgBubbleResolver
-				key={message.content}
+				key={message.id}
 				sender={senderUser} 
 				target={targetUser}
 				message={message}/>)
