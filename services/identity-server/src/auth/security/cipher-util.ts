@@ -9,7 +9,6 @@ const config = {
 }
 
 const ENCRYPTION_KEY =
-  process.env.PASSWORD_ENCRYPTION_KEY ||
   Buffer.from('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef', 'hex')
 
 export function hash(password: string): string {
