@@ -69,7 +69,7 @@ async function leaveTournamentHandler(request, reply) {
     return (reply.send("Leave it successfully"));
 }
 
-export default async function tournament(fastify, options) {
+export default async function tournament(fastify) {
 
     fastify.decorate("currentTournament", null);
     fastify.decorate("tournamentList", new Map());

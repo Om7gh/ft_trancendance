@@ -4,13 +4,18 @@ import statisticsSchema from "../schemas/statisticsSchema.js";
 
 async function statisticsHandler(request, reply) {
     const uid  = request.query.uid;
-    const matches = this.db.getMatchesByUser(uid);
-    const statistics = new Statistics(matches, uid)
+    
+    try {
+        var matches = this.db.getMatchesByUser(uid);
+        var statistics = new Statistics(matches, uid);
+    } catch (err) {
+        throw new PongError(503, "Error statistics fetching!!");
+    }
 
     reply.send(statistics);
 }
 
-export default async function statistics(fastify, options) {
+export default async function statistics(fastify) {
 
     fastify.register(errorHandler);
 

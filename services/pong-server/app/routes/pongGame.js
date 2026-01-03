@@ -7,6 +7,7 @@ import match from "./match.js";
 import customization from "./customization.js";
 import pongStatistics from "./pongStatistics.js";
 import onRequestHook from "../hooks/onRequestHook.js";
+import PongError from "../classes/PongError.js";
 
 export function alreadyInMatch(roomList, userId) {
     for (let [id, room] of roomList) {
@@ -18,21 +19,25 @@ export function alreadyInMatch(roomList, userId) {
 }
 
 function addToRoomList(room) {
-    if (room && !this.roomList.get(room.id)) {
-        this.roomList.set(room.id, room);
-        this.log.info(`add room with id: ${room.id}`);
-
-        room.on("done", () => {
-            if (this.validateRoom(room.toJSON())) {
-                this.db.addMatch(room.toJSON());
-            }
-            this.log.info(`delete room with id: ${room.id}`);
-            this.roomList.delete(room.id);
-        });
+    try {
+        if (room && !this.roomList.get(room.id)) {
+            this.roomList.set(room.id, room);
+            this.log.info(`add room with id: ${room.id}`);
+            
+            room.on("done", () => {
+                if (this.validateRoom(room.toJSON())) {
+                    this.db.addMatch(room.toJSON());
+                }
+                this.log.info(`delete room with id: ${room.id}`);
+                this.roomList.delete(room.id);
+            });
+        }
+    } catch (err) {
+        throw new PongError(503, "Error during adding room to list!!");
     }
 }
 
-export default async function pongGame(fastify, options) {
+export default async function pongGame(fastify) {
 
     fastify.decorate('roomList', new Map());
     fastify.decorate('currentRoom', null);

@@ -8,7 +8,11 @@ async function pongStatisticsHandler(request, reply) {
         throw new PongError(400, "Invalid User Passed To Handler!!");
     }
 
-    const matches = this.db.getMatchesByUser(user.id);
+    try {
+        var matches = this.db.getMatchesByUser(user.id);
+    } catch (err) {
+        throw new PongError(503, "Error during pong statistics fetching!!");
+    }
 
     const statistics = new Statistics(matches, user.id);
 

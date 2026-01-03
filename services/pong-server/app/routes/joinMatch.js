@@ -39,7 +39,7 @@ async function joinMatchHandler(request, reply) {
     return (reply.send(JSON.stringify(room.toJSON())));
 }
 
-export default async function joinMatch(fastify, options) {
+export default async function joinMatch(fastify) {
 
     fastify.route({
         url     : '/pongGame/remote/joinMatch',

@@ -1,3 +1,4 @@
+import PongError from "../classes/PongError.js";
 import pongCustomizationSchema from "../schemas/pongCustomizationSchema.js";
 import chessCustomizationSchema from "../schemas/chessCustomizationSchema.js";
 
@@ -10,13 +11,17 @@ async function pongCustomizationUpdateHandler(request, reply) {
         throw new PongError(400, "Invalid User Passed To Handler!!");
     }
 
-    this.db.insertPongCustomizations.run({
-        id: user.id,
-        ball_color: data.ball_color,
-        left_paddle_color: data.left_paddle_color,
-        right_paddle_color: data.right_paddle_color,
-        table_edges_color: data.table_edges_color
-    });
+    try {
+        this.db.insertPongCustomizations.run({
+            id: user.id,
+            ball_color: data.ball_color,
+            left_paddle_color: data.left_paddle_color,
+            right_paddle_color: data.right_paddle_color,
+            table_edges_color: data.table_edges_color
+        });
+    } catch (err) {
+        throw new PongError(503, "Error during pong customization update!!");
+    }
 
     return reply.send("updated successfully");
 }
@@ -29,7 +34,11 @@ async function pongCustomizationFetchHandler(request, reply) {
         throw new PongError(400, "Invalid User Passed To Handler!!");
     }
     
-    const customization = this.db.fetchPongCustomizations.get(user.id);
+    try {
+        var customization = this.db.fetchPongCustomizations.get(user.id);
+    } catch (err) {
+        throw new PongError(503, "Error during pong customization fetch!!");
+    }
 
     return reply.send(customization);
 }
@@ -43,11 +52,15 @@ async function chessCustomizationUpdateHandler(request, reply) {
         throw new PongError(400, "Invalid User Passed To Handler!!");
     }
 
-    this.db.insertChessCustomizations.run({
-        id: user.id,
-        chess_piece: data.chess_piece
-    });
-    
+    try {
+        this.db.insertChessCustomizations.run({
+            id: user.id,
+            chess_piece: data.chess_piece
+        });
+    } catch (err) {
+        throw new PongError(503, "Error during chess customization update!!");
+    }
+
     return reply.send("updated successfully");
 }
 
@@ -58,13 +71,17 @@ async function chessCustomizationFetchHandler(request, reply) {
     if (!state) {
         throw new PongError(400, "Invalid User Passed To Handler!!");
     }
-    
-    const customization = this.db.fetchChessCustomizations.get(user.id);
+
+    try {
+        var customization = this.db.fetchChessCustomizations.get(user.id);
+    } catch (err) {
+        throw new PongError(503, "Error during pong customization update!!");
+    }
 
     return reply.send(customization?.chess_piece ?? 'fantasy');
 }
 
-export default async function customization(fastify, options) {
+export default async function customization(fastify) {
 
     fastify.route({
         url     : '/pongGame/remote/pongCustomization/update',

@@ -140,8 +140,6 @@ export default class GenericRoom extends EventEmitter {
     }
 
     setPlayerSocket(playerId, socket) {
-        let state = false;
-
         if (this.leftPlayer && (this.leftPlayer.id === playerId)) {
             if (!this.leftPlayer.setSocket(socket))
                 return (false);

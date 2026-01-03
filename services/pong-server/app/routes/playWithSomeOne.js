@@ -28,7 +28,7 @@ export async function waitForOpponent(room) {
 
 async function playWithSomeOneHandler(request, reply) {
     const user          = request.user;
-    const state         = this.valiateUser(user);
+    const state         = this.validateUser(user);
     let   currentRoom   = this.currentRoom;
 
     if (!state) {
@@ -64,7 +64,7 @@ async function playWithSomeOneHandler(request, reply) {
     reply.send(JSON.stringify(currentRoom.toJSON()));
 }
 
-export default async function playWithSomeOne(fastify, options) {
+export default async function playWithSomeOne(fastify) {
 
     fastify.route({
         url     : '/pongGame/remote/someone',

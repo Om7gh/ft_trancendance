@@ -1,16 +1,17 @@
 import fp from 'fastify-plugin';
 import Database from 'better-sqlite3';
+import PongError from '../classes/PongError.js';
 import DatabaseService from '../classes/databaseClass.js';
-
 
 export function initDatabase(dbPath = './pong.db') {
     const db = new Database(dbPath);
-
+    
     db.pragma('journal_mode = WAL');
-
+    
     db.pragma('foreign_keys = ON');
-
+    
     db.exec(`
+
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
             username TEXT NOT NULL,
@@ -46,19 +47,25 @@ export function initDatabase(dbPath = './pong.db') {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     `);
-
+            
     return db;
 }
-
-
+        
+        
 export default fp(async function dataBase(fastify, options) {
-    const db = initDatabase(options.dbPath);
-    const dbService = new DatabaseService(db);
-
-    fastify.decorate('db', dbService);
-
-    fastify.addHook('onClose', async (instance, done) => {
-        db.close();
-        done();
-    });
+    try {
+        const db = initDatabase(options.dbPath);
+        const dbService = new DatabaseService(db);
+        
+        fastify.decorate('db', dbService);
+        
+        fastify.addHook('onClose', async (instance, done) => {
+            db.close();
+            done();
+        });
+    } catch (err) {
+        throw new PongError(503, "Erro during pong's data base initialization!!");
+    }
 });
+
+            
