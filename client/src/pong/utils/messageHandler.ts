@@ -53,24 +53,27 @@ export default function messageHandler(
   setError: (value: string) => void,
   customization: CustomizationType | null,
 ) {
-  let message = JSON.parse(event.data);
-
-  if (message && (message.state === 'ok')) {
-    if (message.data.event === 'matchState') {
-      setMatchState(message.data.value);
-    } else if (message.data.event === 'updateScore') {
-      setScore({
-        leftPlayer: message.data.leftPlayer,
-        rightPlayer: message.data.rightPlayer,
-      });
-    } else if (message.data.event === 'updateView') {
-      context.clearRect(0, 0, 700, 400);
-      drawTableEdges(context, customization?.table_edges_color ?? "white");
-      drawBall(message.data.ball, context, customization?.ball_color ?? "orange");
-      drawPaddle(message.data.leftPaddle, context, customization?.left_paddle_color ?? "green");
-      drawPaddle(message.data.rightPaddle, context, customization?.right_paddle_color ?? "red");
-    }
-  } else {
+  try {
+    let message = JSON.parse(event.data);
+    if (message && (message.state === 'ok')) {
+      if (message.data.event === 'matchState') {
+        setMatchState(message.data.value);
+      } else if (message.data.event === 'updateScore') {
+        setScore({
+          leftPlayer: message.data.leftPlayer,
+          rightPlayer: message.data.rightPlayer,
+        });
+      } else if (message.data.event === 'updateView') {
+        context.clearRect(0, 0, 700, 400);
+        drawTableEdges(context, customization?.table_edges_color ?? "white");
+        drawBall(message.data.ball, context, customization?.ball_color ?? "orange");
+        drawPaddle(message.data.leftPaddle, context, customization?.left_paddle_color ?? "green");
+        drawPaddle(message.data.rightPaddle, context, customization?.right_paddle_color ?? "red");
+      }
+    } else {
       setError("Error during the match!!");
+    }
+  } catch (err) {
+    setError("Error during the match!!");
   }
 }

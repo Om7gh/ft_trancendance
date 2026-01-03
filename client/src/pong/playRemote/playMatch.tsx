@@ -23,57 +23,57 @@ function Match({match, connection, matchState, setMatchState, setError}: MatchPr
 
   return (
     <div>
-      <RemoteScoreBar score={score} match={match} />
-      <div
-        className="relative flex flex-col m-auto my-10">
-        <div 
-          className='absolute top-0 w-full h-1/3 z-10'
-          onTouchStart={(e) => {
-            e.stopPropagation();
-            onTouchEndHandler("s");
-            onTouchStartHandler("w");
-          }}
-          onTouchEnd={(e) => {
-            e.stopPropagation();
-            onTouchEndHandler("w");
-          }}
-          onContextMenu={(e) => {
-            e.preventDefault()
-          }}
+    <RemoteScoreBar score={score} match={match} />
+    <div
+      className="relative flex flex-col m-auto my-10">
+      <div 
+        className='absolute top-0 w-full h-1/3 z-10'
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          onTouchEndHandler("s");
+          onTouchStartHandler("w");
+        }}
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+          onTouchEndHandler("w");
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault()
+        }}
         ></div>
-        <canvas
-          width="700" height="400" ref={canvasRef}
-          className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900  w-full h-full"
+      <canvas
+        width="700" height="400" ref={canvasRef}
+        className="bg-slate-950/40 my-5 shadow-xl shadow-slate-900  w-full h-full"
         >
-          Your browser does not support HTML canvas API!!
-        </canvas>
-        <div
-          className=' absolute bottom-0 w-full h-1/3 z-10'
-          onTouchStart={(e) => {
-            e.stopPropagation();
-            onTouchEndHandler("w");
-            onTouchStartHandler("s");
-          }}
-          onTouchEnd={(e) => {
-            e.stopPropagation();
-            onTouchEndHandler("s");
-          }}
-          onContextMenu={(e) => {
-            e.preventDefault()
-          }}
+        Your browser does not support HTML canvas API!!
+      </canvas>
+      <div
+        className=' absolute bottom-0 w-full h-1/3 z-10'
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          onTouchEndHandler("w");
+          onTouchStartHandler("s");
+        }}
+        onTouchEnd={(e) => {
+          e.stopPropagation();
+          onTouchEndHandler("s");
+        }}
+        onContextMenu={(e) => {
+          e.preventDefault()
+        }}
         ></div>
-        {(matchState === 'paused') && <CounterDown />}
-        {(matchState === 'done') && <RemoteWinner score={score} match={match} />}
-      </div>
-      <button
-          className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-full md:w-1/2 lg:w-1/2 rounded-xl"
-          onClick={() => {
-            if (matchState === 'going') {
-                connection.send(JSON.stringify({type: 'leave',data: true,}));
-            }
-            navigate(-1);
-          }}
-      >Leave Match</button>
+      {(matchState === 'paused') && <CounterDown />}
+      {(matchState === 'done') && <RemoteWinner score={score} match={match} />}
+    </div>
+    <button
+        className="m-auto block bg-slate-950/60 text-violet-200 px-6 py-3 text-xl shadow-xl w-full md:w-1/2 lg:w-1/2 rounded-xl"
+        onClick={() => {
+          if (matchState === 'going') {
+            connection.send(JSON.stringify({type: 'leave',data: true,}));
+          }
+          navigate(-1);
+        }}
+        >Leave Match</button>
     </div>
   );
 }
@@ -89,6 +89,8 @@ export default function PlayMatch({ match }: PlayMatchPropsType) {
 
   if (error){
     return <MessageDisplayer message={error} />
+  } else if (matchState === "canceled") {
+    return <MessageDisplayer message="Match Canceled for waiting too long!!" />
   } else if (matchState) {
     return (
       <Match 

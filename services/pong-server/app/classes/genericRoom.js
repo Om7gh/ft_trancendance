@@ -152,12 +152,24 @@ export default class GenericRoom extends EventEmitter {
             this.continue(playerId);
         } else if (this.leftPlayer.socket && this.rightPlayer.socket) {
             this.startMatch();
+        } else if ((this.leftPlayer.socket && !this.rightPlayer.socket)
+            || (!this.leftPlayer.socket && this.rightPlayer.socket)) {
+            this.waitOpponentToJoin();
         }
         return (true);
     }
 
+    waitOpponentToJoin() {
+        this.waitingId = setTimeout(() => {
+            if (this.isReady()) {
+                this.cancelMatch();
+            }
+        }, 30000);
+    }
+
     startMatch() {
         if (this.isReady()) {
+            clearTimeout(this.waitingId);
             if (this.leftPlayer.socket && this.rightPlayer.socket) {
                 this.state = "going";
                 this.broadcastMatchState();
@@ -210,7 +222,7 @@ export default class GenericRoom extends EventEmitter {
                 }
                 this.stopMatch();
             }
-        }, 60000);
+        }, 30000);
     }
 
     matchLoop() {
@@ -260,10 +272,9 @@ export default class GenericRoom extends EventEmitter {
     }
 
     cancelMatch() {
-        if (this.isWaiting()) {
-            this.state = "done";
-            this.emit("done");
-        }
+        this.state = "canceled";
+        this.broadcastMatchState();
+        this.emit("done");
     }
 
     stopMatch() {

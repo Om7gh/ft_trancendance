@@ -1,6 +1,7 @@
 import fp from 'fastify-plugin';
 import Database from 'better-sqlite3';
 import DatabaseService from "../classes/databaseclass.js"
+import NotificationError from '../classes/notificationError.js';
 
 export function initDatabase(dbPath = './notification.db') {
     const db = new Database(dbPath);
@@ -32,13 +33,17 @@ export function initDatabase(dbPath = './notification.db') {
 }
 
 export default fp(async function dataBase(fastify, options) {
-    const db = initDatabase(options.dbPath);
-    const dbService = new DatabaseService(db);
-
-    fastify.decorate('db', dbService);
-
-    fastify.addHook('onClose', async (instance, done) => {
-        db.close();
-        done();
-    });
+    try {
+        const db = initDatabase(options.dbPath);
+        const dbService = new DatabaseService(db);
+        
+        fastify.decorate('db', dbService);
+        
+        fastify.addHook('onClose', async (instance, done) => {
+            db.close();
+            done();
+        });
+    } catch(err) {
+        throw new NotificationError(503, "Fail ton initiate notification data base!!");
+    }
 });
