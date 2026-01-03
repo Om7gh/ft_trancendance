@@ -30,11 +30,11 @@ run: build
 	@$(COMPOSE) --parallel 4 -p agents up
 
 clean:
-	@$(COMPOSE) rm -fsv `docker ps -aq`
-	@docker rmi `docker images -aq`
+	-@$(COMPOSE) rm -fsv `docker ps -aq`
+	-@docker rmi `docker images -aq`
 
 fclean: clean
-	@rm -f ~/data/*
-	@docker system prune -af
+	-@rm -f ~/data/*
+	-@docker system prune -af
 
 re: fclean run
