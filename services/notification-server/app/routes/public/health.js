@@ -5,7 +5,7 @@ async function health(fastify) {
         handler: async (request, reply) => {
             return { status: 'ok' };
         }
-    })
+    });
 }
 
 export default health;
