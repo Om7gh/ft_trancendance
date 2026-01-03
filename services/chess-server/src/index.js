@@ -30,10 +30,9 @@ app.setErrorHandler((error, request, reply) => {
       message: error.message,
     });
   }
-
   return reply.status(400).send({
     status: 'error',
-    message: error.message || 'bad request',
+    message: 'bad request',
   });
 })
 

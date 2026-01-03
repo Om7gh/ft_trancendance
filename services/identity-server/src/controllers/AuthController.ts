@@ -47,7 +47,7 @@ export default abstract class AuthController {
         const pkceParams = `${pkce.state};${pkce.codeVerifier};${pkce.codeChallenge}`;
         reply.sendNonceToken(await this.generateNonceToken(pkceParams, '5m'));
         const url = this.auth.getAuthUrl(provider, pkce);
-        reply.redirect(url);
+        return reply.redirect(url);
     }
 
     static async oauth2Login(

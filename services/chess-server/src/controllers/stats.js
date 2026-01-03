@@ -1,8 +1,9 @@
 const { getGameStats, getPlayerGameHistory } = require("../repositories");
+const AppError = require("../utils/appError");
 const { catchAsyncError } = require("../utils/catchAsyncError");
 
 const getStats = catchAsyncError(async function(req, rep) {
-   try {
+
     const { uid } = req.query;
 
     if (!uid) {
@@ -13,6 +14,9 @@ const getStats = catchAsyncError(async function(req, rep) {
 
     const history = await getPlayerGameHistory(req.server.db, uid);
     const stats = await getGameStats(req.server.db, uid);
+
+    if (!history || !stats)
+      throw new AppError('Failed to fetch data', 400);
 
     return rep.send({
       success: true,
@@ -39,12 +43,6 @@ const getStats = catchAsyncError(async function(req, rep) {
           : 'LOSS'
       }))
     });
-  } catch (error) {
-    req.server.log.error('Error fetching game history:', error);
-    return rep.status(400).send({
-      error: 'Failed to fetch game history'
-    });
-  }
 })
 
 module.exports = {getStats}
