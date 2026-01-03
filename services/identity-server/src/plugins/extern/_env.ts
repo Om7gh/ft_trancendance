@@ -24,51 +24,52 @@ declare module 'fastify' {
       ACCESS_SECRET: string
       CONFIRM_SECRET: string
       REFRESH_SECRET: string
+      PASSWORD_SECRET: string
     }
   }
 }
 
 const schema = {
-  type: 'object',
+  type: "object",
   required: [
-    'HOST',
-    'PORT',
-    'GOOGLE_CLIENT_ID',
-    'GOOGLE_CLIENT_SECRET',
-    'DISCORD_CLIENT_ID',
-    'DISCORD_CLIENT_SECRET',
-    'SMTP_HOST',
-    'SMTP_PORT',
-    'SMTP_USER',
-    'SMTP_PASS',
-    'ACCESS_SECRET',
-    'CONFIRM_SECRET',
-    'REFRESH_SECRET',
+    "HOST",
+    "PORT",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "DISCORD_CLIENT_ID",
+    "DISCORD_CLIENT_SECRET",
+    "SMTP_HOST",
+    "SMTP_PORT",
+    "SMTP_USER",
+    "SMTP_PASS",
+    "ACCESS_SECRET",
+    "CONFIRM_SECRET",
+    "REFRESH_SECRET",
+    "PASSWORD_SECRET",
   ],
   properties: {
-    HOST: { type: 'string' },
-    PORT: { type: 'number' },
-    GOOGLE_CLIENT_ID: { type: 'string' },
-    GOOGLE_CLIENT_SECRET: { type: 'string' },
+    HOST: { type: "string" },
+    PORT: { type: "number" },
+    GOOGLE_CLIENT_ID: { type: "string" },
+    GOOGLE_CLIENT_SECRET: { type: "string" },
     GOOGLE_REDIRECT_URI: {
-      type: 'string',
-      default: 'http://localhost:3000/auth/google/callback',
+      type: "string"
     },
-    DISCORD_CLIENT_ID: { type: 'string' },
-    DISCORD_CLIENT_SECRET: { type: 'string' },
+    DISCORD_CLIENT_ID: { type: "string" },
+    DISCORD_CLIENT_SECRET: { type: "string" },
     DISCORD_REDIRECT_URI: {
-      type: 'string',
-      default: 'http://localhost:3000/auth/discord/callback',
+      type: "string"
     },
-    SMTP_HOST: { type: 'string' },
-    SMTP_PORT: { type: 'number' },
-    SMTP_USER: { type: 'string' },
-    SMTP_PASS: { type: 'string' },
-    ACCESS_SECRET: { type: 'string' },
-    CONFIRM_SECRET: { type: 'string' },
-    REFRESH_SECRET: { type: 'string' },
+    SMTP_HOST: { type: "string" },
+    SMTP_PORT: { type: "number" },
+    SMTP_USER: { type: "string" },
+    SMTP_PASS: { type: "string" },
+    ACCESS_SECRET: { type: "string" },
+    CONFIRM_SECRET: { type: "string" },
+    REFRESH_SECRET: { type: "string" },
+    PASSWORD_SECRET: { type: "string" },
   },
-}
+};
 
 export const autoConfig = {
   confKey: 'config',

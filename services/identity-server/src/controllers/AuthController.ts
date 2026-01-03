@@ -2,7 +2,6 @@ import { randomUUID } from "crypto";
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { Pkce } from "../auth/index.js";
 import { PkceParams } from "../auth/remote/types/pkce.js";
-import { compare, hash } from "../auth/security/cipher-util.js";
 import asUser, { asUserInfo } from "../dto/user-dto.js";
 import { User } from "../models/user.js";
 import {
@@ -12,7 +11,10 @@ import {
   RegisterBody,
   UsernameBody,
 } from "../schemas/auth.js";
-import saveAvatar, { saveUploadedAvatar, validateImageFile } from "../utils/avatar-utils.js";
+import saveAvatar, {
+  saveUploadedAvatar,
+  validateImageFile,
+} from "../utils/avatar-utils.js";
 import { confirmMailOptions, magicLinkOptions } from "../utils/mail-options.js";
 
 export default abstract class AuthController {
@@ -111,7 +113,10 @@ export default abstract class AuthController {
       first_name: payload.first_name,
       last_name: payload.last_name,
       email: payload.email,
-      password: hash(payload.password),
+      password: this.passwordManager.hash(
+        payload.password,
+        this.config.PASSWORD_SECRET
+      ),
       provider: "local",
     } as unknown as User;
     const user = this.usersRepository.insert(newUser);
@@ -139,7 +144,14 @@ export default abstract class AuthController {
       }
     }
     const user = this.usersRepository.findByEmail(email);
-    if (!user || !compare(password, user.password)) {
+    if (
+      !user ||
+      !this.passwordManager.compare(
+        password,
+        user.password,
+        this.config.PASSWORD_SECRET
+      )
+    ) {
       return reply.badRequest("wrong credentials");
     }
     if (!user.email_verified) {

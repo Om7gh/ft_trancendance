@@ -3,7 +3,7 @@ import fp from 'fastify-plugin'
 
 export default fp<FastifyCookieOptions>(async (fastify) => {
   fastify.register(cookie, {
-    secret: 'your-secret-key', // for signed cookies
-    parseOptions: {}, // optional: options for cookie.parse
+    secret: fastify.config.PASSWORD_SECRET,
+    parseOptions: {},
   })
 })

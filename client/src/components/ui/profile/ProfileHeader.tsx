@@ -113,13 +113,13 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
 
   return (
     <div className="h-96 bg-slate-950/30 shadow-lg shadow-slate-900 mb-5 p-3 flex flex-col md:flex-row justify-around items-center rounded-xl">
-      <div className="flex  items-center h-full gap-8  px-5 py-2">
+      <div className="flex flex-col md:flex-row lg:flex-row  items-center h-full gap-8  px-5 py-2">
         <img
           src={userData?.avatar}
           alt={`${userData?.username} avatar`}
-          className="w-32 h-32 md:h-52 md:w-52  rounded-full ring ring-offset-4 outline-2 outline-transparent ring-offset-violet-300/50 "
+          className="w-32 h-32 md:h-52 md:w-52  rounded-full ring ring-offset-4 outline-2 outline-transparent ring-offset-violet-300/50 object-cover"
         />
-        <div>
+        <div className='text-center md:text-left lg:text-left'>
           <p className="text-violet-200 text-lg md:text-3xl mb-2">
             {userData?.first_name} {userData?.last_name}
           </p>

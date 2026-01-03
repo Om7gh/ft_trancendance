@@ -1,8 +1,8 @@
-import { FastifyInstance } from 'fastify';
-import fp from 'fastify-plugin';
-import { CredentialBody } from '../../auth/remote/types/provider-credentials.js';
+import { FastifyInstance } from "fastify";
+import fp from "fastify-plugin";
+import { CredentialBody } from "../../auth/remote/types/provider-credentials.js";
 
-declare module 'fastify' {
+declare module "fastify" {
   interface FastifyInstance {
     providerConfig: ReturnType<typeof providerConfig>;
     mailerConfig: ReturnType<typeof mailerConfig>;
@@ -49,9 +49,9 @@ function createTokenSecrets(fastify: FastifyInstance) {
 
 export default fp(
   async (fastify) => {
-    fastify.decorate('providerConfig', providerConfig(fastify));
-    fastify.decorate('mailerConfig', mailerConfig(fastify));
-    fastify.decorate('tokenSecrets', createTokenSecrets(fastify));
+    fastify.decorate("providerConfig", providerConfig(fastify));
+    fastify.decorate("mailerConfig", mailerConfig(fastify));
+    fastify.decorate("tokenSecrets", createTokenSecrets(fastify));
   },
-  { name: 'provider-credentials', dependencies: ['@fastify/env'] }
+  { name: "provider-credentials", dependencies: ["@fastify/env"] }
 );
