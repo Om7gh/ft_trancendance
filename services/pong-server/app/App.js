@@ -5,10 +5,8 @@ import websocket from '@fastify/websocket';
 import dataBase from './plugins/dataBase.js';
 import statistics from './routes/statistics.js';
 import errorHandler from "./plugins/errorHandler.js";
-import onRequestHook from "./hooks/onRequestHook.js";
 import validateUserPlugin from './plugins/validateUser.js';
 import validateRoomPlugin from './plugins/validateRoom.js';
-import pongStatistics from './routes/pongStatistics.js';
 
 import pongGame from './routes/pongGame.js';
 
@@ -20,12 +18,10 @@ app.register(axios);
 app.register(websocket);
 
 app.register(cookie);
+app.register(errorHandler);
 app.register(validateUserPlugin);
 app.register(validateRoomPlugin);
 app.register(dataBase, { dbPath: "/var/local/pong.db", });
-
-app.register(onRequestHook);
-app.register(errorHandler);
 
 app.register(pongGame);
 app.register(statistics);

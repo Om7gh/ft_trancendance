@@ -1,3 +1,4 @@
+import PongError from "../classes/PongError.js";
 import GenericRoom from "../classes/genericRoom.js";
 import inviteSchema from "../schemas/inviteSchema.js";
 import acceptSchema from "../schemas/acceptSchema.js";

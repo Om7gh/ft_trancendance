@@ -1,10 +1,11 @@
+import PongError from "../classes/PongError.js";
 import { alreadyInMatch } from "./pongGame.js";
 import { waitForOpponent } from "./playWithSomeOne.js";
 import joinMatchSchema from "../schemas/joinMatchSchema.js";
 
 async function joinMatchHandler(request, reply) {
     const user  = request.user;
-    const rid = request.query.rid;
+    const rid   = request.query.rid;
     const state = this.validateUser(user);
 
     if (!state) {

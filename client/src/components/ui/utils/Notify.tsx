@@ -24,6 +24,7 @@ export interface NotificationType  {
 
 function Notify({data, close} : {data : NotificationType, close: () => void}) {
   const navigate = useNavigate()
+  const {refetch} = useAcceptMatch(data?.sender.id);
   const currentDate = Date.now() / 1000;
   const diff = data.expireTime - currentDate;
   if (data.type === "joinMatch") {
@@ -100,7 +101,6 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
     );
   }
   if (data?.type === "inviteToMatch"  && diff > 0) {
-    const {refetch} = useAcceptMatch(data?.sender.id);
     const handleClick = () => {
       refetch()
       close();
@@ -121,9 +121,6 @@ function Notify({data, close} : {data : NotificationType, close: () => void}) {
         <div className="flex gap-2">
           <button className="px-4 py-1.5 bg-violet-600 hover:bg-violet-700 rounded-md text-sm font-medium transition-colors" onClick={handleClick}>
             Accept
-          </button>
-          <button className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-md text-sm font-medium transition-colors">
-            Decline
           </button>
           {diff <= 0 && <p className="text-xs mx-3 text-violet-500">expired</p>}
         </div>

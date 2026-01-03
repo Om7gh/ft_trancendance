@@ -160,7 +160,6 @@ export default class GenericRoom extends EventEmitter {
 
     startMatch() {
         if (this.isReady()) {
-            clearTimeout(this.waitingId);
             if (this.leftPlayer.socket && this.rightPlayer.socket) {
                 this.state = "going";
                 this.broadcastMatchState();

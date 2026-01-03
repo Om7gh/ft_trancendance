@@ -1,16 +1,5 @@
 import { useEffect } from "react";
 
-function createConnection(url: string, connection: { ws: WebSocket | null }) {
-  try {
-    connection.ws = new WebSocket(url);
-    connection.ws.onerror = () => console.log('Connection error!!');
-    connection.ws.onopen = () => console.log('Connection established!!');
-    connection.ws.onclose = () => console.log('Connection closed!!');
-  } catch (err) {
-    throw (new Error("Fail to Create connection"))
-  }
-}
-
 export default function useWebSocket(
   url: string,
   connection: {ws: WebSocket | null},
@@ -19,7 +8,7 @@ export default function useWebSocket(
 ) {
   useEffect(() => {
     try {
-      createConnection(url, connection);
+      connection.ws = new WebSocket(url);
       setMatchState("waiting");
       return () => {
         if (connection.ws) {

@@ -6,6 +6,7 @@ import Notify, { type NotificationType } from '../ui/utils/Notify';
 import api from '@/services/clientHttpService';
 import { Logo } from '@/assets';
 
+let number = 1000;
 function Notification() {
   const [openNotification, setOpenNotification] = useState(false);
   const [data, setData] = useState<NotificationType[]>([]);
@@ -14,6 +15,7 @@ function Notification() {
   const [counter, setCounter] = useState<number>(0);
   const lastSeenTotalRef = useRef<number>(0);
   const seenRef = useRef(false);
+  const shortPollingCounter = useRef<number>(1000);
 
   
   useEffect(() => {
@@ -35,24 +37,27 @@ function Notification() {
           }
           setData(newData);
           setError("");
+          shortPollingCounter.current = 1000;
           setLoading(false);
         }
       } catch (e: any) {
         if (isMounted) {
           setError(e.message || "Failed to fetch notifications");
           setLoading(false);
+          if (shortPollingCounter.current <= 5000)
+            shortPollingCounter.current += 1000;
         }
       }
     }
     fetchNotification();
     const intervalId = setInterval(() => {
       fetchNotification();
-    }, 5000);
+    }, shortPollingCounter.current);
     return () => {
       isMounted = false;
       clearInterval(intervalId);
     };
-  }, [])
+  }, [shortPollingCounter.current])
 
   const handleToggleNotification = () => {
     setOpenNotification((prev) => {
@@ -65,6 +70,11 @@ function Notification() {
       return next;
     });
   };
+
+  if (error)
+    shortPollingCounter.current += 1000;
+  else
+    shortPollingCounter.current = 1000;
 
   return (
   <div className="relative">

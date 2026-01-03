@@ -7,11 +7,12 @@ import api from "@/services/clientHttpService.ts";
 export default function useFetchMatch(
     url: string,
     setMatch: ((match: MatchType) => void),
-    setError: ((error: string) => void)
+    setError: ((error: string | null) => void)
 ) {
     useEffect(() => {
         let ignored = false;
 
+        setError(null);
         (async function fetchMatch() {
             try {
                 const response = await api.get(url);
