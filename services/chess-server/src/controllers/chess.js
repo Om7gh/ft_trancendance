@@ -39,17 +39,14 @@ const chessHandler = catchAsyncError(async function (connection, req) {
       }
       existingPlayer.connection = connection;
       existingPlayer.roomId = null;
-      console.log(`Duplicate-tab forfeit [${playerId}] from ${clientIP}`);
     } else {
     if (oldConnection && oldConnection.readyState === 1) {
       oldConnection.close();
     }
     existingPlayer.connection = connection;
-    console.log(`Player reconnected [${playerId}] from ${clientIP}`);
     }
   } else {
     players.set(playerId, { connection, roomId: null, ip: clientIP });
-    console.log(`New connection [${playerId}] from ${clientIP}`);
   }
   connection.on('message', (rawMsg) => {
     let msg;
@@ -97,7 +94,6 @@ const handleMessage = catchAsyncError(async function (app, playerId, msg) {
     case 'rematchDecline':
       return handleRematchDecline(playerId);
     default:
-      console.log(`Unknown message type: ${type}`);
       if (player)
         send(player.connection, {
           type: 'error',
@@ -105,27 +101,6 @@ const handleMessage = catchAsyncError(async function (app, playerId, msg) {
         });
   }
 })
-
-setInterval(() => {
-  const now = Date.now();
-  for (const [roomId, room] of Object.entries(rooms)) {
-    if (room.players.length === 2) {
-      const a = room.players[0].playerId;
-      const b = room.players[1].playerId;
-      lastOpponents.set(a, b);
-      lastOpponents.set(b, a);
-    }
-
-    const inactive =
-      room.players.length === 0 && now - room.createdAt > 600_000;
-    if (inactive) {
-      delete rooms[roomId];
-      console.log(`🧹 Cleaned up inactive room ${roomId}`);
-    }
-  }
-}, 600_000);
-
-
 
 function endGameByDuplicateTab(app, roomId, duplicatingPlayerId, reconnectingConnection) {
   const room = rooms[roomId];

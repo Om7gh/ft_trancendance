@@ -13,8 +13,6 @@ const chessDb = catchAsyncError (async function (fastify) {
   const dbPath = path.join(dataDir, 'chess.sqlite');
   const db = new Database(dbPath);
   
-  console.log('Database file location:', dbPath);
-  
   db.pragma('foreign_keys = OFF');
   
   db.exec(`
@@ -54,7 +52,6 @@ const chessDb = catchAsyncError (async function (fastify) {
         gameData.endedAt
       );
     } catch (error) {
-      console.error('❌ Failed to record game:', error);
       throw error;
     }
   });
