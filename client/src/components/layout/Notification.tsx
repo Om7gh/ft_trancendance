@@ -6,7 +6,6 @@ import Notify, { type NotificationType } from '../ui/utils/Notify';
 import api from '@/services/clientHttpService';
 import { Logo } from '@/assets';
 
-let number = 1000;
 function Notification() {
   const [openNotification, setOpenNotification] = useState(false);
   const [data, setData] = useState<NotificationType[]>([]);
@@ -17,7 +16,7 @@ function Notification() {
   const seenRef = useRef(false);
   const shortPollingCounter = useRef<number>(1000);
 
-  
+
   useEffect(() => {
     let isMounted = true;
     async function fetchNotification() {
