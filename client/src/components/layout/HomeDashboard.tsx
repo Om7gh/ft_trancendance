@@ -15,11 +15,10 @@ type GameType = 'pingpong' | 'chess';
 export default function HomeDashboard() {
   const [activeGame, setActiveGame] = useState<GameType>('pingpong');
   const {user} = useContext(GlobalContext)
-  const {data: chess, isPending, isError, error} = useGetChessHistory(user?.username!)
+  const {data: chess, isPending, isError} = useGetChessHistory(user?.username!)
   const {data: pong, isPending: pongPending, error: pongError, isError: isPongError} = useGetPongStat()
 
   const pongErrorMessage = getErrorMessage(pongError);
-  const chessErrorMessage = getErrorMessage(error);
 
   return (
     <div className="h-full p-5 space-y-6 overflow-auto">
@@ -79,7 +78,7 @@ export default function HomeDashboard() {
 
         <div className="grid grid-cols-1 gap-6">
           {
-            isPending ? <p className='text-slate-500 text-center text-lg md:text-xl'>Loading Chess History...</p> : isError ? <p className='text-center text--pink-500'>{chessErrorMessage}</p> : <MyGamesHistory type="chess" userData={user} matchData={chess} />
+            isPending ? <p className='text-slate-500 text-center text-lg md:text-xl'>Loading Chess History...</p> : isError ? <p className='text-center text--pink-500'>Fail to load chess History</p> : <MyGamesHistory type="chess" userData={user} matchData={chess} />
           }
         </div>
       </DashboardWrapper>

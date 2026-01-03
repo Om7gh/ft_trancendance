@@ -31,6 +31,12 @@ const sqlite3Options = {
 async function main() {
 	const app = fastify(serverOptions);
 
+	app.setErrorHandler((_error, _req, reply) => {
+		reply
+			.status(503)
+			.send({message: "Service is temporarily unavailable"});
+	});
+
 	app
 		.register(fastifyBetterSqlite3, sqlite3Options)
 		.register(onRequestHook)

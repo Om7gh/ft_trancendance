@@ -1,4 +1,4 @@
-import { useGetFriends, useGetReceivedRequests, useGetSentRequests, useApproveFriendRequest, useRejectFriendRequest, useSendFriendRequest, useUnfriend } from '@/services/friends';
+import { useGetFriends, useGetReceivedRequests, useGetSentRequests, useApproveFriendRequest, useRejectFriendRequest, useSendFriendRequest, useUnfriend, useCancelFriendRequest } from '@/services/friends';
 import { BiLoaderAlt } from 'react-icons/bi';
 import { useState } from 'react';
 import type { Friend } from '@/types/friendTypes';
@@ -24,6 +24,7 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
   const sendFriendRequest = useSendFriendRequest();
   const approveFriendRequest = useApproveFriendRequest();
   const rejectFriendRequest = useRejectFriendRequest();
+  const cancelFriendRequest = useCancelFriendRequest();
   const unfriend = useUnfriend();
 
   const { data: receivedRequests } = useGetReceivedRequests();
@@ -68,8 +69,8 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
   const handleCancelSentRequest = () => {
     if (!uid) return;
     setActiveAction('cancel');
-    rejectFriendRequest.mutate(uid, {
-      onSettled: () => setActiveAction(null),
+    cancelFriendRequest.mutate(uid, {
+        onSettled: () => setActiveAction(null),
     });
   };
 
@@ -91,7 +92,7 @@ function ProfileHeader({ userData, isOwnProfile }: ProfileHeaderProps) {
 
   const getTimeSinceLastLogin = () => {
     if (!userData?.last_login) return 'Unknown';
-    
+
     const now = Date.now();
     const lastLogin = userData.last_login * 1000;
     const diffMs = now - lastLogin;

@@ -28,7 +28,7 @@ function getMatchOutcome(match: ChessMatch) {
 
 function ChessTodayStatistic() {
   const {user} = useContext(GlobalContext)
-  const {data, isError, error, isPending} = useGetChessHistory(user?.username ?? null)
+  const {data, isError, isPending} = useGetChessHistory(user?.username ?? null)
   const today = new Date()
 
   const history = (data as ChessHistoryResponse | undefined)?.history ?? []
@@ -48,7 +48,7 @@ function ChessTodayStatistic() {
     if (!d) return ""
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   }
-  
+
   return (
     <div className="p-4 bg-slate-800/30  border border-slate-700 rounded-2xl">
       <h3 className="text-lg font-medium text-slate-300 mb-4 max-h-48 overflow-auto">
@@ -61,7 +61,7 @@ function ChessTodayStatistic() {
         <p className="text-slate-200 opacity-40 text-center">Loading…</p>
       ) : isError ? (
         <p className="text-slate-200 opacity-40 text-center">
-          {(error as any)?.message || "Failed to load chess history"}
+          "Failed to load chess history"
         </p>
       ) : todayGames?.length === 0 ? (
         <p className="text-slate-200 opacity-40 text-center">No activities for today</p>
