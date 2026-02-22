@@ -191,7 +191,7 @@ This ensures:
 🚀 How to Run
 
 1️⃣ Clone the repository
-git clone https://github.com/om7gh/ft_transcendence.git
+git clone https://github.com/Om7gh/ft_trancendance
 cd ft_transcendence
 2️⃣ Start the services
 Using Docker
